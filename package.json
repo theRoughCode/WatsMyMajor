@@ -1,0 +1,32 @@
+{
+  "name": "WatsMyMajor",
+  "version": "1.0.0",
+  "description": "A web app that helps Waterloo students pick their courses",
+  "engines": {
+    "node": "6.11.x"
+  },
+  "scripts": {
+    "start": "node server",
+    "heroku-postbuild": "cd react-ui/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
+    "build": "cd react-ui/ && npm run build"
+  },
+  "cacheDirectories": [
+    "node_modules",
+    "react-ui/node_modules"
+  ],
+  "dependencies": {
+    "express": "^4.14.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mars/heroku-cra-node.git"
+  },
+  "keywords": [
+    "node",
+    "heroku",
+    "create-react-app",
+    "react",
+    "waterloo"
+  ],
+  "devDependencies": {}
+}
