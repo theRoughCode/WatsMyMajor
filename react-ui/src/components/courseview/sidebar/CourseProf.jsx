@@ -7,7 +7,7 @@ import Divider from 'material-ui/Divider';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
-import profAvatar from '../../images/prof.jpg';
+import profAvatar from '../../../images/prof.jpg';
 
 const styles = {
 	stars: {
@@ -90,27 +90,34 @@ const Rating = ({ difficulty, tags }) => {
 	);
 };
 
-const Share = ({ icon, text }) => (
+const Share = ({ icon, text, link='#' }) => (
 	<div className="course-prof-share">
 		{icon}
-		<a href="#">{text}</a>
+		<a href={link} target='_blank'>{text}</a>
 	</div>
 );
 
 
-const CourseProf = ({ style }) => {
+const CourseProf = ({ style, ...info }) => {
+  const {
+    instructor,
+    rating,
+    difficulty,
+    tags,
+    rmpURL
+  } = info;
 
 	return (
 		<Paper style={style} zDepth={1}>
 			<ProfHeader
-				name={'Firas Mansour'}
-				stars={4.1}
+				name={instructor}
+				stars={rating}
 				image={profAvatar}
 				/>
 			<Divider style={styles.divider} />
 			<Rating
-				difficulty={3.2}
-				tags={['Hilarious', 'Respected', 'Amazing Lectures']}
+				difficulty={difficulty}
+				tags={tags}
 				/>
 			<Divider style={styles.divider} />
 			<Share
@@ -128,12 +135,26 @@ const CourseProf = ({ style }) => {
 	      />}
 				text={'Share on Twitter'}
 				/>
+			<Divider style={styles.divider} />
+			<Share
+				icon={<FontAwesome
+	        name='globe'
+					style={styles.icon}
+	      />}
+				text={'See on RateMyProf.com'}
+        link={rmpURL}
+				/>
 		</Paper>
 	);
 };
 
 CourseProf.propTypes = {
-	style: PropTypes.object.isRequired
+	style: PropTypes.object.isRequired,
+  instructor: PropTypes.string.isRequired,
+  rating: PropTypes.number.isRequired,
+  difficulty: PropTypes.number.isRequired,
+  tags: PropTypes.array.isRequired,
+  rmpURL: PropTypes.string.isRequired
 }
 
 export default CourseProf;

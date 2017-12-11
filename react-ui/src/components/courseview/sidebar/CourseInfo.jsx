@@ -31,22 +31,29 @@ const Info = ({ icon, info }) => (
 	</div>
 );
 
-const DetailedInfo = () => (
+const DetailedInfo = ({ instructor, enrollmentCap, attending }) => (
 	<div className="course-info-details">
 		<Info
 			icon={<PersonIcon style={styles.icon} />}
-			info={'Instructor: Adrian Deman'}
+			info={`Instructor: ${instructor}`}
 			/>
 		<Info
 			icon={<PeopleIcon style={styles.icon} />}
-			info={'Enrollment cap: 50'}
+			info={`Enrollment cap: ${enrollmentCap}`}
 			/>
 		<Info
 			icon={<CheckIcon style={styles.icon} />}
-			info={'Attending: 30'}
+			info={`Attending: ${attending}`}
 			/>
 	</div>
 );
+
+DetailedInfo.propTypes = {
+  instructor: PropTypes.string.isRequired,
+  enrollmentCap: PropTypes.string.isRequired,
+  attending: PropTypes.string.isRequired
+}
+
 
 const AddToCart = () => (
 	<RaisedButton
@@ -66,15 +73,14 @@ const Share = ({ icon, text }) => (
 );
 
 
-const CourseInfo = ({ style }) => {
-
+const CourseInfo = ({ style, ...info }) => {
 	return (
 		<Paper style={style} zDepth={1}>
 			<div className="course-info-header">
 				<span>Course Info</span>
 			</div>
 			<Divider style={styles.divider} />
-			<DetailedInfo />
+			<DetailedInfo {...info} />
 			<Divider style={styles.divider} />
 			<AddToCart />
 			<Divider style={styles.divider} />
@@ -98,7 +104,10 @@ const CourseInfo = ({ style }) => {
 };
 
 CourseInfo.propTypes = {
-	style: PropTypes.object.isRequired
+	style: PropTypes.object.isRequired,
+  instructor: PropTypes.string.isRequired,
+  enrollmentCap: PropTypes.string.isRequired,
+  attending: PropTypes.string.isRequired
 }
 
 export default CourseInfo;

@@ -97,11 +97,12 @@ html, body, #root, .App {
 }
 
 .course-info-details {
-  padding: 20px 20px;
+  padding: 10px 20px;
 }
 
 .course-info-details-info {
   display: flex;
+  margin: 10px 0;
 }
 
 .course-info-share, .course-prof-share {

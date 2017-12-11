@@ -6,10 +6,12 @@ import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
-import CourseView from './components/CourseView';
+import CourseView from './components/CourseViewContainer';
 import { DASHBOARD_VIEW, COURSE_VIEW } from './constants/views';
 
 let styles = {
+  width: 'auto',
+  height: '100%',
 	marginLeft: 0,
 	transition: 'all 1s ease-in-out'
 }
@@ -58,7 +60,7 @@ class App extends Component {
 		const transition = (this.props.sideBarOpen)
 													? 'all 0.3s ease-in-out'
 													: 'all 0.225s ease-out';
-		styles = Object.assign({}, styles, { marginLeft, transition }); 
+		styles = Object.assign({}, styles, { marginLeft, transition });
 
 		switch (this.props.view) {
 			case DASHBOARD_VIEW:
@@ -103,6 +105,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(toggleSideBar());
     },
 		onSearch: (course) => {
+			if (!course) return;
 			const [ subject, catalogNumber ] = course.split(' ');
 			dispatch(setCourse(subject, catalogNumber));
 		}

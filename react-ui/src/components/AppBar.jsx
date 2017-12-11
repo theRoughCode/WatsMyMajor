@@ -63,6 +63,7 @@ export default class ReactAppBar extends Component {
           filter={(searchValue, key) => searchValue.length}
           onChange={(searchValue) => this.setState(findMatches(searchValue))}
           onRequestSearch={() => this.state.onSearch(this.state.dataSource[0])}
+          onNewRequest={() => this.state.onSearch(this.state.dataSource[0])}
           style={{
             marginTop: '5px',
             maxWidth: 800
