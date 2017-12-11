@@ -9,7 +9,7 @@ import Dashboard from './components/Dashboard';
 import CourseView from './components/CourseView';
 import { DASHBOARD_VIEW, COURSE_VIEW } from './constants/views';
 
-const styles = {
+let styles = {
 	marginLeft: 0,
 	transition: 'all 1s ease-in-out'
 }
@@ -54,10 +54,11 @@ class App extends Component {
 
 	getView() {
 		let view = null;
-		styles.marginLeft = (this.props.sideBarOpen) ? '256px' : 0;
-		styles.transition = (this.props.sideBarOpen)
+		const marginLeft = (this.props.sideBarOpen) ? '256px' : 0;
+		const transition = (this.props.sideBarOpen)
 													? 'all 0.3s ease-in-out'
 													: 'all 0.225s ease-out';
+		styles = Object.assign({}, styles, { marginLeft, transition }); 
 
 		switch (this.props.view) {
 			case DASHBOARD_VIEW:
