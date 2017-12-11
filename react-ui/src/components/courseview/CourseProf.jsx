@@ -77,9 +77,10 @@ const Rating = ({ difficulty, tags }) => {
 					/>
 			</div>
 			<div className="course-prof-rating-tags">
-				{tags.map((tag) => (
+				{tags.map((tag, index) => (
 					<Chip
 	          style={styles.chip}
+            key={index}
 	        >
 	          {tag}
 	        </Chip>

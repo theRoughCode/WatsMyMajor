@@ -1,44 +1,42 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux'
 import CourseContent from './courseview/CourseContent'
 import CourseSideBar from './courseview/CourseSideBar'
 
 
-export default class CourseView extends Component {
+class CourseView extends Component {
 
 	static propTypes = {
-		course: PropTypes.string.isRequired
+		subject: PropTypes.string,
+		catalogNumber: PropTypes.string
 	};
 
-	constructor(props) {
-		super(props);
-
-		const [ subject, catalogNumber ] = props.course.split(' ');
-
-		this.state = {
-			subject: subject || 'CS',
-			catalogNumber: catalogNumber || '240'
-		};
-	}
-
-	componentWillReceiveProps(nextProps) {
-		const [ subject, catalogNumber ] = nextProps.course.split(' ');
-		this.setState({
-			subject,
-			catalogNumber
-		})
+	static defaultProps = {
+		subject: '',
+		catalogNumber: ''
 	}
 
 	render() {
 		return (
 			<div className="course-view">
 				<CourseContent
-					subject={this.state.subject}
-					catalogNumber={this.state.catalogNumber}
+					subject={this.props.subject}
+					catalogNumber={this.props.catalogNumber}
 					/>
 				<CourseSideBar />
 			</div>
 		);
 	}
-
 }
+
+const mapStateToProps = ({ course }) => {
+	const { subject, catalogNumber } = course;
+	return {
+		subject,
+		catalogNumber
+	}
+
+};
+
+export default connect(mapStateToProps, null)(CourseView);

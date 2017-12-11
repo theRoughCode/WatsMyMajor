@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux'
+import { setView, Views } from '../actions/index';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import {List, ListItem} from 'material-ui/List';
@@ -9,7 +11,7 @@ import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import BrowseIcon from 'material-ui/svg-icons/action/subject';
 import Avatar from './Avatar'
-
+import { DASHBOARD_VIEW, COURSE_VIEW } from '../constants/views';
 
 const styles = {
 	drawer: {
@@ -26,19 +28,11 @@ const styles = {
 }
 
 
-export default class SideBar extends Component {
+class SideBar extends Component {
 
 	static propTypes = {
 		open: PropTypes.bool.isRequired
 	};
-
-	constructor(props) {
-		super(props);
-
-		this.state = {
-
-		};
-	}
 
 	render() {
 		return (
@@ -49,10 +43,15 @@ export default class SideBar extends Component {
 					<Avatar />
 				</MenuItem>
 					<List>
-	            <ListItem primaryText="Dashboard" leftIcon={<DashboardIcon />} />
+	            <ListItem
+                primaryText="Dashboard"
+                leftIcon={<DashboardIcon />}
+                onClick={this.props.onDashboardClick}
+                />
 	            <ListItem
 	              primaryText="Courses"
 	              leftIcon={<SchoolIcon />}
+                onClick={this.props.onCoursesClick}
 	              initiallyOpen={false}
 	              primaryTogglesNestedList={true}
 	              nestedItems={[
@@ -77,5 +76,17 @@ export default class SideBar extends Component {
 			</Drawer>
 		);
 	}
-
 }
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onDashboardClick: () => {
+      dispatch(setView(DASHBOARD_VIEW));
+    },
+    onCoursesClick: () => {
+      dispatch(setView(COURSE_VIEW));
+    }
+  }
+};
+
+export default connect(null, mapDispatchToProps)(SideBar);

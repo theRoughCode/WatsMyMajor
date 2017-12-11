@@ -1,25 +1,33 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux'
+import { toggleSideBar, setCourse } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import CourseView from './components/CourseView';
-import views from './constants/views';
+import { DASHBOARD_VIEW, COURSE_VIEW } from './constants/views';
+
+const styles = {
+	marginLeft: 0,
+	transition: 'all 1s ease-in-out'
+}
 
 class App extends Component {
+
+	static propTypes = {
+		onToggleSideBar: PropTypes.func.isRequired
+	};
+
   constructor(props) {
     super(props);
 
     this.state = {
       message: null,
-      fetching: true,
-			open: true,
-			view: views.COURSE_VIEW,
-			course: ''
+      fetching: true
     };
 
-		this.toggleSideBar = this.toggleSideBar.bind(this);
-		this.onSearch = this.onSearch.bind(this);
 		this.getView = this.getView.bind(this);
   }
 
@@ -44,46 +52,60 @@ class App extends Component {
     //   })
   }
 
-	toggleSideBar() {
-		this.setState({ open: !this.state.open });
-	}
-
-	onSearch(course) {
-		this.setState({
-			view: views.COURSE_VIEW,
-			course
-		});
-	}
-
 	getView() {
 		let view = null;
+		styles.marginLeft = (this.props.sideBarOpen) ? '256px' : 0;
+		styles.transition = (this.props.sideBarOpen)
+													? 'all 0.3s ease-in-out'
+													: 'all 0.225s ease-out';
 
-		switch (this.state.view) {
-			case views.DASHBOARD_VIEW:
+		switch (this.props.view) {
+			case DASHBOARD_VIEW:
 				view = <Dashboard />;
 				break;
-			case views.COURSE_VIEW:
-				view = <CourseView course={this.state.course} />
+			case COURSE_VIEW:
+				view = <CourseView />
 				break;
 			default:
 				view = null;
 		}
 
-		return view;
+		return (
+			<div style={styles}>
+				{view}
+			</div>
+		);
 	}
 
   render() {
     return (
       <div className="App">
         <AppBar
-					toggleSideBar={this.toggleSideBar}
-					onSearch={this.onSearch}
+					toggleSideBar={this.props.onToggleSideBar}
+					onSearch={this.props.onSearch}
 					/>
-				<SideBar open={this.state.open} />
+				<SideBar open={this.props.sideBarOpen} />
 				{this.getView()}
       </div>
     );
   }
+
 }
 
-export default App;
+const mapStateToProps = ({ view, sideBarOpen }) => {
+	return { view, sideBarOpen };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onToggleSideBar: () => {
+      dispatch(toggleSideBar());
+    },
+		onSearch: (course) => {
+			const [ subject, catalogNumber ] = course.split(' ');
+			dispatch(setCourse(subject, catalogNumber));
+		}
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

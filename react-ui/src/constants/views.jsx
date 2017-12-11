@@ -1,7 +1,2 @@
-const DASHBOARD_VIEW = 'dashboard_view';
-const COURSE_VIEW = 'course_view';
-
-export default {
-  DASHBOARD_VIEW,
-  COURSE_VIEW
-};
+export const DASHBOARD_VIEW = 'dashboard_view';
+export const COURSE_VIEW = 'course_view';
