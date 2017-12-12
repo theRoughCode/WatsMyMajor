@@ -13,8 +13,8 @@ class CourseViewContainer extends Component {
 	};
 
 	static defaultProps = {
-		subject: '',
-		catalogNumber: ''
+		subject: 'CS',
+		catalogNumber: '100'
 	}
 
 	constructor(props) {
@@ -25,8 +25,9 @@ class CourseViewContainer extends Component {
 			catalogNumber: props.catalogNumber,
 			content: {
 				title: '',
-				description: '',
+        rating: 0,
 				offered: [],
+        description: '',
 				antireqs: [],
 				prereqs: [],
 				proreqs: []
@@ -39,6 +40,7 @@ class CourseViewContainer extends Component {
 			content: {
 				title: 'Introduction to Data Abstraction and Implementation',
 				description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
+        rating: 3.5,
 				offered: ['F', 'W'],
 				antireqs: ['CS 234', 'CS 235'],
 				prereqs: ['CS 137', 'CS 138'],

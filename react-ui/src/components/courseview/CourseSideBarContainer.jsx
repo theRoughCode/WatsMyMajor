@@ -7,7 +7,7 @@ const style = {
 	height: 'auto',
 	width: 270,
 	margin: 15,
-	marginRight: 0,
+	marginLeft: 0,
 	display: 'inline-block',
 };
 

@@ -11,7 +11,7 @@ import profAvatar from '../../../images/prof.jpg';
 
 const styles = {
 	stars: {
-		starRatedColor: '#ffdd00',
+		starRatedColor: '#ffcc00',
 		starWidthAndHeight: '15px',
 		starSpacing: '1px'
 	},
@@ -48,7 +48,7 @@ const ProfHeader = ({ name, stars, image }) => (
 			<StarRatings
 					rating={stars}
 					isSelectable={false}
-					isAggregateRating={ true }
+					isAggregateRating={true}
 					numOfStars={5}
 					{...styles.stars}
 				/>

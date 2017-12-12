@@ -66,18 +66,89 @@ html, body, #root, .App {
   background-color: #f9f9f9;
 }
 
+/* Course Content*/
 .course-content {
-  width: 70%;
+  width: 78%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 60px;
 }
 
-.course-side-bar {
-  width: 30%;
-  height: 100%;
+.course-header {
+  border-bottom: 1px solid #dbdbdb;
+  height: 15%;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  margin-bottom: 25px;
+}
+
+.course-code {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  display: flex;
+}
+
+.course-code > h1 {
+  font-size: 40px;
+  font-weight: 400;
+  margin: auto 0;
+}
+
+.course-code > .star-ratings {
+  margin: auto 20px;
+}
+
+.course-code > span {
+  margin: auto;
+  margin-right: 20px;
+  color: #5c5f63;
+}
+
+.course-header .title {
+  font-size: 20px;
+}
+
+.course-description {
+  padding: 0 10px;
+  display: flex;
+}
+
+.course-description .description {
+  font-size: 15px;
+  margin: auto;
+  text-align: left;
+  width: 55%;
+  line-height: 1.5;
+  color: #5c6e84;
+}
+
+.course-requisites {
+  margin: auto;
+  margin-top: 0;
   margin-right: 0;
+  width: 40%;
+}
+
+.course-requisites span {
+  margin: 4px auto;
+}
+
+.course-class-list {
+  margin-top: 30px;
 }
 
 /* Course Info Sidebar */
+.course-side-bar {
+  width: 22%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .course-info-header {
   padding: 10px 20px;
   text-align: left;
