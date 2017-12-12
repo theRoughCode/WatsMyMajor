@@ -12,7 +12,6 @@ import {
 
 
 const styles ={
-	width: "auto",
 	tableHeader: {
 		fontSize: '15px',
 		fontWeight: '500',
@@ -26,8 +25,8 @@ const CourseClassList = ({ classList }) => {
 
 	return (
 		<div className="course-class-list">
-			<Paper zDepth={1}>
-				<Table selectable={false} style={styles}>
+			<Paper zDepth={1} style={{ display: 'inline-block' }}>
+				<Table selectable={false} style={{ width: "auto" }}>
 					<TableBody displayRowCheckbox={false}>
 						<TableRow>
 							<TableRowColumn style={styles.tableHeader}>Section</TableRowColumn>
