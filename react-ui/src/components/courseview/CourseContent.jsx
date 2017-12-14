@@ -8,13 +8,14 @@ const CourseContent = (props) => {
 	const {
 		subject,
 		catalogNumber,
+		selectCourseHandler,
 		title,
 		rating,
 		offered,
 		description,
 		antireqs,
 		prereqs,
-		proreqs
+		postreqs
 	} = props;
 
 	return (
@@ -30,7 +31,8 @@ const CourseContent = (props) => {
 				description={description}
 				antireqs={antireqs}
 				prereqs={prereqs}
-				proreqs={proreqs}
+				postreqs={postreqs}
+				selectCourseHandler={selectCourseHandler}
 				/>
 			<CourseClassList
 				classList={[
@@ -55,13 +57,14 @@ const CourseContent = (props) => {
 CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
+	selectCourseHandler: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
 	offered: PropTypes.array.isRequired,
 	antireqs: PropTypes.array.isRequired,
 	prereqs: PropTypes.array.isRequired,
-	proreqs: PropTypes.array.isRequired
+	postreqs: PropTypes.array.isRequired
 }
 
 export default CourseContent;

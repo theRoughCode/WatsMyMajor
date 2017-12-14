@@ -106,8 +106,7 @@ const mapDispatchToProps = dispatch => {
     },
 		onSearch: (course) => {
 			if (!course) return;
-			const [ subject, catalogNumber ] = course.split(' ');
-			dispatch(setCourse(subject, catalogNumber));
+			dispatch(setCourse(course));
 		}
   }
 };

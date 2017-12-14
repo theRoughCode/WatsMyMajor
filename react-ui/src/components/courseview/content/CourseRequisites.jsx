@@ -26,19 +26,13 @@ const styles = {
 };
 
 
-const reqs = (arr) => (
-	arr.map((req, index) => (
-		<span key={index}>{req}</span>
-	))
-);
-
-
 export default class CourseRequisites extends Component {
 
 	static propTypes = {
 		antireqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.array.isRequired,
-		proreqs: PropTypes.array.isRequired
+		postreqs: PropTypes.array.isRequired,
+		selectCourseHandler: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -54,11 +48,19 @@ export default class CourseRequisites extends Component {
 		});
 	};
 
+	reqs = (arr) => (
+		arr.map((req, index) => (
+			<a key={index} onClick={() => this.props.selectCourseHandler(req)}>
+				{req}
+			</a>
+		))
+	);
+
 	render() {
 		const {
 			antireqs,
 			prereqs,
-			proreqs
+			postreqs
 		} = this.props;
 
 		return (
@@ -72,20 +74,21 @@ export default class CourseRequisites extends Component {
 					>
 						<Tab label="Prereqs" value={0} style={styles.headline} />
 						<Tab label="Antireqs" value={1} style={styles.headline} />
-						<Tab label="Proreqs" value={2} style={styles.headline} />
+						<Tab label="postreqs" value={2} style={styles.headline} />
 					</Tabs>
 					<SwipeableViews
+						className="reqs-link"
 						index={this.state.slideIndex}
 						onChangeIndex={this.handleChange}
 					>
 						<div style={styles.slide}>
-							{reqs(prereqs)}
+							{this.reqs(prereqs)}
 						</div>
 						<div style={styles.slide}>
-							{reqs(antireqs)}
+							{this.reqs(antireqs)}
 						</div>
 						<div style={styles.slide}>
-							{reqs(proreqs)}
+							{this.reqs(postreqs)}
 						</div>
 					</SwipeableViews>
 				</Paper>

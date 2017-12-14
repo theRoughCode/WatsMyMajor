@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
-import CourseContent from './courseview/CourseContent'
-import CourseSideBar from './courseview/CourseSideBarContainer'
+import { connect } from 'react-redux';
+import CourseContent from './courseview/CourseContent';
+import CourseSideBar from './courseview/CourseSideBarContainer';
+import { setCourse } from '../actions/index';
 
 
 class CourseViewContainer extends Component {
@@ -23,6 +24,7 @@ class CourseViewContainer extends Component {
 		this.state = {
 			subject: props.subject,
 			catalogNumber: props.catalogNumber,
+      selectCourseHandler:props.selectCourseHandler,
 			content: {
 				title: '',
         rating: 0,
@@ -30,7 +32,7 @@ class CourseViewContainer extends Component {
         description: '',
 				antireqs: [],
 				prereqs: [],
-				proreqs: []
+				postreqs: []
 			}
 		}
 	}
@@ -44,7 +46,7 @@ class CourseViewContainer extends Component {
 				offered: ['F', 'W'],
 				antireqs: ['CS 234', 'CS 235'],
 				prereqs: ['CS 137', 'CS 138'],
-				proreqs: ['CS 371', 'CS 472']
+				postreqs: ['CS 371', 'CS 472']
 			}
 		});
 	}
@@ -61,6 +63,7 @@ class CourseViewContainer extends Component {
 				<CourseContent
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
+          selectCourseHandler={this.state.selectCourseHandler}
 					{...this.state.content}
 					/>
 				<CourseSideBar />
@@ -75,7 +78,15 @@ const mapStateToProps = ({ course }) => {
 	return {
 		subject,
 		catalogNumber
-	}
+	};
 };
 
-export default connect(mapStateToProps, null)(CourseViewContainer);
+const mapDispatchToProps = dispatch => {
+  return {
+    selectCourseHandler: (subject, catalogNumber) => {
+      dispatch(setCourse(subject, catalogNumber));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(CourseViewContainer);

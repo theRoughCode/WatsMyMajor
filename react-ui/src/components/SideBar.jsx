@@ -86,7 +86,7 @@ const mapDispatchToProps = dispatch => {
     onCoursesClick: () => {
       dispatch(setView(COURSE_VIEW));
     }
-  }
+  };
 };
 
 export default connect(null, mapDispatchToProps)(SideBar);

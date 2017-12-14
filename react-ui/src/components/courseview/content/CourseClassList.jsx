@@ -11,7 +11,17 @@ import {
 } from 'material-ui/Table';
 
 
-const styles ={
+const styles = {
+	paper: {
+		display: 'inline-block',
+		width: 'auto'
+	},
+	table: {
+		display: 'inline-block',
+		height: 'auto',
+		width: "auto",
+		tableLayout: "auto"
+	},
 	tableHeader: {
 		fontSize: '15px',
 		fontWeight: '500',
@@ -25,8 +35,15 @@ const CourseClassList = ({ classList }) => {
 
 	return (
 		<div className="course-class-list">
-			<Paper zDepth={1} style={{ display: 'inline-block' }}>
-				<Table selectable={false} style={{ width: "auto" }}>
+			<div className="course-class-list-header">
+				<span>Winter 2017</span>
+			</div>
+			<Paper zDepth={1} style={styles.paper}>
+				<Table
+					selectable={false}
+					style={styles.table}
+					headerStyle={{ height: 0 }}
+					>
 					<TableBody displayRowCheckbox={false}>
 						<TableRow>
 							<TableRowColumn style={styles.tableHeader}>Section</TableRowColumn>

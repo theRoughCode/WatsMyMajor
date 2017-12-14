@@ -14,7 +14,9 @@ export function toggleSideBar() {
   return { type: TOGGLE_SIDEBAR };
 }
 
-export function setCourse(subject, catalogNumber) {
+export function setCourse(course) {
+  const [ subject, catalogNumber ] = course.split(' ');
+  
   return {
     type: SET_COURSE,
     course: {

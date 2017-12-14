@@ -120,6 +120,7 @@ html, body, #root, .App {
 .course-description .description {
   font-size: 15px;
   margin: auto;
+  margin-left: 0;
   text-align: left;
   width: 55%;
   line-height: 1.5;
@@ -130,15 +131,31 @@ html, body, #root, .App {
   margin: auto;
   margin-top: 0;
   margin-right: 0;
-  width: 40%;
+  width: 300px;
 }
 
 .course-requisites span {
   margin: 4px auto;
 }
 
+.reqs-link a {
+  cursor: pointer;
+  color: black;
+}
+.reqs-link a:hover {
+  color: #4286f4;
+  background-color: #f3f3f3;
+}
+
 .course-class-list {
-  margin-top: 30px;
+  margin-top: 40px;
+  display: inline-block;
+  flex-direction: column;
+}
+
+.course-class-list-header {
+  font-size: 30px;
+  text-align: left;
 }
 
 /* Course Info Sidebar */
