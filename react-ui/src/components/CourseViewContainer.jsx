@@ -3,57 +3,156 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CourseContent from './courseview/CourseContent';
 import CourseSideBar from './courseview/CourseSideBarContainer';
-import { setCourse } from '../actions/index';
+import { setCourse, setExpandedCourse } from '../actions/index';
+
+
+const getCourseData = (subject, catalogNumber) => {
+	return fetch(`/wat/${subject}/${catalogNumber}`)
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`status ${response.status}`);
+		}
+		return response.json();
+	});
+};
 
 
 class CourseViewContainer extends Component {
 
 	static propTypes = {
 		subject: PropTypes.string,
-		catalogNumber: PropTypes.string
+		catalogNumber: PropTypes.string,
+		instructor: PropTypes.string,
+		attending: PropTypes.string,
+		enrollmentCap: PropTypes.string,
+		classNumber: PropTypes.string,
+		selectedClassIndex: PropTypes.number,
+		selectCourseHandler: PropTypes.func.isRequired,
+		expandCourseHandler: PropTypes.func.isRequired
 	};
 
 	static defaultProps = {
 		subject: 'CS',
-		catalogNumber: '100'
+		catalogNumber: '100',
+		instructor: '',
+		attending: '',
+		enrollmentCap: '',
+		classNumber: '',
+		selectedClassIndex: -1
 	}
 
 	constructor(props) {
 		super(props);
 
 		this.state = {
+			loading: true,
+			error: false,
 			subject: props.subject,
 			catalogNumber: props.catalogNumber,
-      selectCourseHandler:props.selectCourseHandler,
-			content: {
-				title: '',
-        rating: 0,
-				offered: [],
-        description: '',
-				antireqs: [],
-				prereqs: [],
-				postreqs: []
-			}
+			instructor: props.instructor,
+			attending: props.attending,
+			enrollmentCap: props.enrollmentCap,
+			classNumber: props.classNumber,
+			selectedClassIndex: props.selectedClassIndex,
+			selectCourseHandler: props.selectCourseHandler,
+			expandCourseHandler: props.expandCourseHandler,
+			title: '',
+			rating: 0,
+			termsOffered: [],
+			description: '',
+			antireqs: [],
+			coreqs: [],
+			prereqs: [],
+			postreqs: []
 		}
 	}
 
 	componentDidMount() {
-		this.setState({
-			content: {
+		const { subject, catalogNumber } = this.props;
+
+		if (subject && catalogNumber) {
+			getCourseData(subject, catalogNumber)
+				.then(json => {
+					const {
+						title,
+						description,
+						prereqs,
+						antireqs,
+						coreqs,
+						crosslistings,
+						terms,
+						url,
+						parPrereq,
+						parCoreq
+					} = json;
+
+					console.log('json', json);
+
+					this.setState({
+						loading: false,
+						title,
+						description,
+						rating: 2.1,
+						termsOffered: terms,
+						antireqs,
+						coreqs,
+						prereqs,
+						postreqs: parPrereq
+					});
+				}).catch(err => {
+					console.error(`ERROR: ${err}`);
+					return;
+				});
+		} else {
+			this.setState({
+				loading: false,
 				title: 'Introduction to Data Abstraction and Implementation',
 				description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
-        rating: 3.5,
-				offered: ['F', 'W'],
+				rating: 3.5,
+				termsOffered: ['F', 'W'],
 				antireqs: ['CS 234', 'CS 235'],
+				coreqs: ['CS 222', 'CS 232'],
 				prereqs: ['CS 137', 'CS 138'],
 				postreqs: ['CS 371', 'CS 472']
-			}
-		});
+			});
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps !== this.props) {
-			this.setState(nextProps);
+			this.setState({ ...nextProps, loading: true });
+
+			const { subject, catalogNumber } = nextProps;
+			getCourseData(subject, catalogNumber)
+			.then(json => {
+				const {
+					title,
+					description,
+					prereqs,
+					antireqs,
+					coreqs,
+					crosslistings,
+					terms,
+					url,
+					parPrereq,
+					parCoreq
+				} = json;
+
+				this.setState({
+					loading: false,
+					title,
+					description,
+					rating: 2.1,
+					termsOffered: terms,
+					antireqs,
+					coreqs,
+					prereqs,
+					postreqs: parPrereq
+				});
+			}).catch(err => {
+				console.error(`ERROR: ${err}`);
+				return;
+			});
 		}
 	}
 
@@ -63,30 +162,60 @@ class CourseViewContainer extends Component {
 				<CourseContent
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
-          selectCourseHandler={this.state.selectCourseHandler}
-					{...this.state.content}
+					selectedClassIndex={this.state.selectedClassIndex}
+					selectCourseHandler={this.state.selectCourseHandler}
+					expandCourseHandler={this.state.expandCourseHandler}
+					title={this.state.title}
+					rating={this.state.rating}
+					termsOffered={this.state.termsOffered}
+					description={this.state.description}
+					antireqs={this.state.antireqs}
+					coreqs={this.state.coreqs}
+					prereqs={this.state.prereqs}
+					postreqs={this.state.postreqs}
 					/>
-				<CourseSideBar />
+				<CourseSideBar
+					instructor={this.state.instructor}
+					attending={this.state.attending}
+					enrollmentCap={this.state.enrollmentCap}
+					classNumber={this.state.classNumber}
+					/>
 			</div>
 		);
 	}
 
 }
 
-const mapStateToProps = ({ course }) => {
+const mapStateToProps = ({ course, expandedCourse }) => {
 	const { subject, catalogNumber } = course;
+	const {
+		instructor,
+		attending,
+		enrollmentCap,
+		classNumber,
+		selectedClassIndex
+	} = expandedCourse;
+
 	return {
 		subject,
-		catalogNumber
+		catalogNumber,
+		instructor,
+		attending,
+		enrollmentCap,
+		classNumber,
+		selectedClassIndex
 	};
 };
 
 const mapDispatchToProps = dispatch => {
-  return {
-    selectCourseHandler: (subject, catalogNumber) => {
-      dispatch(setCourse(subject, catalogNumber));
-    }
-  };
+	return {
+		selectCourseHandler: (subject, catalogNumber) => {
+			dispatch(setCourse(subject, catalogNumber));
+		},
+		expandCourseHandler: (courseObj, index) => {
+			dispatch(setExpandedCourse(courseObj, index));
+		}
+	};
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CourseViewContainer);

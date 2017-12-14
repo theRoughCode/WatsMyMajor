@@ -7,6 +7,7 @@ const CourseDescription = (props) => {
 	const {
     description,
 		antireqs,
+    coreqs,
 		prereqs,
 		postreqs,
     selectCourseHandler
@@ -19,6 +20,7 @@ const CourseDescription = (props) => {
       </p>
       <CourseRequisites
         antireqs={antireqs}
+        coreqs={coreqs}
         prereqs={prereqs}
         postreqs={postreqs}
         selectCourseHandler={selectCourseHandler}
@@ -30,6 +32,7 @@ const CourseDescription = (props) => {
 CourseDescription.propTypes = {
   description: PropTypes.string.isRequired,
   antireqs: PropTypes.array.isRequired,
+  coreqs: PropTypes.array.isRequired,
   prereqs: PropTypes.array.isRequired,
   postreqs: PropTypes.array.isRequired,
   selectCourseHandler: PropTypes.func.isRequired

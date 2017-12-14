@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import StarRatings from 'react-star-ratings';
 
@@ -16,7 +16,7 @@ const CourseHeader = (props) => {
 		catalogNumber,
 		title,
 		rating,
-		offered
+		termsOffered
 	} = props;
 
 	return (
@@ -30,8 +30,8 @@ const CourseHeader = (props) => {
 					numOfStars={5}
 					{...styles.stars}
 					/>
-				{offered.length && (
-					<span>Offered in: {offered.join(', ')}</span>
+				{termsOffered.length && (
+					<span>Offered in: {termsOffered.join(', ')}</span>
 				)}
 			</div>
 			<span className="title">{title}</span>
@@ -44,7 +44,7 @@ CourseHeader.propTypes = {
 	catalogNumber: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
-	offered: PropTypes.array.isRequired
+	termsOffered: PropTypes.array.isRequired
 };
 
 export default CourseHeader;

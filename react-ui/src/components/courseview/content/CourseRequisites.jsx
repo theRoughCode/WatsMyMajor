@@ -21,7 +21,8 @@ const styles = {
 	slide: {
 		padding: 10,
 		display: 'flex',
-		flexDirection: 'column'
+		flexDirection: 'column',
+    height: '200px'
 	},
 };
 
@@ -30,6 +31,7 @@ export default class CourseRequisites extends Component {
 
 	static propTypes = {
 		antireqs: PropTypes.array.isRequired,
+    coreqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.array.isRequired,
 		postreqs: PropTypes.array.isRequired,
 		selectCourseHandler: PropTypes.func.isRequired
@@ -59,6 +61,7 @@ export default class CourseRequisites extends Component {
 	render() {
 		const {
 			antireqs,
+      coreqs,
 			prereqs,
 			postreqs
 		} = this.props;
@@ -74,7 +77,8 @@ export default class CourseRequisites extends Component {
 					>
 						<Tab label="Prereqs" value={0} style={styles.headline} />
 						<Tab label="Antireqs" value={1} style={styles.headline} />
-						<Tab label="postreqs" value={2} style={styles.headline} />
+            <Tab label="Coreqs" value={2} style={styles.headline} />
+						<Tab label="postreqs" value={3} style={styles.headline} />
 					</Tabs>
 					<SwipeableViews
 						className="reqs-link"
@@ -88,7 +92,10 @@ export default class CourseRequisites extends Component {
 							{this.reqs(antireqs)}
 						</div>
 						<div style={styles.slide}>
-							{this.reqs(postreqs)}
+							{this.reqs(coreqs)}
+						</div>
+						<div style={styles.slide}>
+							{this.reqs(postreqs.map(req => req.subject + ' ' + req.cat_num))}
 						</div>
 					</SwipeableViews>
 				</Paper>

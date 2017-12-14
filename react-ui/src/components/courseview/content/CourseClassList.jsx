@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import {
 	Table,
 	TableBody,
-	TableHeader,
-	TableHeaderColumn,
 	TableRow,
 	TableRowColumn,
 } from 'material-ui/Table';
@@ -27,11 +25,52 @@ const styles = {
 		fontWeight: '500',
 		backgroundColor: 'rgb(54, 65, 80)',
 		color: 'white'
+	},
+	tableRow: {
+		cursor: 'pointer'
 	}
 };
 
+class Row extends Component {
+	static propTypes = {
+		courseObj: PropTypes.object.isRequired,
+		selected: PropTypes.bool.isRequired,
+		onClickHandler: PropTypes.func.isRequired
+	};
 
-const CourseClassList = ({ classList }) => {
+	render() {
+		const {
+			section,
+			classNumber,
+			campus,
+			attending,
+			enrollmentCap,
+			startTime,
+			endTime,
+			location,
+			instructor
+		} = this.props.courseObj;
+
+		return (
+			<TableRow
+				hoverable={!this.props.selected}
+				onClick={() => this.props.onClickHandler()}
+				selected={this.props.selected}
+				style={styles.tableRow}>
+				<TableRowColumn>{section}</TableRowColumn>
+				<TableRowColumn>{classNumber}</TableRowColumn>
+				<TableRowColumn>{campus}</TableRowColumn>
+				<TableRowColumn>{attending}/{enrollmentCap}</TableRowColumn>
+				<TableRowColumn>{startTime} - {endTime}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
+				<TableRowColumn>{instructor}</TableRowColumn>
+			</TableRow>
+		)
+	}
+}
+
+
+const CourseClassList = (props) => {
+	const { expandCourseHandler, classList, selectedClassIndex } = props;
 
 	return (
 		<div className="course-class-list">
@@ -40,7 +79,6 @@ const CourseClassList = ({ classList }) => {
 			</div>
 			<Paper zDepth={1} style={styles.paper}>
 				<Table
-					selectable={false}
 					style={styles.table}
 					headerStyle={{ height: 0 }}
 					>
@@ -54,15 +92,12 @@ const CourseClassList = ({ classList }) => {
 							<TableRowColumn style={styles.tableHeader}>Location</TableRowColumn>
 							<TableRowColumn style={styles.tableHeader}>Instructor</TableRowColumn>
 						</TableRow>
-						{classList.map((c, index) => (
-							<TableRow key={index}>
-								<TableRowColumn>{c.section}</TableRowColumn>
-								<TableRowColumn>{c.class}</TableRowColumn>
-								<TableRowColumn>{c.campus}</TableRowColumn>
-								<TableRowColumn>{c.attending}/{c.enrollmentCap}</TableRowColumn>
-								<TableRowColumn>{c.startTime} - {c.endTime}</TableRowColumn>									<TableRowColumn>{c.location}</TableRowColumn>
-								<TableRowColumn>{c.instructor}</TableRowColumn>
-							</TableRow>
+						{classList.map((courseObj, index) => (
+							<Row
+								key={index}
+								courseObj={courseObj}
+								selected={index === selectedClassIndex}
+								onClickHandler={() => expandCourseHandler(courseObj, index)} />
 						))}
 					</TableBody>
 				</Table>
@@ -72,6 +107,8 @@ const CourseClassList = ({ classList }) => {
 };
 
 CourseClassList.propTypes = {
+	expandCourseHandler: PropTypes.func.isRequired,
+	selectedClassIndex: PropTypes.number.isRequired,
 	classList: PropTypes.array.isRequired
 };
 

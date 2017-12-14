@@ -15,7 +15,10 @@
     "react-ui/node_modules"
   ],
   "dependencies": {
-    "express": "^4.14.1"
+    "async": "^2.6.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.1",
+    "uwaterloo-api": "^1.0.2"
   },
   "repository": {
     "type": "git",

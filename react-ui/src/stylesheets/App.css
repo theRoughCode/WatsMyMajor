@@ -156,6 +156,7 @@ html, body, #root, .App {
 .course-class-list-header {
   font-size: 30px;
   text-align: left;
+  margin-bottom: 15px;
 }
 
 /* Course Info Sidebar */

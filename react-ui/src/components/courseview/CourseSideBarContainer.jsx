@@ -13,11 +13,6 @@ const style = {
 
 const retrieveClassInfo = (classNumber) => {
 	return {
-		instructor: 'Firas Mansour',
-		info: {
-			enrollmentCap: '50',
-			attending: '30'
-		},
 		prof: {
 			rating: 4.1,
 			difficulty: 3.2,
@@ -30,23 +25,29 @@ const retrieveClassInfo = (classNumber) => {
 
 export default class CourseSideBarContainer extends Component {
 
-  static propTypes = {
-		classNumber: PropTypes.string
-  };
-
-	static defaultProps = {
-		classNumber: ''
+	static propTypes = {
+		instructor: PropTypes.string.isRequired,
+		attending: PropTypes.string.isRequired,
+		enrollmentCap: PropTypes.string.isRequired,
+		classNumber: PropTypes.string.isRequired
 	};
 
-  constructor(props) {
-    super(props);
+	constructor(props) {
+		super(props);
 
-    this.state = {
-			classNumber: props.classNumber,
-			instructor: '',
+		const {
+			instructor,
+			attending,
+			enrollmentCap,
+			classNumber
+		} = props;
+
+		this.state = {
+			classNumber,
+			instructor,
 			info: {
-				enrollmentCap: '',
-				attending: ''
+				enrollmentCap,
+				attending
 			},
 			prof: {
 				rating: 0,
@@ -54,25 +55,37 @@ export default class CourseSideBarContainer extends Component {
 				tags: [],
 				rmpURL: ''
 			}
-    };
-  }
+		};
+	}
 
 	componentDidMount() {
-	  this.setState(retrieveClassInfo(this.state.classNumber));
+		this.setState(retrieveClassInfo(this.state.classNumber));
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { classNumber } = nextProps;
+		const {
+			instructor,
+			attending,
+			enrollmentCap,
+			classNumber
+		} = nextProps;
 
 		if (classNumber !== this.props.classNumber) {
-			this.setState({ classNumber });
+			this.setState({
+				instructor,
+				info: {
+					attending,
+					enrollmentCap
+				},
+				classNumber
+			});
 		}
 
 		this.setState(retrieveClassInfo(this.state.classNumber));
 	}
 
-  render() {
-    return (
+	render() {
+		return (
 			<div className="course-side-bar">
 				<CourseInfo
 					style={style}
@@ -85,7 +98,7 @@ export default class CourseSideBarContainer extends Component {
 					{...this.state.prof}
 					/>
 			</div>
-    );
-  }
+		);
+	}
 
 }

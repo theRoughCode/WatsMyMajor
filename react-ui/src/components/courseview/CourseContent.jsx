@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import CourseHeader from './content/CourseHeader';
 import CourseDescription from './content/CourseDescription';
@@ -8,12 +8,15 @@ const CourseContent = (props) => {
 	const {
 		subject,
 		catalogNumber,
+		selectedClassIndex,
 		selectCourseHandler,
+		expandCourseHandler,
 		title,
 		rating,
-		offered,
+		termsOffered,
 		description,
 		antireqs,
+    coreqs,
 		prereqs,
 		postreqs
 	} = props;
@@ -25,20 +28,23 @@ const CourseContent = (props) => {
 				catalogNumber={catalogNumber}
 				title={title}
 				rating={rating}
-				offered={offered}
+				termsOffered={termsOffered}
 				/>
 			<CourseDescription
 				description={description}
-				antireqs={antireqs}
+        antireqs={antireqs}
+				coreqs={coreqs}
 				prereqs={prereqs}
 				postreqs={postreqs}
 				selectCourseHandler={selectCourseHandler}
 				/>
 			<CourseClassList
+				expandCourseHandler={expandCourseHandler}
+				selectedClassIndex={selectedClassIndex}
 				classList={[
 					{
 						section: 'LEC 001',
-						class: '8304',
+						classNumber: '8304',
 						campus: 'UW U',
 						enrollmentCap: '60',
 						attending: '34',
@@ -57,12 +63,15 @@ const CourseContent = (props) => {
 CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
+	selectedClassIndex: PropTypes.number.isRequired,
 	selectCourseHandler: PropTypes.func.isRequired,
+	expandCourseHandler: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
-	offered: PropTypes.array.isRequired,
+	termsOffered: PropTypes.array.isRequired,
 	antireqs: PropTypes.array.isRequired,
+  coreqs: PropTypes.array.isRequired,
 	prereqs: PropTypes.array.isRequired,
 	postreqs: PropTypes.array.isRequired
 }
