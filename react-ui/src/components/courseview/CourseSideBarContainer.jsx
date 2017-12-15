@@ -85,20 +85,27 @@ export default class CourseSideBarContainer extends Component {
 	}
 
 	render() {
-		return (
-			<div className="course-side-bar">
-				<CourseInfo
-					style={style}
-					instructor={this.state.instructor}
-					{...this.state.info}
-					/>
-				<CourseProf
-					style={style}
-					instructor={this.state.instructor}
-					{...this.state.prof}
-					/>
-			</div>
-		);
+		if (this.state.instructor) {
+			return (
+				<div className="course-side-bar">
+					<CourseInfo
+						style={style}
+						instructor={this.state.instructor}
+						{...this.state.info}
+						/>
+					<CourseProf
+						style={style}
+						instructor={this.state.instructor}
+						{...this.state.prof}
+						/>
+				</div>
+			);
+		} else {
+			return (
+				<div className="course-side-bar"></div>
+			)
+		}
+
 	}
 
 }

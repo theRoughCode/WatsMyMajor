@@ -128,7 +128,12 @@ class CourseViewContainer extends Component {
 
 	componentWillReceiveProps(nextProps) {
 		if (nextProps !== this.props) {
-			this.setState({ ...nextProps, loading: true });
+			const isNewCourse = (this.props.subject !== nextProps.subject || this.props.catalogNumber !== nextProps.catalogNumber);
+
+			this.setState({
+				...nextProps,
+				loading: isNewCourse
+			});
 
 			const { subject, catalogNumber } = nextProps;
 			getCourseData(subject, catalogNumber)
