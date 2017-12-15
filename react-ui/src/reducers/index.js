@@ -37,10 +37,10 @@ function expandedCourse(state={}, action) {
 			} = action;
 
 			if (state.selectedClassIndex === index) {
-				instructor = '',
-				attending = '',
-				enrollmentCap = '',
-				classNumber = ''
+				instructor = '';
+				attending = '';
+				enrollmentCap = '';
+				classNumber = '';
 				index = -1;
 			}
 

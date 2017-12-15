@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import CircularProgress from 'material-ui/CircularProgress';
 import CourseContent from './courseview/CourseContent';
 import CourseSideBar from './courseview/CourseSideBarContainer';
 import { setCourse, setExpandedCourse } from '../actions/index';
 
+
+const styles = {
+	loading: {
+		margin: 'auto'
+	}
+};
 
 const getCourseData = (subject, catalogNumber) => {
 	return fetch(`/wat/${subject}/${catalogNumber}`)
@@ -99,8 +106,9 @@ class CourseViewContainer extends Component {
 						prereqs,
 						postreqs: parPrereq
 					});
-				}).catch(err => {
-					console.error(`ERROR: ${err}`);
+				}).catch(error => {
+					console.error(`ERROR: ${error}`);
+					this.setState({ loading: false, error });
 					return;
 				});
 		} else {
@@ -138,6 +146,8 @@ class CourseViewContainer extends Component {
 					parCoreq
 				} = json;
 
+				console.log('json', json);
+
 				this.setState({
 					loading: false,
 					title,
@@ -149,15 +159,33 @@ class CourseViewContainer extends Component {
 					prereqs,
 					postreqs: parPrereq
 				});
-			}).catch(err => {
-				console.error(`ERROR: ${err}`);
+			}).catch(error => {
+				console.error(`ERROR: ${error}`);
+				this.setState({ loading: false, error });
 				return;
 			});
 		}
 	}
 
 	render() {
-		return (
+		const loadingView = (
+			<div className="loading">
+				<CircularProgress
+					size={80}
+					thickness={5}
+					style={styles.loading}
+					/>
+			</div>
+		);
+
+		const errorView = (
+			<div className="error-wrapper">
+				<span>{`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}</span>
+				<span>{`Error message: ${this.state.error}`}</span>
+			</div>
+		)
+
+		const renderedView = (
 			<div className="course-view">
 				<CourseContent
 					subject={this.state.subject}
@@ -182,6 +210,14 @@ class CourseViewContainer extends Component {
 					/>
 			</div>
 		);
+
+		if (this.state.loading) {
+			return loadingView;
+		} else if (this.state.error) {
+			return errorView;
+		} else {
+			return renderedView;
+		}
 	}
 
 }

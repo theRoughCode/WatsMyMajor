@@ -27,6 +27,17 @@ html, body, #root, .App {
 	color: #f60;
 }
 
+.loading, .error-wrapper {
+	width: auto;
+	height: 100%;
+	display: flex;
+}
+
+.error-wrapper span {
+	margin: auto;
+	color: black;
+}
+
 @keyframes App-logo-spin {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
@@ -120,6 +131,7 @@ html, body, #root, .App {
 .course-description .description {
   font-size: 15px;
   margin: auto;
+  margin-top: 10px;
   margin-left: 0;
   text-align: left;
   width: 55%;
@@ -151,6 +163,8 @@ html, body, #root, .App {
   margin-top: 40px;
   display: inline-block;
   flex-direction: column;
+	width: 80%;
+	margin-left: 20px;
 }
 
 .course-class-list-header {

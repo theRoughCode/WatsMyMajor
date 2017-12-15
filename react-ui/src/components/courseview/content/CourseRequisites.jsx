@@ -22,7 +22,7 @@ const styles = {
 		padding: 10,
 		display: 'flex',
 		flexDirection: 'column',
-    height: '200px'
+		height: '200px'
 	},
 };
 
@@ -31,7 +31,7 @@ export default class CourseRequisites extends Component {
 
 	static propTypes = {
 		antireqs: PropTypes.array.isRequired,
-    coreqs: PropTypes.array.isRequired,
+		coreqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.array.isRequired,
 		postreqs: PropTypes.array.isRequired,
 		selectCourseHandler: PropTypes.func.isRequired
@@ -61,10 +61,18 @@ export default class CourseRequisites extends Component {
 	render() {
 		const {
 			antireqs,
-      coreqs,
+			coreqs,
 			prereqs,
 			postreqs
 		} = this.props;
+
+		const titles = [ 'Prereqs', 'Antireqs', 'Coreqs', 'Postreqs' ];
+		const reqs = [
+			prereqs,
+			antireqs,
+			coreqs,
+			postreqs.map(req => req.subject + ' ' + req.cat_num)
+		];
 
 		return (
 			<div className="course-requisites">
@@ -75,28 +83,33 @@ export default class CourseRequisites extends Component {
 						tabItemContainerStyle={styles.tabHeader}
 						inkBarStyle={styles.bar}
 					>
-						<Tab label="Prereqs" value={0} style={styles.headline} />
-						<Tab label="Antireqs" value={1} style={styles.headline} />
-            <Tab label="Coreqs" value={2} style={styles.headline} />
-						<Tab label="postreqs" value={3} style={styles.headline} />
+						{
+							titles
+								.filter((title, index) => reqs[index].length)
+								.map((title, index) => (
+									<Tab
+										key={index}
+										label={title}
+										value={index}
+										style={styles.headline}
+										/>
+								))
+						}
 					</Tabs>
 					<SwipeableViews
 						className="reqs-link"
 						index={this.state.slideIndex}
 						onChangeIndex={this.handleChange}
 					>
-						<div style={styles.slide}>
-							{this.reqs(prereqs)}
-						</div>
-						<div style={styles.slide}>
-							{this.reqs(antireqs)}
-						</div>
-						<div style={styles.slide}>
-							{this.reqs(coreqs)}
-						</div>
-						<div style={styles.slide}>
-							{this.reqs(postreqs.map(req => req.subject + ' ' + req.cat_num))}
-						</div>
+						{
+							reqs
+								.filter(req => req.length)
+								.map((req, index) => (
+									<div key={index} style={styles.slide}>
+										{this.reqs(req)}
+									</div>
+								))
+						}
 					</SwipeableViews>
 				</Paper>
 			</div>
