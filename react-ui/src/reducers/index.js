@@ -30,9 +30,9 @@ function expandedCourse(state={}, action) {
 		case SET_EXPANDED_COURSE:
 			let {
 				instructor,
-		    attending,
-		    enrollmentCap,
-		    classNumber,
+				attending,
+				enrollmentCap,
+				classNumber,
 				index
 			} = action;
 
@@ -46,9 +46,9 @@ function expandedCourse(state={}, action) {
 
 			return {
 				instructor,
-		    attending,
-		    enrollmentCap,
-		    classNumber,
+				attending,
+				enrollmentCap,
+				classNumber,
 				selectedClassIndex: index
 			};
 		default:

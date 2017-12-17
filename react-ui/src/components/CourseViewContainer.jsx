@@ -69,8 +69,6 @@ class CourseViewContainer extends Component {
 				classes: []
 			},
 			classInfo: {
-				loading: true,
-				error: false,
 				instructor: props.instructor,
 				attending: props.attending,
 				enrollmentCap: props.enrollmentCap,

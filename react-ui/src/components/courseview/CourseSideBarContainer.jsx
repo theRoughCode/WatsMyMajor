@@ -1,47 +1,29 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import CircularProgress from 'material-ui/CircularProgress';
 import CourseInfo from './sidebar/CourseInfo';
 import CourseProf from './sidebar/CourseProf';
 
-const style = (isVisible) => ({
-	height: 'auto',
-	width: 270,
-	margin: 15,
-	marginLeft: 0,
-	display: 'inline-block',
-	opacity: (isVisible) ? 1 : 0
-});
+const styles =  {
+	instructor: (isVisible) => ({
+		height: 'auto',
+		width: 270,
+		margin: 15,
+		marginLeft: 0,
+		display: 'inline-block',
+		opacity: (isVisible) ? 1 : 0
+	})
+};
 
 const retrieveProfInfo = (instructor) => {
-	let prof = {};
+	return fetch(`/prof/${instructor}`)
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`status ${response.status}`);
+		}
 
-	if (instructor === 'Firas Mansour') {
-		prof = {
-			rating: 4.1,
-			difficulty: 3.2,
-			tags: ['Hilarious', 'Respected', 'Amazing Lectures'],
-			rmpURL: 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=21566',
-			profAvatarURL: 'images/firas_mansour.jpg'
-		};
-	} else if (instructor === 'Stephen New') {
-		prof = {
-			rating: 4.6,
-			difficulty: 4.9,
-			tags: ['Respected', 'Inspirational', 'Amazing Lectures'],
-			rmpURL: 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=10101',
-			profAvatarURL: 'images/stephen_new.png'
-		};
-	} else {
-		prof = {
-			rating: 0,
-			difficulty: 0,
-			tags: [],
-			rmpURL: '',
-			profAvatarURL: ''
-		};
-	}
-
-	return { prof };
+		return response.json();
+	});
 };
 
 
@@ -71,18 +53,24 @@ export default class CourseSideBarContainer extends Component {
 				enrollmentCap,
 				attending
 			},
-			prof: {
-				rating: 0,
-				difficulty: 0,
-				tags: [],
-				rmpURL: '',
-				profAvatarURL: ''
-			}
+			prof: null,
+			fetchingRMP: false
 		};
 	}
 
 	componentDidMount() {
-		this.setState(retrieveProfInfo(this.state.instructor));
+		if (this.state.instructor) {
+			retrieveProfInfo(this.state.instructor)
+			.then(prof => {
+				this.setState({ fetchingRMP: false });
+				if (!prof.error) this.setState({ prof });
+				else throw prof.error;
+			})
+			.catch(error => {
+				console.error(`ERROR: ${error}`);
+				this.setState({ prof: null });
+			});
+		}
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -102,28 +90,42 @@ export default class CourseSideBarContainer extends Component {
 					enrollmentCap
 				}
 			});
-		}
 
-		this.setState(retrieveProfInfo(instructor));
+			if (instructor && instructor !== this.props.instructor) {
+				this.setState({ fetchingRMP: true });
+				retrieveProfInfo(instructor)
+				.then(prof => {
+					this.setState({ fetchingRMP: false });
+					if (!prof.error) this.setState({ prof });
+					else throw prof.error;
+				})
+				.catch(error => {
+					console.error(`ERROR: ${error}`);
+					this.setState({ prof: null });
+				});
+			}
+		}
 	}
 
 	render() {
-		const id = (this.state.instructor) ? 'slide' : '';
+		const { instructor, info, prof, fetchingRMP } = this.state;
+		const id = (instructor) ? 'slide' : '';
 
 		return (
 			<div className="course-side-bar">
 				<CourseInfo
-					style={style(this.state.instructor)}
+					style={styles.instructor(instructor)}
 					id={id}
-					instructor={this.state.instructor}
-					{...this.state.info}
-					/>
+					instructor={instructor}
+					{...info}
+				/>
 				<CourseProf
-					style={style(this.state.instructor)}
+					style={styles.instructor(instructor)}
 					id={id}
-					instructor={this.state.instructor}
-					{...this.state.prof}
-					/>
+					instructor={instructor}
+					loading={fetchingRMP}
+					{...prof}
+				/>
 			</div>
 		);
 	}

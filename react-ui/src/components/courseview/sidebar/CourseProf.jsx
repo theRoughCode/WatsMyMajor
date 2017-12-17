@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import Divider from 'material-ui/Divider';
+import CircularProgress from 'material-ui/CircularProgress';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
@@ -31,7 +32,11 @@ const styles = {
 	},
 	chip: {
     margin: 4
-  }
+  },
+	loading: {
+		margin: 'auto',
+		padding: 20
+	}
 };
 
 
@@ -97,17 +102,31 @@ const Share = ({ icon, text, link='#' }) => (
 );
 
 
-const CourseProf = ({ style, ...info }) => {
+const CourseProf = (props) => {
   const {
+		style,
     instructor,
+		loading,
     rating,
     difficulty,
     tags,
     rmpURL,
 		profAvatarURL
-  } = info;
+  } = props;
 
-	return (
+	const loadingView = (
+		<Paper style={style} zDepth={1}>
+			<div className="loading">
+				<CircularProgress
+					size={40}
+					thickness={5}
+					style={styles.loading}
+					/>
+			</div>
+		</Paper>
+	);
+
+	const renderedView = (
 		<Paper style={style} zDepth={1}>
 			<ProfHeader
 				name={instructor}
@@ -145,17 +164,30 @@ const CourseProf = ({ style, ...info }) => {
         link={rmpURL}
 				/>
 		</Paper>
-	);
+	)
+
+	if (loading) return loadingView;
+	else if (!rmpURL) return null;
+	else return renderedView;
 };
 
 CourseProf.propTypes = {
 	style: PropTypes.object.isRequired,
   instructor: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  difficulty: PropTypes.number.isRequired,
-  tags: PropTypes.array.isRequired,
-  rmpURL: PropTypes.string.isRequired,
-	profAvatarURL: PropTypes.string.isRequired
+	loading: PropTypes.bool.isRequired,
+  rating: PropTypes.number,
+  difficulty: PropTypes.number,
+  tags: PropTypes.array,
+  rmpURL: PropTypes.string,
+	profAvatarURL: PropTypes.string
+}
+
+CourseProf.defaultProps = {
+	rating: 0,
+	difficulty: 0,
+	tags: [],
+	rmpURL: '',
+	profAvatarURL: ''
 }
 
 export default CourseProf;

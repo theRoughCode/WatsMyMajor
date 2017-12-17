@@ -62,6 +62,10 @@ class Row extends Component {
 			last_updated
 		} = this.props.classData;
 
+		const time = (start_time && end_time)
+									? `${start_time} - ${end_time}`
+									: 'N/A';
+
 		return (
 			<TableRow
 				hoverable={!this.props.selected}
@@ -72,7 +76,7 @@ class Row extends Component {
 				<TableRowColumn>{class_number}</TableRowColumn>
 				<TableRowColumn>{campus}</TableRowColumn>
 				<TableRowColumn>{enrollment_total}/{enrollment_capacity}</TableRowColumn>
-				<TableRowColumn>{start_time} - {end_time}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
+				<TableRowColumn>{time}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
 				<TableRowColumn>{instructor}</TableRowColumn>
 			</TableRow>
 		)
