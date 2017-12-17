@@ -104,7 +104,7 @@ function getReqInfo(subject, course_number, callback) {
 					? crosslistings
 					: [crosslistings] || [];
 
-			 var terms = res.data.terms_termsOffered;
+			 var terms = res.data.terms_offered;
 
 			 if (!terms) {
 				 const string = 'Offered: ';
@@ -116,50 +116,6 @@ function getReqInfo(subject, course_number, callback) {
 				 } else terms = [];
 			 }
 
-			 //OUTPUT STRING
-			 const prereqsString = [];
-			 // Prerequisites
-			 if(prereqs && prereqs[0] === 1) {
-				 let temp = [prereqs[0]];
-				 prereqs.slice(1).forEach(elem => {
-					 if(Array.isArray(elem)) temp = temp.concat(elem.slice(1));
-					 else temp = temp.concat(elem);
-				 });
-				 prereqs = temp;
-			 }
-			 if(Array.isArray(prereqs)){
-				 // if first elem is a digit
-				 if(!isNaN(prereqs[0])) prereqsString.push(pick(prereqs));
-				 else {
-					 prereqs.forEach(prereq => {
-						 if (typeof prereq[0] == 'number') prereqsString.push(pick(prereq));
-						 else prereqsString.push(`${getLink(prereq)}`);
-					 });
-				 }
-			 } else prereqsString.push(`${getLink(prereqs)}`);
-
-			 // Corequisites
-			 const coreqsString = [];
-			 // Prerequisites
-			 if(coreqs && coreqs[0] === 1) {
-				 let temp = [coreqs[0]];
-				 coreqs.slice(1).forEach(elem => {
-					 if(Array.isArray(elem)) temp = temp.concat(elem.slice(1));
-					 else temp = temp.concat(elem);
-				 });
-				 coreqs = temp;
-			 }
-			 if(Array.isArray(coreqs)){
-				 // if first elem is a digit
-				 if(!isNaN(coreqs[0])) coreqsString.push(pick(coreqs));
-				 else {
-					 coreqs.forEach(coreq => {
-						 if (typeof coreq[0] == 'number') coreqsString.push(pick(coreq));
-						 else coreqsString.push(`${getLink(coreq)}`);
-					 });
-				 }
-			 } else coreqsString.push(`${getLink(coreqs)}`);
-
 			 const data = {
 				 title,
 				 description,
@@ -168,10 +124,6 @@ function getReqInfo(subject, course_number, callback) {
 				 coreqs,
 				 crosslistings,
 				 terms,
-				 string: {
-					 prereqs: prereqsString,
-					 coreqs: coreqsString
-				 },
 				 subject,
 				 catalog_number: course_number,
 				 url: res.data.url
