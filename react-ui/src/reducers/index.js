@@ -16,7 +16,7 @@ function view(state = COURSE_VIEW, action) {
 	}
 }
 
-function course(state = {}, action) {
+function course(state = { subject: 'CS', catalogNumber: '136' }, action) {
 	switch(action.type) {
 		case SET_COURSE:
 			return action.course;

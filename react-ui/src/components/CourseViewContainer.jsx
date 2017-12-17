@@ -9,7 +9,8 @@ import { setCourse, setExpandedCourse } from '../actions/index';
 
 const styles = {
 	loading: {
-		margin: 'auto'
+		margin: 'auto',
+		padding: '200px 0'
 	}
 };
 
@@ -52,11 +53,11 @@ class CourseViewContainer extends Component {
 		super(props);
 
 		this.state = {
+			subject: props.subject,
+			catalogNumber: props.catalogNumber,
+			loading: true,
+			error: false,
 			course: {
-				loading: true,
-				error: false,
-				subject: props.subject,
-				catalogNumber: props.catalogNumber,
 				title: '',
 				rating: 0,
 				termsOffered: [],
@@ -84,6 +85,7 @@ class CourseViewContainer extends Component {
 		const { subject, catalogNumber } = this.props;
 
 		if (subject && catalogNumber) {
+			this.setState({ subject, catalogNumber });
 			// fetch course data
 			getCourseData(subject, catalogNumber)
 			.then(json => {
@@ -101,12 +103,9 @@ class CourseViewContainer extends Component {
 					classList
 				} = json;
 
-				const { term, classes } = classList;
-
 				console.log('json', json);
 
-				const course = Object.assign({}, this.state.course, {
-					loading: false,
+				const course = {
 					title,
 					description,
 					rating: 2.1,
@@ -115,62 +114,58 @@ class CourseViewContainer extends Component {
 					coreqs,
 					prereqs,
 					postreqs: parPrereq,
-					term,
-					classes
-				});
+					term: (classList) ? classList.term : '',
+					classes: (classList) ? classList.classes : []
+				};
 
-				this.setState({ course });
+				this.setState({ loading: false, course });
 			}).catch(error => {
 				console.error(`ERROR: ${error}`);
-				const course = Object.assign({}, this.state.course, {
-					loading: false,
-					error
-				});
-				this.setState({ course });
-				return;
+				this.setState({ loading: false, error });
 			});
-		} else {
-			const course = Object.assign({}, this.state.course, {
-				loading: false,
-				title: 'Introduction to Data Abstraction and Implementation',
-				description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
-				rating: 3.5,
-				termsOffered: ['F', 'W'],
-				antireqs: ['CS 234', 'CS 235'],
-				coreqs: ['CS 222', 'CS 232'],
-				prereqs: ['CS 137', 'CS 138'],
-				postreqs: ['CS 371', 'CS 472'],
-				term: '1181',
-				classes: [
-					{
-						section: 'LEC 001',
-						class_number: '8304',
-						campus: 'UW U',
-						enrollment_capacity: '60',
-						enrollment_total: '34',
-						start_time: '8.30',
-						end_time: '9.50',
-						weekdays: [2, 4],
-						location: 'MC 4042',
-						instructor: 'Firas Mansour'
-					},
-					{
-						section: 'LEC 002',
-						class_number: '8305',
-						campus: 'UW U',
-						enrollment_capacity: '60',
-						enrollment_total: '50',
-						start_time: '10.30',
-						end_time: '11.50',
-						weekdays: [1, 3, 5],
-						location: 'MC 4045',
-						instructor: 'Stephen New'
-					}
-				]
-			});
-
-			this.setState({ course });
 		}
+
+		// else {
+		// 	const course = {
+		// 		title: 'Introduction to Data Abstraction and Implementation',
+		// 		description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
+		// 		rating: 3.5,
+		// 		termsOffered: ['F', 'W'],
+		// 		antireqs: ['CS 234', 'CS 235'],
+		// 		coreqs: ['CS 222', 'CS 232'],
+		// 		prereqs: ['CS 137', 'CS 138'],
+		// 		postreqs: ['CS 371', 'CS 472'],
+		// 		term: '1181',
+		// 		classes: [
+		// 			{
+		// 				section: 'LEC 001',
+		// 				class_number: '8304',
+		// 				campus: 'UW U',
+		// 				enrollment_capacity: '60',
+		// 				enrollment_total: '34',
+		// 				start_time: '8.30',
+		// 				end_time: '9.50',
+		// 				weekdays: [2, 4],
+		// 				location: 'MC 4042',
+		// 				instructor: 'Firas Mansour'
+		// 			},
+		// 			{
+		// 				section: 'LEC 002',
+		// 				class_number: '8305',
+		// 				campus: 'UW U',
+		// 				enrollment_capacity: '60',
+		// 				enrollment_total: '50',
+		// 				start_time: '10.30',
+		// 				end_time: '11.50',
+		// 				weekdays: [1, 3, 5],
+		// 				location: 'MC 4045',
+		// 				instructor: 'Stephen New'
+		// 			}
+		// 		]
+		// 	};
+    //
+		// 	this.setState({ loading: false, course });
+		// }
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -181,14 +176,7 @@ class CourseViewContainer extends Component {
 			// User selected new course
 			if (isNewCourse) {
 				const { subject, catalogNumber } = nextProps;
-
-				let course = Object.assign({}, this.state.course, {
-					subject,
-					catalogNumber,
-					loading: true
-				});
-
-				this.setState({ course });
+				this.setState({ subject, catalogNumber, loading: true });
 
 				// fetch course data
 				getCourseData(subject, catalogNumber)
@@ -207,12 +195,9 @@ class CourseViewContainer extends Component {
 						classList
 					} = json;
 
-					const { term, classes } = classList;
-
 					console.log('json', json);
 
-					course = Object.assign({}, this.state.course, {
-						loading: false,
+					const course = {
 						title,
 						description,
 						rating: 2.1,
@@ -221,19 +206,14 @@ class CourseViewContainer extends Component {
 						coreqs,
 						prereqs,
 						postreqs: parPrereq,
-						term,
-						classes
-					});
+						term: (classList) ? classList.term : '',
+						classes: (classList) ? classList.classes : []
+					};
 
-					this.setState({ course });
+					this.setState({ loading: false, course });
 				}).catch(error => {
 					console.error(`ERROR: ${error}`);
-					course = Object.assign({}, this.state.course, {
-						loading: false,
-						error
-					});
-					this.setState({ course });
-					return;
+					this.setState({ loading: false, error });
 				});
 			}
 
@@ -247,12 +227,12 @@ class CourseViewContainer extends Component {
 					selectedClassIndex
 				} = nextProps;
 
-				let classInfo = Object.assign({}, this.state.classInfo, {
+				const classInfo = {
 					instructor,
 					attending,
 					enrollmentCap,
 					classNumber
-				});
+				};
 
 				this.setState({ classInfo, selectedClassIndex });
 			}
@@ -261,7 +241,7 @@ class CourseViewContainer extends Component {
 
 	render() {
 		const loadingView = (
-			<div className="loading">
+			<div className="loading course-view">
 				<CircularProgress
 					size={80}
 					thickness={5}
@@ -271,9 +251,9 @@ class CourseViewContainer extends Component {
 		);
 
 		const errorView = (
-			<div className="error-wrapper">
-				<span>{`Oops!  We encountered an error trying to fetch ${this.state.course.subject} ${this.state.course.catalogNumber}.`}</span>
-				<span>{`Error message: ${this.state.course.error}`}</span>
+			<div className="error-wrapper course-view">
+				<span>{`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}</span>
+				<span>{`Error message: ${this.state.error}`}</span>
 			</div>
 		)
 
@@ -283,6 +263,8 @@ class CourseViewContainer extends Component {
 					selectedClassIndex={this.state.selectedClassIndex}
 					selectCourseHandler={this.state.selectCourseHandler}
 					expandCourseHandler={this.state.expandCourseHandler}
+					subject={this.state.subject}
+					catalogNumber={this.state.catalogNumber}
 					{...this.state.course}
 					/>
 				<CourseSideBar

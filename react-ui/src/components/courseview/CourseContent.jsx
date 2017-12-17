@@ -40,12 +40,16 @@ const CourseContent = (props) => {
 				postreqs={postreqs}
 				selectCourseHandler={selectCourseHandler}
 				/>
-			<CourseClassList
-				expandCourseHandler={expandCourseHandler}
-				selectedClassIndex={selectedClassIndex}
-				term={term}
-				classes={classes}
-				/>
+			{
+				classes.length > 0 && (
+					<CourseClassList
+						expandCourseHandler={expandCourseHandler}
+						selectedClassIndex={selectedClassIndex}
+						term={term}
+						classes={classes}
+						/>
+				)
+			}
 		</div>
 	);
 };
