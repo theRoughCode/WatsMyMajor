@@ -10,8 +10,6 @@ import CourseView from './components/CourseViewContainer';
 import { DASHBOARD_VIEW, COURSE_VIEW } from './constants/views';
 
 let styles = {
-  width: 'auto',
-  height: '100%',
 	marginLeft: 0,
 	transition: 'all 1s ease-in-out'
 }

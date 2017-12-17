@@ -22,7 +22,7 @@ const styles = {
 		padding: 10,
 		display: 'flex',
 		flexDirection: 'column',
-		height: '200px'
+		height: '100px'
 	},
 };
 

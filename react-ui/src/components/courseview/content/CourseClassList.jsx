@@ -17,8 +17,8 @@ const styles = {
 	table: {
 		display: 'inline-block',
 		height: 'auto',
-		width: "auto",
-		tableLayout: "auto"
+		width: 'auto',
+		tableLayout: 'auto'
 	},
 	tableHeader: {
 		fontSize: '15px',
@@ -33,23 +33,34 @@ const styles = {
 
 class Row extends Component {
 	static propTypes = {
-		courseObj: PropTypes.object.isRequired,
+		classData: PropTypes.object.isRequired,
 		selected: PropTypes.bool.isRequired,
 		onClickHandler: PropTypes.func.isRequired
 	};
 
 	render() {
 		const {
+			units,
+			note,
+			class_number,
 			section,
-			classNumber,
 			campus,
-			attending,
-			enrollmentCap,
-			startTime,
-			endTime,
+			enrollment_capacity,
+			enrollment_total,
+			waiting_capacity,
+			waiting_total,
+			reserve_capacity,
+			reserve_total,
+			start_time,
+			end_time,
+			weekdays,
+			is_tba,
+			is_cancelled,
+			is_closed,
+			instructor,
 			location,
-			instructor
-		} = this.props.courseObj;
+			last_updated
+		} = this.props.classData;
 
 		return (
 			<TableRow
@@ -58,27 +69,42 @@ class Row extends Component {
 				selected={this.props.selected}
 				style={styles.tableRow}>
 				<TableRowColumn>{section}</TableRowColumn>
-				<TableRowColumn>{classNumber}</TableRowColumn>
+				<TableRowColumn>{class_number}</TableRowColumn>
 				<TableRowColumn>{campus}</TableRowColumn>
-				<TableRowColumn>{attending}/{enrollmentCap}</TableRowColumn>
-				<TableRowColumn>{startTime} - {endTime}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
+				<TableRowColumn>{enrollment_total}/{enrollment_capacity}</TableRowColumn>
+				<TableRowColumn>{start_time} - {end_time}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
 				<TableRowColumn>{instructor}</TableRowColumn>
 			</TableRow>
 		)
 	}
 }
 
+const termStr = (term) => {
+	switch(term) {
+		case '1175': return 'Spring 2017';
+		case '1179': return 'Fall 2017';
+		case '1181': return 'Winter 2018';
+		case '1185': return 'Spring 2018';
+	}
+};
+
 
 const CourseClassList = (props) => {
-	const { expandCourseHandler, classList, selectedClassIndex } = props;
+	const {
+		expandCourseHandler,
+		term,
+		classes,
+		selectedClassIndex
+	} = props;
 
 	return (
 		<div className="course-class-list">
 			<div className="course-class-list-header">
-				<span>Winter 2017</span>
+				<span>{termStr(term)}</span>
 			</div>
 			<Paper zDepth={1} style={styles.paper}>
 				<Table
+					className="course-class-list-table"
 					style={styles.table}
 					headerStyle={{ height: 0 }}
 					>
@@ -92,12 +118,12 @@ const CourseClassList = (props) => {
 							<TableRowColumn style={styles.tableHeader}>Location</TableRowColumn>
 							<TableRowColumn style={styles.tableHeader}>Instructor</TableRowColumn>
 						</TableRow>
-						{classList.map((courseObj, index) => (
+						{classes.map((classData, index) => (
 							<Row
 								key={index}
-								courseObj={courseObj}
+								classData={classData}
 								selected={index === selectedClassIndex}
-								onClickHandler={() => expandCourseHandler(courseObj, index)} />
+								onClickHandler={() => expandCourseHandler(classData, index)} />
 						))}
 					</TableBody>
 				</Table>
@@ -109,7 +135,8 @@ const CourseClassList = (props) => {
 CourseClassList.propTypes = {
 	expandCourseHandler: PropTypes.func.isRequired,
 	selectedClassIndex: PropTypes.number.isRequired,
-	classList: PropTypes.array.isRequired
+	term: PropTypes.string.isRequired,
+	classes: PropTypes.array.isRequired
 };
 
 export default CourseClassList;

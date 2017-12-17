@@ -30,7 +30,7 @@ const CourseHeader = (props) => {
 					numOfStars={5}
 					{...styles.stars}
 					/>
-				{termsOffered.length && (
+				{termsOffered.length > 0 && (
 					<span>Offered in: {termsOffered.join(', ')}</span>
 				)}
 			</div>

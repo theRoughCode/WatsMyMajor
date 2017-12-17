@@ -18,7 +18,9 @@ const CourseContent = (props) => {
 		antireqs,
     coreqs,
 		prereqs,
-		postreqs
+		postreqs,
+		term,
+		classes
 	} = props;
 
 	return (
@@ -41,32 +43,8 @@ const CourseContent = (props) => {
 			<CourseClassList
 				expandCourseHandler={expandCourseHandler}
 				selectedClassIndex={selectedClassIndex}
-				classList={[
-					{
-						section: 'LEC 001',
-						classNumber: '8304',
-						campus: 'UW U',
-						enrollmentCap: '60',
-						attending: '34',
-						startTime: '8.30',
-						endTime: '9.50',
-						days: [2, 4],
-						location: 'MC 4042',
-						instructor: 'Firas Mansour'
-					},
-					{
-						section: 'LEC 002',
-						classNumber: '8305',
-						campus: 'UW U',
-						enrollmentCap: '60',
-						attending: '50',
-						startTime: '10.30',
-						endTime: '11.50',
-						days: [1, 3, 5],
-						location: 'MC 4045',
-						instructor: 'Stephen New'
-					}
-				]}
+				term={term}
+				classes={classes}
 				/>
 		</div>
 	);
@@ -85,7 +63,9 @@ CourseContent.propTypes = {
 	antireqs: PropTypes.array.isRequired,
   coreqs: PropTypes.array.isRequired,
 	prereqs: PropTypes.array.isRequired,
-	postreqs: PropTypes.array.isRequired
+	postreqs: PropTypes.array.isRequired,
+	term: PropTypes.string.isRequired,
+	classes: PropTypes.array.isRequired
 }
 
 export default CourseContent;

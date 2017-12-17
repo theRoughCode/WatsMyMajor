@@ -64,7 +64,9 @@ class CourseViewContainer extends Component {
 				antireqs: [],
 				coreqs: [],
 				prereqs: [],
-				postreqs: []
+				postreqs: [],
+				term: '',
+				classes: []
 			},
 			classInfo: {
 				loading: true,
@@ -97,8 +99,11 @@ class CourseViewContainer extends Component {
 					terms,
 					url,
 					parPrereq,
-					parCoreq
+					parCoreq,
+					classList
 				} = json;
+
+				const { term, classes } = classList;
 
 				console.log('json', json);
 
@@ -111,7 +116,9 @@ class CourseViewContainer extends Component {
 					antireqs,
 					coreqs,
 					prereqs,
-					postreqs: parPrereq
+					postreqs: parPrereq,
+					term,
+					classes
 				});
 
 				this.setState({ course });
@@ -134,8 +141,37 @@ class CourseViewContainer extends Component {
 				antireqs: ['CS 234', 'CS 235'],
 				coreqs: ['CS 222', 'CS 232'],
 				prereqs: ['CS 137', 'CS 138'],
-				postreqs: ['CS 371', 'CS 472']
+				postreqs: ['CS 371', 'CS 472'],
+				term: '1181',
+				classes: [
+					{
+						section: 'LEC 001',
+						class_number: '8304',
+						campus: 'UW U',
+						enrollment_capacity: '60',
+						enrollment_total: '34',
+						start_time: '8.30',
+						end_time: '9.50',
+						weekdays: [2, 4],
+						location: 'MC 4042',
+						instructor: 'Firas Mansour'
+					},
+					{
+						section: 'LEC 002',
+						class_number: '8305',
+						campus: 'UW U',
+						enrollment_capacity: '60',
+						enrollment_total: '50',
+						start_time: '10.30',
+						end_time: '11.50',
+						weekdays: [1, 3, 5],
+						location: 'MC 4045',
+						instructor: 'Stephen New'
+					}
+				]
 			});
+
+			this.setState({ course });
 		}
 	}
 
@@ -169,8 +205,11 @@ class CourseViewContainer extends Component {
 						terms,
 						url,
 						parPrereq,
-						parCoreq
+						parCoreq,
+						classList
 					} = json;
+
+					const { term, classes } = classList;
 
 					console.log('json', json);
 
@@ -183,7 +222,9 @@ class CourseViewContainer extends Component {
 						antireqs,
 						coreqs,
 						prereqs,
-						postreqs: parPrereq
+						postreqs: parPrereq,
+						term,
+						classes
 					});
 
 					this.setState({ course });
@@ -244,22 +285,10 @@ class CourseViewContainer extends Component {
 					selectedClassIndex={this.state.selectedClassIndex}
 					selectCourseHandler={this.state.selectCourseHandler}
 					expandCourseHandler={this.state.expandCourseHandler}
-					subject={this.state.course.subject}
-					catalogNumber={this.state.course.catalogNumber}
-					title={this.state.course.title}
-					rating={this.state.course.rating}
-					termsOffered={this.state.course.termsOffered}
-					description={this.state.course.description}
-					antireqs={this.state.course.antireqs}
-					coreqs={this.state.course.coreqs}
-					prereqs={this.state.course.prereqs}
-					postreqs={this.state.course.postreqs}
+					{...this.state.course}
 					/>
 				<CourseSideBar
-					instructor={this.state.classInfo.instructor}
-					attending={this.state.classInfo.attending}
-					enrollmentCap={this.state.classInfo.enrollmentCap}
-					classNumber={this.state.classInfo.classNumber}
+					{...this.state.classInfo}
 					/>
 			</div>
 		);

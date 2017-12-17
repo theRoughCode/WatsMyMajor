@@ -6,46 +6,83 @@ const database = require('../models/data');
 // Enable hiding of API Key
 require('dotenv').config();
 
-const TERM = '1175';  // Spring 2017, 1179 = Fall 2017
+const TERM = '1181';  // Winter 2017
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
-var uwclient = new watApi({
+const uwclient = new watApi({
 	API_KEY : process.env.API_KEY
-})
+});
+
+function getInstructor(instructor) {
+	if (!instructor || !instructor.length) return '';
+	return instructor.split(',').reverse().join(' ');
+}
 
 function getCourseInfo(subject, cat_num, callback) {
 	uwclient.get(`/terms/${TERM}/${subject}/${cat_num}/schedule.json`, function(err, res) {
 		if(err) return callback(null);
 		if (res.data.length === 0) return callback(null);
 
-		const units = res.data[0].units;
-		const title = res.data[0].title;
+		const classes = res.data.map(course => {
+			const {
+				units,
+				note,
+				class_number,
+				section,
+				campus,
+				enrollment_capacity,
+				enrollment_total,
+				waiting_capacity,
+				waiting_total,
+				reserves,
+				classes,
+				last_updated
+			} = course;
 
-		const classes = [];
-		res.data.forEach(course => {
-			const info = {
-				class_number: course.class_number,
-				enrol_cap: course.enrollment_capacity,
-				enrol_total: course.enrollment_total,
-				wait_cap: course.waiting_capacity,
-				wait_total: course.waiting_total,
-				days: course.classes[0].date.weekdays,
-				start_time: course.classes[0].date.start_time,
-				end_time: course.classes[0].date.end_time,
-				instructors: course.classes[0].instructors,
-				is_cancelled: course.classes[0].date.is_cancelled,
-				is_closed: course.classes[0].date.is_closed,
-				building: course.classes[0].location.building,
-				room: course.classes[0].location.room
+			const {
+				date,
+				location,
+				instructors
+			} = classes[0];
+
+			const {
+				start_time,
+				end_time,
+				weekdays,
+				is_tba,
+				is_cancelled,
+				is_closed
+			} = date;
+			const { building, room } = location;
+
+			return {
+				units,
+				note,
+				class_number,
+				section,
+				campus,
+				enrollment_capacity,
+				enrollment_total,
+				waiting_capacity,
+				waiting_total,
+				reserve_capacity: reserves.enrollment_capacity,
+				reserve_total: reserves.enrollment_total,
+				start_time,
+				end_time,
+				weekdays,
+				is_tba,
+				is_cancelled,
+				is_closed,
+				instructor: getInstructor(instructors[0]),
+				location: (building || room) ? `${building} ${room}` : 'TBA',
+				last_updated
 			};
-			classes.push(info);
 		});
+
 		const data = {
-			units: units,
-			title: title,
 			term: TERM,
-			classes: classes
+			classes
 		}
 		return callback(data);
 	});
