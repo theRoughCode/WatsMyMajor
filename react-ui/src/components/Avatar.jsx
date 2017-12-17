@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Avatar from 'material-ui/Avatar';
-import avatarIcon from '../images/avatar.jpg';
 
 
 export default class ReactAvatar extends Component {
@@ -18,7 +17,7 @@ export default class ReactAvatar extends Component {
 			<div className="avatar-wrapper">
 				<Avatar
 					className="avatar-icon"
-					src={avatarIcon}
+					src='images/avatar.jpg'
 					size={100}
 					/>
 				<span className="avatar-name">{this.state.name}</span>

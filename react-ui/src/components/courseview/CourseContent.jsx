@@ -53,6 +53,18 @@ const CourseContent = (props) => {
 						days: [2, 4],
 						location: 'MC 4042',
 						instructor: 'Firas Mansour'
+					},
+					{
+						section: 'LEC 002',
+						classNumber: '8305',
+						campus: 'UW U',
+						enrollmentCap: '60',
+						attending: '50',
+						startTime: '10.30',
+						endTime: '11.50',
+						days: [1, 3, 5],
+						location: 'MC 4045',
+						instructor: 'Stephen New'
 					}
 				]}
 				/>

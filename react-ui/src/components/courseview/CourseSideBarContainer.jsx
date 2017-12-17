@@ -3,23 +3,45 @@ import PropTypes from 'prop-types';
 import CourseInfo from './sidebar/CourseInfo';
 import CourseProf from './sidebar/CourseProf';
 
-const style = {
+const style = (isVisible) => ({
 	height: 'auto',
 	width: 270,
 	margin: 15,
 	marginLeft: 0,
 	display: 'inline-block',
-};
+	opacity: (isVisible) ? 1 : 0
+});
 
-const retrieveClassInfo = (classNumber) => {
-	return {
-		prof: {
+const retrieveProfInfo = (instructor) => {
+	let prof = {};
+
+	if (instructor === 'Firas Mansour') {
+		prof = {
 			rating: 4.1,
 			difficulty: 3.2,
 			tags: ['Hilarious', 'Respected', 'Amazing Lectures'],
-			rmpURL: 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=21566'
-		}
+			rmpURL: 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=21566',
+			profAvatarURL: 'images/firas_mansour.jpg'
+		};
+	} else if (instructor === 'Stephen New') {
+		prof = {
+			rating: 4.6,
+			difficulty: 4.9,
+			tags: ['Respected', 'Inspirational', 'Amazing Lectures'],
+			rmpURL: 'http://www.ratemyprofessors.com/ShowRatings.jsp?tid=10101',
+			profAvatarURL: 'images/stephen_new.png'
+		};
+	} else {
+		prof = {
+			rating: 0,
+			difficulty: 0,
+			tags: [],
+			rmpURL: '',
+			profAvatarURL: ''
+		};
 	}
+
+	return { prof };
 };
 
 
@@ -53,13 +75,14 @@ export default class CourseSideBarContainer extends Component {
 				rating: 0,
 				difficulty: 0,
 				tags: [],
-				rmpURL: ''
+				rmpURL: '',
+				profAvatarURL: ''
 			}
 		};
 	}
 
 	componentDidMount() {
-		this.setState(retrieveClassInfo(this.state.classNumber));
+		this.setState(retrieveProfInfo(this.state.instructor));
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -72,40 +95,37 @@ export default class CourseSideBarContainer extends Component {
 
 		if (classNumber !== this.props.classNumber) {
 			this.setState({
+				classNumber,
 				instructor,
 				info: {
 					attending,
 					enrollmentCap
-				},
-				classNumber
+				}
 			});
 		}
 
-		this.setState(retrieveClassInfo(this.state.classNumber));
+		this.setState(retrieveProfInfo(instructor));
 	}
 
 	render() {
-		if (this.state.instructor) {
-			return (
-				<div className="course-side-bar">
-					<CourseInfo
-						style={style}
-						instructor={this.state.instructor}
-						{...this.state.info}
-						/>
-					<CourseProf
-						style={style}
-						instructor={this.state.instructor}
-						{...this.state.prof}
-						/>
-				</div>
-			);
-		} else {
-			return (
-				<div className="course-side-bar"></div>
-			)
-		}
+		const id = (this.state.instructor) ? 'slide' : '';
 
+		return (
+			<div className="course-side-bar">
+				<CourseInfo
+					style={style(this.state.instructor)}
+					id={id}
+					instructor={this.state.instructor}
+					{...this.state.info}
+					/>
+				<CourseProf
+					style={style(this.state.instructor)}
+					id={id}
+					instructor={this.state.instructor}
+					{...this.state.prof}
+					/>
+			</div>
+		);
 	}
 
 }

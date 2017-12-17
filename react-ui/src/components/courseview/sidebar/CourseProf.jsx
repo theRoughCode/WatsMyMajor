@@ -7,7 +7,6 @@ import Divider from 'material-ui/Divider';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
-import profAvatar from '../../../images/prof.jpg';
 
 const styles = {
 	stars: {
@@ -104,7 +103,8 @@ const CourseProf = ({ style, ...info }) => {
     rating,
     difficulty,
     tags,
-    rmpURL
+    rmpURL,
+		profAvatarURL
   } = info;
 
 	return (
@@ -112,7 +112,7 @@ const CourseProf = ({ style, ...info }) => {
 			<ProfHeader
 				name={instructor}
 				stars={rating}
-				image={profAvatar}
+				image={profAvatarURL}
 				/>
 			<Divider style={styles.divider} />
 			<Rating
@@ -154,7 +154,8 @@ CourseProf.propTypes = {
   rating: PropTypes.number.isRequired,
   difficulty: PropTypes.number.isRequired,
   tags: PropTypes.array.isRequired,
-  rmpURL: PropTypes.string.isRequired
+  rmpURL: PropTypes.string.isRequired,
+	profAvatarURL: PropTypes.string.isRequired
 }
 
 export default CourseProf;

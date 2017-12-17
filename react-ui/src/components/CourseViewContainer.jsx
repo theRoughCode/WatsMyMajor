@@ -52,25 +52,31 @@ class CourseViewContainer extends Component {
 		super(props);
 
 		this.state = {
-			loading: true,
-			error: false,
-			subject: props.subject,
-			catalogNumber: props.catalogNumber,
-			instructor: props.instructor,
-			attending: props.attending,
-			enrollmentCap: props.enrollmentCap,
-			classNumber: props.classNumber,
+			course: {
+				loading: true,
+				error: false,
+				subject: props.subject,
+				catalogNumber: props.catalogNumber,
+				title: '',
+				rating: 0,
+				termsOffered: [],
+				description: '',
+				antireqs: [],
+				coreqs: [],
+				prereqs: [],
+				postreqs: []
+			},
+			classInfo: {
+				loading: true,
+				error: false,
+				instructor: props.instructor,
+				attending: props.attending,
+				enrollmentCap: props.enrollmentCap,
+				classNumber: props.classNumber
+			},
 			selectedClassIndex: props.selectedClassIndex,
 			selectCourseHandler: props.selectCourseHandler,
-			expandCourseHandler: props.expandCourseHandler,
-			title: '',
-			rating: 0,
-			termsOffered: [],
-			description: '',
-			antireqs: [],
-			coreqs: [],
-			prereqs: [],
-			postreqs: []
+			expandCourseHandler: props.expandCourseHandler
 		}
 	}
 
@@ -78,64 +84,7 @@ class CourseViewContainer extends Component {
 		const { subject, catalogNumber } = this.props;
 
 		if (subject && catalogNumber) {
-			getCourseData(subject, catalogNumber)
-				.then(json => {
-					const {
-						title,
-						description,
-						prereqs,
-						antireqs,
-						coreqs,
-						crosslistings,
-						terms,
-						url,
-						parPrereq,
-						parCoreq
-					} = json;
-
-					console.log('json', json);
-
-					this.setState({
-						loading: false,
-						title,
-						description,
-						rating: 2.1,
-						termsOffered: terms,
-						antireqs,
-						coreqs,
-						prereqs,
-						postreqs: parPrereq
-					});
-				}).catch(error => {
-					console.error(`ERROR: ${error}`);
-					this.setState({ loading: false, error });
-					return;
-				});
-		} else {
-			this.setState({
-				loading: false,
-				title: 'Introduction to Data Abstraction and Implementation',
-				description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
-				rating: 3.5,
-				termsOffered: ['F', 'W'],
-				antireqs: ['CS 234', 'CS 235'],
-				coreqs: ['CS 222', 'CS 232'],
-				prereqs: ['CS 137', 'CS 138'],
-				postreqs: ['CS 371', 'CS 472']
-			});
-		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-		if (nextProps !== this.props) {
-			const isNewCourse = (this.props.subject !== nextProps.subject || this.props.catalogNumber !== nextProps.catalogNumber);
-
-			this.setState({
-				...nextProps,
-				loading: isNewCourse
-			});
-
-			const { subject, catalogNumber } = nextProps;
+			// fetch course data
 			getCourseData(subject, catalogNumber)
 			.then(json => {
 				const {
@@ -153,7 +102,7 @@ class CourseViewContainer extends Component {
 
 				console.log('json', json);
 
-				this.setState({
+				const course = Object.assign({}, this.state.course, {
 					loading: false,
 					title,
 					description,
@@ -164,11 +113,110 @@ class CourseViewContainer extends Component {
 					prereqs,
 					postreqs: parPrereq
 				});
+
+				this.setState({ course });
 			}).catch(error => {
 				console.error(`ERROR: ${error}`);
-				this.setState({ loading: false, error });
+				const course = Object.assign({}, this.state.course, {
+					loading: false,
+					error
+				});
+				this.setState({ course });
 				return;
 			});
+		} else {
+			const course = Object.assign({}, this.state.course, {
+				loading: false,
+				title: 'Introduction to Data Abstraction and Implementation',
+				description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
+				rating: 3.5,
+				termsOffered: ['F', 'W'],
+				antireqs: ['CS 234', 'CS 235'],
+				coreqs: ['CS 222', 'CS 232'],
+				prereqs: ['CS 137', 'CS 138'],
+				postreqs: ['CS 371', 'CS 472']
+			});
+		}
+	}
+
+	componentWillReceiveProps(nextProps) {
+		if (nextProps !== this.props) {
+			const isNewCourse = (this.props.subject !== nextProps.subject || this.props.catalogNumber !== nextProps.catalogNumber);
+			const isNewClass = (this.props.classNumber !== nextProps.classNumber);
+
+			// User selected new course
+			if (isNewCourse) {
+				const { subject, catalogNumber } = nextProps;
+
+				let course = Object.assign({}, this.state.course, {
+					subject,
+					catalogNumber,
+					loading: true
+				});
+
+				this.setState({ course });
+
+				// fetch course data
+				getCourseData(subject, catalogNumber)
+				.then(json => {
+					const {
+						title,
+						description,
+						prereqs,
+						antireqs,
+						coreqs,
+						crosslistings,
+						terms,
+						url,
+						parPrereq,
+						parCoreq
+					} = json;
+
+					console.log('json', json);
+
+					course = Object.assign({}, this.state.course, {
+						loading: false,
+						title,
+						description,
+						rating: 2.1,
+						termsOffered: terms,
+						antireqs,
+						coreqs,
+						prereqs,
+						postreqs: parPrereq
+					});
+
+					this.setState({ course });
+				}).catch(error => {
+					console.error(`ERROR: ${error}`);
+					course = Object.assign({}, this.state.course, {
+						loading: false,
+						error
+					});
+					this.setState({ course });
+					return;
+				});
+			}
+
+			// User selected new class
+			if (isNewClass) {
+				const {
+					instructor,
+					attending,
+					enrollmentCap,
+					classNumber,
+					selectedClassIndex
+				} = nextProps;
+
+				let classInfo = Object.assign({}, this.state.classInfo, {
+					instructor,
+					attending,
+					enrollmentCap,
+					classNumber
+				});
+
+				this.setState({ classInfo, selectedClassIndex });
+			}
 		}
 	}
 
@@ -185,33 +233,33 @@ class CourseViewContainer extends Component {
 
 		const errorView = (
 			<div className="error-wrapper">
-				<span>{`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}</span>
-				<span>{`Error message: ${this.state.error}`}</span>
+				<span>{`Oops!  We encountered an error trying to fetch ${this.state.course.subject} ${this.state.course.catalogNumber}.`}</span>
+				<span>{`Error message: ${this.state.course.error}`}</span>
 			</div>
 		)
 
 		const renderedView = (
 			<div className="course-view">
 				<CourseContent
-					subject={this.state.subject}
-					catalogNumber={this.state.catalogNumber}
 					selectedClassIndex={this.state.selectedClassIndex}
 					selectCourseHandler={this.state.selectCourseHandler}
 					expandCourseHandler={this.state.expandCourseHandler}
-					title={this.state.title}
-					rating={this.state.rating}
-					termsOffered={this.state.termsOffered}
-					description={this.state.description}
-					antireqs={this.state.antireqs}
-					coreqs={this.state.coreqs}
-					prereqs={this.state.prereqs}
-					postreqs={this.state.postreqs}
+					subject={this.state.course.subject}
+					catalogNumber={this.state.course.catalogNumber}
+					title={this.state.course.title}
+					rating={this.state.course.rating}
+					termsOffered={this.state.course.termsOffered}
+					description={this.state.course.description}
+					antireqs={this.state.course.antireqs}
+					coreqs={this.state.course.coreqs}
+					prereqs={this.state.course.prereqs}
+					postreqs={this.state.course.postreqs}
 					/>
 				<CourseSideBar
-					instructor={this.state.instructor}
-					attending={this.state.attending}
-					enrollmentCap={this.state.enrollmentCap}
-					classNumber={this.state.classNumber}
+					instructor={this.state.classInfo.instructor}
+					attending={this.state.classInfo.attending}
+					enrollmentCap={this.state.classInfo.enrollmentCap}
+					classNumber={this.state.classInfo.classNumber}
 					/>
 			</div>
 		);
