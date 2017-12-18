@@ -1,4 +1,4 @@
-const waterloo = require('../waterloo');
+const waterloo = require('./waterloo');
 const async = require('async');
 const data = require('./data');
 

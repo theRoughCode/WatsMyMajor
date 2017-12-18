@@ -156,6 +156,7 @@ function pick (arr) {
 // Converts weird data formatting to pick format
 function unpick(str) {
 	str = str.replace(/\s*and\s*/g,',');
+
 	if (str.includes('of')) {
 		var num = str.slice(0, 3);
 		switch(num) {
@@ -171,23 +172,23 @@ function unpick(str) {
 			default:
 				return str;
 		}
-		str = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
-		str.unshift(num);
-		return str;
+		const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
+		arr.unshift(num);
+		return arr;
 	} else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
 		var open = str.indexOf('(');
 		var close = str.indexOf(')');
 		// replace 'or' with comma and split into array
-		var fixed = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
-		fixed.unshift(1); // add 1 to front
+		var arr = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
+		arr.unshift(1); // add 1 to front
 		// Remove special chars
 		var checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
-		fixed = [fixed];
-		// remove 'fixed' from original string and exclude commas before and after
-		str = str.slice(0, (open > 0) ? open - 1 : open).concat(str.slice(close + 2));
-		fixed.push(...str.replace(checkSpecial, '').split(','));
-		return fixed;
-	} else return str;
+		arr = [arr];
+		// remove 'arr' from original string and exclude commas before and after
+		str = str.slice(0, (open !== -1) ? open - 1 : open).concat(str.slice(close + 2));
+		arr.push(...str.replace(checkSpecial, '').split(','));
+		return arr;
+	} else return parseCourse(str);
 }
 
 function getLink(course) {
@@ -211,6 +212,48 @@ function getLink(course) {
 	return course;
 }
 
+// Separate subject and catalog number from course string
+function parseCourse(courseStr) {
+	const index = courseStr.search(/[0-9]/);
+	const subject = courseStr.slice(0, index);
+	const catalogNumber = courseStr.slice(index);
+	return {
+		subject,
+		catalogNumber
+	};
+}
+
+// Format requisites into required structure
+//  { subject, catalogNumber }
+function parseReqs(arr) {
+	return arr.reduce((acc, req, index) => {
+		if (typeof req === 'string') {
+			req = unpick(req);
+			// add course subject for those without
+			if (index > 0 && !req.subject) {
+				let prev = acc[acc.length - 1];
+				if (Array.isArray(prev)) prev = prev[prev.length - 1];  // get last elem
+				req.subject = prev.subject;
+			}
+		}
+		acc.push(req);
+		return acc;
+	}, []);
+}
+
+function nestReqs(reqArr) {
+	if (!reqArr) return null;
+
+	const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
+		if (Array.isArray(req)) return nestReqs(req);
+		else return parseCourse(req);
+	});
+	return {
+		choose: (!isNaN(reqArr[0])) ? Number(reqArr[0]) : 0,
+		reqs
+	};
+}
+
 // Gets prerequisites from UW-API
 function getPrereqs (subject, course_number, callback) {
 	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
@@ -224,7 +267,7 @@ function getPrereqs (subject, course_number, callback) {
 		 }
 		 const prereqs = res.data.prerequisites_parsed;
 
-	 callback(null, prereqs);
+	 callback(null, nestReqs(prereqs));
  })
 }
 
@@ -245,29 +288,20 @@ function getReqs(subject, course_number, callback) {
 				// if coreqs is normal string
 				if (!Array.isArray(coreqs)) coreqs = [coreqs];
 				else {
-					coreqs.forEach((coreq, index) => {
-						if (typeof coreq === 'string') {
-							coreq = unpick(coreq);
-							// add course subject for those without
-							if (index > 0 && !isNaN(coreq.charAt(0))) {
-								var prev = coreqs[index - 1];
-								if (Array.isArray(prev)) prev = prev[prev.length - 1];  // get last elem
-								if(typeof prev === 'string')
-									coreq = prev.replace(/[0-9]/g, '') + coreq;
-							}
-							coreqs[index] = coreq;
-						}
-					});
+					coreqs = parseReqs(coreqs);
 				}
 			}
 			if ((antireqs = res.data.antirequisites)) {
-				// remove whitespace and split by comma
-				antireqs = antireqs.replace(/\s+/g, '').split(',');
-				// add course subject for those without
-				antireqs.forEach((antireq, index) => {
-					if(!isNaN(antireq.charAt(0)) && index > 0)
-						antireqs[index] = antireqs[index - 1].match(/[A-Z]{3,5}/) + antireq;
-				});
+				// check if contains valid courses and not a note
+				if (antireqs.length <= 6 || antireqs.replace(/\D/g, '').length > 2) {
+					// remove whitespace and split by comma
+					antireqs = antireqs
+						.replace(/\s+/g, '')
+						.replace('/', ',')
+						.split(',');
+
+					antireqs = parseReqs(antireqs);
+				}
 			}
 
 			return callback(null, {
@@ -282,8 +316,8 @@ function getReqs(subject, course_number, callback) {
 // Gets courses from UW-API
 function getCourses (callback) {
 	uwclient.get('/courses.json', function (err, res) {
-		if (err) console.error(err);
-		callback(res);
+		if (err) return callback(err, null);
+		else return callback(null, res.data);
 	})
 }
 

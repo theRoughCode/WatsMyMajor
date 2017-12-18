@@ -2,7 +2,8 @@ const routes = require('express').Router();
 const path = require('path');
 const request = require('request');
 const cheerio = require('cheerio');
-const waterloo = require('./waterloo');
+const waterloo = require('../models/waterloo');
+const database = require('../models/database');
 
 routes.get('/', function(req, res){
 	res.render('index');
@@ -34,6 +35,45 @@ routes.get('/wat/class/:subject/:number', function(req, res) {
 	waterloo.getCourseInfo(subject, number, classes => {
 		res.json(classes);
 	});
+});
+
+routes.get('/wat/reqs/:subject/:number', function(req, res) {
+	const subject = req.params.subject.toUpperCase();
+	const number = req.params.number;
+
+	res.set('Content-Type', 'application/json');
+	waterloo.getReqs(subject, number, (err, reqs) => {
+		res.json({ err, reqs });
+	});
+});
+
+// routes.get('/update/:subject/:number', function(req, res) {
+// 	const subject = req.params.subject.toUpperCase();
+// 	const number = req.params.number;
+//
+// 	res.set('Content-Type', 'application/json');
+// 	database.updateRequisites(subject, number, err => {
+// 		if (err) res.json({ success: false, err });
+// 		else res.json({ success: true });
+// 	});
+// });
+
+routes.get('/update/:type', function(req, res) {
+	const type = req.params.type.toLowerCase();
+
+	req.setTimeout(0); // disables timeout
+	res.set('Content-Type', 'application/json');
+	if (type === 'course') {
+		database.updateCourseList(err => {
+			if (err) res.json({ success: false, err });
+			else res.json({ success: true });
+		});
+	} else if (type === 'requisite') {
+		database.updateRequisites((err, failedList) => {
+			if (err) res.json({ success: false, err });
+			else res.json({ success: true, failedList });
+		});
+	} else res.send('Invalid type.');
 });
 
 
