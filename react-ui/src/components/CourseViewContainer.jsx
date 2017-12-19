@@ -124,48 +124,6 @@ class CourseViewContainer extends Component {
 				this.setState({ loading: false, error });
 			});
 		}
-
-		// else {
-		// 	const course = {
-		// 		title: 'Introduction to Data Abstraction and Implementation',
-		// 		description: 'Software abstractions via elementary data structures and their implementation; encapsulation and modularity; class and interface definitions; object instantiation; recursion; elementary abstract data types, including sequences, stacks, queues, and trees; implementation using linked structures and arrays; vectors and strings; memory models; automatic vs. dynamic memory management.',
-		// 		rating: 3.5,
-		// 		termsOffered: ['F', 'W'],
-		// 		antireqs: ['CS 234', 'CS 235'],
-		// 		coreqs: ['CS 222', 'CS 232'],
-		// 		prereqs: ['CS 137', 'CS 138'],
-		// 		postreqs: ['CS 371', 'CS 472'],
-		// 		term: '1181',
-		// 		classes: [
-		// 			{
-		// 				section: 'LEC 001',
-		// 				class_number: '8304',
-		// 				campus: 'UW U',
-		// 				enrollment_capacity: '60',
-		// 				enrollment_total: '34',
-		// 				start_time: '8.30',
-		// 				end_time: '9.50',
-		// 				weekdays: [2, 4],
-		// 				location: 'MC 4042',
-		// 				instructor: 'Firas Mansour'
-		// 			},
-		// 			{
-		// 				section: 'LEC 002',
-		// 				class_number: '8305',
-		// 				campus: 'UW U',
-		// 				enrollment_capacity: '60',
-		// 				enrollment_total: '50',
-		// 				start_time: '10.30',
-		// 				end_time: '11.50',
-		// 				weekdays: [1, 3, 5],
-		// 				location: 'MC 4045',
-		// 				instructor: 'Stephen New'
-		// 			}
-		// 		]
-		// 	};
-    //
-		// 	this.setState({ loading: false, course });
-		// }
 	}
 
 	componentWillReceiveProps(nextProps) {

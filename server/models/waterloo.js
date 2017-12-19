@@ -1,7 +1,8 @@
 const watApi = require('uwaterloo-api');
 const fs = require('fs');
 const async = require('async');
-const database = require('../models/data');
+const database = require('./data');
+const utils = require('./utils');
 
 // Enable hiding of API Key
 require('dotenv').config();
@@ -133,26 +134,6 @@ function getReqInfo(subject, course_number, callback) {
 	);
 }
 
-// handles Choose One event
-function pick (arr) {
-	var string = "";
-	var num = arr[0];
-	string += ("   Choose " + num + " of:<ul type='circle'>");
-	arr.slice(1).forEach(elem => {
-		if (typeof elem[0] === 'number'){
-			num = elem[0];
-			string += ("      Choose " + num + " of:<ul>");
-			elem.slice(1).forEach(elem2 => string += `<li>${getLink(elem2)}</li>`);
-		}
-		else if (Array.isArray(elem)) {
-			string += ("All of:<ul>");
-			elem.forEach(elem2 => string += `<li>${getLink(elem2)}></li>`);
-		}
-		else string += `<li>${getLink(elem)}</li>`;
-	});
-	return string + "</ul>";
-}
-
 // Converts weird data formatting to pick format
 function unpick(str) {
 	str = str.replace(/\s*and\s*/g,',');
@@ -188,70 +169,7 @@ function unpick(str) {
 		str = str.slice(0, (open !== -1) ? open - 1 : open).concat(str.slice(close + 2));
 		arr.push(...str.replace(checkSpecial, '').split(','));
 		return arr;
-	} else return parseCourse(str);
-}
-
-function getLink(course) {
-	if(!course) return ``;
-	// check for courses
-	var regCourse = /[A-Z]{2,5}\s*\d{3,4}[A-Z]*/g;
-	course = course.replace(regCourse, match => {
-		match = match.replace(/\s/g, '');  // remove white space
-		var index = match.search(/[0-9]/);
-		const subject = match.slice(0, index);
-		const cat_num = match.slice(index);
-		// check for non alpha-numeric chars (except spaces)
-		var checkSpecial = new RegExp('[^A-z0-9] | ^\s', 'g');
-		match = match.replace(checkSpecial, '');
-		if (!subject || ! cat_num || checkSpecial.test(subject) || checkSpecial.test(cat_num)) {
-			return `${match}`;
-		} else {
-			return `<a href='/wat/${subject}/${cat_num}'>${match}</a>`;
-		}
-	});
-	return course;
-}
-
-// Separate subject and catalog number from course string
-function parseCourse(courseStr) {
-	const index = courseStr.search(/[0-9]/);
-	const subject = courseStr.slice(0, index);
-	const catalogNumber = courseStr.slice(index);
-	return {
-		subject,
-		catalogNumber
-	};
-}
-
-// Format requisites into required structure
-//  { subject, catalogNumber }
-function parseReqs(arr) {
-	return arr.reduce((acc, req, index) => {
-		if (typeof req === 'string') {
-			req = unpick(req);
-			// add course subject for those without
-			if (index > 0 && !req.subject) {
-				let prev = acc[acc.length - 1];
-				if (Array.isArray(prev)) prev = prev[prev.length - 1];  // get last elem
-				req.subject = prev.subject;
-			}
-		}
-		acc.push(req);
-		return acc;
-	}, []);
-}
-
-function nestReqs(reqArr) {
-	if (!reqArr) return null;
-
-	const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
-		if (Array.isArray(req)) return nestReqs(req);
-		else return parseCourse(req);
-	});
-	return {
-		choose: (!isNaN(reqArr[0])) ? Number(reqArr[0]) : 0,
-		reqs
-	};
+	} else return utils.parseCourse(str);
 }
 
 // Gets prerequisites from UW-API
@@ -267,7 +185,7 @@ function getPrereqs (subject, course_number, callback) {
 		 }
 		 const prereqs = res.data.prerequisites_parsed;
 
-	 callback(null, nestReqs(prereqs));
+	 callback(null, utils.nestReqs(prereqs));
  })
 }
 
@@ -288,7 +206,7 @@ function getReqs(subject, course_number, callback) {
 				// if coreqs is normal string
 				if (!Array.isArray(coreqs)) coreqs = [coreqs];
 				else {
-					coreqs = parseReqs(coreqs);
+					coreqs = utils.parseReqs(coreqs);
 				}
 			}
 			if ((antireqs = res.data.antirequisites)) {
@@ -300,7 +218,7 @@ function getReqs(subject, course_number, callback) {
 						.replace('/', ',')
 						.split(',');
 
-					antireqs = parseReqs(antireqs);
+					antireqs = utils.parseReqs(antireqs);
 				}
 			}
 

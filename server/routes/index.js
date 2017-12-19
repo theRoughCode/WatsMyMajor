@@ -1,14 +1,14 @@
 const routes = require('express').Router();
 const path = require('path');
-const request = require('request');
-const cheerio = require('cheerio');
 const waterloo = require('../models/waterloo');
 const database = require('../models/database');
+const rmp = require('../models/rmp');
 
 routes.get('/', function(req, res){
 	res.render('index');
 });
 
+// Get Course Information
 routes.get('/wat/:subject/:number', function(req, res){
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
@@ -27,6 +27,7 @@ routes.get('/wat/:subject/:number', function(req, res){
 	});
 });
 
+// Get classes from course
 routes.get('/wat/class/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
@@ -37,6 +38,7 @@ routes.get('/wat/class/:subject/:number', function(req, res) {
 	});
 });
 
+// Get requisites from course
 routes.get('/wat/reqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
@@ -46,6 +48,17 @@ routes.get('/wat/reqs/:subject/:number', function(req, res) {
 		res.json({ err, reqs });
 	});
 });
+
+// Get search results for query string and max number of results
+routes.get('/courses/query/:query/:num', function(req, res) {
+	const query = req.params.query;
+	const num = req.params.num;
+
+	database.getSearchResults(query, num, (err, matches) => {
+		if (err) res.send(err);
+		else res.json(matches);
+	});
+})
 
 // routes.get('/update/:subject/:number', function(req, res) {
 // 	const subject = req.params.subject.toUpperCase();
@@ -58,6 +71,7 @@ routes.get('/wat/reqs/:subject/:number', function(req, res) {
 // 	});
 // });
 
+// Update database for courses or requisites
 routes.get('/update/:type', function(req, res) {
 	const type = req.params.type.toLowerCase();
 
@@ -80,42 +94,8 @@ routes.get('/update/:type', function(req, res) {
 // Get professor rating from ratemyprofessors.com
 routes.get('/prof/:name', function(req, res) {
 	const name = req.params.name;
-	const baseURL = 'http://www.ratemyprofessors.com';
-	const url = `${baseURL}/search.jsp?queryBy=teacherName&country=canada&stateselect=ON&queryoption=HEADER&query=${name}&facetSearch=true`;
-
-	request(url, function(error, response, html){
-		if(!error){
-			let $ = cheerio.load(html);
-
-			const hasResults = /\d/.test($('.result-count').text());
-
-			if (!hasResults) return res.json({ error: 'No results' });
-
-			const profURL = $('.listings').children().first().find('a').attr('href');
-			const rmpURL = baseURL + profURL;
-			request(rmpURL, function(error, response, html) {
-				$ = cheerio.load(html);
-				const rating = Number($('.quality .grade').text());
-				const difficulty = Number($('.difficulty .grade').text().replace(/\s/g, ''));
-				const maxNumberOfTags = 3;  // Determines max no. of tags
-				const tags = $('.tag-box-choosetags')
-					.slice(0, maxNumberOfTags)
-					.text()
-					.replace(/\([0-9]*\)/g, ',')
-					.slice(0, -1)
-					.split(',')
-					.map(tag => tag.trim());
-
-				res.json({
-					rating,
-					difficulty,
-					tags,
-					rmpURL,
-					profAvatarURL: 'images/firas_mansour.jpg'
-				});
-			});
-		}
-	})
+	res.set('Content-Type', 'application/json');
+	rmp.getProfInfo(name, info => res.json(info));
 });
 
 // All remaining requests return the React app, so it can handle routing.

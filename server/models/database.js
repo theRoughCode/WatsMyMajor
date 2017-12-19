@@ -1,6 +1,7 @@
 const admin = require('firebase-admin');
 const waterloo = require('./waterloo');
 const async = require('async');
+const utils = require('./utils');
 
 const serviceAccount = JSON.parse(process.env.FIREBASE);
 
@@ -77,7 +78,49 @@ function updateRequisites(callback) {
 		.catch(err => callback(err, null));
 }
 
+// Get course search results given query string and max number of results
+function getSearchResults(query, num, callback) {
+	const { subject, catalogNumber } = utils.parseCourse(query);
+	console.log(subject);
+	console.log(catalogNumber);
+
+	if (!num || isNaN(num)) num = 5;
+
+	coursesRef
+		.orderByKey()
+		.startAt(subject)
+		// .endAt(`${subject}\uf8ff`)
+		.limitToFirst(1)
+		.once('value')
+		.then(snapshot => {
+			const matches = snapshot.val();
+			const matchSubject = Object.keys(matches)[0];
+			const filteredMatches = Object.keys(matches[matchSubject])
+				.filter(key =>
+					!catalogNumber ||
+					String(key).includes(String(catalogNumber))
+				)
+				.reduce((matchArr, matchCatNum) => {
+					if (matchArr.length >= num) return matchArr;
+
+					matchArr.push({
+						subject: matchSubject,
+						catalogNumber: matchCatNum,
+						title: matches[matchSubject][matchCatNum]
+					});
+					return matchArr;
+				}, []);
+
+			callback(null, filteredMatches);
+		})
+		.catch(err => {
+			console.error(err);
+			callback(err);
+		});
+}
+
 module.exports = {
 	updateRequisites,
-	updateCourseList
+	updateCourseList,
+	getSearchResults
 };
