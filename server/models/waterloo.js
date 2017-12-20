@@ -91,85 +91,57 @@ function getCourseInfo(subject, cat_num, callback) {
 
 // Use API
 function getReqInfo(subject, course_number, callback) {
-	getDataReqs(subject, course_number, reqs =>
-		uwclient.get(`/courses/${subject}/${course_number}.json`, function(err, res){
-			 if(err) console.error(err);
-			 let { title, description, crosslistings } = res.data;
-			 var prereqs = reqs.prereqs || [];
-			 var coreqs =  reqs.coreqs || [];
-			 var antireqs = ((Array.isArray(reqs.antireqs))
-												? reqs.antireqs
-												: [reqs.antireqs]) || [];
-
-			 crosslistings = (Array.isArray(crosslistings))
-					? crosslistings
-					: [crosslistings] || [];
-
-			 var terms = res.data.terms_offered;
-
-			 if (!terms) {
-				 const string = 'Offered: ';
-				 const startIndex = description.indexOf(string);
-				 const endIndex = description.indexOf(']', startIndex + string.length);
-				 if (startIndex < endIndex) {
-					 terms = description.slice(startIndex + string.length, endIndex).split(',');
-					 description = description.substring(0, startIndex - 1);
-				 } else terms = [];
-			 }
-
-			 const data = {
-				 title,
-				 description,
-				 prereqs,
-				 antireqs,
-				 coreqs,
-				 crosslistings,
-				 terms,
-				 subject,
-				 catalog_number: course_number,
-				 url: res.data.url
-			 }
-			 callback(data);
-		 })
-	);
-}
-
-// Converts weird data formatting to pick format
-function unpick(str) {
-	str = str.replace(/\s*and\s*/g,',');
-
-	if (str.includes('of')) {
-		var num = str.slice(0, 3);
-		switch(num) {
-			case 'One':
-				num = 1;
-				break;
-			case 'Two':
-				num = 2;
-				break;
-			case 'All':
-				num = null;
-				break;
-			default:
-				return str;
+	getReqs(subject, course_number, (err, reqs) => {
+		if (err) {
+			console.error(err);
+			return callback(err, null);
 		}
-		const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
-		arr.unshift(num);
-		return arr;
-	} else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
-		var open = str.indexOf('(');
-		var close = str.indexOf(')');
-		// replace 'or' with comma and split into array
-		var arr = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
-		arr.unshift(1); // add 1 to front
-		// Remove special chars
-		var checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
-		arr = [arr];
-		// remove 'arr' from original string and exclude commas before and after
-		str = str.slice(0, (open !== -1) ? open - 1 : open).concat(str.slice(close + 2));
-		arr.push(...str.replace(checkSpecial, '').split(','));
-		return arr;
-	} else return utils.parseCourse(str);
+
+		uwclient.get(`/courses/${subject}/${course_number}.json`, function(err, res){
+			if (err) {
+				console.error(err);
+				return callback(err, null);
+			}
+			if (!Object.keys(res.data).length)
+				return callback('No course found.', null);
+
+			let { title, description, crosslistings } = res.data;
+			
+			var prereqs = reqs.prereqs || [];
+			var coreqs =  reqs.coreqs || [];
+			var antireqs = [reqs.antireqs] || [];
+
+			crosslistings = (Array.isArray(crosslistings))
+			? crosslistings
+			: [crosslistings] || [];
+
+			var terms = res.data.terms_offered;
+
+			if (!terms) {
+				const string = 'Offered: ';
+				const startIndex = description.indexOf(string);
+				const endIndex = description.indexOf(']', startIndex + string.length);
+				if (startIndex < endIndex) {
+					terms = description.slice(startIndex + string.length, endIndex).split(',');
+					description = description.substring(0, startIndex - 1);
+				} else terms = [];
+			}
+
+			const data = {
+				title,
+				description,
+				prereqs,
+				antireqs,
+				coreqs,
+				crosslistings,
+				terms,
+				subject,
+				catalog_number: course_number,
+				url: res.data.url
+			}
+			callback(null, data);
+		});
+	});
 }
 
 // Gets prerequisites from UW-API
@@ -202,7 +174,7 @@ function getReqs(subject, course_number, callback) {
 			var coreqs, antireqs;
 			if ((coreqs = res.data.corequisites)) {
 				// Edge case of "Oneof"
-				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = unpick(coreqs);
+				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = utils.unpick(coreqs);
 				// if coreqs is normal string
 				if (!Array.isArray(coreqs)) coreqs = [coreqs];
 				else {

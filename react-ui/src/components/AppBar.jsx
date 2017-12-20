@@ -55,7 +55,6 @@ export default class ReactAppBar extends Component {
 	}
 
 	selectCourseHandler() {
-		console.log(this.state);
 		this.state.onSearch(this.state.dataSource[0]);
 	}
 

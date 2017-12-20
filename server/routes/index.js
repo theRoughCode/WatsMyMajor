@@ -15,13 +15,15 @@ routes.get('/wat/:subject/:number', function(req, res){
 
 	res.set('Content-Type', 'application/json');
 
-	waterloo.getReqInfo(subject, number, output => {
+	waterloo.getReqInfo(subject, number, (err, info) => {
+		if (err) return res.json({ success: false, err });
+
 		waterloo.getParentReqs(subject, number, parents => {
 			waterloo.getCourseInfo(subject, number, classes => {
-				output["parPrereq"] = (parents[0].length > 0) ? parents[0] : [];
-				output["parCoreq"] = (parents[1].length > 0) ? parents[1] : [];
-				output["classList"] = classes;
-				res.json(output);
+				info["parPrereq"] = (parents[0].length > 0) ? parents[0] : [];
+				info["parCoreq"] = (parents[1].length > 0) ? parents[1] : [];
+				info["classList"] = classes;
+				res.json(info);
 			});
 		});
 	});
@@ -72,7 +74,7 @@ routes.get('/courses/query/:query/:num', function(req, res) {
 // });
 
 // Update database for courses or requisites
-routes.get('/update/:type', function(req, res) {
+routes.get('/update/:type/:subject/:catalogNumber', function(req, res) {
 	const type = req.params.type.toLowerCase();
 
 	req.setTimeout(0); // disables timeout
@@ -83,11 +85,20 @@ routes.get('/update/:type', function(req, res) {
 			else res.json({ success: true });
 		});
 	} else if (type === 'requisite') {
-		database.updateRequisites((err, failedList) => {
-			if (err) res.json({ success: false, err });
-			else res.json({ success: true, failedList });
-		});
-	} else res.send('Invalid type.');
+		const { subject, catalogNumber } = req.params;
+
+		if (subject && catalogNumber) {
+			database.updateCourseRequisite(subject.toUpperCase(), String(catalogNumber), err => {
+				if (err) res.send({ success: false, err });
+				else res.send({ success: true });
+			});
+		} else {
+			database.updateRequisites((err, failedList) => {
+				if (err) res.json({ success: false, err });
+				else res.json({ success: true, failedList });
+			});
+		}
+	} else res.send({ success: false, err: 'Invalid type.' });
 });
 
 

@@ -34,7 +34,7 @@ function nestReqs(reqArr) {
 
 	const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
 		if (Array.isArray(req)) return nestReqs(req);
-		else return utils.parseCourse(req);
+		else return parseCourse(req);
 	});
 	return {
 		choose: (!isNaN(reqArr[0])) ? Number(reqArr[0]) : 0,
@@ -60,11 +60,50 @@ function parseReqs(arr) {
 	}, []);
 }
 
+// Converts weird data formatting to pick format
+function unpick(str) {
+	str = str.replace(/\s*and\s*/g,',');
+
+	if (str.includes('of')) {
+		var num = str.slice(0, 3);
+		switch(num) {
+			case 'One':
+				num = 1;
+				break;
+			case 'Two':
+				num = 2;
+				break;
+			case 'All':
+				num = null;
+				break;
+			default:
+				return str;
+		}
+		const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
+		arr.unshift(num);
+		return arr;
+	} else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
+		var open = str.indexOf('(');
+		var close = str.indexOf(')');
+		// replace 'or' with comma and split into array
+		var arr = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
+		arr.unshift(1); // add 1 to front
+		// Remove special chars
+		var checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
+		arr = [arr];
+		// remove 'arr' from original string and exclude commas before and after
+		str = str.slice(0, (open !== -1) ? open - 1 : open).concat(str.slice(close + 2));
+		arr.push(...str.replace(checkSpecial, '').split(','));
+		return arr;
+	} else return parseCourse(str);
+}
+
 
 
 
 module.exports = {
 	parseCourse,
 	nestReqs,
-	parseReqs
+	parseReqs,
+	unpick
 };
