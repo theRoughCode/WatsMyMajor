@@ -26,6 +26,8 @@ const styles = {
 	},
 };
 
+const formatReqs = req => req.subject + ' ' + req.catalogNumber;
+
 
 export default class CourseRequisites extends Component {
 
@@ -50,7 +52,7 @@ export default class CourseRequisites extends Component {
 		});
 	};
 
-	reqs = (arr) => (
+	createReqLink = (arr) => (
 		arr.map((req, index) => (
 			<a key={index} onClick={() => this.props.selectCourseHandler(req)}>
 				{req}
@@ -68,12 +70,12 @@ export default class CourseRequisites extends Component {
 
 		const titles = [ 'Prereqs', 'Antireqs', 'Coreqs', 'Postreqs' ];
 		const reqs = [
-			prereqs,
-			antireqs,
-			coreqs,
-			postreqs.map(req => req.subject + ' ' + req.cat_num)
+			prereqs.map(formatReqs),
+			antireqs.map(formatReqs),
+			coreqs.map(formatReqs),
+			postreqs.map(formatReqs)
 		];
-
+		
 		return (
 			<div className="course-requisites">
 				<Paper zDepth={1}>
@@ -106,7 +108,7 @@ export default class CourseRequisites extends Component {
 								.filter(req => req.length)
 								.map((req, index) => (
 									<div key={index} style={styles.slide}>
-										{this.reqs(req)}
+										{this.createReqLink(req)}
 									</div>
 								))
 						}

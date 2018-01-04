@@ -89,15 +89,46 @@ function getCourseInfo(subject, cat_num, callback) {
 	});
 }
 
-// Use API
-function getReqInfo(subject, course_number, callback) {
-	getReqs(subject, course_number, (err, reqs) => {
-		if (err) {
+// Gets prerequisites from UW-API
+// { prereqString, prereqs }
+function getPrereqs (subject, course_number, callback) {
+	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
+		if(err) {
 			console.error(err);
 			return callback(err, null);
 		}
+		if (!res) {
+			console.error("Undefined prereqs");
+			return callback(1, null);
+		}
 
-		uwclient.get(`/courses/${subject}/${course_number}.json`, function(err, res){
+		if (!Object.keys(res.data).length) return callback(null, {
+			prereqString: '',
+			prereqs: []
+		});
+
+		const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
+		const prereqs = res.data.prerequisites_parsed;
+
+		callback(null, {
+			prereqString,
+			prereqs: utils.nestReqs(prereqs)
+		});
+ })
+}
+
+//  Gets requisites from UW-API
+// returns object with prereqs, coreqs, and antireqs
+function getReqs(subject, course_number, callback) {
+	getPrereqs(subject, course_number, (err, prereqData) => {
+		if(err) return callback(err, null);
+
+		let { prereqString, prereqs } = prereqData;
+
+		// for courses that don't have prereqs
+		if (prereqs === 'undefined' || !prereqs) prereqs = [];
+
+		uwclient.get(`/courses/${subject}/${course_number}.json`, (err, res) => {
 			if (err) {
 				console.error(err);
 				return callback(err, null);
@@ -105,15 +136,41 @@ function getReqInfo(subject, course_number, callback) {
 			if (!Object.keys(res.data).length)
 				return callback('No course found.', null);
 
-			let { title, description, crosslistings } = res.data;
-			
-			var prereqs = reqs.prereqs || [];
-			var coreqs =  reqs.coreqs || [];
-			var antireqs = [reqs.antireqs] || [];
 
-			crosslistings = (Array.isArray(crosslistings))
-			? crosslistings
-			: [crosslistings] || [];
+			let { title, description, crosslistings } = res.data;
+			const coreqString = res.data.corequisites || '';
+			const antireqString = res.data.antirequisites || '';
+			let coreqs = coreqString;
+			let antireqs = antireqString;
+
+			if (coreqs) {
+				// Edge case of "Oneof"
+				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = utils.unpick(coreqs);
+				// if coreqs is normal string
+				if (!Array.isArray(coreqs)) coreqs = [coreqs];
+				else {
+					coreqs = utils.parseReqs(coreqs);
+				}
+			} else coreqs = [];
+
+			if (antireqs) {
+				// check if contains valid courses and not a note
+				if (antireqs.length <= 6 || antireqs.replace(/\D/g, '').length > 2) {
+					// remove whitespace and split by comma
+					antireqs = antireqs
+						.replace(/\s+/g, '')
+						.replace('/', ',')
+						.split(',');
+
+					antireqs = utils.parseReqs(antireqs);
+				}
+			} else antireqs = [];
+
+			crosslistings = (!crosslistings)
+				? []
+				: (Array.isArray(crosslistings))
+					? crosslistings
+					: [crosslistings];
 
 			var terms = res.data.terms_offered;
 
@@ -130,6 +187,9 @@ function getReqInfo(subject, course_number, callback) {
 			const data = {
 				title,
 				description,
+				prereqString,
+				coreqString,
+				antireqString,
 				prereqs,
 				antireqs,
 				coreqs,
@@ -140,65 +200,6 @@ function getReqInfo(subject, course_number, callback) {
 				url: res.data.url
 			}
 			callback(null, data);
-		});
-	});
-}
-
-// Gets prerequisites from UW-API
-function getPrereqs (subject, course_number, callback) {
-	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
-		 if(err) {
-			 console.error(err);
-			 return callback(err, null);
-		 }
-		 if (!res) {
-			 console.log("Undefined prereqs");
-			 return callback(1, null);
-		 }
-		 const prereqs = res.data.prerequisites_parsed;
-
-	 callback(null, utils.nestReqs(prereqs));
- })
-}
-
-//  Gets requisites from UW-API
-// returns object with prereqs, coreqs, and antireqs
-function getReqs(subject, course_number, callback) {
-	getPrereqs(subject, course_number, (err, prereqs) => {
-		if(err) return callback(err, null);
-		// for courses that don't have prereqs
-		if(prereqs === 'undefined' || !prereqs) prereqs = null;
-
-		uwclient.get(`/courses/${subject}/${course_number}.json`, (err, res) => {
-			if(err) return callback(err, null);
-			var coreqs, antireqs;
-			if ((coreqs = res.data.corequisites)) {
-				// Edge case of "Oneof"
-				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = utils.unpick(coreqs);
-				// if coreqs is normal string
-				if (!Array.isArray(coreqs)) coreqs = [coreqs];
-				else {
-					coreqs = utils.parseReqs(coreqs);
-				}
-			}
-			if ((antireqs = res.data.antirequisites)) {
-				// check if contains valid courses and not a note
-				if (antireqs.length <= 6 || antireqs.replace(/\D/g, '').length > 2) {
-					// remove whitespace and split by comma
-					antireqs = antireqs
-						.replace(/\s+/g, '')
-						.replace('/', ',')
-						.split(',');
-
-					antireqs = utils.parseReqs(antireqs);
-				}
-			}
-
-			return callback(null, {
-				prereqs: prereqs,
-				coreqs: coreqs,
-				antireqs: antireqs
-			});
 		});
 	});
 }
@@ -339,9 +340,7 @@ function getParentReqs(subject, cat_num, callback) {
 // Exports
 module.exports = {
 	getCourseInfo,
-	getReqInfo,
 	getCourses,
-	getPrereqs,
 	getReqs,
 	getDataReqs,
 	getParentReqs

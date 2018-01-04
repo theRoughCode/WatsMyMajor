@@ -24,6 +24,47 @@ const getCourseData = (subject, catalogNumber) => {
 	});
 };
 
+function updatePageInfo(subject, catalogNumber) {
+	this.setState({ subject, catalogNumber });
+	// fetch course data
+	getCourseData(subject, catalogNumber)
+	.then(json => {
+		let {
+			title,
+			description,
+			prereqs,
+			antireqs,
+			coreqs,
+			crosslistings,
+			terms,
+			url,
+			parPrereq,
+			parCoreq,
+			classList
+		} = json;
+
+		if (!Array.isArray(prereqs)) prereqs = prereqs.reqs;
+
+		const course = {
+			title,
+			description,
+			rating: 2.1,
+			termsOffered: terms,
+			antireqs,
+			coreqs,
+			prereqs,
+			postreqs: parPrereq,
+			term: (classList) ? classList.term : '',
+			classes: (classList) ? classList.classes : []
+		};
+
+		this.setState({ loading: false, course });
+	}).catch(error => {
+		console.error(`ERROR: ${error}`);
+		this.setState({ loading: false, error });
+	});
+};
+
 
 class CourseViewContainer extends Component {
 
@@ -84,46 +125,8 @@ class CourseViewContainer extends Component {
 	componentDidMount() {
 		const { subject, catalogNumber } = this.props;
 
-		if (subject && catalogNumber) {
-			this.setState({ subject, catalogNumber });
-			// fetch course data
-			getCourseData(subject, catalogNumber)
-			.then(json => {
-				const {
-					title,
-					description,
-					prereqs,
-					antireqs,
-					coreqs,
-					crosslistings,
-					terms,
-					url,
-					parPrereq,
-					parCoreq,
-					classList
-				} = json;
-
-				console.log('json', json);
-
-				const course = {
-					title,
-					description,
-					rating: 2.1,
-					termsOffered: terms,
-					antireqs,
-					coreqs,
-					prereqs,
-					postreqs: parPrereq,
-					term: (classList) ? classList.term : '',
-					classes: (classList) ? classList.classes : []
-				};
-
-				this.setState({ loading: false, course });
-			}).catch(error => {
-				console.error(`ERROR: ${error}`);
-				this.setState({ loading: false, error });
-			});
-		}
+		if (subject && catalogNumber)
+			updatePageInfo.call(this, subject, catalogNumber);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -134,45 +137,8 @@ class CourseViewContainer extends Component {
 			// User selected new course
 			if (isNewCourse) {
 				const { subject, catalogNumber } = nextProps;
-				this.setState({ subject, catalogNumber, loading: true });
-
-				// fetch course data
-				getCourseData(subject, catalogNumber)
-				.then(json => {
-					const {
-						title,
-						description,
-						prereqs,
-						antireqs,
-						coreqs,
-						crosslistings,
-						terms,
-						url,
-						parPrereq,
-						parCoreq,
-						classList
-					} = json;
-
-					console.log('json', json);
-
-					const course = {
-						title,
-						description,
-						rating: 2.1,
-						termsOffered: terms,
-						antireqs,
-						coreqs,
-						prereqs,
-						postreqs: parPrereq,
-						term: (classList) ? classList.term : '',
-						classes: (classList) ? classList.classes : []
-					};
-
-					this.setState({ loading: false, course });
-				}).catch(error => {
-					console.error(`ERROR: ${error}`);
-					this.setState({ loading: false, error });
-				});
+				this.setState({ loading: true });
+				updatePageInfo.call(this, subject, catalogNumber);
 			}
 
 			// User selected new class
@@ -213,7 +179,7 @@ class CourseViewContainer extends Component {
 				<span>{`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}</span>
 				<span>{`Error message: ${this.state.error}`}</span>
 			</div>
-		)
+		);
 
 		const renderedView = (
 			<div className="course-view">
