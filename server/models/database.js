@@ -13,10 +13,12 @@ admin.initializeApp({
 const coursesRef = admin.database().ref('/courses/');
 const reqsRef = admin.database().ref('/reqs/');
 
-function setPostReq(subject, catalogNumber, postreq, optional) {
-	console.log(subject + catalogNumber);
-	return reqsRef.child(`${subject}/${catalogNumber}/postreqs/${postreq.subject}/${postreq.catalogNumber}/optional`).set(optional);
-}
+
+/****************************
+ *													*
+ *			S E T T E R S 			*
+ *													*
+ ****************************/
 
 function updateCourseList(callback) {
 	waterloo.getCourses((err, data) => {
@@ -34,47 +36,60 @@ function updateCourseList(callback) {
 	});
 }
 
-function storePostReqs(optional, postreq, prereq, index, callback) {
-	const { subject, catalogNumber } = prereq;
+function storePostReqs(choose, prereqs, postreq, prereq, index, callback) {
+	// Nested Requisite
+	if (prereq.hasOwnProperty('choose')) {
+		const choose = prereq.choose;
+		prereqs = prereq.reqs;
 
-	// Is a nested requisite
-	if (!subject && !catalogNumber) {
-		const { choose, reqs } = prereq;
-
-		async.forEachOf(reqs, storePostReqs.bind(this, optional, postreq), err => {
+		async.forEachOf(prereqs, storePostReqs.bind(this, choose, prereqs, postreq), err => {
 			if (err) callback(err);
 			else callback();
 		});
 	} else {
-		setPostReq(subject, catalogNumber, postreq, optional)
-		.then(() => callback())
-		.catch(err => callback(err));
+		const { subject, catalogNumber } = prereq;
+		const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
+
+		reqsRef.child(`${subject}/${catalogNumber}/postreqs/${postreq.subject}/${postreq.catalogNumber}`).set({ choose, alternatives })
+			.then(() => callback())
+			.catch(err => callback(err));
 	}
 }
 
 function updateCourseRequisite(subject, catalogNumber, callback) {
 	waterloo.getReqs(subject, catalogNumber, (err, reqs) => {
-		if (err) {
-			failedList.push({ subject, catalogNumber, err });
-			callback();
-		}	else {
-			console.log(`\nCourse: ${subject} ${catalogNumber}`);
+		if (err) return callback(err)
+		else {
+			console.log(`\nUpdating: ${subject} ${catalogNumber}`);
 
-			// Store requisites in database
-			reqsRef.child(`${subject}/${catalogNumber}`).set(reqs)
+			let { prereqs, coreqs, antireqs } = reqs;
+
+			// No requisities
+			if (prereqs.length + coreqs.length + antireqs.length === 0)
+				return callback();
+
+			// Store prereqs in database
+			reqsRef.child(`${subject}/${catalogNumber}/prereqs`).set(prereqs)
 				.catch(err => callback(err));
 
+			// Store coreqs in database
+			reqsRef.child(`${subject}/${catalogNumber}/coreqs`).set(coreqs)
+				.catch(err => callback(err));
+
+			// Store antireqs in database
+			reqsRef.child(`${subject}/${catalogNumber}/antireqs`).set(antireqs)
+				.catch(err => callback(err));
+
+
 			// Store parent requisites in database
-			let { prereqs } = reqs;
-			if (!prereqs) return callback();
+			if (!prereqs.length && !Object.keys(prereqs).length) return callback();
 
 			const choose = prereqs.choose;
-			const optional = choose !== null && choose > 0;
 			prereqs = prereqs.reqs;
 
 			if (prereqs.length > 0) {
 				const postreq = { subject, catalogNumber };
-				async.forEachOf(prereqs, storePostReqs.bind(this, optional, postreq), err => {
+				async.forEachOf(prereqs, storePostReqs.bind(this, choose, prereqs, postreq), err => {
 					if (err) callback(err);
 					else callback();
 				});
@@ -94,7 +109,13 @@ function updateRequisites(callback) {
 					if (!title) return catNumCallback();
 
 					// Get course reqs
-					updateCourseRequisite(subject, catalogNumber, catNumCallback);
+					updateCourseRequisite(subject, catalogNumber, err => {
+						if (err) {
+							console.error(err);
+							failedList.push({ subject, catalogNumber, err });
+						}
+						catNumCallback();
+					});
 				}, err => {
 					if (err) subjectCallback(err);
 					else subjectCallback(null);
@@ -104,12 +125,50 @@ function updateRequisites(callback) {
 					console.log('\n\n\n\n', err);
 					callback(err, null);
 				} else {
+					console.log('Done updating course requisites! :D');
+					console.log(`There were a total of ${failedList.length} errors.`);
 					callback(null, failedList);
 				}
 			});
 		})
 		.catch(err => callback(err, null));
 }
+
+
+
+/****************************
+ *													*
+ *			G E T T E R S 			*
+ *													*
+ ****************************/
+
+ function getReqType(subject, catalogNumber, reqType, callback) {
+	 reqsRef
+ 		.child(`${subject}/${catalogNumber}/${reqType}`)
+ 		.once('value')
+ 		.then(snapshot => callback(null, snapshot.val()))
+		.catch(err => callback(err, null));
+ }
+
+ function getPrereqs(subject, catalogNumber, callback) {
+ 	getReqType(subject, catalogNumber, 'prereqs', callback);
+ }
+
+ function getCoreqs(subject, catalogNumber, callback) {
+ 	getReqType(subject, catalogNumber, 'coreqs', callback);
+ }
+
+ function getAntireqs(subject, catalogNumber, callback) {
+ 	getReqType(subject, catalogNumber, 'antireqs', callback);
+ }
+
+ function getPostreqs(subject, catalogNumber, callback) {
+ 	getReqType(subject, catalogNumber, 'postreqs', callback);
+ }
+
+ function getRequisites(subject, catalogNumber, callback) {
+ 	getReqType(subject, catalogNumber, '', callback);
+ }
 
 // Get course search results given query string and max number of results
 function getSearchResults(query, num, callback) {
@@ -154,5 +213,10 @@ module.exports = {
 	updateCourseRequisite,
 	updateRequisites,
 	updateCourseList,
+	getPrereqs,
+	getCoreqs,
+	getAntireqs,
+	getPostreqs,
+	getRequisites,
 	getSearchResults
 };

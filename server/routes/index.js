@@ -46,8 +46,81 @@ routes.get('/wat/reqs/:subject/:number', function(req, res) {
 	const number = req.params.number;
 
 	res.set('Content-Type', 'application/json');
-	waterloo.getReqs(subject, number, (err, reqs) => {
-		res.json({ err, reqs });
+	// waterloo.getReqs(subject, number, (err, reqs) => {
+	// 	res.json({ err, reqs });
+	// });
+	database.getRequisites(subject, number, (err, reqs) => {
+		if (err) {
+			console.error(err);
+			res.send(err);
+		} else {
+			res.set('Content-Type', 'application/json');
+			res.json(reqs);
+		}
+	});
+});
+
+// Get prereqs from course
+routes.get('/reqs/prereqs/:subject/:number', function(req, res) {
+	const subject = req.params.subject.toUpperCase();
+	const number = req.params.number;
+
+	database.getPrereqs(subject, number, (err, prereqs) => {
+		if (err) {
+			console.error(err);
+			res.send(err);
+		} else {
+			res.set('Content-Type', 'application/json');
+			res.json(prereqs);
+		}
+	});
+});
+
+// Get coreqs from course
+routes.get('/reqs/coreqs/:subject/:number', function(req, res) {
+	const subject = req.params.subject.toUpperCase();
+	const number = req.params.number;
+
+	database.getCoreqs(subject, number, (err, coreqss) => {
+		if (err) {
+			console.error(err);
+			res.send(err);
+		} else {
+			res.set('Content-Type', 'application/json');
+			res.json(coreqss);
+		}
+	});
+});
+
+// Get antireqs from course
+routes.get('/reqs/antireqs/:subject/:number', function(req, res) {
+	const subject = req.params.subject.toUpperCase();
+	const number = req.params.number;
+
+	database.getAntireqs(subject, number, (err, antireqss) => {
+		if (err) {
+			console.error(err);
+			res.send(err);
+		} else {
+			res.set('Content-Type', 'application/json');
+			res.json(antireqss);
+		}
+	});
+});
+
+// Get postreqs from course
+routes.get('/reqs/postreqs/:subject/:number', function(req, res) {
+	const subject = req.params.subject.toUpperCase();
+	const number = req.params.number;
+
+	database.getPostreqs(subject, number, (err, postreqs) => {
+		if (err) {
+			console.error(err);
+			res.send(err);
+		} else {
+			res.set('Content-Type', 'application/json');
+			res.json(postreqs);
+		}
 	});
 });
 
@@ -60,21 +133,10 @@ routes.get('/courses/query/:query/:num', function(req, res) {
 		if (err) res.send(err);
 		else res.json(matches);
 	});
-})
-
-// routes.get('/update/:subject/:number', function(req, res) {
-// 	const subject = req.params.subject.toUpperCase();
-// 	const number = req.params.number;
-//
-// 	res.set('Content-Type', 'application/json');
-// 	database.updateRequisites(subject, number, err => {
-// 		if (err) res.json({ success: false, err });
-// 		else res.json({ success: true });
-// 	});
-// });
+});
 
 // Update database for courses or requisites
-routes.get('/update/:type/:subject/:catalogNumber', function(req, res) {
+routes.get('/update/:type/:subject/:catalogNumber?', function(req, res) {
 	const type = req.params.type.toLowerCase();
 
 	req.setTimeout(0); // disables timeout
@@ -87,15 +149,15 @@ routes.get('/update/:type/:subject/:catalogNumber', function(req, res) {
 	} else if (type === 'requisite') {
 		const { subject, catalogNumber } = req.params;
 
-		if (subject && catalogNumber) {
-			database.updateCourseRequisite(subject.toUpperCase(), String(catalogNumber), err => {
-				if (err) res.send({ success: false, err });
-				else res.send({ success: true });
-			});
-		} else {
+		if (subject === 'all') {
 			database.updateRequisites((err, failedList) => {
 				if (err) res.json({ success: false, err });
 				else res.json({ success: true, failedList });
+			});
+		} else {
+			database.updateCourseRequisite(subject.toUpperCase(), String(catalogNumber), err => {
+				if (err) res.send({ success: false, err });
+				else res.send({ success: true });
 			});
 		}
 	} else res.send({ success: false, err: 'Invalid type.' });

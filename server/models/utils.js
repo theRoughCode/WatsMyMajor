@@ -65,23 +65,22 @@ function unpick(str) {
 	str = str.replace(/\s*and\s*/g,',');
 
 	if (str.includes('of')) {
-		var num = str.slice(0, 3);
-		switch(num) {
+		var choose = str.slice(0, 3);
+		switch(choose) {
 			case 'One':
-				num = 1;
+				choose = 1;
 				break;
 			case 'Two':
-				num = 2;
+				choose = 2;
 				break;
 			case 'All':
-				num = null;
+				choose = null;
 				break;
 			default:
 				return str;
 		}
 		const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
-		arr.unshift(num);
-		return arr;
+		return { choose, reqs: arr };
 	} else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
 		var open = str.indexOf('(');
 		var close = str.indexOf(')');

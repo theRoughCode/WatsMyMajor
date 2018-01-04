@@ -91,7 +91,7 @@ function getCourseInfo(subject, cat_num, callback) {
 
 // Gets prerequisites from UW-API
 // { prereqString, prereqs }
-function getPrereqs (subject, course_number, callback) {
+function getPrereqs(subject, course_number, callback) {
 	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
 		if(err) {
 			console.error(err);
@@ -146,10 +146,15 @@ function getReqs(subject, course_number, callback) {
 			if (coreqs) {
 				// Edge case of "Oneof"
 				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = utils.unpick(coreqs);
-				// if coreqs is normal string
-				if (!Array.isArray(coreqs)) coreqs = [coreqs];
-				else {
+
+				if (coreqs.hasOwnProperty('choose')) {
+					coreqs.reqs = utils.parseReqs(coreqs.reqs);
+				}
+
+				if (Array.isArray(coreqs)) {
 					coreqs = utils.parseReqs(coreqs);
+				} else {
+					coreqs = [coreqs];
 				}
 			} else coreqs = [];
 
