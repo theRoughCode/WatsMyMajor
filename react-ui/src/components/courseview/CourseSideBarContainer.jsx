@@ -32,7 +32,10 @@ export default class CourseSideBarContainer extends Component {
 		instructor: PropTypes.string.isRequired,
 		attending: PropTypes.string.isRequired,
 		enrollmentCap: PropTypes.string.isRequired,
-		classNumber: PropTypes.string.isRequired
+		reserved: PropTypes.string.isRequired,
+		reservedCap: PropTypes.string.isRequired,
+		classNumber: PropTypes.string.isRequired,
+		lastUpdated: PropTypes.string.isRequired
 	};
 
 	constructor(props) {
@@ -42,15 +45,21 @@ export default class CourseSideBarContainer extends Component {
 			instructor,
 			attending,
 			enrollmentCap,
-			classNumber
+			reserved,
+			reservedCap,
+			classNumber,
+			lastUpdated
 		} = props;
 
 		this.state = {
 			classNumber,
 			instructor,
 			info: {
+				attending,
 				enrollmentCap,
-				attending
+				reserved,
+				reservedCap,
+				lastUpdated
 			},
 			prof: null,
 			fetchingRMP: false
@@ -77,7 +86,10 @@ export default class CourseSideBarContainer extends Component {
 			instructor,
 			attending,
 			enrollmentCap,
-			classNumber
+			reserved,
+			reservedCap,
+			classNumber,
+			lastUpdated
 		} = nextProps;
 
 		if (classNumber !== this.props.classNumber) {
@@ -86,7 +98,10 @@ export default class CourseSideBarContainer extends Component {
 				instructor,
 				info: {
 					attending,
-					enrollmentCap
+					enrollmentCap,
+					reserved,
+					reservedCap,
+					lastUpdated
 				}
 			});
 

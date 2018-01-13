@@ -33,8 +33,11 @@ function nestReqs(reqArr) {
 	if (!reqArr) return null;
 
 	const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
-		if (Array.isArray(req)) return nestReqs(req);
-		else return parseCourse(req);
+		if (Array.isArray(req)) {
+			// [1, 'CS136']
+			if (!isNaN(req[0]) && req.slice(1).length === 1) return parseCourse(req[1]);
+			else return nestReqs(req);
+		} else return parseCourse(req);
 	});
 	return {
 		choose: (!isNaN(reqArr[0])) ? Number(reqArr[0]) : 0,

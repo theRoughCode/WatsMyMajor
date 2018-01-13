@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import PeopleIcon from 'material-ui/svg-icons/social/people';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
+import BlockIcon from 'material-ui/svg-icons/content/block';
 import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import FontAwesome from 'react-fontawesome';
 
@@ -31,22 +32,41 @@ const Info = ({ icon, info }) => (
 	</div>
 );
 
-const DetailedInfo = ({ instructor, enrollmentCap, attending }) => (
-	<div className="course-info-details">
-		<Info
-			icon={<PersonIcon style={styles.icon} />}
-			info={`Instructor: ${instructor}`}
-			/>
-		<Info
-			icon={<PeopleIcon style={styles.icon} />}
-			info={`Enrollment cap: ${enrollmentCap}`}
-			/>
-		<Info
-			icon={<CheckIcon style={styles.icon} />}
-			info={`Attending: ${attending}`}
-			/>
-	</div>
-);
+const DetailedInfo = (info) => {
+	const {
+		instructor,
+		attending,
+		enrollmentCap,
+		reserved,
+		reservedCap,
+		lastUpdated
+	} = info;
+
+	return (
+		<div className="course-info-details">
+			<Info
+				icon={<PersonIcon style={styles.icon} />}
+				info={`Instructor: ${instructor}`}
+				/>
+			<Info
+				icon={<PeopleIcon style={styles.icon} />}
+				info={`Enrollment cap: ${enrollmentCap}`}
+				/>
+			<Info
+				icon={<CheckIcon style={styles.icon} />}
+				info={`Attending: ${attending}`}
+				/>
+			<Info
+				icon={<BlockIcon style={styles.icon} />}
+				info={`Reserved cap: ${reservedCap}`}
+				/>
+			<Info
+				icon={<CheckIcon style={styles.icon} />}
+				info={`Reserved enrolled: ${reserved}`}
+				/>
+		</div>
+	);
+};
 
 DetailedInfo.propTypes = {
   instructor: PropTypes.string.isRequired,

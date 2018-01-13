@@ -28,6 +28,10 @@ const styles = {
 	},
 	tableRow: {
 		cursor: 'pointer'
+	},
+	tableRowGrey: {
+		cursor: 'pointer',
+		backgroundColor: '#ededed'
 	}
 };
 
@@ -71,7 +75,9 @@ class Row extends Component {
 				hoverable={!this.props.selected}
 				onClick={() => this.props.onClickHandler()}
 				selected={this.props.selected}
-				style={styles.tableRow}>
+				style={(enrollment_capacity === enrollment_total)
+					? styles.tableRowGrey
+					: styles.tableRow}>
 				<TableRowColumn>{section}</TableRowColumn>
 				<TableRowColumn>{class_number}</TableRowColumn>
 				<TableRowColumn>{campus}</TableRowColumn>

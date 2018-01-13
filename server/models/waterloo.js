@@ -41,6 +41,12 @@ function getCourseInfo(subject, cat_num, callback) {
 				last_updated
 			} = course;
 
+			var lastUpdated = new Date(last_updated);
+			var options = {
+			    year: "numeric", month: "short",
+			    day: "numeric", hour: "2-digit", minute: "2-digit"
+			};
+
 			const {
 				date,
 				location,
@@ -55,6 +61,7 @@ function getCourseInfo(subject, cat_num, callback) {
 				is_cancelled,
 				is_closed
 			} = date;
+			
 			const { building, room } = location;
 
 			return {
@@ -77,7 +84,7 @@ function getCourseInfo(subject, cat_num, callback) {
 				is_closed,
 				instructor: getInstructor(instructors[0]),
 				location: (building || room) ? `${building} ${room}` : 'TBA',
-				last_updated
+				last_updated: lastUpdated.toLocaleDateString("en-US", options)
 			};
 		});
 
@@ -201,7 +208,7 @@ function getReqs(subject, course_number, callback) {
 				crosslistings,
 				terms,
 				subject,
-				catalog_number: course_number,
+				catalogNumber: course_number,
 				url: res.data.url
 			}
 			callback(null, data);
@@ -318,8 +325,8 @@ function getParentReqs(subject, cat_num, callback) {
 					const courses = Object.keys(sub_list[0]);
 					courses.forEach(key => {
 						filtered[0].push({
-							subject: subject,
-							cat_num: key,
+							subject,
+							catalogNumber: key,
 							optional: sub_list[0][key]['prereqs']['optional'],
 							alternate: sub_list[0][key]['prereqs']['alternate'] || null
 						});
@@ -330,8 +337,8 @@ function getParentReqs(subject, cat_num, callback) {
 					const courses = Object.keys(sub_list[1]);
 					courses.forEach(key => {
 						filtered[1].push({
-							subject: subject,
-							cat_num: key,
+							subject,
+							catalogNumber: key,
 							optional: sub_list[1][key]['coreqs']['optional']
 						});
 					});

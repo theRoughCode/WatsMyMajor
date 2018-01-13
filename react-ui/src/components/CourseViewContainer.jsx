@@ -74,7 +74,10 @@ class CourseViewContainer extends Component {
 		instructor: PropTypes.string,
 		attending: PropTypes.string,
 		enrollmentCap: PropTypes.string,
+		reserved: PropTypes.string,
+		reservedCap: PropTypes.string,
 		classNumber: PropTypes.string,
+		lastUpdated: PropTypes.string,
 		selectedClassIndex: PropTypes.number,
 		selectCourseHandler: PropTypes.func.isRequired,
 		expandCourseHandler: PropTypes.func.isRequired
@@ -86,7 +89,10 @@ class CourseViewContainer extends Component {
 		instructor: '',
 		attending: '',
 		enrollmentCap: '',
+		reserved: '',
+		reservedCap: '',
 		classNumber: '',
+		lastUpdated: '',
 		selectedClassIndex: -1
 	}
 
@@ -114,7 +120,10 @@ class CourseViewContainer extends Component {
 				instructor: props.instructor,
 				attending: props.attending,
 				enrollmentCap: props.enrollmentCap,
-				classNumber: props.classNumber
+				reserved: props.reserved,
+				reservedCap: props.reservedCap,
+				classNumber: props.classNumber,
+				lastUpdated: props.lastUpdated
 			},
 			selectedClassIndex: props.selectedClassIndex,
 			selectCourseHandler: props.selectCourseHandler,
@@ -147,7 +156,10 @@ class CourseViewContainer extends Component {
 					instructor,
 					attending,
 					enrollmentCap,
+					reserved,
+					reservedCap,
 					classNumber,
+					lastUpdated,
 					selectedClassIndex
 				} = nextProps;
 
@@ -155,7 +167,10 @@ class CourseViewContainer extends Component {
 					instructor,
 					attending,
 					enrollmentCap,
-					classNumber
+					reserved,
+					reservedCap,
+					classNumber,
+					lastUpdated,
 				};
 
 				this.setState({ classInfo, selectedClassIndex });
@@ -214,7 +229,10 @@ const mapStateToProps = ({ course, expandedCourse }) => {
 		instructor,
 		attending,
 		enrollmentCap,
+		reserved,
+		reservedCap,
 		classNumber,
+		lastUpdated,
 		selectedClassIndex
 	} = expandedCourse;
 
@@ -224,7 +242,10 @@ const mapStateToProps = ({ course, expandedCourse }) => {
 		instructor,
 		attending,
 		enrollmentCap,
+		reserved,
+		reservedCap,
 		classNumber,
+		lastUpdated,
 		selectedClassIndex
 	};
 };

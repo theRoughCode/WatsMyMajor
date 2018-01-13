@@ -32,7 +32,10 @@ function expandedCourse(state={}, action) {
 				instructor,
 				attending,
 				enrollmentCap,
+				reserved,
+				reservedCap,
 				classNumber,
+				lastUpdated,
 				index
 			} = action;
 
@@ -40,7 +43,10 @@ function expandedCourse(state={}, action) {
 				instructor = '';
 				attending = '';
 				enrollmentCap = '';
+				reserved = '';
+				reservedCap = '';
 				classNumber = '';
+				lastUpdated = '';
 				index = -1;
 			}
 
@@ -48,7 +54,10 @@ function expandedCourse(state={}, action) {
 				instructor,
 				attending,
 				enrollmentCap,
+				reserved,
+				reservedCap,
 				classNumber,
+				lastUpdated,
 				selectedClassIndex: index
 			};
 		default:
@@ -70,6 +79,6 @@ const reducers = combineReducers({
 	course,
 	expandedCourse,
 	sideBarOpen
-})
+});
 
 export default reducers;

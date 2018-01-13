@@ -32,7 +32,10 @@ export function setExpandedCourse(courseObj, index) {
 		instructor,
 		enrollment_total,
 		enrollment_capacity,
-		class_number
+		waiting_total,
+		waiting_capacity,
+		class_number,
+		last_updated
 	} = courseObj;
 
 	return {
@@ -41,7 +44,10 @@ export function setExpandedCourse(courseObj, index) {
 		instructor,
 		attending: String(enrollment_total),
 		enrollmentCap: String(enrollment_capacity),
-		classNumber: String(class_number)
+		reserved: String(waiting_total),
+		reservedCap: String(waiting_capacity),
+		classNumber: String(class_number),
+		lastUpdated: last_updated
 	};
 }
 

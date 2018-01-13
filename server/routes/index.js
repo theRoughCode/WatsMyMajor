@@ -5,7 +5,7 @@ const database = require('../models/database');
 const rmp = require('../models/rmp');
 
 routes.get('/', function(req, res){
-	res.render('index');
+	res.send('By Raphael Koh');
 });
 
 // Get Course Information
@@ -41,7 +41,7 @@ routes.get('/wat/class/:subject/:number', function(req, res) {
 });
 
 // Get requisites from course
-routes.get('/wat/reqs/:subject/:number', function(req, res) {
+routes.get('/reqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 

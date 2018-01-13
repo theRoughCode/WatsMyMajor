@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { toggleSideBar, setCourse } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
@@ -30,7 +30,7 @@ class App extends Component {
 
 		this.getView = this.getView.bind(this);
 	}
-	
+
 	getView() {
 		let view = null;
 		const marginLeft = (this.props.sideBarOpen) ? '256px' : 0;
@@ -82,7 +82,6 @@ const mapDispatchToProps = dispatch => {
       dispatch(toggleSideBar());
     },
 		onSearch: (course) => {
-			console.log(course);
 			if (!course) return;
 			dispatch(setCourse(course));
 		}
