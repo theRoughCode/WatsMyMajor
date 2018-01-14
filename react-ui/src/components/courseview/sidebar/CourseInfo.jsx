@@ -70,8 +70,11 @@ const DetailedInfo = (info) => {
 
 DetailedInfo.propTypes = {
   instructor: PropTypes.string.isRequired,
+	attending: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,
-  attending: PropTypes.string.isRequired
+	reserved: PropTypes.string.isRequired,
+	reservedCap: PropTypes.string.isRequired,
+	lastUpdated: PropTypes.string.isRequired
 };
 
 
@@ -97,14 +100,33 @@ const Share = ({ icon, text }) => (
 );
 
 
-const CourseInfo = ({ style, ...info, addToCartHandler }) => {
+const CourseInfo = (props) => {
+	const {
+		style,
+		instructor,
+		attending,
+		enrollmentCap,
+		reserved,
+		reservedCap,
+		lastUpdated,
+		addToCartHandler
+	} = props;
+
 	return (
 		<Paper style={style} zDepth={1}>
 			<div className="course-info-header">
-				<span>Course Info</span>
+				<span>Course Info</span><br />
+				<span id="last-updated">Last updated: {lastUpdated}</span>
 			</div>
 			<Divider style={styles.divider} />
-			<DetailedInfo {...info} />
+			<DetailedInfo
+				instructor={instructor}
+				attending={attending}
+				enrollmentCap={enrollmentCap}
+				reserved={reserved}
+				reservedCap={reservedCap}
+				lastUpdated={lastUpdated}
+				/>
 			<Divider style={styles.divider} />
 			<AddToCart addToCartHandler={addToCartHandler} />
 			<Divider style={styles.divider} />
@@ -130,8 +152,11 @@ const CourseInfo = ({ style, ...info, addToCartHandler }) => {
 CourseInfo.propTypes = {
 	style: PropTypes.object.isRequired,
   instructor: PropTypes.string.isRequired,
+	attending: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,
-  attending: PropTypes.string.isRequired,
+	reserved: PropTypes.string.isRequired,
+	reservedCap: PropTypes.string.isRequired,
+	lastUpdated: PropTypes.string.isRequired,
 	addToCartHandler: PropTypes.func.isRequired
 }
 

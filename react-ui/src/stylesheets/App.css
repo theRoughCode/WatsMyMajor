@@ -226,6 +226,11 @@ html {
   font-weight: 400;
 }
 
+.course-info-header #last-updated {
+	font-size: 12px;
+	margin-left: 2px;
+}
+
 .course-info-details,
 .course-info-share,
 .course-prof-share {
