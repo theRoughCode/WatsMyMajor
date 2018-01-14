@@ -1,4 +1,5 @@
-# WatsMyMajor
+# WatsMyMajorBeta
+A revamped version of [WatsMyMajor](https://github.com/theRoughCode/WatsMyMajor).
 
 ## Acknowledgements
 This project was structured with the help from https://github.com/mars/heroku-cra-node via the MIT license.
