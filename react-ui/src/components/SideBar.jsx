@@ -11,7 +11,11 @@ import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import BrowseIcon from 'material-ui/svg-icons/action/subject';
 import Avatar from './Avatar'
-import { DASHBOARD_VIEW, COURSE_VIEW } from '../constants/views';
+import {
+	DASHBOARD_VIEW,
+	COURSE_LIST_VIEW,
+	MY_COURSE_VIEW
+} from '../constants/views';
 
 const styles = {
 	drawer: {
@@ -31,7 +35,10 @@ const styles = {
 class SideBar extends Component {
 
 	static propTypes = {
-		open: PropTypes.bool.isRequired
+		open: PropTypes.bool.isRequired,
+		onDashboardClick: PropTypes.func.isRequired,
+		onMyCoursesClick: PropTypes.func.isRequired,
+		onBrowseCoursesClick: PropTypes.func.isRequired
 	};
 
 	render() {
@@ -51,7 +58,6 @@ class SideBar extends Component {
 	            <ListItem
 	              primaryText="Courses"
 	              leftIcon={<SchoolIcon />}
-                onClick={this.props.onCoursesClick}
 	              initiallyOpen={false}
 	              primaryTogglesNestedList={true}
 	              nestedItems={[
@@ -59,6 +65,7 @@ class SideBar extends Component {
 	                  key={1}
 	                  primaryText="My Courses"
 	                  leftIcon={<MyCoursesIcon />}
+		                onClick={this.props.onMyCoursesClick}
 	                />,
 	                <ListItem
 	                  key={2}
@@ -69,6 +76,7 @@ class SideBar extends Component {
 	                  key={3}
 	                  primaryText="Browse Courses"
 	                  leftIcon={<BrowseIcon />}
+		                onClick={this.props.onBrowseCoursesClick}
 	                />
 	              ]}
 	            />
@@ -83,8 +91,11 @@ const mapDispatchToProps = dispatch => {
     onDashboardClick: () => {
       dispatch(setView(DASHBOARD_VIEW));
     },
-    onCoursesClick: () => {
-      dispatch(setView(COURSE_VIEW));
+		onMyCoursesClick: () => {
+			dispatch(setView(MY_COURSE_VIEW));
+		},
+    onBrowseCoursesClick: () => {
+      dispatch(setView(COURSE_LIST_VIEW));
     }
   };
 };

@@ -35,7 +35,8 @@ export default class CourseSideBarContainer extends Component {
 		reserved: PropTypes.string.isRequired,
 		reservedCap: PropTypes.string.isRequired,
 		classNumber: PropTypes.string.isRequired,
-		lastUpdated: PropTypes.string.isRequired
+		lastUpdated: PropTypes.string.isRequired,
+		addToCartHandler: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -48,7 +49,8 @@ export default class CourseSideBarContainer extends Component {
 			reserved,
 			reservedCap,
 			classNumber,
-			lastUpdated
+			lastUpdated,
+			addToCartHandler
 		} = props;
 
 		this.state = {
@@ -64,6 +66,8 @@ export default class CourseSideBarContainer extends Component {
 			prof: null,
 			fetchingRMP: false
 		};
+
+		this.addToCartHandler = addToCartHandler;
 	}
 
 	componentDidMount() {
@@ -132,6 +136,7 @@ export default class CourseSideBarContainer extends Component {
 					id={id}
 					instructor={instructor}
 					{...info}
+					addToCartHandler={this.addToCartHandler}
 				/>
 				<CourseProf
 					style={styles.instructor(instructor)}

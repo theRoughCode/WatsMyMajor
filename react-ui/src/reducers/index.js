@@ -3,11 +3,15 @@ import {
 	TOGGLE_SIDEBAR,
 	SET_COURSE,
 	SET_EXPANDED_COURSE,
-	SET_VIEW
+	SET_VIEW,
+	CREATE_SNACK
 } from '../actions/index';
-import { DASHBOARD_VIEW, COURSE_VIEW } from '../constants/views';
+import {
+	DASHBOARD_VIEW,
+	COURSE_LIST_VIEW
+} from '../constants/views';
 
-function view(state = COURSE_VIEW, action) {
+function view(state = COURSE_LIST_VIEW, action) {
 	switch (action.type) {
 		case SET_VIEW:
 			return action.view;
@@ -74,11 +78,38 @@ function sideBarOpen(state = true, action) {
 	}
 }
 
+const snackInitialState = {
+	msg: '',
+	actionMsg: '',
+	undoMsg: '',
+	onActionClick: () => {}
+};
+function snack(state = snackInitialState, action) {
+	switch (action.type) {
+		case CREATE_SNACK:
+			const {
+				msg,
+				actionMsg,
+				undoMsg,
+				handleActionClick
+			} = action;
+			return {
+				msg,
+				actionMsg,
+				undoMsg,
+				handleActionClick
+			};
+		default:
+			return state;
+	}
+}
+
 const reducers = combineReducers({
 	view,
 	course,
 	expandedCourse,
-	sideBarOpen
+	sideBarOpen,
+	snack
 });
 
 export default reducers;

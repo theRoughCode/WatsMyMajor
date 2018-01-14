@@ -6,6 +6,7 @@ export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const SET_VIEW = 'SET_VIEW';
+export const CREATE_SNACK = 'CREATE_SNACK';
 
 /*
  * action creators
@@ -53,4 +54,14 @@ export function setExpandedCourse(courseObj, index) {
 
 export function setView(view) {
 	return { type: SET_VIEW, view };
+}
+
+export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
+	return {
+		type: CREATE_SNACK,
+		msg,
+		actionMsg,
+		undoMsg,
+		handleActionClick
+	};
 }

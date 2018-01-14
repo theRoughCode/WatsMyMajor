@@ -72,18 +72,22 @@ DetailedInfo.propTypes = {
   instructor: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,
   attending: PropTypes.string.isRequired
-}
+};
 
 
-const AddToCart = () => (
+const AddToCart = ({ addToCartHandler }) => (
 	<RaisedButton
-		onClick={() => {}}
+		onClick={() => addToCartHandler()}
 		label="Add To Cart"
 		backgroundColor="#a4c639"
 		style={styles.button}
 		icon={<CartIcon />}
 	/>
 );
+
+AddToCart.propTypes = {
+	addToCartHandler: PropTypes.func.isRequired
+};
 
 const Share = ({ icon, text }) => (
 	<div className="course-info-share">
@@ -93,7 +97,7 @@ const Share = ({ icon, text }) => (
 );
 
 
-const CourseInfo = ({ style, ...info }) => {
+const CourseInfo = ({ style, ...info, addToCartHandler }) => {
 	return (
 		<Paper style={style} zDepth={1}>
 			<div className="course-info-header">
@@ -102,7 +106,7 @@ const CourseInfo = ({ style, ...info }) => {
 			<Divider style={styles.divider} />
 			<DetailedInfo {...info} />
 			<Divider style={styles.divider} />
-			<AddToCart />
+			<AddToCart addToCartHandler={addToCartHandler} />
 			<Divider style={styles.divider} />
 			<Share
 				icon={<FontAwesome
@@ -127,7 +131,8 @@ CourseInfo.propTypes = {
 	style: PropTypes.object.isRequired,
   instructor: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,
-  attending: PropTypes.string.isRequired
+  attending: PropTypes.string.isRequired,
+	addToCartHandler: PropTypes.func.isRequired
 }
 
 export default CourseInfo;

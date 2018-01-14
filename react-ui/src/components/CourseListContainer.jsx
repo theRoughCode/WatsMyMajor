@@ -1,18 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import CircularProgress from 'material-ui/CircularProgress';
 import CourseContent from './courseview/CourseContent';
 import CourseSideBar from './courseview/CourseSideBarContainer';
-import { setCourse, setExpandedCourse } from '../actions/index';
+import LoadingView from './tools/LoadingView';
+import ErrorView from './tools/ErrorView';
+import { setCourse, setExpandedCourse, createSnack } from '../actions/index';
 
-
-const styles = {
-	loading: {
-		margin: 'auto',
-		padding: '200px 0'
-	}
-};
 
 const getCourseData = (subject, catalogNumber) => {
 	return fetch(`/wat/${subject}/${catalogNumber}`)
@@ -66,7 +60,7 @@ function updatePageInfo(subject, catalogNumber) {
 };
 
 
-class CourseViewContainer extends Component {
+class CourseListContainer extends Component {
 
 	static propTypes = {
 		subject: PropTypes.string,
@@ -80,7 +74,8 @@ class CourseViewContainer extends Component {
 		lastUpdated: PropTypes.string,
 		selectedClassIndex: PropTypes.number,
 		selectCourseHandler: PropTypes.func.isRequired,
-		expandCourseHandler: PropTypes.func.isRequired
+		expandCourseHandler: PropTypes.func.isRequired,
+		addToCartHandler: PropTypes.func.isRequired
 	};
 
 	static defaultProps = {
@@ -124,11 +119,13 @@ class CourseViewContainer extends Component {
 				reservedCap: props.reservedCap,
 				classNumber: props.classNumber,
 				lastUpdated: props.lastUpdated
-			},
-			selectedClassIndex: props.selectedClassIndex,
-			selectCourseHandler: props.selectCourseHandler,
-			expandCourseHandler: props.expandCourseHandler
+			}
 		}
+
+		this.selectedClassIndex = props.selectedClassIndex,
+		this.selectCourseHandler = props.selectCourseHandler,
+		this.expandCourseHandler = props.expandCourseHandler
+		this.addToCartHandler = props.addToCartHandler
 	}
 
 	componentDidMount() {
@@ -179,43 +176,32 @@ class CourseViewContainer extends Component {
 	}
 
 	render() {
-		const loadingView = (
-			<div className="loading course-view">
-				<CircularProgress
-					size={80}
-					thickness={5}
-					style={styles.loading}
-					/>
-			</div>
-		);
-
-		const errorView = (
-			<div className="error-wrapper course-view">
-				<span>{`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}</span>
-				<span>{`Error message: ${this.state.error}`}</span>
-			</div>
-		);
-
 		const renderedView = (
 			<div className="course-view">
 				<CourseContent
-					selectedClassIndex={this.state.selectedClassIndex}
-					selectCourseHandler={this.state.selectCourseHandler}
-					expandCourseHandler={this.state.expandCourseHandler}
+					selectedClassIndex={this.selectedClassIndex}
+					selectCourseHandler={this.selectCourseHandler}
+					expandCourseHandler={this.expandCourseHandler}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
 					{...this.state.course}
 					/>
 				<CourseSideBar
 					{...this.state.classInfo}
+					addToCartHandler={this.addToCartHandler.bind(this, this.state.subject, this.state.catalogNumber)}
 					/>
 			</div>
 		);
 
 		if (this.state.loading) {
-			return loadingView;
+			return <LoadingView />;
 		} else if (this.state.error) {
-			return errorView;
+			return (
+				<ErrorView
+					msgHeader={`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}
+					msgBody={`Error message: ${this.state.error}`}
+				/>
+			);
 		} else {
 			return renderedView;
 		}
@@ -257,8 +243,15 @@ const mapDispatchToProps = dispatch => {
 		},
 		expandCourseHandler: (courseObj, index) => {
 			dispatch(setExpandedCourse(courseObj, index));
-		}
+		},
+		addToCartHandler: (subject, catalogNumber) => {
+			const msg = `${subject}${catalogNumber} has been added to your cart.`;
+			const actionMsg = 'undo';
+			const undoMsg = `${subject}${catalogNumber} has been removed from your cart.`;
+			const handleActionClick = () => console.log('Removed from cart.');
+      dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
+    }
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CourseViewContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(CourseListContainer);
