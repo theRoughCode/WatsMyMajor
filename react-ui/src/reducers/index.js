@@ -5,7 +5,10 @@ import {
 	SET_EXPANDED_COURSE,
 	SET_VIEW,
 	CREATE_SNACK,
-	UPDATE_USER_COURSES
+	UPDATE_USER_COURSES,
+	ADD_TO_CART,
+	REMOVE_FROM_CART,
+	REORDER_CART
 } from '../actions/index';
 import {
 	DASHBOARD_VIEW,
@@ -115,13 +118,28 @@ function courseList(state = {}, action) {
 	}
 }
 
+function cart(state = [], action) {
+	switch (action.type) {
+		case ADD_TO_CART:
+			state.push(action.course);
+			return state;
+		case REMOVE_FROM_CART:
+			return state.filter(course => course.id !== action.id);
+		case REORDER_CART:
+			return action.cart;
+		default:
+			return state;
+	}
+}
+
 const reducers = combineReducers({
 	view,
 	course,
 	expandedCourse,
 	sideBarOpen,
 	snack,
-	courseList
+	courseList,
+	cart
 });
 
 export default reducers;

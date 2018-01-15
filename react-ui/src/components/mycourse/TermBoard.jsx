@@ -5,17 +5,31 @@ import CourseCard from './CourseCard';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 
-const grid = 8;
+const space = 8;
+const stylesConst = {
+	minHeight: '400px',
+	height: 'auto',
+	width: 200
+};
 const styles = {
 	board: {
-		margin: '20px',
-		width: '200px',
-		minHeight: '400px',
-		height: 'auto',
+		margin: '20px auto',
+		width:  stylesConst.width,
+		minHeight: stylesConst.minHeight,
+		height: stylesConst.height,
 	},
-	dragArea: (isDraggingOver) => ({
-		padding: grid,
-		width: '180px',
+	cartBoard: {
+		margin: '20px auto',
+		width:  stylesConst.width,
+		height: '100%',
+	},
+	dragArea: (isDraggingOver, isCart) => ({
+		padding: space,
+		width: stylesConst.width - space * 2,
+		minHeight: stylesConst.minHeight,
+		height: (isCart) ? '100%' : stylesConst.height,
+
+		background: isDraggingOver ? '#fafcf2' : 'inherit'
 	})
 };
 
@@ -23,8 +37,8 @@ const styles = {
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
+  padding: space * 2,
+  margin: `0 0 ${space}px 0`,
 	border: isDragging
 		? '1px solid #4f4f4f'
 		: '1px solid #bcbcbc',
@@ -62,20 +76,29 @@ const renderCourses = (courseList) => {
 export default class TermPaper extends Component {
 
 	static propTypes = {
-		termNumber: PropTypes.string.isRequired,
-		term: PropTypes.string.isRequired,
-		year: PropTypes.string.isRequired,
-		courses: PropTypes.array.isRequired
+		boardHeader: PropTypes.string.isRequired,
+		term: PropTypes.string,
+		year: PropTypes.string,
+		courses: PropTypes.array,
+		isCart: PropTypes.bool
+	};
+
+	static defaultProps = {
+		term: '',
+		year: '',
+		courses: [],
+		isCart: false
 	};
 
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			termNumber: props.termNumber,
+			boardHeader: props.boardHeader,
 			term: props.term,
 			year: props.year,
-			courses: props.courses
+			courses: props.courses,
+			isCart: props.isCart
 		};
 	}
 
@@ -90,21 +113,21 @@ export default class TermPaper extends Component {
 			<Paper
 				className="term-paper"
 				zDepth={1}
-				style={styles.board}
+				style={(this.state.isCart) ? styles.cartBoard : styles.board}
 				>
 				<div className="term-header">
-					<span>{this.state.termNumber}</span>
+					<span>{this.state.boardHeader}</span>
 					<span className="year">{this.state.term} {this.state.year}</span>
 				</div>
-				<div>
+				<div style={{ height: '93%' }}>
 					<Droppable
-						droppableId={this.state.termNumber}
+						droppableId={this.state.boardHeader}
 						type={DragTypes.COURSE}
 						>
 						{(provided, snapshot) => (
 							<div
 								ref={provided.innerRef}
-								style={styles.dragArea(snapshot.isDraggingOver)}
+								style={styles.dragArea(snapshot.isDraggingOver, this.state.isCart)}
 								>
 								{renderCourses(this.state.courses)}
 								{provided.placeholder}

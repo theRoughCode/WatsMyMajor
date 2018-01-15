@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
-import CourseBoard from './mycourse/CourseBoard';
+import CourseBoard from './mycourse/CourseBoardContainer';
 import { updateUserCourses } from '../actions/index';
 import '../stylesheets/CourseView.css';
 
@@ -125,6 +125,11 @@ const getUserCourses = (userID) => {
 					catalogNumber: '231'
 				}
 			]
+		},
+		'3B': {
+			term: '',
+			year: '',
+			courses: []
 		}
 	}
 }
@@ -134,6 +139,7 @@ class MyCourseContainer extends Component {
 
 	static propTypes = {
 		courseList: PropTypes.object.isRequired,
+		cart: PropTypes.array.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired
 	};
 
@@ -142,7 +148,8 @@ class MyCourseContainer extends Component {
 		this.state = {
 			loading: true,
 			error: false,
-			courseList: {}
+			courseList: props.courseList,
+			cart: props.cart
 		};
 
 		this.updateCourseHandler = props.updateCourseHandler;
@@ -157,16 +164,22 @@ class MyCourseContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-	  if (nextProps.courseList !== this.state.courseList) {
-			this.setState({ courseList: nextProps.courseList });
+		const { courseList, cart } = nextProps;
+
+	  if (courseList !== this.state.courseList) {
+			this.setState({ courseList });
+		}
+		if (cart !== this.state.cart) {
+			this.setState({ cart });
 		}
 	}
 
 	render() {
 		const renderedView = (
-			<div className="course-view">
+			<div>
 				<CourseBoard
 					courseList={this.state.courseList}
+					cart={this.state.cart}
 					updateCourseHandler={this.updateCourseHandler}
 					/>
 			</div>
@@ -188,8 +201,8 @@ class MyCourseContainer extends Component {
 
 }
 
-const mapStateToProps = ({ courseList }) => {
-	return { courseList };
+const mapStateToProps = ({ courseList, cart }) => {
+	return { courseList, cart };
 };
 
 const mapDispatchToProps = dispatch => {

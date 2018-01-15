@@ -1,3 +1,5 @@
+import uuidv4 from 'uuid/v4';
+
 /*
  * action types
  */
@@ -8,6 +10,9 @@ export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const SET_VIEW = 'SET_VIEW';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
+export const ADD_TO_CART = 'ADD_TO_CART';
+export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
+export const REORDER_CART = 'REORDER_CART';
 
 /*
  * action creators
@@ -71,5 +76,28 @@ export function updateUserCourses(courseList) {
 	return {
 		type: UPDATE_USER_COURSES,
 		courseList
+	};
+}
+
+export function addToCart(course) {
+	course['id'] = uuidv4();
+
+	return {
+		type: ADD_TO_CART,
+		course
+	};
+}
+
+export function removeFromCart(id) {
+	return {
+		type: REMOVE_FROM_CART,
+		id
+	};
+}
+
+export function reorderCart(cart) {
+	return {
+		type: REORDER_CART,
+		cart
 	};
 }
