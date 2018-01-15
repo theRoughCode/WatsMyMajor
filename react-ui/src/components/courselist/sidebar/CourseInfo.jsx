@@ -38,8 +38,7 @@ const DetailedInfo = (info) => {
 		attending,
 		enrollmentCap,
 		reserved,
-		reservedCap,
-		lastUpdated
+		reservedCap
 	} = info;
 
 	return (
@@ -125,7 +124,6 @@ const CourseInfo = (props) => {
 				enrollmentCap={enrollmentCap}
 				reserved={reserved}
 				reservedCap={reservedCap}
-				lastUpdated={lastUpdated}
 				/>
 			<Divider style={styles.divider} />
 			<AddToCart addToCartHandler={addToCartHandler} />

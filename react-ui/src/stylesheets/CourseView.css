@@ -1,0 +1,134 @@
+/* Course View */
+.course-view {
+  width: 100%;
+  height: 90%;
+  display: flex;
+  padding-top: 84px;
+}
+
+/* Course Content*/
+.course-content, .course-board {
+  width: 78%;
+  height: 100%;
+  display: flex;
+  padding: 0 60px;
+}
+
+.course-content {
+	flex-direction: column;
+}
+
+.course-header {
+  border-bottom: 1px solid #dbdbdb;
+  height: 15%;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+	padding-bottom: 10px;
+  margin-bottom: 25px;
+}
+
+.course-code {
+  margin-top: 20px;
+  margin-bottom: 5px;
+  display: flex;
+}
+
+.course-code > h1 {
+  font-size: 40px;
+  font-weight: 400;
+  margin: auto 0;
+}
+
+.course-code > .star-ratings {
+  margin: auto 20px;
+}
+
+.course-code > span {
+  margin: auto;
+  margin-right: 20px;
+  color: #5c5f63;
+}
+
+.course-header .title {
+  font-size: 20px;
+}
+
+.course-description {
+  padding: 0 10px;
+  display: flex;
+}
+
+.course-description .description {
+  font-size: 15px;
+  margin: auto;
+  margin-top: 10px;
+  margin-left: 0;
+  text-align: left;
+  width: 55%;
+  line-height: 1.5;
+  color: #5c6e84;
+}
+
+.course-requisites {
+  margin: auto;
+  margin-top: 0;
+  margin-right: 0;
+  width: 300px;
+}
+
+.course-requisites span {
+  margin: 4px auto;
+}
+
+.reqs-link a {
+  cursor: pointer;
+  color: black;
+}
+.reqs-link a:hover {
+  color: #4286f4;
+  background-color: #f3f3f3;
+}
+
+.course-class-list {
+  margin-top: 40px;
+  display: inline-block;
+  flex-direction: column;
+	width: 80%;
+	margin-left: 20px;
+}
+
+.course-class-list-header {
+  font-size: 30px;
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.course-class-list-table td {
+	text-align: center !important;
+}
+
+
+/* Course Board */
+.course-board {
+	flex-direction: row;
+}
+
+.term-header {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	background-color: rgb(54, 65, 80);
+	color: white;
+	font-size: 18px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+	display: flex;
+	flex-direction: column;
+}
+
+.term-header .year {
+	font-size: 13px;
+	margin-top: 5px;
+}

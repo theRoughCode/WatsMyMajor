@@ -8,10 +8,11 @@ import {
 } from '../actions/index';
 import {
 	DASHBOARD_VIEW,
-	COURSE_LIST_VIEW
+	COURSE_LIST_VIEW,
+	MY_COURSE_VIEW
 } from '../constants/views';
 
-function view(state = COURSE_LIST_VIEW, action) {
+function view(state = MY_COURSE_VIEW, action) {
 	switch (action.type) {
 		case SET_VIEW:
 			return action.view;

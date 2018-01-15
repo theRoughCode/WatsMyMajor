@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import CourseInfo from './sidebar/CourseInfo';
 import CourseProf from './sidebar/CourseProf';
+import '../../stylesheets/CourseSideBar.css';
 
 const styles =  {
 	instructor: (isVisible) => ({

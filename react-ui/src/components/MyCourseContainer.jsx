@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
+import CourseBoard from './mycourse/CourseBoard';
+import '../stylesheets/CourseView.css';
 
 
 const getUserCourses = (userID) => {
@@ -28,8 +30,8 @@ const getUserCourses = (userID) => {
 					catalogNumber: '137'
 				},
 				{
-					subject: 'MATH',
-					catalogNumber: '137'
+					subject: 'SPCOM',
+					catalogNumber: '223'
 				}
 			]
 		},
@@ -151,6 +153,12 @@ class MyCourseContainer extends Component {
 	}
 
 	render() {
+		const renderedView = (
+			<div className="course-view">
+				<CourseBoard courseList={this.state.courseList} />
+			</div>
+		);
+
 		if (this.state.loading) {
 			return <LoadingView />;
 		} else if (this.state.error) {
@@ -161,7 +169,7 @@ class MyCourseContainer extends Component {
 				/>
 			);
 		} else {
-			return <div>MyComponent</div>;
+			return renderedView;
 		}
 	}
 

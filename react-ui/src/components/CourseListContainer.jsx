@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import CourseContent from './courseview/CourseContent';
-import CourseSideBar from './courseview/CourseSideBarContainer';
+import CourseContent from './courselist/CourseContent';
+import CourseSideBar from './courselist/CourseSideBarContainer';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
 import { setCourse, setExpandedCourse, createSnack } from '../actions/index';
+import '../stylesheets/CourseView.css';
 
 
 const getCourseData = (subject, catalogNumber) => {
