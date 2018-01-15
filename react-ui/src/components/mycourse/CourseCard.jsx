@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
+import RemoveIcon from 'material-ui/svg-icons/content/remove-circle';
 
 
 export default class CoursePaper extends Component {
