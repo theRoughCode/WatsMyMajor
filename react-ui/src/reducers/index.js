@@ -4,7 +4,8 @@ import {
 	SET_COURSE,
 	SET_EXPANDED_COURSE,
 	SET_VIEW,
-	CREATE_SNACK
+	CREATE_SNACK,
+	UPDATE_USER_COURSES
 } from '../actions/index';
 import {
 	DASHBOARD_VIEW,
@@ -105,12 +106,22 @@ function snack(state = snackInitialState, action) {
 	}
 }
 
+function courseList(state = {}, action) {
+	switch (action.type) {
+		case UPDATE_USER_COURSES:
+			return { courseList: action.courseList };
+		default:
+			return state;
+	}
+}
+
 const reducers = combineReducers({
 	view,
 	course,
 	expandedCourse,
 	sideBarOpen,
-	snack
+	snack,
+	courseList
 });
 
 export default reducers;

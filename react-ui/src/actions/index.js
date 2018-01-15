@@ -7,6 +7,7 @@ export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const SET_VIEW = 'SET_VIEW';
 export const CREATE_SNACK = 'CREATE_SNACK';
+export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 
 /*
  * action creators
@@ -63,5 +64,12 @@ export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
 		actionMsg,
 		undoMsg,
 		handleActionClick
+	};
+}
+
+export function updateUserCourses(courseList) {
+	return {
+		type: UPDATE_USER_COURSES,
+		courseList
 	};
 }

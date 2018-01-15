@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
 import CourseBoard from './mycourse/CourseBoard';
+import { updateUserCourses } from '../actions/index';
 import '../stylesheets/CourseView.css';
 
 
@@ -35,7 +36,7 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'1B': {
+		'2A': {
 			term: 'W',
 			year: '2017',
 			courses: [
@@ -65,7 +66,7 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'2A': {
+		'2B': {
 			term: 'S',
 			year: '2017',
 			courses: [
@@ -95,7 +96,7 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'2B': {
+		'3A': {
 			term: 'W',
 			year: '2018',
 			courses: [
@@ -132,7 +133,8 @@ const getUserCourses = (userID) => {
 class MyCourseContainer extends Component {
 
 	static propTypes = {
-
+		courseList: PropTypes.object.isRequired,
+		updateCourseHandler: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -142,6 +144,8 @@ class MyCourseContainer extends Component {
 			error: false,
 			courseList: {}
 		};
+
+		this.updateCourseHandler = props.updateCourseHandler;
 	}
 
 	componentDidMount() {
@@ -152,10 +156,19 @@ class MyCourseContainer extends Component {
 		});
 	}
 
+	componentWillReceiveProps(nextProps) {
+	  if (nextProps.courseList !== this.state.courseList) {
+			this.setState({ courseList: nextProps.courseList });
+		}
+	}
+
 	render() {
 		const renderedView = (
 			<div className="course-view">
-				<CourseBoard courseList={this.state.courseList} />
+				<CourseBoard
+					courseList={this.state.courseList}
+					updateCourseHandler={this.updateCourseHandler}
+					/>
 			</div>
 		);
 
@@ -175,4 +188,16 @@ class MyCourseContainer extends Component {
 
 }
 
-export default connect(null, null)(MyCourseContainer);
+const mapStateToProps = ({ courseList }) => {
+	return { courseList };
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		updateCourseHandler: courseList => {
+			dispatch(updateUserCourses(courseList));
+		}
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyCourseContainer);

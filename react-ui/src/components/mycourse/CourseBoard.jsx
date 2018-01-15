@@ -44,13 +44,14 @@ const reorder = (list, source, dest) => {
 export default class CourseBoard extends Component {
 
 	static propTypes = {
-		courseList: PropTypes.object.isRequired
+		courseList: PropTypes.object.isRequired,
+		updateCourseHandler: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
 		super(props);
 
-		const { courseList } = props;
+		const { courseList, updateCourseHandler } = props;
 
 		for (let term in courseList) {
 			courseList[term].courses = courseList[term].courses.map(course => {
@@ -64,6 +65,7 @@ export default class CourseBoard extends Component {
 		};
 
 		this.onDragEnd = this.onDragEnd.bind(this);
+		this.updateCourseHandler = updateCourseHandler;
 	}
 
 	onDragEnd(result) {
@@ -78,7 +80,7 @@ export default class CourseBoard extends Component {
 			result.destination
 		);
 
-		this.setState({ courseList });
+		this.updateCourseHandler(courseList);
   }
 
 	render() {
