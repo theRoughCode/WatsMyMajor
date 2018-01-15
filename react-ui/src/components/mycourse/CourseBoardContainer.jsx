@@ -92,6 +92,17 @@ class CourseBoard extends Component {
 		const sourceArr = (source.droppableId === 'Cart')
 			? cart
 			: courseList[source.droppableId].courses;
+
+		// Deleted course
+		if (dest.droppableId === 'Trash') {
+			sourceArr.splice(sourceIndex, 1);
+			if (source.droppableId === 'Cart')
+				this.reorderCartHandler(sourceArr);
+			else courseList[source.droppableId].courses = sourceArr;
+			return courseList;
+		}
+
+
 		const destArr = (dest.droppableId === 'Cart')
 			? cart
 			: courseList[dest.droppableId].courses;
@@ -108,7 +119,7 @@ class CourseBoard extends Component {
 			courseList[dest.droppableId].courses = destArr;
 
 		if (source.droppableId === 'Cart' || dest.droppableId == 'Cart')
-			this.reorderCartHandler(cart);
+			this.reorderCartHandler(sourceArr);
 
 		return courseList;
 	};

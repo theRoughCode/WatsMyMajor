@@ -16,8 +16,8 @@ const styles = {
 		display: 'flex'
 	},
 	droppableContainer: isDraggingOver => ({
-		width: '195px',
-		height: '80px',
+		width: '196px',
+		height: '96px',
 		display: 'flex',
 		margin: 'auto',
 		border: (isDraggingOver) ? '2px dashed black' : 'none',
@@ -43,7 +43,7 @@ class Trash extends Component {
 		return (
 			<Paper zDepth={1} style={styles.trashContainer}>
 				<Droppable
-					droppableId={'trash'}
+					droppableId={'Trash'}
 					type={DragTypes.COURSE}
 					>
 					{(provided, snapshot) => (

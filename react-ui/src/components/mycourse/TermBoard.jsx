@@ -7,8 +7,9 @@ import { DragTypes } from '../../constants/DragTypes';
 
 const space = 8;
 const stylesConst = {
-	minHeight: '400px',
+	minHeight: 400,
 	height: 'auto',
+	cartHeight: 600,
 	width: 200
 };
 const styles = {
@@ -21,13 +22,13 @@ const styles = {
 	cartBoard: {
 		margin: '20px auto',
 		width:  stylesConst.width,
-		height: '100%',
+		height: stylesConst.cartHeight
 	},
 	dragArea: (isDraggingOver, isCart) => ({
 		padding: space,
 		width: stylesConst.width - space * 2,
 		minHeight: stylesConst.minHeight,
-		height: (isCart) ? '100%' : stylesConst.height,
+		height: (isCart) ? 528 : stylesConst.height,
 
 		background: isDraggingOver ? '#fafcf2' : 'inherit'
 	})
