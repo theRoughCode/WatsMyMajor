@@ -11,11 +11,7 @@ const styles = {
 		margin: '20px',
 		width: '200px',
 		minHeight: '400px',
-		height: 'auto'
-	},
-	divider: {
-		borderTop: '1px solid #eeeeee',
-		backgroundColor: 'inherit'
+		height: 'auto',
 	},
 	dragArea: (isDraggingOver) => ({
 		padding: grid,
@@ -32,6 +28,7 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 	border: isDragging
 		? '1px solid #4f4f4f'
 		: '1px solid #bcbcbc',
+	borderRadius: '5px',
 
   // change background colour if dragging
   background: isDragging ? '#8be58b' : '#f2f2f2',
@@ -41,33 +38,6 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 const renderCourses = (courseList) => {
-
-		// <CourseCard
-		// 	key={index}
-		// 	index={index}
-		// 	subject={course.subject}
-		// 	catalogNumber={course.catalogNumber}
-		// 	id={course.id}
-		// 	/>
-		// <CourseCard
-		// 	subject={course.subject}
-		// 	catalogNumber={course.catalogNumber}
-		// 	/>
-
-		// <Paper zDepth={1}>
-		// 	<div
-		// 		ref={provided.innerRef}
-		// 		{...provided.draggableProps}
-		// 		{...provided.dragHandleProps}
-		// 		style={getItemStyle(
-		// 			snapshot.isDragging,
-		// 			provided.draggableProps.style,
-		// 		)}
-		// 	>
-		// 		{course.subject + course.catalogNumber}
-		// 	</div>
-		// 	{provided.placeholder}
-		// </Paper>
 	return courseList.map((course, index) => (
 			<Draggable
 				key={index}
