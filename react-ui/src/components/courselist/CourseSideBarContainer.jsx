@@ -44,6 +44,8 @@ export default class CourseSideBarContainer extends Component {
 		super(props);
 
 		const {
+			subject,
+			catalogNumber,
 			instructor,
 			attending,
 			enrollmentCap,
@@ -55,6 +57,8 @@ export default class CourseSideBarContainer extends Component {
 		} = props;
 
 		this.state = {
+			subject,
+			catalogNumber,
 			classNumber,
 			instructor,
 			info: {
@@ -127,7 +131,14 @@ export default class CourseSideBarContainer extends Component {
 	}
 
 	render() {
-		const { instructor, info, prof, fetchingRMP } = this.state;
+		const {
+			subject,
+			catalogNumber,
+			instructor,
+			info,
+			prof,
+			fetchingRMP
+		} = this.state;
 		const id = (instructor) ? 'slide' : '';
 
 		return (
@@ -135,6 +146,8 @@ export default class CourseSideBarContainer extends Component {
 				<CourseInfo
 					style={styles.instructor(instructor)}
 					id={id}
+					subject={subject}
+					catalogNumber={catalogNumber}
 					instructor={instructor}
 					{...info}
 					addToCartHandler={this.addToCartHandler}

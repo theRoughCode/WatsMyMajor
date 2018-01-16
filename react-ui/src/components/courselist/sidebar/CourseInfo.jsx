@@ -72,14 +72,13 @@ DetailedInfo.propTypes = {
 	attending: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,
 	reserved: PropTypes.string.isRequired,
-	reservedCap: PropTypes.string.isRequired,
-	lastUpdated: PropTypes.string.isRequired
+	reservedCap: PropTypes.string.isRequired
 };
 
 
-const AddToCart = ({ addToCartHandler }) => (
+const AddToCart = ({ addToCartHandler, subject, catalogNumber }) => (
 	<RaisedButton
-		onClick={() => addToCartHandler()}
+		onClick={() => addToCartHandler(subject, catalogNumber)}
 		label="Add To Cart"
 		backgroundColor="#a4c639"
 		style={styles.button}
@@ -88,7 +87,9 @@ const AddToCart = ({ addToCartHandler }) => (
 );
 
 AddToCart.propTypes = {
-	addToCartHandler: PropTypes.func.isRequired
+	addToCartHandler: PropTypes.func.isRequired,
+	subject: PropTypes.string.isRequired,
+	catalogNumber: PropTypes.string.isRequired
 };
 
 const Share = ({ icon, text }) => (
@@ -102,6 +103,8 @@ const Share = ({ icon, text }) => (
 const CourseInfo = (props) => {
 	const {
 		style,
+		subject,
+		catalogNumber,
 		instructor,
 		attending,
 		enrollmentCap,
@@ -126,7 +129,11 @@ const CourseInfo = (props) => {
 				reservedCap={reservedCap}
 				/>
 			<Divider style={styles.divider} />
-			<AddToCart addToCartHandler={addToCartHandler} />
+			<AddToCart
+				addToCartHandler={addToCartHandler}
+				subject={subject}
+				catalogNumber={catalogNumber}
+				/>
 			<Divider style={styles.divider} />
 			<Share
 				icon={<FontAwesome
@@ -149,6 +156,8 @@ const CourseInfo = (props) => {
 
 CourseInfo.propTypes = {
 	style: PropTypes.object.isRequired,
+	subject: PropTypes.string.isRequired,
+	catalogNumber: PropTypes.string.isRequired,
   instructor: PropTypes.string.isRequired,
 	attending: PropTypes.string.isRequired,
   enrollmentCap: PropTypes.string.isRequired,

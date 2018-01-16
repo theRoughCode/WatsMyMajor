@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import uuidv4 from 'uuid/v4';
 import CourseContent from './courselist/CourseContent';
 import CourseSideBar from './courselist/CourseSideBarContainer';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
-import { setCourse, setExpandedCourse, createSnack } from '../actions/index';
 import '../stylesheets/CourseView.css';
+import {
+	setCourse,
+	setExpandedCourse,
+	createSnack,
+	addToCart,
+	removeFromCart
+} from '../actions/index';
 
 
 const getCourseData = (subject, catalogNumber) => {
@@ -189,6 +196,8 @@ class CourseListContainer extends Component {
 					/>
 				<CourseSideBar
 					{...this.state.classInfo}
+					subject={this.state.subject}
+					catalogNumber={this.state.catalogNumber}
 					addToCartHandler={this.addToCartHandler.bind(this, this.state.subject, this.state.catalogNumber)}
 					/>
 			</div>
@@ -249,9 +258,11 @@ const mapDispatchToProps = dispatch => {
 			const msg = `${subject}${catalogNumber} has been added to your cart.`;
 			const actionMsg = 'undo';
 			const undoMsg = `${subject}${catalogNumber} has been removed from your cart.`;
-			const handleActionClick = () => console.log('Removed from cart.');
-      dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
-    }
+			const id = uuidv4();
+			const handleActionClick = () => dispatch(removeFromCart(id));
+			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
+			dispatch(addToCart(subject, catalogNumber, id));
+		}
 	};
 };
 

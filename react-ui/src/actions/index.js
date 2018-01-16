@@ -1,5 +1,3 @@
-import uuidv4 from 'uuid/v4';
-
 /*
  * action types
  */
@@ -79,12 +77,14 @@ export function updateUserCourses(courseList) {
 	};
 }
 
-export function addToCart(course) {
-	course['id'] = uuidv4();
-
+export function addToCart(subject, catalogNumber, id) {
 	return {
 		type: ADD_TO_CART,
-		course
+		course: {
+			subject,
+			catalogNumber,
+			id
+		}
 	};
 }
 
