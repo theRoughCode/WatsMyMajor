@@ -33,7 +33,7 @@ CourseDescription.propTypes = {
   description: PropTypes.string.isRequired,
   antireqs: PropTypes.array.isRequired,
   coreqs: PropTypes.array.isRequired,
-  prereqs: PropTypes.array.isRequired,
+  prereqs: PropTypes.object.isRequired,
   postreqs: PropTypes.array.isRequired,
   selectCourseHandler: PropTypes.func.isRequired
 };

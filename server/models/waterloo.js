@@ -7,7 +7,7 @@ const utils = require('./utils');
 // Enable hiding of API Key
 require('dotenv').config();
 
-const TERM = '1181';  // Winter 2017
+const TERM = '1185';  // Spring 2018
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
@@ -61,7 +61,7 @@ function getCourseInfo(subject, cat_num, callback) {
 				is_cancelled,
 				is_closed
 			} = date;
-			
+
 			const { building, room } = location;
 
 			return {
@@ -111,7 +111,7 @@ function getPrereqs(subject, course_number, callback) {
 
 		if (!Object.keys(res.data).length) return callback(null, {
 			prereqString: '',
-			prereqs: []
+			prereqs: {}
 		});
 
 		const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
@@ -131,9 +131,7 @@ function getReqs(subject, course_number, callback) {
 		if(err) return callback(err, null);
 
 		let { prereqString, prereqs } = prereqData;
-
-		// for courses that don't have prereqs
-		if (prereqs === 'undefined' || !prereqs) prereqs = [];
+		console.log(prereqData)
 
 		uwclient.get(`/courses/${subject}/${course_number}.json`, (err, res) => {
 			if (err) {

@@ -91,10 +91,10 @@ class Row extends Component {
 
 const termStr = (term) => {
 	switch(term) {
-		case '1175': return 'Spring 2017';
 		case '1179': return 'Fall 2017';
 		case '1181': return 'Winter 2018';
 		case '1185': return 'Spring 2018';
+		case '1189': return 'Fall 2018';
 	}
 };
 

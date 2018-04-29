@@ -81,7 +81,26 @@
   margin: 4px auto;
 }
 
+.prereqs {
+  text-align: left;
+  padding: 0 10px;
+}
+
+.prereqs-choose span {
+  margin-left: 0;
+  text-align: left;
+}
+
+.prereqs-reqs {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
 .reqs-link a {
+  padding: 1px;
   cursor: pointer;
   color: black;
 }

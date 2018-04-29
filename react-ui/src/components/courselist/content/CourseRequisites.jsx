@@ -3,6 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import SwipeableViews from 'react-swipeable-views';
+import Prereqs from './Prereqs';
 
 
 const styles = {
@@ -26,15 +27,13 @@ const styles = {
 	},
 };
 
-const formatReqs = req => req.subject + ' ' + req.catalogNumber;
-
 
 export default class CourseRequisites extends Component {
 
 	static propTypes = {
 		antireqs: PropTypes.array.isRequired,
 		coreqs: PropTypes.array.isRequired,
-		prereqs: PropTypes.array.isRequired,
+		prereqs: PropTypes.object.isRequired,
 		postreqs: PropTypes.array.isRequired,
 		selectCourseHandler: PropTypes.func.isRequired
 	};
@@ -52,13 +51,33 @@ export default class CourseRequisites extends Component {
 		});
 	};
 
-	createReqLink = (arr) => (
-		arr.map((req, index) => (
-			<a key={index} onClick={() => this.props.selectCourseHandler(req)}>
-				{req}
-			</a>
-		))
+	formatReqs = ({ subject, catalogNumber }, index) => (
+		<a key={index} onClick={() => this.props.selectCourseHandler(subject, catalogNumber)}>
+			{ `${subject} ${catalogNumber}` }
+		</a>
 	);
+
+	formatPrereqs = (prereq, index) => {
+		if (!Object.keys(prereq).length) return [];
+		// Base case: list of courses
+		if (prereq.hasOwnProperty('subject')) {
+			return this.formatReqs(prereq, index);
+		}
+
+		// Inductive case: list of courses with choose
+		switch (prereq.choose) {
+			case 0: return prereq.reqs.map(this.formatPrereqs);
+			default:
+				const newReqsArr = prereq.reqs.map(this.formatPrereqs);
+				return [
+					<Prereqs
+						key={0}
+						choose={ prereq.choose }
+						reqs={ newReqsArr }
+					/>
+				];
+		}
+	};
 
 	render() {
 		const {
@@ -70,12 +89,12 @@ export default class CourseRequisites extends Component {
 
 		const titles = [ 'Prereqs', 'Antireqs', 'Coreqs', 'Postreqs' ];
 		const reqs = [
-			prereqs.map(formatReqs),
-			antireqs.map(formatReqs),
-			coreqs.map(formatReqs),
-			postreqs.map(formatReqs)
+			this.formatPrereqs(prereqs),
+			antireqs.map(this.formatReqs),
+			coreqs.map(this.formatReqs),
+			postreqs.map(this.formatReqs)
 		];
-		
+
 		return (
 			<div className="course-requisites">
 				<Paper zDepth={1}>
@@ -87,7 +106,8 @@ export default class CourseRequisites extends Component {
 					>
 						{
 							titles
-								.filter((title, index) => reqs[index].length)
+								.filter((title, index) => (!Array.isArray(reqs[index]) &&
+									Object.keys(reqs[index]).length) || reqs[index].length)
 								.map((title, index) => (
 									<Tab
 										key={index}
@@ -108,7 +128,7 @@ export default class CourseRequisites extends Component {
 								.filter(req => req.length)
 								.map((req, index) => (
 									<div key={index} style={styles.slide}>
-										{this.createReqLink(req)}
+										{ req }
 									</div>
 								))
 						}

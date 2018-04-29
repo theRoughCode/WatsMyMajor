@@ -20,9 +20,7 @@ export function toggleSideBar() {
 	return { type: TOGGLE_SIDEBAR };
 }
 
-export function setCourse(courseStr) {
-	const [ subject, catalogNumber ] = courseStr.split(' ');
-
+export function setCourse(subject, catalogNumber) {
 	return {
 		type: SET_COURSE,
 		course: {

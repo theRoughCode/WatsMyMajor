@@ -66,7 +66,7 @@ CourseContent.propTypes = {
 	termsOffered: PropTypes.array.isRequired,
 	antireqs: PropTypes.array.isRequired,
   coreqs: PropTypes.array.isRequired,
-	prereqs: PropTypes.array.isRequired,
+	prereqs: PropTypes.object.isRequired,
 	postreqs: PropTypes.array.isRequired,
 	term: PropTypes.string.isRequired,
 	classes: PropTypes.array.isRequired

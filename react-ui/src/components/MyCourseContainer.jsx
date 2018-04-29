@@ -6,6 +6,7 @@ import ErrorView from './tools/ErrorView';
 import CourseBoard from './mycourse/CourseBoardContainer';
 import { updateUserCourses } from '../actions/index';
 import '../stylesheets/CourseView.css';
+// import coursesText from '../../server/data/transcript.txt';
 
 
 const getUserCourses = (userID) => {
@@ -145,6 +146,8 @@ class MyCourseContainer extends Component {
 
 	constructor(props) {
 		super(props);
+
+		// console.log(coursesText);
 		this.state = {
 			loading: true,
 			error: false,

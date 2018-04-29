@@ -45,8 +45,6 @@ function updatePageInfo(subject, catalogNumber) {
 			classList
 		} = json;
 
-		if (!Array.isArray(prereqs)) prereqs = prereqs.reqs;
-
 		const course = {
 			title,
 			description,
@@ -114,7 +112,7 @@ class CourseListContainer extends Component {
 				description: '',
 				antireqs: [],
 				coreqs: [],
-				prereqs: [],
+				prereqs: {},
 				postreqs: [],
 				term: '',
 				classes: []
