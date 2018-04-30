@@ -3,6 +3,7 @@ const path = require('path');
 const waterloo = require('../models/waterloo');
 const database = require('../models/database');
 const rmp = require('../models/rmp');
+const parseText = require('../models/parser');
 
 routes.get('/', function(req, res){
 	res.send('By Raphael Koh');
@@ -169,6 +170,10 @@ routes.get('/prof/:name', function(req, res) {
 	const name = req.params.name;
 	res.set('Content-Type', 'application/json');
 	rmp.getProfInfo(name, info => res.json(info));
+});
+
+routes.get('/parse', function(req, res) {
+	parseText(text => res.json(text));
 });
 
 // All remaining requests return the React app, so it can handle routing.
