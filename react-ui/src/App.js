@@ -107,7 +107,7 @@ class App extends Component {
 
 	searchCourseHandler(subject, catalogNumber) {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.state.selectCourseHandler(subject, catalogNumber);
+		this.selectCourseHandler(subject, catalogNumber);
 	}
 
   render() {

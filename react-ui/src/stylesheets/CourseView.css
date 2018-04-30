@@ -92,11 +92,13 @@
 }
 
 .prereqs-reqs {
-  padding: 5px;
+  margin: 5px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   text-align: center;
-  margin-bottom: 10px;
+  border-left-style: solid;
+  border-left-color: grey;
 }
 
 .reqs-link a {
