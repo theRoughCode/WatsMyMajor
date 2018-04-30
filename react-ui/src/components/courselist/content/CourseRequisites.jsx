@@ -35,7 +35,7 @@ export default class CourseRequisites extends Component {
 		coreqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.object.isRequired,
 		postreqs: PropTypes.array.isRequired,
-		selectCourseHandler: PropTypes.func.isRequired
+		selectCourse: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -52,7 +52,7 @@ export default class CourseRequisites extends Component {
 	};
 
 	formatReqs = ({ subject, catalogNumber }, index) => (
-		<a key={index} onClick={() => this.props.selectCourseHandler(subject, catalogNumber)}>
+		<a key={index} onClick={() => this.props.selectCourse(subject, catalogNumber)}>
 			{ `${subject} ${catalogNumber}` }
 		</a>
 	);

@@ -3,27 +3,12 @@ import {
 	TOGGLE_SIDEBAR,
 	SET_COURSE,
 	SET_EXPANDED_COURSE,
-	SET_VIEW,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
 	ADD_TO_CART,
 	REMOVE_FROM_CART,
 	REORDER_CART
 } from '../actions/index';
-import {
-	DASHBOARD_VIEW,
-	COURSE_LIST_VIEW,
-	MY_COURSE_VIEW
-} from '../constants/views';
-
-function view(state = COURSE_LIST_VIEW, action) {
-	switch (action.type) {
-		case SET_VIEW:
-			return action.view;
-		default:
-			return state;
-	}
-}
 
 function course(state = { subject: 'CS', catalogNumber: '136' }, action) {
 	switch(action.type) {
@@ -133,7 +118,6 @@ function cart(state = [], action) {
 }
 
 const reducers = combineReducers({
-	view,
 	course,
 	expandedCourse,
 	sideBarOpen,

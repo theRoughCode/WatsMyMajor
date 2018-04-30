@@ -30,7 +30,7 @@ function parseCourse(courseStr) {
 
 // Nests "choose" requisites
 function nestReqs(reqArr) {
-	if (!reqArr) return null;
+	if (!Array.isArray(reqArr)) return {};
 
 	const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
 		if (Array.isArray(req)) {

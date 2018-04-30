@@ -9,7 +9,7 @@ const styles = {
 
 const ErrorView = ({ msgHeader, msgBody }) => (
 	<div className="error-wrapper course-view">
-		<span>{msgHeader}</span>
+		<h1>{msgHeader}</h1>
 		<span>{msgBody}</span>
 	</div>
 );

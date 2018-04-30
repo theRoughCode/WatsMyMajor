@@ -9,8 +9,8 @@ const CourseContent = (props) => {
 		subject,
 		catalogNumber,
 		selectedClassIndex,
-		selectCourseHandler,
-		expandCourseHandler,
+		selectCourse,
+		expandCourse,
 		title,
 		rating,
 		termsOffered,
@@ -38,12 +38,12 @@ const CourseContent = (props) => {
 				coreqs={coreqs}
 				prereqs={prereqs}
 				postreqs={postreqs}
-				selectCourseHandler={selectCourseHandler}
+				selectCourse={selectCourse}
 				/>
 			{
 				classes.length > 0 && (
 					<CourseClassList
-						expandCourseHandler={expandCourseHandler}
+						expandCourse={expandCourse}
 						selectedClassIndex={selectedClassIndex}
 						term={term}
 						classes={classes}
@@ -58,8 +58,8 @@ CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
 	selectedClassIndex: PropTypes.number.isRequired,
-	selectCourseHandler: PropTypes.func.isRequired,
-	expandCourseHandler: PropTypes.func.isRequired,
+	selectCourse: PropTypes.func.isRequired,
+	expandCourse: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,

@@ -16,7 +16,7 @@ routes.get('/wat/:subject/:number', function(req, res){
 	res.set('Content-Type', 'application/json');
 
 	waterloo.getReqs(subject, number, (err, info) => {
-		if (err) return res.json({ success: false, err });
+		if (err) return res.status(404).json({ success: false, err });
 
 		waterloo.getParentReqs(subject, number, parents => {
 			waterloo.getCourseInfo(subject, number, classes => {

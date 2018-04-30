@@ -101,7 +101,7 @@ const termStr = (term) => {
 
 const CourseClassList = (props) => {
 	const {
-		expandCourseHandler,
+		expandCourse,
 		term,
 		classes,
 		selectedClassIndex
@@ -133,7 +133,7 @@ const CourseClassList = (props) => {
 								key={index}
 								classData={classData}
 								selected={index === selectedClassIndex}
-								onClickHandler={() => expandCourseHandler(classData, index)} />
+								onClickHandler={() => expandCourse(classData, index)} />
 						))}
 					</TableBody>
 				</Table>
@@ -143,7 +143,7 @@ const CourseClassList = (props) => {
 };
 
 CourseClassList.propTypes = {
-	expandCourseHandler: PropTypes.func.isRequired,
+	expandCourse: PropTypes.func.isRequired,
 	selectedClassIndex: PropTypes.number.isRequired,
 	term: PropTypes.string.isRequired,
 	classes: PropTypes.array.isRequired

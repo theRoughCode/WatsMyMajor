@@ -30,6 +30,7 @@ html {
 	width: auto;
 	height: 100%;
 	display: flex;
+	flex-direction: column;
 }
 
 .error-wrapper span {
@@ -65,4 +66,9 @@ html {
 .avatar-name {
   color: white;
   margin: auto;
+}
+
+.sidebar-courses a {
+	color: rgba(0, 0, 0, 0.87);
+	text-decoration: none !important;
 }

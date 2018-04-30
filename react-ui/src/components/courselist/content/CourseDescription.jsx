@@ -10,7 +10,7 @@ const CourseDescription = (props) => {
     coreqs,
 		prereqs,
 		postreqs,
-    selectCourseHandler
+    selectCourse
 	} = props;
 
 	return (
@@ -23,8 +23,8 @@ const CourseDescription = (props) => {
         coreqs={coreqs}
         prereqs={prereqs}
         postreqs={postreqs}
-        selectCourseHandler={selectCourseHandler}
-        />
+        selectCourse={selectCourse}
+      />
 		</div>
 	);
 };
@@ -35,7 +35,7 @@ CourseDescription.propTypes = {
   coreqs: PropTypes.array.isRequired,
   prereqs: PropTypes.object.isRequired,
   postreqs: PropTypes.array.isRequired,
-  selectCourseHandler: PropTypes.func.isRequired
+  selectCourse: PropTypes.func.isRequired
 };
 
 export default CourseDescription;

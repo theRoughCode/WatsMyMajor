@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import uuidv4 from 'uuid/v4';
 import CourseContent from './courselist/CourseContent';
 import CourseSideBar from './courselist/CourseSideBarContainer';
@@ -101,8 +102,8 @@ class CourseListContainer extends Component {
 		super(props);
 
 		this.state = {
-			subject: props.subject,
-			catalogNumber: props.catalogNumber,
+			subject: props.match.params.subject,
+			catalogNumber: props.match.params.catalogNumber,
 			loading: true,
 			error: false,
 			course: {
@@ -128,17 +129,18 @@ class CourseListContainer extends Component {
 			}
 		}
 
-		this.selectedClassIndex = props.selectedClassIndex,
-		this.selectCourseHandler = props.selectCourseHandler,
-		this.expandCourseHandler = props.expandCourseHandler
-		this.addToCartHandler = props.addToCartHandler
+		this.selectedClassIndex = props.selectedClassIndex;
+		this.selectCourseHandler = props.selectCourseHandler;
+		this.expandCourseHandler = props.expandCourseHandler;
+		this.addToCartHandler = props.addToCartHandler;
+		this.selectCourse = this.selectCourse.bind(this);
 	}
 
 	componentDidMount() {
-		const { subject, catalogNumber } = this.props;
+		const { subject, catalogNumber } = this.state;
 
 		if (subject && catalogNumber)
-			updatePageInfo.call(this, subject, catalogNumber);
+			updatePageInfo.call(this, subject.toUpperCase(), catalogNumber);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -181,13 +183,18 @@ class CourseListContainer extends Component {
 		}
 	}
 
+	selectCourse(subject, catalogNumber) {
+		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+		this.selectCourseHandler(subject, catalogNumber);
+	}
+
 	render() {
 		const renderedView = (
 			<div className="course-view">
 				<CourseContent
 					selectedClassIndex={this.selectedClassIndex}
-					selectCourseHandler={this.selectCourseHandler}
-					expandCourseHandler={this.expandCourseHandler}
+					selectCourse={this.selectCourse}
+					expandCourse={this.expandCourseHandler}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
 					{...this.state.course}
@@ -206,8 +213,8 @@ class CourseListContainer extends Component {
 		} else if (this.state.error) {
 			return (
 				<ErrorView
-					msgHeader={`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}
-					msgBody={`Error message: ${this.state.error}`}
+					msgHeader={"Oops!"}
+					msgBody={`${this.state.subject} ${this.state.catalogNumber} is not a valid course!`}
 				/>
 			);
 		} else {
@@ -264,4 +271,4 @@ const mapDispatchToProps = dispatch => {
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CourseListContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseListContainer));

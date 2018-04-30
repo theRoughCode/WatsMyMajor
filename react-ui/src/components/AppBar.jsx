@@ -16,7 +16,7 @@ export default class ReactAppBar extends Component {
 
 	static propTypes = {
 		toggleSideBar: PropTypes.func.isRequired,
-		onSearch: PropTypes.func.isRequired
+		searchCourseHandler: PropTypes.func.isRequired
 	};
 
 	constructor(props) {
@@ -25,7 +25,7 @@ export default class ReactAppBar extends Component {
 		this.state = {
 			dataSource: [],
 			toggleSideBar: props.toggleSideBar,
-			onSearch: props.onSearch
+			searchCourseHandler: props.searchCourseHandler
 		};
 	}
 
@@ -54,8 +54,10 @@ export default class ReactAppBar extends Component {
 			});
 	}
 
-	selectCourseHandler() {
-		this.state.onSearch(this.state.dataSource[0]);
+	searchCourseHandler() {
+		const strArr = this.state.dataSource[0].split(' ');
+		if (!strArr.length) return;
+		this.state.searchCourseHandler(strArr[0], strArr[1]);
 	}
 
 	render() {
@@ -70,8 +72,8 @@ export default class ReactAppBar extends Component {
 					dataSource={this.state.dataSource}
 					filter={(searchValue, key) => searchValue.length}
 					onChange={this.queryForCourse.bind(this)}
-					onRequestSearch={this.selectCourseHandler.bind(this)}
-					onNewRequest={this.selectCourseHandler.bind(this)}
+					onRequestSearch={this.searchCourseHandler.bind(this)}
+					onNewRequest={this.searchCourseHandler.bind(this)}
 					style={{
 						marginTop: '5px',
 						maxWidth: 800

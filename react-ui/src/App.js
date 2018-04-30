@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+	withRouter
+} from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
 import { toggleSideBar, setCourse, createSnack } from './actions/index';
 import './stylesheets/App.css';
@@ -9,11 +15,6 @@ import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/MyCourseContainer';
 import CourseListView from './components/CourseListContainer';
-import {
-	DASHBOARD_VIEW,
-	MY_COURSE_VIEW,
-	COURSE_LIST_VIEW
-} from './constants/views';
 
 let styles = {
 	marginLeft: 0,
@@ -24,7 +25,7 @@ class App extends Component {
 
 	static propTypes = {
 		onToggleSideBar: PropTypes.func.isRequired,
-		onSearch: PropTypes.func.isRequired,
+		selectCourseHandler: PropTypes.func.isRequired,
 		onUndoSnack: PropTypes.func.isRequired
 	};
 
@@ -36,11 +37,13 @@ class App extends Component {
 			sideBarOpen,
 			snack,
 			onToggleSideBar,
-			onSearch,
+			selectCourseHandler,
 			onUndoSnack
 		} = props;
 
     this.state = {
+			subject: '',
+			catalogNumber: '',
       message: null,
       fetching: true,
 			hasSnack: false,
@@ -54,36 +57,26 @@ class App extends Component {
 		this.getView = this.getView.bind(this);
 		this.handleRequestClose = this.handleRequestClose.bind(this);
 		this.handleActionClick = this.handleActionClick.bind(this);
+		this.searchCourseHandler = this.searchCourseHandler.bind(this);
 		this.onToggleSideBar = onToggleSideBar;
-		this.onSearch = onSearch;
+		this.selectCourseHandler = selectCourseHandler;
 		this.onUndoSnack = onUndoSnack;
 	}
 
 	getView() {
-		let view = null;
 		const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
 		const transition = (this.state.sideBarOpen)
 													? 'all 0.3s ease-in-out'
 													: 'all 0.225s ease-out';
 		styles = Object.assign({}, styles, { marginLeft, transition });
 
-		switch (this.state.view) {
-			case DASHBOARD_VIEW:
-				view = <Dashboard />;
-				break;
-			case MY_COURSE_VIEW:
-				view = <MyCourseView />;
-				break;
-			case COURSE_LIST_VIEW:
-				view = <CourseListView />
-				break;
-			default:
-				view = null;
-		}
-
 		return (
 			<div style={styles}>
-				{view}
+				<Switch>
+					<Route exact path='/' component={Dashboard} />
+					<Route path='/my-courses' component={MyCourseView} />
+					<Route path='/courses/:subject/:catalogNumber' component={CourseListView} />
+				</Switch>
 			</div>
 		);
 	}
@@ -105,30 +98,38 @@ class App extends Component {
 	handleRequestClose() {
 		this.setState({ snackOpen: false });
 	}
+
 	handleActionClick() {
 		this.setState({ snackOpen: false });
 		this.state.snack.handleActionClick();
 		this.props.onUndoSnack(this.state.snack.undoMsg);
 	}
 
+	searchCourseHandler(subject, catalogNumber) {
+		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+		this.state.selectCourseHandler(subject, catalogNumber);
+	}
+
   render() {
     return (
-      <div className="App">
-        <AppBar
-					toggleSideBar={this.onToggleSideBar}
-					onSearch={this.onSearch}
+			<Router>
+				<div className="App">
+					<AppBar
+						toggleSideBar={this.onToggleSideBar}
+						searchCourseHandler={this.searchCourseHandler}
 					/>
-				<SideBar open={this.state.sideBarOpen} />
-				{this.getView()}
-				<Snackbar
-          open={this.state.snackOpen}
-          message={this.state.snack.msg}
-          action={this.state.snack.actionMsg}
-          autoHideDuration={this.state.snackAutoHideDuration}
-          onActionClick={this.handleActionClick}
-          onRequestClose={this.handleRequestClose}
-        />
-      </div>
+					<SideBar open={this.state.sideBarOpen} />
+					{this.getView()}
+					<Snackbar
+						open={this.state.snackOpen}
+						message={this.state.snack.msg}
+						action={this.state.snack.actionMsg}
+						autoHideDuration={this.state.snackAutoHideDuration}
+						onActionClick={this.handleActionClick}
+						onRequestClose={this.handleRequestClose}
+					/>
+				</div>
+			</Router>
     );
   }
 
@@ -143,9 +144,8 @@ const mapDispatchToProps = dispatch => {
     onToggleSideBar: () => {
       dispatch(toggleSideBar());
     },
-		onSearch: (course) => {
-			if (!course) return;
-			dispatch(setCourse(course));
+		selectCourseHandler: (subject, catalogNumber) => {
+			dispatch(setCourse(subject, catalogNumber));
 		},
 		onUndoSnack: (msg) => {
 			dispatch(createSnack(msg));
@@ -153,4 +153,4 @@ const mapDispatchToProps = dispatch => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

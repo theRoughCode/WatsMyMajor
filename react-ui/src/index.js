@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { createStore } from 'redux';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './App';
 import './stylesheets/index.css';
@@ -12,7 +13,9 @@ const store = createStore(reducers);
 const Wrapper = () => (
 	<Provider store={store}>
 		<MuiThemeProvider>
-			<App />
+			<Router>
+				<App />
+			</Router>
 		</MuiThemeProvider>
 	</Provider>
 );

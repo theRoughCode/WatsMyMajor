@@ -5,7 +5,6 @@
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
-export const SET_VIEW = 'SET_VIEW';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const ADD_TO_CART = 'ADD_TO_CART';
@@ -52,10 +51,6 @@ export function setExpandedCourse(courseObj, index) {
 		classNumber: String(class_number),
 		lastUpdated: last_updated
 	};
-}
-
-export function setView(view) {
-	return { type: SET_VIEW, view };
 }
 
 export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
