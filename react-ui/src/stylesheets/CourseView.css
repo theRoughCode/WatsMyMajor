@@ -98,7 +98,7 @@
   flex-direction: column;
   text-align: center;
   border-left-style: solid;
-  border-left-color: grey;
+  border-left-color: rgba(116, 122, 132, 0.5);
 }
 
 .reqs-link a {
