@@ -51,11 +51,16 @@ export default class CourseRequisites extends Component {
 		});
 	};
 
-	formatReqs = ({ subject, catalogNumber }, index) => (
-		<a key={index} onClick={() => this.props.selectCourse(subject, catalogNumber)}>
-			{ `${subject} ${catalogNumber}` }
-		</a>
-	);
+	formatReqs = (course, index) => (typeof course === "string")
+		? course
+		: (
+			<a
+				key={ index }
+				onClick={ () => this.props.selectCourse(course.subject, course.catalogNumber) }
+			>
+				{ `${course.subject} ${course.catalogNumber}` }
+			</a>
+		);
 
 	formatPrereqs = (prereq, index) => {
 		if (!Object.keys(prereq).length) return [];

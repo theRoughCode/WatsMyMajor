@@ -165,7 +165,7 @@ function getReqs(subject, course_number, callback) {
 
 			if (antireqs) {
 				// check if contains valid courses and not a note
-				if (antireqs.length <= 6 || antireqs.replace(/\D/g, '').length > 2) {
+				if (!(/[a-z]/.test(antireqString))) {
 					// remove whitespace and split by comma
 					antireqs = antireqs
 						.replace(/\s+/g, '')
@@ -173,7 +173,7 @@ function getReqs(subject, course_number, callback) {
 						.split(',');
 
 					antireqs = utils.parseReqs(antireqs);
-				}
+				} else antireqs = [antireqString];
 			} else antireqs = [];
 
 			crosslistings = (!crosslistings)

@@ -7,6 +7,7 @@ import CourseContent from './courselist/CourseContent';
 import CourseSideBar from './courselist/CourseSideBarContainer';
 import LoadingView from './tools/LoadingView';
 import ErrorView from './tools/ErrorView';
+import { objectEquals } from '../utils/arrays';
 import '../stylesheets/CourseView.css';
 import {
 	setCourse,
@@ -144,7 +145,7 @@ class CourseListContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (nextProps !== this.props) {
+		if (!objectEquals(nextProps, this.props)) {
 			const isNewCourse = (this.props.subject !== nextProps.subject || this.props.catalogNumber !== nextProps.catalogNumber);
 			const isNewClass = (this.props.classNumber !== nextProps.classNumber);
 

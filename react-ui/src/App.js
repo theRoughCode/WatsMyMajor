@@ -14,6 +14,7 @@ import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/MyCourseContainer';
+import CourseListBrowseView from './components/courselist/CourseListBrowseContainer';
 import CourseListView from './components/CourseListContainer';
 
 let styles = {
@@ -54,31 +55,12 @@ class App extends Component {
 			snack
     };
 
-		this.getView = this.getView.bind(this);
 		this.handleRequestClose = this.handleRequestClose.bind(this);
 		this.handleActionClick = this.handleActionClick.bind(this);
 		this.searchCourseHandler = this.searchCourseHandler.bind(this);
 		this.onToggleSideBar = onToggleSideBar;
 		this.selectCourseHandler = selectCourseHandler;
 		this.onUndoSnack = onUndoSnack;
-	}
-
-	getView() {
-		const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
-		const transition = (this.state.sideBarOpen)
-													? 'all 0.3s ease-in-out'
-													: 'all 0.225s ease-out';
-		styles = Object.assign({}, styles, { marginLeft, transition });
-
-		return (
-			<div style={styles}>
-				<Switch>
-					<Route exact path='/' component={Dashboard} />
-					<Route path='/my-courses' component={MyCourseView} />
-					<Route path='/courses/:subject/:catalogNumber' component={CourseListView} />
-				</Switch>
-			</div>
-		);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -111,6 +93,12 @@ class App extends Component {
 	}
 
   render() {
+    const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
+		const transition = (this.state.sideBarOpen)
+													? 'all 0.3s ease-in-out'
+													: 'all 0.225s ease-out';
+		styles = Object.assign({}, styles, { marginLeft, transition });
+
     return (
 			<Router>
 				<div className="App">
@@ -119,7 +107,14 @@ class App extends Component {
 						searchCourseHandler={this.searchCourseHandler}
 					/>
 					<SideBar open={this.state.sideBarOpen} />
-					{this.getView()}
+          <div style={styles}>
+    				<Switch>
+    					<Route exact path='/' component={ Dashboard } />
+              <Route path='/my-courses' component={ MyCourseView } />
+    					<Route exact path='/courses' component={ CourseListBrowseView } />
+    					<Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
+    				</Switch>
+    			</div>
 					<Snackbar
 						open={this.state.snackOpen}
 						message={this.state.snack.msg}

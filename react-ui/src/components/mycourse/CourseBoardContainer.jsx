@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
 import CourseCard from './CourseCard';
@@ -153,4 +154,4 @@ const mapDispatchToProps = dispatch => {
 	};
 };
 
-export default connect(null, mapDispatchToProps)(CourseBoard);
+export default withRouter(connect(null, mapDispatchToProps)(CourseBoard));
