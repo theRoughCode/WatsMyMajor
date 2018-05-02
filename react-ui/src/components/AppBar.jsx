@@ -11,13 +11,13 @@ const styles = {
 	position: 'fixed'
 };
 
-const AppAppBar = ({ toggleSideBar, searchCourseHandler }) => (
+const AppAppBar = ({ toggleSideBar }) => (
 	<AppBar
 		style={styles}
 		onLeftIconButtonClick={ toggleSideBar }
 		title="Wat'sMyMajor"
 	>
-		<SearchBar searchCourseHandler={ searchCourseHandler } />
+		<SearchBar />
 	</AppBar>
 );
 

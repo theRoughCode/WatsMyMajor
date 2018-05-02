@@ -14,43 +14,41 @@ const styles = {
 
 
 const CourseCard = ({
+	title,
   subject,
   catalogNumber,
   description,
-  rating,
-  termsOffered
+  rating
 }) => (
-  <Card>
-    <CardHeader
-      title={ `${subject} ${catalogNumber}` }
-      subtitle={
-        <StarRatings
-					rating={rating}
-					isSelectable={false}
-					isAggregateRating={true}
-					numOfStars={5}
-					{...styles.stars}
+  <Card className="course-card">
+		<div className="card-content">
+			<div className="card-header">
+				<CardHeader
+					title={ `${subject} ${catalogNumber}` }
+					subtitle={ title }
+					style={{ textAlign: 'left' }}
+					titleStyle={{ marginBottom: 5 }}
 				/>
-      }
-      actAsExpander={true}
-      showExpandableButton={true}
-    />
-    <CardActions>
-      <FlatButton label="See more" />
-      <FlatButton label="Quick add" />
-    </CardActions>
-    <CardText expandable={true}>
-      { description }
-    </CardText>
+			</div>
+			<div className="overlay">
+				<div className="overlay-text">
+					{ description }
+				</div>
+			</div>
+		</div>
+		<CardActions>
+			<FlatButton label="See more" />
+			<FlatButton label="Quick add" />
+		</CardActions>
   </Card>
 );
 
 CourseCard.propTypes = {
+	title: PropTypes.string.isRequired,
   subject: PropTypes.string.isRequired,
   catalogNumber: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  termsOffered: PropTypes.array.isRequired
+  rating: PropTypes.number.isRequired
 }
 
 export default CourseCard;

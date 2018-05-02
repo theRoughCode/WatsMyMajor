@@ -14,12 +14,13 @@ import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/MyCourseContainer';
-import CourseListBrowseView from './components/courselist/CourseListBrowseContainer';
+import CourseListBrowseView from './components/CourseListBrowseContainer';
 import CourseListView from './components/CourseListContainer';
 
 let styles = {
 	marginLeft: 0,
-	transition: 'all 1s ease-in-out'
+	transition: 'all 1s ease-in-out',
+  height: '100%'
 }
 
 class App extends Component {
@@ -57,7 +58,6 @@ class App extends Component {
 
 		this.handleRequestClose = this.handleRequestClose.bind(this);
 		this.handleActionClick = this.handleActionClick.bind(this);
-		this.searchCourseHandler = this.searchCourseHandler.bind(this);
 		this.onToggleSideBar = onToggleSideBar;
 		this.selectCourseHandler = selectCourseHandler;
 		this.onUndoSnack = onUndoSnack;
@@ -87,11 +87,6 @@ class App extends Component {
 		this.props.onUndoSnack(this.state.snack.undoMsg);
 	}
 
-	searchCourseHandler(subject, catalogNumber) {
-		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.selectCourseHandler(subject, catalogNumber);
-	}
-
   render() {
     const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
 		const transition = (this.state.sideBarOpen)
@@ -102,10 +97,7 @@ class App extends Component {
     return (
 			<Router>
 				<div className="App">
-					<AppBar
-						toggleSideBar={this.onToggleSideBar}
-						searchCourseHandler={this.searchCourseHandler}
-					/>
+					<AppBar toggleSideBar={this.onToggleSideBar} />
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
     				<Switch>

@@ -6,6 +6,77 @@
   padding-top: 84px;
 }
 
+/* Browse Courses */
+.course-browse {
+  width: 90%;
+  height: 100%;
+  padding-top: 100px;
+  margin: auto;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.browse-search {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.browse-search span {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.browse-recommended {
+  display: flex;
+}
+
+.course-card {
+  position: relative;
+  width: 300px;
+  margin: 20px;
+}
+
+.card-content {
+  width: 100%;
+  height: auto;
+  flex-grow: 1;
+}
+
+.card-header {
+  width: 100%;
+}
+
+.overlay {
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  opacity: 0;
+  transition: .3s ease;
+  background-color: #f2f7f9;
+}
+
+.overlay-text {
+  height: 60%;
+  overflow: hidden;
+  margin: 15px;
+}
+
+.course-card:hover .overlay {
+  opacity: 1;
+}
+
+.course-card > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Course Content*/
 .course-content {
   width: 78%;

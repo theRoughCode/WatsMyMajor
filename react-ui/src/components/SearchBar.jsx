@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import SearchBar from 'material-ui-search-bar';
+import { setCourse } from '../actions/index';
 
 
-export default class AppSearchBar extends Component {
+class AppSearchBar extends Component {
 
   static propTypes = {
-    searchCourseHandler: PropTypes.func.isRequired
+    selectCourseHandler: PropTypes.func.isRequired,
+    style: PropTypes.object
+  };
+
+  static defaultProps = {
+    style: {
+      marginTop: '5px',
+      maxWidth: 800
+    }
   };
 
   constructor(props) {
@@ -14,7 +25,8 @@ export default class AppSearchBar extends Component {
 
     this.state = {
 			dataSource: [],
-			searchCourseHandler: props.searchCourseHandler
+			selectCourseHandler: props.selectCourseHandler,
+      style: props.style
     };
   }
 
@@ -43,27 +55,38 @@ export default class AppSearchBar extends Component {
 			});
 	}
 
-	searchCourseHandler() {
+	searchCourse() {
 		const strArr = this.state.dataSource[0].split(' ');
 		if (!strArr.length) return;
-		this.state.searchCourseHandler(strArr[0], strArr[1]);
+
+    const subject = strArr[0];
+    const catalogNumber = strArr[1];
+		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+		this.state.selectCourseHandler(subject, catalogNumber);
 	}
 
   render() {
     return (
       <SearchBar
         hintText="Search for courses"
-        dataSource={this.state.dataSource}
-        filter={(searchValue, key) => searchValue.length}
-        onChange={this.queryForCourse.bind(this)}
-        onRequestSearch={this.searchCourseHandler.bind(this)}
-        onNewRequest={this.searchCourseHandler.bind(this)}
-        style={{
-          marginTop: '5px',
-          maxWidth: 800
-        }}
+        dataSource={ this.state.dataSource }
+        filter={ (searchValue, key) => searchValue.length }
+        onChange={ this.queryForCourse.bind(this) }
+        onRequestSearch={ this.searchCourse.bind(this) }
+        onNewRequest={ this.searchCourse.bind(this) }
+        style={ this.state.style }
       />
     );
   }
 
 }
+
+const mapDispatchToProps = dispatch => {
+  return {
+		selectCourseHandler: (subject, catalogNumber) => {
+			dispatch(setCourse(subject, catalogNumber));
+		}
+  }
+};
+
+export default withRouter(connect(null, mapDispatchToProps)(AppSearchBar));
