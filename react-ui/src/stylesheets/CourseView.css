@@ -28,13 +28,26 @@
   margin-bottom: 20px;
 }
 
+.course-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.popular-text {
+  font-size: 30px;
+  float: left;
+  margin-top: 40px;
+  margin-left: 20px;
+}
+
 .browse-recommended {
   display: flex;
 }
 
 .course-card {
   position: relative;
-  width: 300px;
+  width: 250px;
   margin: 20px;
 }
 
@@ -46,6 +59,10 @@
 
 .card-header {
   width: 100%;
+}
+
+.card-header div {
+  padding-right: 2px !important;
 }
 
 .overlay {
@@ -62,7 +79,7 @@
 }
 
 .overlay-text {
-  height: 60%;
+  height: 50%;
   overflow: hidden;
   margin: 15px;
 }
