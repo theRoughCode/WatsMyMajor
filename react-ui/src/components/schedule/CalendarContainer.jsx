@@ -7,18 +7,35 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import SvgIcon from 'material-ui/SvgIcon';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
+import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
+import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 
 var color1 = '#049BE5';
 var color2 = '#33B679';
 var color3 = '#E67B73';
 
-function startOfDay(date) {
-	return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const referenceDate = new Date(2017,1,1);
+
+const modeNbOfDaysMap = {
+	day: 1,
+	'3days': 3,
+	week: 7
 }
+
+const styles = {
+	arrows: {
+		borderRadius: 20,
+		height: 'auto',
+		minWidth: 0,
+		lineHeight: 0
+	}
+};
 
 function addTime(date, hours, minutes) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes == null ? 0 : minutes);
@@ -109,6 +126,8 @@ class CalendarContainer extends Component {
     };
 
 		this.setDate = this.setDate.bind(this);
+		this.getDate = this.getDate.bind(this);
+		this.getIndex = this.getIndex.bind(this);
 		this.changeMode = this.changeMode.bind(this);
 		this.toggleMenu = this.toggleMenu.bind(this);
   }
@@ -117,9 +136,27 @@ class CalendarContainer extends Component {
     this.setState({ date: date });
   }
 
+	onChangeIndex(index) {
+		const date = addDays(referenceDate, index * modeNbOfDaysMap[this.getMode()]);
+		this.unControlledDate = date;
+		this.setDate(date);
+	}
+
+	getMode() {
+		return this.state.mode == null ? 'day' : this.state.mode;
+	}
+
   changeMode(mode) {
     this.setState({ mode: mode, isOpen: false});
   }
+
+	getDate() {
+		return this.state.date != null ? this.state.date : this.unControlledDate;
+	}
+
+	getIndex() {
+		return Math.round(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
+	}
 
   toggleMenu() {
     this.setState({ isOpen: !this.state.isOpen });
@@ -138,15 +175,33 @@ class CalendarContainer extends Component {
         </Drawer>
         <AppBar
           style={{ background: 'white', position: 'relative' }}
-          titleStyle={{ color: 'black' }}
+          titleStyle={{ color: 'black', textAlign: 'left' }}
           title={ this.state.term }
-          iconElementLeft={<IconButton onClick={this.toggleMenu}><MenuIcon color='black' /></IconButton>}
+          iconElementLeft={
+						<div>
+							<IconButton onClick={this.toggleMenu}><MenuIcon color='black' /></IconButton>
+							<FlatButton
+								style={ styles.arrows }
+								onClick={ () => this.onChangeIndex(this.getIndex() - 1) }
+							>
+								<LeftIcon color='grey' style={{ margin: 'auto' }} />
+							</FlatButton>
+							<FlatButton
+								style={ styles.arrows }
+								onClick={ () => this.onChangeIndex(this.getIndex() + 1) }
+							>
+								<RightIcon color='grey' style={{ margin: 'auto' }} />
+							</FlatButton>
+						</div>
+					}
         />
         <Calendar
           style={{ height: '100%', width: '100%' }}
           date={this.state.date}
-          onDateChange={this.setDate}
-          mode={this.state.mode}>
+					referenceDate={referenceDate}
+          mode={this.state.mode}
+					getIndex={this.getIndex}
+				>
           {
             this.state.classes
               .map(event => (

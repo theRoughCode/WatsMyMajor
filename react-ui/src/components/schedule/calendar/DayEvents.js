@@ -15,7 +15,7 @@ type DayViewItem = {
 	y: number,
 	height: number,
 	width: number,
-	event: EventElement		
+	event: EventElement
 }
 
 const msInDay = 1000 * 60 * 60 * 24;
@@ -113,23 +113,12 @@ function getHourDividerStyle(hour) {
 	};
 }
 
-function handleHourDividerClick(date:Date, hour: number, onHourDividerClick) {
-	return function() {
-		var start = new Date(date.getTime());
-		start.setHours(hour);
-		var end = new Date(date.getTime());
-		end.setHours(hour + 1);
-		onHourDividerClick(start, end);
-	}
-}
-
-function renderHoursDividers(date: Date, onHourDividerClick: (start: Date, end: Date) => void) {
+function renderHoursDividers(date: Date) {
   var dividers = [];
   for(var i = 0; i < 24; i++) {
     dividers.push(
-      <div 
-        key={i + 'divider'} 
-				onClick={handleHourDividerClick(date,i,onHourDividerClick)}
+      <div
+        key={i + 'divider'}
         style={getHourDividerStyle(i)}>
       </div>
     );
@@ -141,7 +130,7 @@ function renderEventsItems(events: EventElement[], date:Date) {
   var items = eventsToDayViewItems(getEventsBetweenDates(events, date, addDays(date,1)), date);
   return items
     .map(item => {
-      return React.cloneElement(item.event, { 
+      return React.cloneElement(item.event, {
         style: Object.assign({}, item.event.props.style, getDayViewItemStyle(item))
       });
     });
@@ -166,54 +155,14 @@ function getDayViewItemStyle(item: DayViewItem) {
   };
 }
 
-function renderNewEvent(date: Date, newEvent, onCreateEvent: () => void) {
-	if(newEvent == null || newEvent.start >= addDays(date,1) || newEvent.end <= date) {
-		return [];
-	}
-
-  return (
-		<div 
-			key={'newEvent'}
-			style={{
-				width: '100%',
-				height: toPercent((newEvent.end.getTime() - newEvent.start.getTime()) / 60000 / 1440),
-				top: toPercent((newEvent.start.getTime() - date.getTime()) / 60000 / 1440),
-				left: '0',
-				position: 'absolute',
-				boxSizing: 'border-box',
-				background: '#049BE5',
-				color: 'white',
-				fontSize: '20px',
-				opacity: '0.6'
-			}}
-			onClick={onCreateEvent}>
-			<div style={{
-				position: 'absolute',
-				top: '50%',
-				left: '50%',
-				transform: 'translate(-50%, -50%)'
-				}}>
-				+
-			</div>
-		</div>
-	);
-}
-
 type Props = {
-	events: EventElement[], 
-	date: Date, 
-	newEvent: ?{
-		start: Date,
-		end: Date	
-	},
-	onHourDividerClick: (start: Date, end: Date) => void,
-	onCreateEvent: () => void,
+	events: EventElement[],
+	date: Date
 }
 
 var DayEvents = (props: Props) => {
-	return renderHoursDividers(props.date, props.onHourDividerClick)
-		.concat(renderEventsItems(props.events, props.date))
-		.concat(renderNewEvent(props.date, props.newEvent, props.onCreateEvent));
+	return renderHoursDividers(props.date)
+		.concat(renderEventsItems(props.events, props.date));
 }
 
 export default DayEvents;

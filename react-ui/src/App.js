@@ -24,7 +24,7 @@ let styles = {
   height: '100%',
   paddingTop: 64,
   boxSizing: 'border-box'
-}
+};
 
 class App extends Component {
 

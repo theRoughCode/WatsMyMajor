@@ -1,13 +1,13 @@
 // @flow
 import React from 'react';
 
-var previousDayColor = '#8D8D8D';
-var currentDayColor = '#4285F4';
-var futureDayColor = 'black';
+const previousDayColor = '#8D8D8D';
+const currentDayColor = '#4285F4';
+const futureDayColor = 'black';
 
 //Assume that date have 0min 0sec 0ms
 function getHeaderColor(date: Date): string {
-	var diff = new Date().getTime() - date.getTime();
+	const diff = new Date().getTime() - date.getTime();
   if(diff < 0) {
     return futureDayColor;
   } else if (diff > (3600 * 1000 * 24)) {
@@ -16,25 +16,20 @@ function getHeaderColor(date: Date): string {
   return currentDayColor;
 }
 
-var weekDayFormatter = new Intl.DateTimeFormat(window.navigator.language, { weekday: 'short' });
-var dayFormatter = new Intl.DateTimeFormat(window.navigator.language, { day: 'numeric' });
+const weekDayFormatter = new Intl.DateTimeFormat(window.navigator.language, { weekday: 'short' });
+const dayFormatter = new Intl.DateTimeFormat(window.navigator.language, { day: 'numeric' });
 
-type Props = {
-  style: any,
-  date: Date
-}
-
-const DayHeader = (props: Props) => {
+const DayHeader = ({ style, date }) => {
   return (
-    <div style={Object.assign(props.style, { color: getHeaderColor(props.date)})}>
+    <div style={Object.assign(style, { color: getHeaderColor(date)})}>
       <div style={{ fontSize: '22px' }}>
         {
-          dayFormatter.format(props.date)
+          dayFormatter.format(date)
         }
       </div>
       <div style={{ fontSize: '12px' }}>
         {
-          weekDayFormatter.format(props.date)
+          weekDayFormatter.format(date)
         }
       </div>
     </div>
