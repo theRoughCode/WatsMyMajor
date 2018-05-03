@@ -51,7 +51,7 @@ export default class CourseListBrowseContainer extends Component {
         <div className="course-card-container">
           <span className="popular-text">Most popular courses</span>
           <div className="browse-recommended">
-            { this.state.popular.map(course => <CourseCard { ...course } />) }
+            { this.state.popular.map((course, index) => <CourseCard key={index} { ...course } />) }
           </div>
         </div>
         <div className="browse-popular">

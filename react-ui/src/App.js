@@ -14,13 +14,16 @@ import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/MyCourseContainer';
+import MyScheduleView from './components/schedule/CalendarContainer';
 import CourseListBrowseView from './components/CourseListBrowseContainer';
 import CourseListView from './components/CourseListContainer';
 
 let styles = {
 	marginLeft: 0,
 	transition: 'all 1s ease-in-out',
-  height: '100%'
+  height: '100%',
+  paddingTop: 64,
+  boxSizing: 'border-box'
 }
 
 class App extends Component {
@@ -103,6 +106,7 @@ class App extends Component {
     				<Switch>
     					<Route exact path='/' component={ Dashboard } />
               <Route path='/my-courses' component={ MyCourseView } />
+              <Route path='/schedule' component={ MyScheduleView } />
     					<Route exact path='/courses' component={ CourseListBrowseView } />
     					<Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
     				</Switch>

@@ -63,7 +63,7 @@ export default class SideBar extends Component {
 								className="sidebar-courses"
                 key={2}
 								primaryText="My Schedule"
-								containerElement={ <Link to="/my-schedule" /> }
+								containerElement={ <Link to="/schedule" /> }
                 leftIcon={<ScheduleIcon />}
               />,
               <ListItem

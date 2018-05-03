@@ -2,8 +2,14 @@ html {
 	background-color: #f9f9f9;
 }
 
+html, body, #root, .App {
+	height: 100%;
+}
+
 .App {
 	text-align: center;
+	display: flex;
+	flex-direction: column;
 }
 
 .App-logo {

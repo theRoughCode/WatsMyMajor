@@ -15,7 +15,7 @@ export default class Dashboard extends Component {
 
 	render() {
 		return (
-			<div style={{ paddingTop: '64px' }}>
+			<div>
 				<div className="App-header">
 					<img src={logo} className="App-logo" alt="logo" />
 					<h2>Welcome to React</h2>
