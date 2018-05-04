@@ -8,7 +8,6 @@ import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
-import SvgIcon from 'material-ui/SvgIcon';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
@@ -16,9 +15,9 @@ import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 
-var color1 = '#049BE5';
-var color2 = '#33B679';
-var color3 = '#E67B73';
+const color1 = '#049BE5';
+const color2 = '#33B679';
+const color3 = '#E67B73';
 
 const referenceDate = new Date(2017,1,1);
 
@@ -41,22 +40,12 @@ function addTime(date, hours, minutes) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes == null ? 0 : minutes);
 }
 
-function getIcon(mode) {
-  switch(mode) {
-    case 'day':
-      return <DayIcon/>;
-    case '3days':
-    case 'week':
-      return <MultipleDaysIcon/>;
-  }
-}
-
 class CalendarContainer extends Component {
 
   constructor(props: any) {
     super(props);
 
-    const date = startOfDay(new Date());
+    const date = new Date();
     this.state = {
       term: 'Spring 2018',
       date: date,
@@ -169,9 +158,9 @@ class CalendarContainer extends Component {
           docked={false}
           open={this.state.isOpen}
           onRequestChange={this.toggleMenu}>
-          <MenuItem leftIcon={<DayIcon/>} onClick={() => this.changeMode('day')}>Day</MenuItem>
-          <MenuItem leftIcon={<MultipleDaysIcon/>} onClick={() => this.changeMode('3days')}>3 Days</MenuItem>
-          <MenuItem leftIcon={<MultipleDaysIcon/>} onClick={() => this.changeMode('week')}>Week</MenuItem>
+          <MenuItem leftIcon={<DayIcon />} onClick={() => this.changeMode('day')}>Day</MenuItem>
+          <MenuItem leftIcon={<MultipleDaysIcon />} onClick={() => this.changeMode('3days')}>3 Days</MenuItem>
+          <MenuItem leftIcon={<MultipleDaysIcon />} onClick={() => this.changeMode('week')}>Week</MenuItem>
         </Drawer>
         <AppBar
           style={{ background: 'white', position: 'relative' }}

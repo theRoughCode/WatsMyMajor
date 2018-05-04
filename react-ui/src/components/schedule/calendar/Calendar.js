@@ -9,7 +9,7 @@ import { virtualize } from 'react-swipeable-views-utils';
 
 import DayView from './DayView';
 import MultipleDaysView from './MultipleDaysView';
-import { addDays, diffDays, startOfDay } from './dateUtils';
+import { addDays } from './dateUtils';
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 

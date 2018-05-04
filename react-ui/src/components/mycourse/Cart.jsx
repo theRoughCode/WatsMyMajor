@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import TermBoard from './TermBoard';
 import Paper from 'material-ui/Paper';
 import FontIcon from 'material-ui/FontIcon';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 
@@ -29,44 +28,31 @@ const styles = {
 	}
 }
 
-class Trash extends Component {
-
-	static propTypes = {
-
-	};
-
-	constructor(props) {
-		super(props);
-	}
-
-	render() {
-		return (
-			<Paper zDepth={1} style={styles.trashContainer}>
-				<Droppable
-					droppableId={'Trash'}
-					type={DragTypes.COURSE}
+const Trash = () => (
+	<Paper zDepth={1} style={styles.trashContainer}>
+		<Droppable
+			droppableId={'Trash'}
+			type={DragTypes.COURSE}
+			>
+			{(provided, snapshot) => (
+				<div
+					ref={provided.innerRef}
+					style={styles.droppableContainer(snapshot.isDraggingOver)}
 					>
-					{(provided, snapshot) => (
-						<div
-							ref={provided.innerRef}
-							style={styles.droppableContainer(snapshot.isDraggingOver)}
-							>
-							<FontIcon
-								className="material-icons"
-								style={styles.trashIcon}
-							>
-								{(snapshot.isDraggingOver)
-									? 'delete_forever'
-									: 'delete'
-								}
-							</FontIcon>
-						</div>
-					)}
-				</Droppable>
-			</Paper>
-		);
-	}
-}
+					<FontIcon
+						className="material-icons"
+						style={styles.trashIcon}
+					>
+						{(snapshot.isDraggingOver)
+							? 'delete_forever'
+							: 'delete'
+						}
+					</FontIcon>
+				</div>
+			)}
+		</Droppable>
+	</Paper>
+);
 
 
 export default class Cart extends Component {

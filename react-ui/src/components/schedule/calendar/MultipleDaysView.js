@@ -1,19 +1,8 @@
-// @flow
-import type { EventElement } from './types';
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
-
-type Props = {
-  dates: Date[],
-	scrollPosition: number;
-	onScrollChange: (number) => void;
-  isScrollDisable: boolean,
-  children: EventElement[]
-}
 
 const firstColumnWidth = '40px';
 const headerHeight = '60px';

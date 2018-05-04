@@ -1,17 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardHeader } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import StarRatings from 'react-star-ratings';
-
-const styles = {
-	stars: {
-		starRatedColor: '#ffcc00',
-		starWidthAndHeight: '15px',
-		starSpacing: '1px'
-	}
-};
-
 
 const CourseCard = ({
 	title,

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
-import CourseCard from './CourseCard';
 import Cart from './Cart';
 import { DragDropContext } from 'react-beautiful-dnd';
 import uuidv4 from 'uuid/v4';
@@ -89,6 +88,8 @@ class CourseBoard extends Component {
 	// Reorder courses in term board
 	reorder(source, dest) {
 		const { courseList, cart } = this.state;
+		const sourceIndex = source.index;
+		const destIndex = dest.index;
 
 		const sourceArr = (source.droppableId === 'Cart')
 			? cart
@@ -108,9 +109,6 @@ class CourseBoard extends Component {
 			? cart
 			: courseList[dest.droppableId].courses;
 
-		const sourceIndex = source.index;
-		const destIndex = dest.index;
-
 		const [ course ] = sourceArr.splice(sourceIndex, 1);
 		destArr.splice(destIndex, 0, course);
 
@@ -119,7 +117,7 @@ class CourseBoard extends Component {
 		if (dest.droppableId !== 'Cart')
 			courseList[dest.droppableId].courses = destArr;
 
-		if (source.droppableId === 'Cart' || dest.droppableId == 'Cart')
+		if (source.droppableId === 'Cart' || dest.droppableId === 'Cart')
 			this.reorderCartHandler(sourceArr);
 
 		return courseList;

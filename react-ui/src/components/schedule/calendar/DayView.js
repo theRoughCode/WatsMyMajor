@@ -1,6 +1,3 @@
-// @flow
-import type { EventElement } from './types';
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import verticalHours from './verticalHours';
