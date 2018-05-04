@@ -8,7 +8,9 @@ import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
+import DatePicker from 'material-ui/DatePicker';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+import DateIcon from 'material-ui/svg-icons/editor/insert-invitation';
 import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import DayIcon from 'material-ui/svg-icons/action/view-day';
@@ -28,6 +30,21 @@ const modeNbOfDaysMap = {
 }
 
 const styles = {
+	toggleMenu: {
+		borderRadius: 35,
+		height: 'auto',
+		minWidth: 35,
+		height: 35,
+		lineHeight: 0
+	},
+	dateIcon: {
+		borderRadius: 40,
+		height: 'auto',
+		minWidth: 40,
+		height: 40,
+		lineHeight: 0,
+		margin: 10
+	},
 	arrows: {
 		borderRadius: 20,
 		height: 'auto',
@@ -164,11 +181,27 @@ class CalendarContainer extends Component {
         </Drawer>
         <AppBar
           style={{ background: 'white', position: 'relative' }}
-          titleStyle={{ color: 'black', textAlign: 'left' }}
+          titleStyle={{
+						color: 'black',
+						textAlign: 'left',
+						marginTop: 4,
+						marginLeft: 10
+					}}
           title={ this.state.term }
           iconElementLeft={
 						<div>
-							<IconButton onClick={this.toggleMenu}><MenuIcon color='black' /></IconButton>
+							<FlatButton
+								style={ styles.toggleMenu }
+								onClick={ this.toggleMenu }
+							>
+								<MenuIcon color='black' />
+							</FlatButton>
+							<FlatButton
+								style={ styles.dateIcon }
+								onClick={ () => this.setDate(new Date()) }
+							>
+								<DateIcon color='grey' />
+							</FlatButton>
 							<FlatButton
 								style={ styles.arrows }
 								onClick={ () => this.onChangeIndex(this.getIndex() - 1) }
