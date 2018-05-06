@@ -1,8 +1,6 @@
-// @flow
-
 import React, { Component } from 'react';
 import { Calendar, Event } from './calendar';
-
+import moment from 'moment';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
@@ -15,6 +13,7 @@ import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
+import RandomColour from 'randomcolor';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 
 const color1 = '#049BE5';
@@ -30,20 +29,30 @@ const modeNbOfDaysMap = {
 }
 
 const styles = {
+	iconContainer: {
+		marginTop: 2,
+		marginRight: 20
+	},
 	toggleMenu: {
 		borderRadius: 35,
-		height: 'auto',
 		minWidth: 35,
 		height: 35,
 		lineHeight: 0
 	},
 	dateIcon: {
 		borderRadius: 40,
-		height: 'auto',
 		minWidth: 40,
 		height: 40,
 		lineHeight: 0,
 		margin: 10
+	},
+	today: {
+		minWidth: 40,
+		display: 'inline-block',
+    verticalAlign: 'top',
+		lineHeight: 0,
+		marginTop: 11,
+		marginRight: 10
 	},
 	arrows: {
 		borderRadius: 20,
@@ -57,78 +66,137 @@ function addTime(date, hours, minutes) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes == null ? 0 : minutes);
 }
 
+function parseCourses(courses) {
+	const classesArr = [];
+
+	courses.map(({ subject, catalogNumber, classes }) => {
+		const colour = RandomColour();
+		Object.entries(classes).map(arr => {
+			const type = arr[0];
+
+			const {
+				classNum,
+				section,
+				days,
+				startTime,
+				endTime,
+				location,
+				instructor,
+				startDate,
+				endDate
+			} = arr[1];
+
+			const startDateMoment = moment(startDate, "DD/MM/YYYY");
+			const endDateMoment = moment(endDate, "DD/MM/YYYY");
+			const startTimeMoment = moment(startTime, "hh:mmA");
+			const endTimeMoment = moment(endTime, "hh:mmA");
+
+			console.log('year: ', startDateMoment.year())
+			console.log('month: ', startDateMoment.month())
+			console.log('date: ', startDateMoment.date())
+			console.log('hour: ', startTimeMoment.hour())
+			console.log('minute: ', startTimeMoment.minute())
+
+			let date = startDateMoment;
+			while (date.isSameOrBefore(endDateMoment)) {
+				days.map(dayStr => {
+					let day = 0;
+					switch (dayStr) {
+						case 'M': day = 1; break;
+						case 'T': day = 2; break;
+						case 'W': day = 3; break;
+						case 'Th': day = 4; break;
+						case 'F': day = 5; break;
+						default: day = 6;
+					}
+
+					const startOfWeekMoment = date.startOf('week');
+					const startDay = startOfWeekMoment.day();
+					const startDate = startOfWeekMoment.date();
+
+					// ensure valid date
+					const currDayMoment = startOfWeekMoment.add(day, 'days');
+					if (currDayMoment.isSameOrAfter(startDateMoment) || currDayMoment.add(day, 'days').isSameOrBefore(endDateMoment)) {
+						const start = new Date(date.year(), date.month(), currDayMoment.date(), startTimeMoment.hour(), startTimeMoment.minute());
+						const end = new Date(date.year(), date.month(), currDayMoment.date(), endTimeMoment.hour(), endTimeMoment.minute());
+						console.log(start)
+					}
+				});
+				date = date.add(7, 'days');
+			}
+
+			classesArr.push({
+				subject,
+				catalogNumber,
+				type,
+				colour,
+				classNum,
+				section,
+				days,
+				startTime,
+				endTime,
+				location,
+				instructor,
+				startDate,
+				endDate
+			});
+		});
+	});
+	console.log(classesArr)
+	return classesArr;
+}
+
 class CalendarContainer extends Component {
 
   constructor(props: any) {
     super(props);
 
     const date = new Date();
+		const courses = [{
+			"subject":"CS",
+			"catalogNumber":"240E",
+			"classes": {
+				"TUT": {
+					"classNum":"8305",
+					"section":"101",
+					"days":["M"],
+					"startTime":"3:30PM",
+					"endTime":"4:20PM",
+					"location":"MC 2017",
+					"instructor":"Staff",
+					"startDate":"03/01/2018",
+					"endDate":"04/04/2018"
+				},
+				"TST": {
+					"classNum":"8306",
+					"section":"201",
+					"days":["Th"],
+					"startTime":"4:30PM",
+					"endTime":"6:20PM",
+					"location":"TBA",
+					"instructor":"Karen Anderson",
+					"startDate":"15/02/2018",
+					"endDate":"15/02/2018"
+				},
+				"LEC": {
+					"classNum":"8304",
+					"section":"001",
+					"days":["T", "Th"],
+					"startTime":"8:30AM",
+					"endTime":"9:50AM",
+					"location":"MC 4061",
+					"instructor":"Prabhakar Ragde",
+					"startDate":"03/01/2018",
+					"endDate":"04/04/2018"
+				}
+			}
+		}];
+
     this.state = {
-      term: 'Spring 2018',
       date: date,
       mode: 'day',
       isOpen: false,
-      classes: [{
-        key: 0,
-        start: addTime(date, 10),
-        end: addTime(date, 11),
-        background: color1,
-        title: 'Team meeting'
-      }, {
-        key: 1,
-        start: addTime(date, 34),
-        end: addTime(date, 35),
-        background: color1,
-        title: 'Team meeting'
-      }, {
-        key: 2,
-        start: addTime(date, 58),
-        end: addTime(date, 59),
-        background: color1,
-        title: 'Team meeting'
-      }, {
-        key: 3,
-        start: addTime(date, -14),
-        end: addTime(date, -13),
-        background: color1,
-        title: 'Team meeting'
-      }, {
-        key: 4,
-        start: addTime(date, 12),
-        end: addTime(date, 14),
-        background: color2,
-        title: 'Picnic with Marion'
-      }, {
-        key: 5,
-        start: addTime(date, 16),
-        end: addTime(date, 17),
-        background: color3,
-        title: 'Walk Ginza'
-      }, {
-        key: 6,
-        start: addTime(date, 16, 45),
-        end: addTime(date, 17, 15),
-        background: color2,
-        title: 'Meet William'
-      }, {
-        key: 7,
-        start: addTime(date, 64, 45),
-        end: addTime(date, 65, 15),
-        background: color2,
-        title: 'Meet Olivier'
-      }, {
-        key: 8,
-        start: addTime(date, 37, 30),
-        end: addTime(date, 38, 30),
-        background: color3,
-        title: 'Haircut'
-      }, {
-        key: 9,
-        start: addTime(date, 39),
-        end: addTime(date, 42),
-        background: color1,
-        title: 'Photo shoot'
-      }]
+      classes: parseCourses(courses)
     };
 
 		this.setDate = this.setDate.bind(this);
@@ -136,6 +204,7 @@ class CalendarContainer extends Component {
 		this.getIndex = this.getIndex.bind(this);
 		this.changeMode = this.changeMode.bind(this);
 		this.toggleMenu = this.toggleMenu.bind(this);
+		this.openDatePicker = this.openDatePicker.bind(this);
   }
 
   setDate(date) {
@@ -168,26 +237,30 @@ class CalendarContainer extends Component {
     this.setState({ isOpen: !this.state.isOpen });
   }
 
+	openDatePicker() {
+		this.refs.dp.openDialog();
+	}
+
   render() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Drawer
-          docked={false}
-          open={this.state.isOpen}
-          onRequestChange={this.toggleMenu}>
-          <MenuItem leftIcon={<DayIcon />} onClick={() => this.changeMode('day')}>Day</MenuItem>
-          <MenuItem leftIcon={<MultipleDaysIcon />} onClick={() => this.changeMode('3days')}>3 Days</MenuItem>
-          <MenuItem leftIcon={<MultipleDaysIcon />} onClick={() => this.changeMode('week')}>Week</MenuItem>
+          docked={ false }
+          open={ this.state.isOpen }
+          onRequestChange={ this.toggleMenu }>
+          <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
+          <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
+          <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
         </Drawer>
         <AppBar
           style={{ background: 'white', position: 'relative' }}
           titleStyle={{
 						color: 'black',
 						textAlign: 'left',
-						marginTop: 4,
-						marginLeft: 10
+						marginBottom: 10
 					}}
-          title={ this.state.term }
+          title={ `${moment(this.state.date).format('MMM YYYY')}` }
+					iconStyleLeft={ styles.iconContainer }
           iconElementLeft={
 						<div>
 							<FlatButton
@@ -198,10 +271,17 @@ class CalendarContainer extends Component {
 							</FlatButton>
 							<FlatButton
 								style={ styles.dateIcon }
-								onClick={ () => this.setDate(new Date()) }
+								onClick={ this.openDatePicker }
 							>
 								<DateIcon color='grey' />
 							</FlatButton>
+							<FlatButton
+								label="Today"
+								style={ styles.today }
+								labelStyle={ styles.todayLabel }
+								backgroundColor="rgba(0,0,0,0.04)"
+								onClick={ () => this.setDate(new Date()) }
+							/>
 							<FlatButton
 								style={ styles.arrows }
 								onClick={ () => this.onChangeIndex(this.getIndex() - 1) }
@@ -217,6 +297,13 @@ class CalendarContainer extends Component {
 						</div>
 					}
         />
+				<DatePicker
+					ref="dp"
+					name="dp"
+					style={{ display: 'none' }}
+					onChange={ (_, date) => this.setDate(date) }
+
+				/>
         <Calendar
           style={{ height: '100%', width: '100%' }}
           date={this.state.date}
@@ -226,13 +313,13 @@ class CalendarContainer extends Component {
 				>
           {
             this.state.classes
-              .map(event => (
+              .map((classElem, index) => (
               <Event
-                key={event.key}
-                start={event.start}
-                end={event.end}
-                background={event.background}
-                title={event.title}
+                key={ index }
+                start={classElem.startTime}
+                end={classElem.endTime}
+                background={classElem.colour}
+                title={`${classElem.subject} ${classElem.catalogNumber}`}
               />
             ))
           }

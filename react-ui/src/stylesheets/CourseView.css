@@ -254,3 +254,10 @@
 	display: flex;
 	flex-direction: column;
 }
+
+/* My Schedule */
+
+.schedule-appbar {
+  margin-top: 0;
+  border: 1px solid red !important;
+}

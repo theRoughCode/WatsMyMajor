@@ -13,7 +13,7 @@ function parseComponent(arr) {
   const section = arr[1];
   const type = arr[2];
   const dayArr = arr[3].split(' ');
-  const day = dayArr[0];
+  const days = dayArr[0].split(/(?=[A-Z])/);
   const startTime = dayArr[1];
   const endTime = dayArr[3];
   const location = arr[4].replace(/\s+/, ' ');
@@ -26,7 +26,7 @@ function parseComponent(arr) {
     info: {
       classNum,
       section,
-      day,
+      days,
       startTime,
       endTime,
       location,
