@@ -15,6 +15,8 @@ import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
 import RandomColour from 'randomcolor';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
+import LoadingView from '../tools/LoadingView';
+import ErrorView from '../tools/ErrorView';
 
 const color1 = '#049BE5';
 const color2 = '#33B679';
@@ -143,52 +145,16 @@ class CalendarContainer extends Component {
     super(props);
 
     const date = new Date(2018, 2, 27);
-		const courses = [{
-			"subject":"CS",
-			"catalogNumber":"240E",
-			"classes": {
-				"TUT": {
-					"classNum":"8305",
-					"section":"101",
-					"days":["M"],
-					"startTime":"3:30PM",
-					"endTime":"4:20PM",
-					"location":"MC 2017",
-					"instructor":"Staff",
-					"startDate":"03/01/2018",
-					"endDate":"04/04/2018"
-				},
-				"TST": {
-					"classNum":"8306",
-					"section":"201",
-					"days":["Th"],
-					"startTime":"4:30PM",
-					"endTime":"6:20PM",
-					"location":"TBA",
-					"instructor":"Karen Anderson",
-					"startDate":"15/02/2018",
-					"endDate":"15/02/2018"
-				},
-				"LEC": {
-					"classNum":"8304",
-					"section":"001",
-					"days":["T", "Th"],
-					"startTime":"8:30AM",
-					"endTime":"9:50AM",
-					"location":"MC 4061",
-					"instructor":"Prabhakar Ragde",
-					"startDate":"03/01/2018",
-					"endDate":"04/04/2018"
-				}
-			}
-		}];
 
     this.state = {
       date: date,
-      mode: 'day',
-      classes: parseCourses(courses),
+      mode: '3days',
+      classes: [],
+			loading: true,
+			error: ''
     };
 
+		this.getSchedule = this.getSchedule.bind(this);
 		this.setDate = this.setDate.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.getIndex = this.getIndex.bind(this);
@@ -196,6 +162,25 @@ class CalendarContainer extends Component {
 		this.toggleMenu = this.toggleMenu.bind(this);
 		this.openDatePicker = this.openDatePicker.bind(this);
   }
+
+	componentDidMount() {
+	  this.getSchedule();
+	}
+
+	getSchedule() {
+		return fetch(`/parse`)
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`status ${response.status}`);
+			}
+			return response.json();
+		})
+		.then(({ term, courses }) => this.setState({
+			loading: false,
+			classes: parseCourses(courses)
+		}))
+		.catch(error => this.setState({ loading: false, error }));
+	}
 
   setDate(date) {
     this.setState({ date: date });
@@ -232,8 +217,8 @@ class CalendarContainer extends Component {
 	}
 
   render() {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+		const renderedView = (
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Drawer
           docked={ false }
           open={ this.state.isOpen }
@@ -315,7 +300,20 @@ class CalendarContainer extends Component {
           }
         </Calendar>
       </div>
-    );
+		)
+
+		if (this.state.loading) {
+			return <LoadingView />;
+		} else if (this.state.error) {
+			return (
+				<ErrorView
+					msgHeader={"Oops!"}
+					msgBody={ this.state.error }
+				/>
+			);
+		} else {
+			return renderedView;
+		}
   }
 }
 

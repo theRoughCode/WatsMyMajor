@@ -4,6 +4,7 @@ import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
 
+const height = 2500;
 const firstColumnWidth = '40px';
 const headerHeight = '60px';
 
@@ -87,12 +88,12 @@ const MultipleDaysView = ({
         overflowY: isScrollDisable ? 'hidden' : 'auto',
         overflowX: 'hidden'
       }}>
-      <div style={{ height: '1700px', position: 'absolute', left: '0', top: '0', borderTop: '1px solid #F3F3F3' }}>
+      <div style={{ height: height + 'px', position: 'absolute', left: '0', top: '0', borderTop: '1px solid #F3F3F3' }}>
         {
           verticalHours()
         }
       </div>
-      <div style={{ height: '1700px', position: 'absolute', right: '0', left: firstColumnWidth, top: '0' }}>
+      <div style={{ height: height + 'px', position: 'absolute', right: '0', left: firstColumnWidth, top: '0' }}>
         {
           renderDays(dates, children)
         }
