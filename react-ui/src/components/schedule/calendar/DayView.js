@@ -4,7 +4,7 @@ import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
 
-const height = 1700;
+const height = 2000;
 
 const DayView = ({
 	scrollViewer,

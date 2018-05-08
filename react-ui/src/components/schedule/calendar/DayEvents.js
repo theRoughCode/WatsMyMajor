@@ -1,22 +1,6 @@
-// @flow
-import type { EventElement } from './types';
-
 import React from 'react';
 import { addDays } from './dateUtils';
 import { every } from './utils';
-
-type Column = {
-	column: number,
-	over: number
-}
-
-type DayViewItem = {
-	x: number,
-	y: number,
-	height: number,
-	width: number,
-	event: EventElement
-}
 
 const msInDay = 1000 * 60 * 60 * 24;
 
@@ -82,7 +66,7 @@ function getEventItemHeight(event: EventElement, date: Date) {
 	return (maxedDate - minDate) / msInDay;
 }
 
-function eventsToDayViewItems(events: EventElement[], date: Date) {
+function eventsToDayViewItems(events, date) {
 	const sortedEvents = events.sort((a, b) => a.props.start.getTime() - b.props.start.getTime());
 	const eventsColumn = getEventsColumns(sortedEvents);
 	return sortedEvents
@@ -126,8 +110,8 @@ function renderHoursDividers(date: Date) {
   return dividers;
 }
 
-function renderEventsItems(events: EventElement[], date:Date) {
-  var items = eventsToDayViewItems(getEventsBetweenDates(events, date, addDays(date,1)), date);
+function renderEventsItems(events, date) {
+  const items = eventsToDayViewItems(getEventsBetweenDates(events, date, addDays(date,1)), date);
   return items
     .map(item => {
       return React.cloneElement(item.event, {
@@ -150,19 +134,16 @@ function getDayViewItemStyle(item: DayViewItem) {
 		cursor: 'pointer',
 		borderRadius: '2px',
 		fontSize: '12px',
+		display: 'flex',
+		flexDirection: 'column',
+		verticalAlign: 'middle',
 		color: item.event.props.color ? item.event.props.color : 'white',
 		background: item.event.props.background ? item.event.props.background : '#049BE5'
   };
 }
 
-type Props = {
-	events: EventElement[],
-	date: Date
-}
-
-var DayEvents = (props: Props) => {
-	return renderHoursDividers(props.date)
-		.concat(renderEventsItems(props.events, props.date));
+const DayEvents = ({ date, events }) => {
+	return renderHoursDividers(date).concat(renderEventsItems(events, date));
 }
 
 export default DayEvents;

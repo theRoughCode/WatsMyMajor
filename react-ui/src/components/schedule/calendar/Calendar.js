@@ -1,6 +1,3 @@
-// @flow
-import type { EventElement } from './types';
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -13,7 +10,7 @@ import { addDays } from './dateUtils';
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
-function getEventsFromChildren(children?: EventElement | EventElement[]) {
+function getEventsFromChildren(children) {
 	if(children == null) {
 		return [];
 	} else if (!Array.isArray(children)) {
@@ -23,20 +20,18 @@ function getEventsFromChildren(children?: EventElement | EventElement[]) {
 	}
 }
 
-function getTimeOrDefault(date: ?Date) {
+function getTimeOrDefault(date) {
 	return date == null ? 0 : date.getTime();
 }
 
 class Calendar extends Component {
+
 	static propTypes = {
 		date: PropTypes.instanceOf(Date).isRequired,
 		referenceDate: PropTypes.instanceOf(Date).isRequired,
 		mode: PropTypes.string.isRequired,
 		getIndex: PropTypes.func.isRequired
 	}
-	state: State;
-
-	unControlledDate: Date;
 
 	constructor(props: Props) {
 		super(props);
@@ -73,25 +68,25 @@ class Calendar extends Component {
 	slideRenderer = (slide) => {
 		if(this.state.mode === 'day') {
 			return (
-				<div key={slide.key} style={{ position: 'relative', height: '100%', width: '100%' }}>
+				<div key={ slide.key } style={{ position: 'relative', height: '100%', width: '100%' }}>
 					<DayView
-						onScrollChange={this.onScrollChange}
-						scrollPosition={this.state.scrollPosition}
-						date={addDays(this.state.referenceDate, slide.index)}
-						isScrollDisable={this.state.isSwiping}
-						children={getEventsFromChildren(this.props.children)}/>
+						onScrollChange={ this.onScrollChange }
+						scrollPosition={ this.state.scrollPosition }
+						date={ addDays(this.state.referenceDate, slide.index) }
+						isScrollDisable={ this.state.isSwiping }
+						children={ getEventsFromChildren(this.props.children) }/>
 				</div>
 			);
 		}
 
 		return (
-			<div key={slide.key} style={{ position: 'relative', height: '100%', width: '100%' }}>
+			<div key={ slide.key } style={{ position: 'relative', height: '100%', width: '100%' }}>
 				<MultipleDaysView
-					onScrollChange={this.onScrollChange}
-					scrollPosition={this.state.scrollPosition}
-					dates={this.state.mode === 'week' ? this.getWeekDates(slide.index) : this.getThreeDaysDates(slide.index)}
-					isScrollDisable={this.state.isSwiping}
-					children={getEventsFromChildren(this.props.children)}>
+					onScrollChange={ this.onScrollChange }
+					scrollPosition={ this.state.scrollPosition }
+					dates={ this.state.mode === 'week' ? this.getWeekDates(slide.index) : this.getThreeDaysDates(slide.index) }
+					isScrollDisable={ this.state.isSwiping }
+					children={ getEventsFromChildren(this.props.children) }>
 				</MultipleDaysView>
 			</div>
 		);
@@ -122,16 +117,16 @@ class Calendar extends Component {
 	render() {
 		return (
 			<VirtualizeSwipeableViews
-				key={this.state.mode}
-				style={this.props.style}
+				key={ this.state.mode }
+				style={ this.props.style }
 				slideStyle={{ height: '100%' }}
 				containerStyle={{ height: '100%', willChange: 'transform' }}
-				index={this.state.getIndex()}
-				overscanSlideAfter={1}
-				overscanSlideBefore={1}
-				slideRenderer={this.slideRenderer}
-				onChangeIndex={this.onChangeIndex}
-				onSwitching={this.onSwitching}/>
+				index={ this.state.getIndex() }
+				overscanSlideAfter={ 1 }
+				overscanSlideBefore={ 1 }
+				slideRenderer={ this.slideRenderer }
+				onChangeIndex={ this.onChangeIndex }
+				onSwitching={ this.onSwitching }/>
 		)
 	}
 }

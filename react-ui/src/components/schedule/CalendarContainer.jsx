@@ -20,7 +20,7 @@ const color1 = '#049BE5';
 const color2 = '#33B679';
 const color3 = '#E67B73';
 
-const referenceDate = new Date(2017,1,1);
+const referenceDate = new Date(2017, 1, 1);
 
 const modeNbOfDaysMap = {
 	day: 1,
@@ -70,7 +70,7 @@ function parseCourses(courses) {
 	const classesArr = [];
 
 	courses.map(({ subject, catalogNumber, classes }) => {
-		const colour = RandomColour();
+		const colour = RandomColour({ luminosity: 'dark' });
 		Object.entries(classes).map(arr => {
 			const type = arr[0];
 
@@ -90,12 +90,6 @@ function parseCourses(courses) {
 			const endDateMoment = moment(endDate, "DD/MM/YYYY");
 			const startTimeMoment = moment(startTime, "hh:mmA");
 			const endTimeMoment = moment(endTime, "hh:mmA");
-
-			console.log('year: ', startDateMoment.year())
-			console.log('month: ', startDateMoment.month())
-			console.log('date: ', startDateMoment.date())
-			console.log('hour: ', startTimeMoment.hour())
-			console.log('minute: ', startTimeMoment.minute())
 
 			let date = startDateMoment;
 			while (date.isSameOrBefore(endDateMoment)) {
@@ -119,30 +113,27 @@ function parseCourses(courses) {
 					if (currDayMoment.isSameOrAfter(startDateMoment) || currDayMoment.add(day, 'days').isSameOrBefore(endDateMoment)) {
 						const start = new Date(date.year(), date.month(), currDayMoment.date(), startTimeMoment.hour(), startTimeMoment.minute());
 						const end = new Date(date.year(), date.month(), currDayMoment.date(), endTimeMoment.hour(), endTimeMoment.minute());
-						console.log(start)
+
+						classesArr.push({
+							subject,
+							catalogNumber,
+							type,
+							colour,
+							classNum,
+							section,
+							days,
+							start,
+							end,
+							location,
+							instructor
+						});
 					}
 				});
 				date = date.add(7, 'days');
 			}
-
-			classesArr.push({
-				subject,
-				catalogNumber,
-				type,
-				colour,
-				classNum,
-				section,
-				days,
-				startTime,
-				endTime,
-				location,
-				instructor,
-				startDate,
-				endDate
-			});
 		});
 	});
-	console.log(classesArr)
+
 	return classesArr;
 }
 
@@ -151,7 +142,7 @@ class CalendarContainer extends Component {
   constructor(props: any) {
     super(props);
 
-    const date = new Date();
+    const date = new Date(2018, 2, 27);
 		const courses = [{
 			"subject":"CS",
 			"catalogNumber":"240E",
@@ -195,8 +186,7 @@ class CalendarContainer extends Component {
     this.state = {
       date: date,
       mode: 'day',
-      isOpen: false,
-      classes: parseCourses(courses)
+      classes: parseCourses(courses),
     };
 
 		this.setDate = this.setDate.bind(this);
@@ -302,24 +292,24 @@ class CalendarContainer extends Component {
 					name="dp"
 					style={{ display: 'none' }}
 					onChange={ (_, date) => this.setDate(date) }
-
+					value={ this.state.date }
 				/>
         <Calendar
           style={{ height: '100%', width: '100%' }}
-          date={this.state.date}
-					referenceDate={referenceDate}
-          mode={this.state.mode}
-					getIndex={this.getIndex}
+          date={ this.state.date }
+					referenceDate={ referenceDate }
+          mode={ this.state.mode }
+					getIndex={ this.getIndex }
 				>
           {
             this.state.classes
               .map((classElem, index) => (
               <Event
                 key={ index }
-                start={classElem.startTime}
-                end={classElem.endTime}
-                background={classElem.colour}
-                title={`${classElem.subject} ${classElem.catalogNumber}`}
+                background={ classElem.colour }
+                title={ `${classElem.subject} ${classElem.catalogNumber}` }
+								onClick={ () => {} }
+								{ ...classElem }
               />
             ))
           }
