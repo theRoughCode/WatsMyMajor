@@ -168,7 +168,7 @@ class CalendarContainer extends Component {
 	}
 
 	getSchedule() {
-		return fetch(`/parse`)
+		return fetch(`/parse`, { method: 'POST', body: JSON.stringify(text) })
 		.then(response => {
 			if (!response.ok) {
 				throw new Error(`status ${response.status}`);
@@ -179,7 +179,7 @@ class CalendarContainer extends Component {
 			loading: false,
 			classes: parseCourses(courses)
 		}))
-		.catch(error => this.setState({ loading: false, error }));
+		.catch(err => this.setState({ loading: false, error: err.message }));
 	}
 
   setDate(date) {

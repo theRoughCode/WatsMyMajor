@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 // Finds first elem with substr and removes all preceding elems
 function read(textArr, substr, start = 0, offset = 0) {
   const index = textArr.findIndex((str, idx) => idx >= start && str.includes(substr));
@@ -64,22 +62,18 @@ function parseCourses(textArr) {
   return courses;
 }
 
-function parseText(callback) {
-  fs.readFile('./server/data/transcript.txt', 'utf8', (err, text) => {
-    if (err) throw err;
+function parseText(text, callback) {
+  let textArr = text.split(/(?<!\,)\n/g);
+  textArr = read(textArr, '| University of Waterloo');
 
-    let textArr = text.split(/(?<!\,)\n/g);
-    textArr = read(textArr, '| University of Waterloo');
+  const term = textArr[0].slice(0, textArr[0].indexOf('|') - 1);
+  textArr = read(textArr, 'Status\t', 0, -1);
 
-    const term = textArr[0].slice(0, textArr[0].indexOf('|') - 1);
-    textArr = read(textArr, 'Status\t', 0, -1);
+  const courses = parseCourses(textArr);
 
-    const courses = parseCourses(textArr);
-
-    callback({
-      term,
-      courses
-    });
+  callback({
+    term,
+    courses
   });
 }
 

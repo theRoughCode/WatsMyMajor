@@ -5,7 +5,8 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    margin: 'auto'
+    margin: 'auto',
+    paddingBottom: 3
   },
   title: {
     fontWeight: 500,
