@@ -1,0 +1,35 @@
+/* My Schedule */
+
+b {
+  font-weight: 500;
+}
+
+.schedule {
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+  padding-top: 20px;
+}
+
+.schedule-form {
+  width: 100%;
+  height: 70%;
+  padding: 30px;
+}
+
+.schedule-form form {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  height: 80%;
+}
+
+.schedule-form textarea {
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  padding-top: 0;
+  padding-left: 0;
+}

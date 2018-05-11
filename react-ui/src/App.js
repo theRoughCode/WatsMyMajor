@@ -14,7 +14,7 @@ import AppBar from './components/AppBar';
 import SideBar from './components/SideBar';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/MyCourseContainer';
-import MyScheduleView from './components/schedule/CalendarContainer';
+import MyScheduleView from './components/schedule/Schedule';
 import CourseListBrowseView from './components/CourseListBrowseContainer';
 import CourseListView from './components/CourseListContainer';
 

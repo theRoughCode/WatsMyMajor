@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Calendar, Event } from './calendar';
 import moment from 'moment';
 import Drawer from 'material-ui/Drawer';
@@ -141,10 +142,14 @@ function parseCourses(courses) {
 
 class CalendarContainer extends Component {
 
-  constructor(props: any) {
+	static propTypes = {
+		text: PropTypes.string.isRequired
+	};
+
+  constructor(props) {
     super(props);
 
-    const date = new Date(2018, 2, 27);
+    const date = new Date();
 
     this.state = {
       date: date,
@@ -168,18 +173,23 @@ class CalendarContainer extends Component {
 	}
 
 	getSchedule() {
-		return fetch(`/parse`, { method: 'POST', body: JSON.stringify(text) })
-		.then(response => {
+		return fetch('/parse', {
+			method: 'POST',
+			body: JSON.stringify({
+				text: this.props.text
+			}),
+			headers: {
+	      'content-type': 'application/json'
+	    }
+		}).then(response => {
 			if (!response.ok) {
 				throw new Error(`status ${response.status}`);
 			}
 			return response.json();
-		})
-		.then(({ term, courses }) => this.setState({
+		}).then(({ term, courses }) => this.setState({
 			loading: false,
 			classes: parseCourses(courses)
-		}))
-		.catch(err => this.setState({ loading: false, error: err.message }));
+		})).catch(err => this.setState({ loading: false, error: err.message }));
 	}
 
   setDate(date) {
