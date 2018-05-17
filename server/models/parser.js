@@ -11,10 +11,10 @@ function parseComponent(arr) {
   const section = arr[1];
   const type = arr[2];
   const dayArr = arr[3].split(' ');
-  const days = dayArr[0].split(/(?=[A-Z])/);
+  const days = (!dayArr[0].length || dayArr[0] === 'TBA') ? [] : dayArr[0].split(/(?=[A-Z])/);
   const startTime = dayArr[1];
   const endTime = dayArr[3];
-  const location = arr[4].replace(/\s+/, ' ');
+  const location = (arr[4] === 'TBA') ? '' : arr[4].replace(/\s+/, ' ');
   const instructor = arr[5].replace(/\n/g, ' ');
   const dateArr = arr[6].split(' ');
   const startDate = dateArr[0];
