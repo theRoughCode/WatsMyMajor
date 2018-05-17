@@ -143,7 +143,11 @@ function parseCourses(courses) {
 class CalendarContainer extends Component {
 
 	static propTypes = {
-		text: PropTypes.string.isRequired
+		text: PropTypes.string
+	};
+
+	static defaultProps = {
+		text: ''
 	};
 
   constructor(props) {
@@ -173,7 +177,7 @@ class CalendarContainer extends Component {
 	}
 
 	getSchedule() {
-		return fetch('/parse', {
+		return fetch('/parse/schedule', {
 			method: 'POST',
 			body: JSON.stringify({
 				text: this.props.text
