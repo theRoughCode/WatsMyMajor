@@ -5,44 +5,20 @@ import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
 import Cart from './Cart';
 import { DragDropContext } from 'react-beautiful-dnd';
-import uuidv4 from 'uuid/v4';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { addToCart, removeFromCart, reorderCart } from '../../actions/index';
 
 
 const renderTerms = (courseList) => {
-	return Object.entries(courseList).map((kv, index) => {
-		const boardHeader = kv[0];
-		const { term, year, courses } = kv[1];
-
-		return (
-			<TermBoard
-				key={index}
-				term={term}
-				courses={courses}
-				/>
-		);
-	});
-}
-
-const parseCourses = (courseList) => {
-	return courseList.map(({ term, courses }) => {
-		const parsedCourses = [];
-
-		for (let subject in courses) {
-			parsedCourses.push(...courses[subject].map(catalogNumber => ({
-				subject,
-				catalogNumber,
-				id: uuidv4()
-			})));
-		}
-
-		return {
-			term,
-			courses: parsedCourses
-		};
-	});
-}
+	return courseList.map(({ term, courses }, index) => (
+		<TermBoard
+			key={ index }
+			index={ index.toString() }
+			boardHeader={ term }
+			courses={ courses }
+		/>
+	));
+};
 
 
 class CourseBoard extends Component {
@@ -73,7 +49,7 @@ class CourseBoard extends Component {
 		} = props;
 
 		this.state = {
-			courseList: parseCourses(courseList),
+			courseList,
 			cart
 		};
 
@@ -87,7 +63,7 @@ class CourseBoard extends Component {
 
 	componentWillReceiveProps(nextProps) {
 	  if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
-			this.setState({ courseList: parseCourses(nextProps.courseList) });
+			this.setState({ courseList: nextProps.courseList });
 		}
 		if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
 			this.setState({ cart: nextProps.cart });

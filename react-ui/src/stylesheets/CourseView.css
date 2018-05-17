@@ -239,11 +239,6 @@
 	flex-direction: column;
 }
 
-.term-header .year {
-	font-size: 13px;
-	margin-top: 5px;
-}
-
 /* Cart */
 .cart {
 	position: fixed;

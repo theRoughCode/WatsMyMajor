@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import uuidv4 from 'uuid/v4';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { arrayOfObjectEquals } from '../../utils/arrays';
@@ -137,6 +138,24 @@ const getUserCourses = (userID) => {
 }
 
 
+const parseCourses = ({ term, courses}) => {
+	const parsedCourses = [];
+
+	for (let subject in courses) {
+		parsedCourses.push(...courses[subject].map(catalogNumber => ({
+			subject,
+			catalogNumber,
+			id: uuidv4()
+		})));
+	}
+
+	return {
+		term,
+		courses: parsedCourses
+	};
+};
+
+
 class MyCourseContainer extends Component {
 
 	static propTypes = {
@@ -194,7 +213,7 @@ class MyCourseContainer extends Component {
 			return response.json();
 		}).then((termCourse) => {
 			this.setState({ loading: false });
-			const courseList = [...this.state.courseList, termCourse];
+			const courseList = [...this.state.courseList, parseCourses(termCourse)];
 			this.updateCourseHandler(courseList);
 		}).catch(err => this.setState({ loading: false, error: err.message }));
 	}

@@ -74,16 +74,18 @@ const renderCourses = (courseList) => {
 };
 
 
-export default class TermPaper extends Component {
+export default class TermBoard extends Component {
 
 	static propTypes = {
-		term: PropTypes.string,
+		index: PropTypes.string,
+		boardHeader: PropTypes.string,
 		courses: PropTypes.array,
 		isCart: PropTypes.bool
 	};
 
 	static defaultProps = {
-		term: '',
+		index: '',
+		boardHeader: '',
 		courses: [],
 		isCart: false
 	};
@@ -92,7 +94,8 @@ export default class TermPaper extends Component {
 		super(props);
 
 		this.state = {
-			term: props.term,
+			index: props.index || props.boardHeader,
+			boardHeader: props.boardHeader,
 			courses: props.courses,
 			isCart: props.isCart
 		};
@@ -112,13 +115,13 @@ export default class TermPaper extends Component {
 				style={(this.state.isCart) ? styles.cartBoard : styles.board}
 				>
 				<div className="term-header">
-					<span>{this.state.term}</span>
+					<span>{this.state.boardHeader}</span>
 				</div>
 				<div style={{ height: '93%' }}>
 					<Droppable
-						droppableId={this.state.boardHeader}
+						droppableId={this.state.index}
 						type={DragTypes.COURSE}
-						>
+					>
 						{(provided, snapshot) => (
 							<div
 								ref={provided.innerRef}
