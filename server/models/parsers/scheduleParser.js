@@ -1,8 +1,4 @@
-// Finds first elem with substr and removes all preceding elems
-function read(textArr, substr, start = 0, offset = 0) {
-  const index = textArr.findIndex((str, idx) => idx >= start && str.includes(substr));
-  return textArr.slice(index + offset);
-}
+const { read } = require('./utils');
 
 function parseComponent(arr) {
   if (arr.length < 7) return null;
