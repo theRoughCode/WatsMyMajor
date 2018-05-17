@@ -77,16 +77,13 @@ const renderCourses = (courseList) => {
 export default class TermPaper extends Component {
 
 	static propTypes = {
-		boardHeader: PropTypes.string.isRequired,
 		term: PropTypes.string,
-		year: PropTypes.string,
 		courses: PropTypes.array,
 		isCart: PropTypes.bool
 	};
 
 	static defaultProps = {
 		term: '',
-		year: '',
 		courses: [],
 		isCart: false
 	};
@@ -95,9 +92,7 @@ export default class TermPaper extends Component {
 		super(props);
 
 		this.state = {
-			boardHeader: props.boardHeader,
 			term: props.term,
-			year: props.year,
 			courses: props.courses,
 			isCart: props.isCart
 		};
@@ -117,8 +112,7 @@ export default class TermPaper extends Component {
 				style={(this.state.isCart) ? styles.cartBoard : styles.board}
 				>
 				<div className="term-header">
-					<span>{this.state.boardHeader}</span>
-					<span className="year">{this.state.term} {this.state.year}</span>
+					<span>{this.state.term}</span>
 				</div>
 				<div style={{ height: '93%' }}>
 					<Droppable

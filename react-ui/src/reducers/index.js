@@ -94,10 +94,10 @@ function snack(state = snackInitialState, action) {
 	}
 }
 
-function courseList(state = {}, action) {
+function courseList(state = [], action) {
 	switch (action.type) {
 		case UPDATE_USER_COURSES:
-			return { courseList: action.courseList };
+			return action.courseList;
 		default:
 			return state;
 	}

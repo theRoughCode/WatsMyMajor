@@ -8,6 +8,8 @@ function parseCourses(textArr) {
     const subject = textArr[i];
     const catalogNumber = textArr[i + 1];
 
+    if (subject !== subject.toUpperCase()) break;
+
     if (!courses.hasOwnProperty(subject)) {
       // Use sets to prevent dups
       courses[subject] = new Set([ catalogNumber ]);
@@ -29,6 +31,7 @@ function parseText(text, callback) {
   textArr = read(textArr, 'Groupbox', 0, 1);
   const term = textArr[0];
   textArr = read(textArr, 'Section', 0, 1);
+  console.log(textArr)
   const courses = parseCourses(textArr);
   callback({ term, courses });
 }

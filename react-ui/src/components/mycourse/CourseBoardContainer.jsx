@@ -6,6 +6,7 @@ import TermBoard from './TermBoard';
 import Cart from './Cart';
 import { DragDropContext } from 'react-beautiful-dnd';
 import uuidv4 from 'uuid/v4';
+import { arrayOfObjectEquals } from '../../utils/arrays';
 import { addToCart, removeFromCart, reorderCart } from '../../actions/index';
 
 
@@ -17,12 +18,29 @@ const renderTerms = (courseList) => {
 		return (
 			<TermBoard
 				key={index}
-				boardHeader={boardHeader}
 				term={term}
-				year={year}
 				courses={courses}
 				/>
 		);
+	});
+}
+
+const parseCourses = (courseList) => {
+	return courseList.map(({ term, courses }) => {
+		const parsedCourses = [];
+
+		for (let subject in courses) {
+			parsedCourses.push(...courses[subject].map(catalogNumber => ({
+				subject,
+				catalogNumber,
+				id: uuidv4()
+			})));
+		}
+
+		return {
+			term,
+			courses: parsedCourses
+		};
 	});
 }
 
@@ -30,12 +48,16 @@ const renderTerms = (courseList) => {
 class CourseBoard extends Component {
 
 	static propTypes = {
-		courseList: PropTypes.object.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired,
 		cart: PropTypes.array.isRequired,
 		addCourseHandler: PropTypes.func.isRequired,
 		removeCourseHandler: PropTypes.func.isRequired,
-		reorderCartHandler: PropTypes.func.isRequired
+		reorderCartHandler: PropTypes.func.isRequired,
+		courseList: PropTypes.array,
+	};
+
+	static defaultProps = {
+		courseList: []
 	};
 
 	constructor(props) {
@@ -50,16 +72,8 @@ class CourseBoard extends Component {
 			reorderCartHandler
 		} = props;
 
-		for (let term in courseList) {
-			if (courseList[term].courses.length > 0)
-				courseList[term].courses = courseList[term].courses.map(course => {
-					course['id'] = uuidv4();
-					return course;
-				});
-		}
-
 		this.state = {
-			courseList,
+			courseList: parseCourses(courseList),
 			cart
 		};
 
@@ -69,6 +83,15 @@ class CourseBoard extends Component {
 		this.addCourseHandler = addCourseHandler;
 		this.removeCourseHandler = removeCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
+	}
+
+	componentWillReceiveProps(nextProps) {
+	  if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
+			this.setState({ courseList: parseCourses(nextProps.courseList) });
+		}
+		if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
+			this.setState({ cart: nextProps.cart });
+		}
 	}
 
 	onDragEnd(result) {

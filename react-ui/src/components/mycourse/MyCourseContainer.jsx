@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import LoadingView from './tools/LoadingView';
-import ErrorView from './tools/ErrorView';
-import CourseBoard from './mycourse/CourseBoardContainer';
-import { updateUserCourses } from '../actions/index';
-import '../stylesheets/CourseView.css';
-// import coursesText from '../../server/data/transcript.txt';
+import LoadingView from '../tools/LoadingView';
+import ErrorView from '../tools/ErrorView';
+import { arrayOfObjectEquals } from '../../utils/arrays';
+import CourseBoard from './CourseBoardContainer';
+import { updateUserCourses } from '../../actions/index';
+import '../../stylesheets/CourseView.css';
 
 
 const getUserCourses = (userID) => {
@@ -140,15 +140,19 @@ const getUserCourses = (userID) => {
 class MyCourseContainer extends Component {
 
 	static propTypes = {
-		courseList: PropTypes.object.isRequired,
+		courseList: PropTypes.array.isRequired,
 		cart: PropTypes.array.isRequired,
-		updateCourseHandler: PropTypes.func.isRequired
+		updateCourseHandler: PropTypes.func.isRequired,
+		text: PropTypes.string
+	};
+
+	static defaultProps = {
+		text: ''
 	};
 
 	constructor(props) {
 		super(props);
 
-		// console.log(coursesText);
 		this.state = {
 			loading: true,
 			error: false,
@@ -157,25 +161,42 @@ class MyCourseContainer extends Component {
 		};
 
 		this.updateCourseHandler = props.updateCourseHandler;
+		this.getCourses = this.getCourses.bind(this);
 	}
 
 	componentDidMount() {
-	  const courseList = getUserCourses(1);
-		this.setState({
-			loading: false,
-			courseList
-		});
+	  this.getCourses();
 	}
 
 	componentWillReceiveProps(nextProps) {
 		const { courseList, cart } = nextProps;
-
-	  if (courseList !== this.state.courseList) {
+	  if (!arrayOfObjectEquals(courseList, this.state.courseList)) {
 			this.setState({ courseList });
 		}
-		if (cart !== this.state.cart) {
+		if (!arrayOfObjectEquals(cart, this.state.cart)) {
 			this.setState({ cart });
 		}
+	}
+
+	getCourses() {
+		return fetch('/parse/courses', {
+			method: 'POST',
+			body: JSON.stringify({
+				text: this.props.text
+			}),
+			headers: {
+	      'content-type': 'application/json'
+	    }
+		}).then(response => {
+			if (!response.ok) {
+				throw new Error(`status ${response.status}`);
+			}
+			return response.json();
+		}).then((termCourse) => {
+			this.setState({ loading: false });
+			const courseList = [...this.state.courseList, termCourse];
+			this.updateCourseHandler(courseList);
+		}).catch(err => this.setState({ loading: false, error: err.message }));
 	}
 
 	render() {
