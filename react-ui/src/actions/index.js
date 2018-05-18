@@ -1,3 +1,5 @@
+import { RSAA } from 'redux-api-middleware';
+
 /*
  * action types
  */
@@ -7,6 +9,8 @@ export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
+export const UPDATE_USER_COURSES_SUCCESS = 'UPDATE_USER_COURSES_SUCCESS';	// not used
+export const UPDATE_USER_COURSES_FAILURE = 'UPDATE_USER_COURSES_FAILURE';	// not used
 export const ADD_TO_CART = 'ADD_TO_CART';
 export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
 export const REORDER_CART = 'REORDER_CART';
@@ -63,10 +67,24 @@ export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
 	};
 }
 
-export function updateUserCourses(courseList) {
+export function updateUserCourses(userId, courseList) {
 	return {
-		type: UPDATE_USER_COURSES,
-		courseList
+		[RSAA]: {
+			endpoint: `/users/set/courselist/${userId}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ courseList }),
+			types: [
+				{
+					type: UPDATE_USER_COURSES,
+					meta: { courseList }
+				},
+				UPDATE_USER_COURSES_SUCCESS,
+				UPDATE_USER_COURSES_FAILURE
+			]
+		}
 	};
 }
 

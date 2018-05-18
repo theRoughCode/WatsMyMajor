@@ -179,7 +179,7 @@ class MyCourseContainer extends Component {
 			cart: props.cart
 		};
 
-		this.updateCourseHandler = props.updateCourseHandler;
+		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.userId);
 		this.getCourses = this.getCourses.bind(this);
 	}
 
@@ -245,14 +245,15 @@ class MyCourseContainer extends Component {
 
 }
 
-const mapStateToProps = ({ courseList, cart }) => {
-	return { courseList, cart };
+const mapStateToProps = ({ courseList, cart, user }) => {
+	const { userId } = user;
+	return { courseList, cart, userId };
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		updateCourseHandler: courseList => {
-			dispatch(updateUserCourses(courseList));
+		updateCourseHandler: (userId, courseList) => {
+			dispatch(updateUserCourses(userId, courseList));
 		}
 	};
 };

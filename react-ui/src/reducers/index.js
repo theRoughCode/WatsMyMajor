@@ -97,7 +97,7 @@ function snack(state = snackInitialState, action) {
 function courseList(state = [], action) {
 	switch (action.type) {
 		case UPDATE_USER_COURSES:
-			return action.courseList;
+			return action.meta.courseList;
 		default:
 			return state;
 	}
@@ -117,13 +117,18 @@ function cart(state = [], action) {
 	}
 }
 
+function user(state = {}, action) {
+	return { userId: 1 };
+}
+
 const reducers = combineReducers({
 	course,
 	expandedCourse,
 	sideBarOpen,
 	snack,
 	courseList,
-	cart
+	cart,
+	user
 });
 
 export default reducers;
