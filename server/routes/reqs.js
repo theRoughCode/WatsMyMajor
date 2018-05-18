@@ -1,5 +1,5 @@
 const ReqsRouter = require('express').Router();
-const database = require('../models/database');
+const requisites = require('../models/database/requisites');
 
 // Get requisites from course
 ReqsRouter.get('/:subject/:number', function(req, res) {
@@ -10,7 +10,7 @@ ReqsRouter.get('/:subject/:number', function(req, res) {
 	// waterloo.getReqs(subject, number, (err, reqs) => {
 	// 	res.json({ err, reqs });
 	// });
-	database.getRequisites(subject, number, (err, reqs) => {
+	requisites.getRequisites(subject, number, (err, reqs) => {
 		if (err) {
 			console.error(err);
 			res.send(err);
@@ -26,7 +26,7 @@ ReqsRouter.get('/prereqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 
-	database.getPrereqs(subject, number, (err, prereqs) => {
+	requisites.getPrereqs(subject, number, (err, prereqs) => {
 		if (err) {
 			console.error(err);
 			res.send(err);
@@ -42,7 +42,7 @@ ReqsRouter.get('/coreqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 
-	database.getCoreqs(subject, number, (err, coreqss) => {
+	requisites.getCoreqs(subject, number, (err, coreqss) => {
 		if (err) {
 			console.error(err);
 			res.send(err);
@@ -58,7 +58,7 @@ ReqsRouter.get('/antireqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 
-	database.getAntireqs(subject, number, (err, antireqss) => {
+	requisites.getAntireqs(subject, number, (err, antireqss) => {
 		if (err) {
 			console.error(err);
 			res.send(err);
@@ -74,7 +74,7 @@ ReqsRouter.get('/postreqs/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 
-	database.getPostreqs(subject, number, (err, postreqs) => {
+	requisites.getPostreqs(subject, number, (err, postreqs) => {
 		if (err) {
 			console.error(err);
 			res.send(err);
