@@ -7,7 +7,7 @@ const utils = require('./utils');
 // Enable hiding of API Key
 require('dotenv').config();
 
-const TERM = '1185';  // Spring 2018
+const TERM = '1189';  // Fall 2018
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
