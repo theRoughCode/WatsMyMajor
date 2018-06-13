@@ -18,3 +18,8 @@ Tree
 - Community notes per course
 	- how do we regulate this?
 - Helpful resources per course
+
+
+Important:
+- Check for MM/DD/YYYY
+  - maybe do it in backend and check if any number is above 12

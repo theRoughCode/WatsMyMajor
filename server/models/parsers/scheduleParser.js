@@ -11,7 +11,7 @@ function parseComponent(arr) {
   const startTime = dayArr[1];
   const endTime = dayArr[3];
   const location = (arr[4] === 'TBA') ? '' : arr[4].replace(/\s+/, ' ');
-  const instructor = arr[5].replace(/\n/g, ' ');
+  const instructor = arr[5].replace(/,/g, ', ');
   const dateArr = arr[6].split(' ');
   const startDate = dateArr[0];
   const endDate = dateArr[2];
@@ -59,7 +59,8 @@ function parseCourses(textArr) {
 }
 
 function parseText(text, callback) {
-  let textArr = text.split(/(?<!\,)\n/g);
+  text = text.replace(/,\n/, ',');
+  let textArr = text.split(/\n/g);
   textArr = read(textArr, '| University of Waterloo');
 
   const term = textArr[0].slice(0, textArr[0].indexOf('|') - 1);

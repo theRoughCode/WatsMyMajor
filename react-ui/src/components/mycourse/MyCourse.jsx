@@ -24,7 +24,7 @@ const MyCourse = () => {
 
   return (
     <ParserInstructions stepContents={ stepContents } child={ <MyCourseContainer /> } />
-  )
+  );
 };
 
 
