@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 import {
 	TOGGLE_SIDEBAR,
+	SET_USER,
 	SET_COURSE,
 	SET_EXPANDED_COURSE,
 	CREATE_SNACK,
@@ -118,7 +119,21 @@ function cart(state = [], action) {
 }
 
 function user(state = {}, action) {
-	return { userId: 1 };
+	switch (action.type) {
+		case SET_USER:
+			const { username } = action.meta;
+			const { name, pass, cart, schedule, courseList } = action.payload;
+			const user = {
+				username: username || '',
+				name: name || '',
+				cart: cart || [],
+				schedule: schedule || [],
+				courseList: courseList || []
+			}
+			return user;
+		default:
+			return state;
+	}
 }
 
 const reducers = combineReducers({

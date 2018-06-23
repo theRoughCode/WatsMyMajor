@@ -18,23 +18,23 @@ const { usersRef } = require('./index');
     }
 */
 
-const defaultUser = {
-  name: '',
-  cart: [],
-  schedule: [],
-  courseList: []
-}
-
 /****************************
  *													*
  *			S E T T E R S 			*
  *													*
  ****************************/
 
-function setUser(userId, user, callback) {
+// username: {
+//   name: '',
+//   pass: '',
+//   cart: [],
+//   schedule: [],
+//   courseList: []
+// }
+function setUser(username, user, callback) {
   usersRef
-    .child(userId)
-    .set(Object.assign(defaultUser, user))
+    .child(username)
+    .set(user)
     .then(() => callback(null))
     .catch(err => callback(err));
 }
@@ -55,9 +55,9 @@ function setField(userId, field, data, callback) {
  *													*
  ****************************/
 
-function getUser(userId, callback) {
+function getUser(username, callback) {
   usersRef
-    .child(userId)
+    .child(username)
 		.once('value')
     .then(snapshot => callback(null, snapshot.val()))
     .catch(err => callback(err, null));

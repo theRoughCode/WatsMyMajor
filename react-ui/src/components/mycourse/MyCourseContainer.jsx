@@ -159,6 +159,7 @@ const parseCourses = ({ term, courses}) => {
 class MyCourseContainer extends Component {
 
 	static propTypes = {
+		username: PropTypes.string.isRequired,
 		courseList: PropTypes.array.isRequired,
 		cart: PropTypes.array.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired,
@@ -179,7 +180,7 @@ class MyCourseContainer extends Component {
 			cart: props.cart
 		};
 
-		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.userId);
+		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.username);
 		this.getCourses = this.getCourses.bind(this);
 	}
 
@@ -246,14 +247,14 @@ class MyCourseContainer extends Component {
 }
 
 const mapStateToProps = ({ courseList, cart, user }) => {
-	const { userId } = user;
-	return { courseList, cart, userId };
+	const { username } = user;
+	return { courseList, cart, username };
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		updateCourseHandler: (userId, courseList) => {
-			dispatch(updateUserCourses(userId, courseList));
+		updateCourseHandler: (username, courseList) => {
+			dispatch(updateUserCourses(username, courseList));
 		}
 	};
 };

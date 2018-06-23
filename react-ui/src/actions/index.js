@@ -5,6 +5,7 @@ import { RSAA } from 'redux-api-middleware';
  */
 
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
+export const SET_USER = 'SET_USER';
 export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
@@ -21,6 +22,16 @@ export const REORDER_CART = 'REORDER_CART';
 
 export function toggleSideBar() {
 	return { type: TOGGLE_SIDEBAR };
+}
+
+export function setUser(username) {
+	return {
+		[RSAA]: {
+			endpoint: `/users/${username}`,
+			method: 'GET',
+			types: ['', { type: SET_USER, meta: { username } }, '']
+		}
+	};
 }
 
 export function setCourse(subject, catalogNumber) {
@@ -67,10 +78,10 @@ export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
 	};
 }
 
-export function updateUserCourses(userId, courseList) {
+export function updateUserCourses(username, courseList) {
 	return {
 		[RSAA]: {
-			endpoint: `/users/set/courselist/${userId}`,
+			endpoint: `/users/set/courselist/${username}`,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

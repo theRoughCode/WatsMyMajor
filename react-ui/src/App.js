@@ -8,10 +8,10 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { toggleSideBar, setCourse, createSnack } from './actions/index';
+import { setUser, toggleSideBar, setCourse, createSnack } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
-import SideBar from './components/SideBar';
+import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/mycourse/MyCourse';
 import MyScheduleView from './components/schedule/MySchedule';
@@ -29,6 +29,7 @@ let styles = {
 class App extends Component {
 
 	static propTypes = {
+    onSetUser: PropTypes.func.isRequired,
 		onToggleSideBar: PropTypes.func.isRequired,
 		selectCourseHandler: PropTypes.func.isRequired,
 		onUndoSnack: PropTypes.func.isRequired
@@ -36,6 +37,9 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+
+    // TODO: Remove once login functionality has been implemented
+    props.onSetUser('theroughcode');
 
 		const {
 			view,
@@ -132,6 +136,9 @@ const mapStateToProps = ({ view, sideBarOpen, snack }) => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    onSetUser: (username) => {
+      dispatch(setUser(username));
+    },
     onToggleSideBar: () => {
       dispatch(toggleSideBar());
     },
