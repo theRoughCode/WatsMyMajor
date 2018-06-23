@@ -54,7 +54,10 @@ class CourseBoard extends Component {
 		};
 
 		this.onDragEnd = this.onDragEnd.bind(this);
+		this.getBoard = this.getBoard.bind(this);
+		this.updateBoard = this.updateBoard.bind(this);
 		this.reorder = this.reorder.bind(this);
+		this.move = this.move.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
 		this.addCourseHandler = addCourseHandler;
 		this.removeCourseHandler = removeCourseHandler;
@@ -70,57 +73,70 @@ class CourseBoard extends Component {
 		}
 	}
 
+	getTermList(id) {
+		return this.state.courseList[id].courses;
+	}
+
 	onDragEnd(result) {
+		const { courseList } = this.state;
+		const { source, destination } = result;
 		// dropped outside the list
-		if (!result.destination) {
+		if (!destination) {
 			return;
 		}
 
-		const courseList = this.reorder(
-			result.source,
-			result.destination
-		);
-
-		this.updateCourseHandler(courseList);
+		if (source.droppableId === destination.droppableId) {
+			this.reorder(source.droppableId, source.index, destination.index);
+		} else {
+			this.move(source, destination);
+		}
 	}
 
-	// Reorder courses in term board
-	reorder(source, dest) {
-		const { courseList, cart } = this.state;
-		const sourceIndex = source.index;
-		const destIndex = dest.index;
-
-		const sourceArr = (source.droppableId === 'Cart')
-			? cart
-			: courseList[source.droppableId].courses;
-
-		// Deleted course
-		if (dest.droppableId === 'Trash') {
-			sourceArr.splice(sourceIndex, 1);
-			if (source.droppableId === 'Cart')
-				this.reorderCartHandler(sourceArr);
-			else courseList[source.droppableId].courses = sourceArr;
-			return courseList;
+	// Retrieves board
+	getBoard(id) {
+		switch (id) {
+			case 'Cart':
+				return this.state.cart;
+			case 'Trash':
+				return null;
+			default:
+				return this.state.courseList[id].courses;
 		}
+	}
 
+	// Updates the board
+	updateBoard(id, board) {
+		switch (id) {
+			case 'Cart':
+				this.setState({ cart: board });
+				this.reorderCartHandler(board);
+				break;
+			case 'Trash': break;
+			default:
+				const { courseList } = this.state;
+				courseList[id].courses = board;
+				this.setState({ courseList });
+				this.updateCourseHandler(courseList);
+		}
+	}
 
-		const destArr = (dest.droppableId === 'Cart')
-			? cart
-			: courseList[dest.droppableId].courses;
+	// Reorder term board
+	reorder(id, fromIndex, toIndex) {
+		const board = this.getBoard(id);
+		const [removed] = board.splice(fromIndex, 1);
+		board.splice(toIndex, 0, removed);
+		this.updateBoard(id, board);
+	}
 
-		const [ course ] = sourceArr.splice(sourceIndex, 1);
-		destArr.splice(destIndex, 0, course);
-
-		if (source.droppableId !== 'Cart')
-			courseList[source.droppableId].courses = sourceArr;
-		if (dest.droppableId !== 'Cart')
-			courseList[dest.droppableId].courses = destArr;
-
-		if (source.droppableId === 'Cart' || dest.droppableId === 'Cart')
-			this.reorderCartHandler(sourceArr);
-
-		return courseList;
-	};
+	// Move an item between lists
+	move(source, dest) {
+		const sourceBoard = this.getBoard(source.droppableId);
+		const destBoard = this.getBoard(dest.droppableId);
+		const [removed] = sourceBoard.splice(source.index, 1);
+		if (destBoard) destBoard.splice(dest.index, 0, removed);
+		this.updateBoard(source.droppableId, sourceBoard);
+		this.updateBoard(dest.droppableId, destBoard);
+	}
 
 	render() {
 		return (

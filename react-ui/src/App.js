@@ -13,7 +13,7 @@ import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
-import MyCourseView from './components/mycourse/MyCourse';
+import MyCourseView from './components/mycourse/MyCourseContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import CourseListBrowseView from './components/CourseListBrowseContainer';
 import CourseListView from './components/CourseListContainer';

@@ -118,11 +118,15 @@ function cart(state = [], action) {
 	}
 }
 
-function user(state = {}, action) {
+const defaultUser = {
+	username: 'theroughcode',
+	name: 'Raphael Koh'
+};
+function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
 			const { username } = action.meta;
-			const { name, pass, cart, schedule, courseList } = action.payload;
+			const { name, cart, schedule, courseList } = action.payload;
 			const user = {
 				username: username || '',
 				name: name || '',

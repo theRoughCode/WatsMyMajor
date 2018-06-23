@@ -2,7 +2,7 @@ import React from 'react';
 import MyCourseContainer from './MyCourseContainer';
 import ParserInstructions from '../tools/ParserInstructions';
 
-const MyCourse = () => {
+const ParseCourses = () => {
   const stepContents = [
     {
       button: 'Log in to Quest',
@@ -29,4 +29,4 @@ const MyCourse = () => {
 
 
 
-export default MyCourse;
+export default ParseCourses;

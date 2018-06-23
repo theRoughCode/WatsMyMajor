@@ -12,10 +12,9 @@ import '../../stylesheets/CourseView.css';
 
 
 const getUserCourses = (userID) => {
-	return {
-		'1A': {
-			term: 'F',
-			year: '2016',
+	return [
+		{
+			term: 'Fall 2016',
 			courses: [
 				{
 					subject: 'CS',
@@ -39,9 +38,8 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'2A': {
-			term: 'W',
-			year: '2017',
+		{
+			term: 'Winter 2017',
 			courses: [
 				{
 					subject: 'CS',
@@ -69,9 +67,8 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'2B': {
-			term: 'S',
-			year: '2017',
+		{
+			term: 'Spring 2017',
 			courses: [
 				{
 					subject: 'CS',
@@ -99,9 +96,8 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'3A': {
-			term: 'W',
-			year: '2018',
+		{
+			term: 'Winter 2018',
 			courses: [
 				{
 					subject: 'CS',
@@ -129,13 +125,12 @@ const getUserCourses = (userID) => {
 				}
 			]
 		},
-		'3B': {
-			term: '',
-			year: '',
+		{
+			term: 'Fall 2018',
 			courses: []
 		}
-	}
-}
+	]
+};
 
 
 const parseCourses = ({ term, courses}) => {
@@ -174,18 +169,21 @@ class MyCourseContainer extends Component {
 		super(props);
 
 		this.state = {
-			loading: true,
+			loading: false,  //TODO: Change back to true
 			error: false,
 			courseList: props.courseList,
 			cart: props.cart
 		};
+
+		// TODO: Remove this
+		props.updateCourseHandler(props.username, getUserCourses(1));
 
 		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.username);
 		this.getCourses = this.getCourses.bind(this);
 	}
 
 	componentDidMount() {
-	  this.getCourses();
+	  // this.getCourses();
 	}
 
 	componentWillReceiveProps(nextProps) {

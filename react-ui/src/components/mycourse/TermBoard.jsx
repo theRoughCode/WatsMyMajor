@@ -53,10 +53,12 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 const renderCourses = (courseList) => {
-	return courseList.map((course, index) => (
+	return courseList.map((course, index) => {
+		const key = `${course.subject}.${course.catalogNumber}-${index}`;
+		return (
 			<Draggable
-				key={index}
-				draggableId={course.id}
+				key={ key }
+				draggableId={ key }
 				index={index}
 				type={DragTypes.COURSE}
 				>
@@ -70,7 +72,8 @@ const renderCourses = (courseList) => {
 						/>
 				)}
 			</Draggable>
-	));
+		);
+	});
 };
 
 
