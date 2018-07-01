@@ -97,6 +97,8 @@ function snack(state = snackInitialState, action) {
 
 function courseList(state = [], action) {
 	switch (action.type) {
+		case SET_USER:
+			return action.payload.courseList;
 		case UPDATE_USER_COURSES:
 			return action.meta.courseList;
 		default:
@@ -106,6 +108,8 @@ function courseList(state = [], action) {
 
 function cart(state = [], action) {
 	switch (action.type) {
+		case SET_USER:
+			return action.payload.cart || state;
 		case ADD_TO_CART:
 			state.push(action.course);
 			return state;
@@ -126,13 +130,11 @@ function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
 			const { username } = action.meta;
-			const { name, cart, schedule, courseList } = action.payload;
+			const { name, schedule } = action.payload;
 			const user = {
 				username: username || '',
 				name: name || '',
-				cart: cart || [],
-				schedule: schedule || [],
-				courseList: courseList || []
+				schedule: schedule || []
 			}
 			return user;
 		default:

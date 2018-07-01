@@ -16,7 +16,7 @@ import Dashboard from './components/Dashboard';
 import MyCourseView from './components/mycourse/MyCourseContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import CourseListBrowseView from './components/CourseListBrowseContainer';
-import CourseListView from './components/CourseListContainer';
+import CourseListView from './components/courselist/CourseListContainer';
 
 let styles = {
 	marginLeft: 0,

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import SideBar from './SideBar';
 
 const SideBarContainer = ({ user, open }) => (
-  <SideBar user={ user } open={ open } />
+  <SideBar username={ user.name } open={ open } />
 );
 
 SideBarContainer.propTypes = {

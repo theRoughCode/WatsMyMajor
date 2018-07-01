@@ -20,7 +20,8 @@ const CourseContent = (props) => {
 		prereqs,
 		postreqs,
 		term,
-		classes
+		classes,
+		addToCartHandler
 	} = props;
 
 	return (
@@ -31,7 +32,8 @@ const CourseContent = (props) => {
 				title={title}
 				rating={rating}
 				termsOffered={termsOffered}
-				/>
+				addToCartHandler={addToCartHandler}
+			/>
 			<CourseDescription
 				description={description}
         antireqs={antireqs}
@@ -39,7 +41,7 @@ const CourseContent = (props) => {
 				prereqs={prereqs}
 				postreqs={postreqs}
 				selectCourse={selectCourse}
-				/>
+			/>
 			{
 				classes.length > 0 && (
 					<CourseClassList
@@ -47,7 +49,7 @@ const CourseContent = (props) => {
 						selectedClassIndex={selectedClassIndex}
 						term={term}
 						classes={classes}
-						/>
+					/>
 				)
 			}
 		</div>
@@ -69,7 +71,8 @@ CourseContent.propTypes = {
 	prereqs: PropTypes.object.isRequired,
 	postreqs: PropTypes.array.isRequired,
 	term: PropTypes.string.isRequired,
-	classes: PropTypes.array.isRequired
+	classes: PropTypes.array.isRequired,
+	addToCartHandler: PropTypes.func.isRequired
 }
 
 export default CourseContent;

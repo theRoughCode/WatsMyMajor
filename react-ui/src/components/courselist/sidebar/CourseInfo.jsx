@@ -2,18 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import Divider from 'material-ui/Divider';
-import RaisedButton from 'material-ui/RaisedButton';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import PeopleIcon from 'material-ui/svg-icons/social/people';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import BlockIcon from 'material-ui/svg-icons/content/block';
-import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import FontAwesome from 'react-fontawesome';
 
 const styles = {
-	button: {
-		margin: 12,
-	},
 	icon: {
 		width: '20px',
 		height: '20px',
@@ -75,23 +70,6 @@ DetailedInfo.propTypes = {
 	reservedCap: PropTypes.string.isRequired
 };
 
-
-const AddToCart = ({ addToCartHandler, subject, catalogNumber }) => (
-	<RaisedButton
-		onClick={() => addToCartHandler(subject, catalogNumber)}
-		label="Add To Cart"
-		backgroundColor="#a4c639"
-		style={styles.button}
-		icon={<CartIcon />}
-	/>
-);
-
-AddToCart.propTypes = {
-	addToCartHandler: PropTypes.func.isRequired,
-	subject: PropTypes.string.isRequired,
-	catalogNumber: PropTypes.string.isRequired
-};
-
 const Share = ({ icon, text }) => (
 	<div className="course-info-share">
 		{icon}
@@ -110,8 +88,7 @@ const CourseInfo = (props) => {
 		enrollmentCap,
 		reserved,
 		reservedCap,
-		lastUpdated,
-		addToCartHandler
+		lastUpdated
 	} = props;
 
 	return (
@@ -127,12 +104,6 @@ const CourseInfo = (props) => {
 				enrollmentCap={enrollmentCap}
 				reserved={reserved}
 				reservedCap={reservedCap}
-				/>
-			<Divider style={styles.divider} />
-			<AddToCart
-				addToCartHandler={addToCartHandler}
-				subject={subject}
-				catalogNumber={catalogNumber}
 				/>
 			<Divider style={styles.divider} />
 			<Share
@@ -163,8 +134,7 @@ CourseInfo.propTypes = {
   enrollmentCap: PropTypes.string.isRequired,
 	reserved: PropTypes.string.isRequired,
 	reservedCap: PropTypes.string.isRequired,
-	lastUpdated: PropTypes.string.isRequired,
-	addToCartHandler: PropTypes.func.isRequired
+	lastUpdated: PropTypes.string.isRequired
 }
 
 export default CourseInfo;

@@ -11,128 +11,6 @@ import { updateUserCourses } from '../../actions/index';
 import '../../stylesheets/CourseView.css';
 
 
-const getUserCourses = (userID) => {
-	return [
-		{
-			term: 'Fall 2016',
-			courses: [
-				{
-					subject: 'CS',
-					catalogNumber: '135'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '145'
-				},
-				{
-					subject: 'PHYS',
-					catalogNumber: '121'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '137'
-				},
-				{
-					subject: 'SPCOM',
-					catalogNumber: '223'
-				}
-			]
-		},
-		{
-			term: 'Winter 2017',
-			courses: [
-				{
-					subject: 'CS',
-					catalogNumber: '136'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '146'
-				},
-				{
-					subject: 'PHYS',
-					catalogNumber: '122'
-				},
-				{
-					subject: 'PHYS',
-					catalogNumber: '124'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '138'
-				},
-				{
-					subject: 'ECON',
-					catalogNumber: '101'
-				}
-			]
-		},
-		{
-			term: 'Spring 2017',
-			courses: [
-				{
-					subject: 'CS',
-					catalogNumber: '246'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '237'
-				},
-				{
-					subject: 'CS',
-					catalogNumber: '240E'
-				},
-				{
-					subject: 'PHYS',
-					catalogNumber: '234'
-				},
-				{
-					subject: 'AMATH',
-					catalogNumber: '250'
-				},
-				{
-					subject: 'STAT',
-					catalogNumber: '230'
-				}
-			]
-		},
-		{
-			term: 'Winter 2018',
-			courses: [
-				{
-					subject: 'CS',
-					catalogNumber: '240E'
-				},
-				{
-					subject: 'CS',
-					catalogNumber: '241'
-				},
-				{
-					subject: 'CS',
-					catalogNumber: '251'
-				},
-				{
-					subject: 'MATH',
-					catalogNumber: '239'
-				},
-				{
-					subject: 'SPCOM',
-					catalogNumber: '225'
-				},
-				{
-					subject: 'STAT',
-					catalogNumber: '231'
-				}
-			]
-		},
-		{
-			term: 'Fall 2018',
-			courses: []
-		}
-	]
-};
-
-
 const parseCourses = ({ term, courses}) => {
 	const parsedCourses = [];
 
@@ -174,9 +52,6 @@ class MyCourseContainer extends Component {
 			courseList: props.courseList,
 			cart: props.cart
 		};
-
-		// TODO: Remove this
-		props.updateCourseHandler(props.username, getUserCourses(1));
 
 		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.username);
 		this.getCourses = this.getCourses.bind(this);

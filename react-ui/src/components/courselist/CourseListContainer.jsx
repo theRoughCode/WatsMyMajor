@@ -3,19 +3,20 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import uuidv4 from 'uuid/v4';
-import CourseContent from './courselist/CourseContent';
-import CourseSideBar from './courselist/CourseSideBarContainer';
-import LoadingView from './tools/LoadingView';
-import ErrorView from './tools/ErrorView';
-import { objectEquals } from '../utils/arrays';
-import '../stylesheets/CourseView.css';
+import ErrorIcon from 'material-ui/svg-icons/alert/error';
+import CourseContent from './CourseContent';
+import CourseSideBar from './CourseSideBarContainer';
+import LoadingView from '../tools/LoadingView';
+import ErrorView from '../tools/ErrorView';
+import { objectEquals } from '../../utils/arrays';
+import '../../stylesheets/CourseView.css';
 import {
 	setCourse,
 	setExpandedCourse,
 	createSnack,
 	addToCart,
 	removeFromCart
-} from '../actions/index';
+} from '../../actions/index';
 
 
 const getCourseData = (subject, catalogNumber) => {
@@ -133,8 +134,8 @@ class CourseListContainer extends Component {
 		this.selectedClassIndex = props.selectedClassIndex;
 		this.selectCourseHandler = props.selectCourseHandler;
 		this.expandCourseHandler = props.expandCourseHandler;
-		this.addToCartHandler = props.addToCartHandler;
 		this.selectCourse = this.selectCourse.bind(this);
+		this.addToCart = this.addToCart.bind(this);
 	}
 
 	componentDidMount() {
@@ -189,6 +190,22 @@ class CourseListContainer extends Component {
 		this.selectCourseHandler(subject, catalogNumber);
 	}
 
+	addToCart(subject, catalogNumber) {
+		const { courseList, addToCartHandler } = this.props;
+		let courseExists = false;
+		for (let i = 0; i < courseList.length; i++) {
+			const termCourses = courseList[i].courses;
+			if (termCourses == null) continue;
+			for (let j = 0; j < termCourses.length; j++) {
+				const course = termCourses[j];
+				if (subject === course.subject && catalogNumber === course.catalogNumber) {
+					courseExists = true;
+				}
+			}
+		}
+		addToCartHandler(subject, catalogNumber, courseExists);
+	}
+
 	render() {
 		const renderedView = (
 			<div className="course-view">
@@ -198,13 +215,13 @@ class CourseListContainer extends Component {
 					expandCourse={this.expandCourseHandler}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
+					addToCartHandler={this.addToCart.bind(this, this.state.subject, this.state.catalogNumber)}
 					{...this.state.course}
 					/>
 				<CourseSideBar
 					{...this.state.classInfo}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
-					addToCartHandler={this.addToCartHandler.bind(this, this.state.subject, this.state.catalogNumber)}
 					/>
 			</div>
 		);
@@ -225,7 +242,7 @@ class CourseListContainer extends Component {
 
 }
 
-const mapStateToProps = ({ course, expandedCourse }) => {
+const mapStateToProps = ({ course, expandedCourse, courseList }) => {
 	const { subject, catalogNumber } = course;
 	const {
 		instructor,
@@ -248,7 +265,8 @@ const mapStateToProps = ({ course, expandedCourse }) => {
 		reservedCap,
 		classNumber,
 		lastUpdated,
-		selectedClassIndex
+		selectedClassIndex,
+		courseList
 	};
 };
 
@@ -260,14 +278,19 @@ const mapDispatchToProps = dispatch => {
 		expandCourseHandler: (courseObj, index) => {
 			dispatch(setExpandedCourse(courseObj, index));
 		},
-		addToCartHandler: (subject, catalogNumber) => {
-			const msg = `${subject}${catalogNumber} has been added to your cart.`;
-			const actionMsg = 'undo';
-			const undoMsg = `${subject}${catalogNumber} has been removed from your cart.`;
-			const id = uuidv4();
-			const handleActionClick = () => dispatch(removeFromCart(id));
-			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
-			dispatch(addToCart(subject, catalogNumber, id));
+		addToCartHandler: (subject, catalogNumber, courseExists) => {
+			if (courseExists) {
+				const msg = `${subject}${catalogNumber} already exists in your courses!`;
+				dispatch(createSnack(msg, "", "", null));
+			} else {
+				const msg = `${subject}${catalogNumber} has been added to your cart.`;
+				const actionMsg = 'undo';
+				const undoMsg = `${subject}${catalogNumber} has been removed from your cart.`;
+				const id = uuidv4();
+				const handleActionClick = () => dispatch(removeFromCart(id));
+				dispatch(addToCart(subject, catalogNumber, id));
+				dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
+			}
 		}
 	};
 };

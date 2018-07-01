@@ -18,7 +18,7 @@ UsersRouter.post('/set/user/:username', function(req, res) {
   const username = req.params.username;
 	const user = {
 		name: req.body.name || '',
-	  pass: req.body.pass || '',
+	  password: req.body.password || '',
 	  cart: req.body.cart || [],
 	  schedule: req.body.schedule || [],
 	  courseList: req.body.courseList || []
