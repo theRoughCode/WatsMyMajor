@@ -7,9 +7,8 @@ import { DragTypes } from '../../constants/DragTypes';
 
 const space = 8;
 const stylesConst = {
-	minHeight: 400,
+	minHeight: 200,
 	height: 'auto',
-	cartHeight: 600,
 	width: 200
 };
 const styles = {
@@ -22,14 +21,13 @@ const styles = {
 	cartBoard: {
 		margin: '20px auto',
 		width:  stylesConst.width,
-		height: stylesConst.cartHeight
+		height: stylesConst.height
 	},
 	dragArea: (isDraggingOver, isCart) => ({
 		padding: space,
 		width: stylesConst.width - space * 2,
 		minHeight: stylesConst.minHeight,
-		height: (isCart) ? 528 : stylesConst.height,
-
+		height: stylesConst.height,
 		background: isDraggingOver ? '#fafcf2' : 'inherit'
 	})
 };
@@ -76,68 +74,46 @@ const renderCourses = (courseList) => {
 	});
 };
 
+const TermBoard = ({ index, boardHeader, courses, isCart }) => (
+	<Paper
+		className="term-paper"
+		zDepth={1}
+		style={(isCart) ? styles.cartBoard : styles.board}
+		>
+		<div className="term-header">
+			<span>{boardHeader}</span>
+		</div>
+		<div>
+			<Droppable
+				droppableId={index || boardHeader}
+				type={DragTypes.COURSE}
+			>
+				{(provided, snapshot) => (
+					<div
+						ref={provided.innerRef}
+						style={styles.dragArea(snapshot.isDraggingOver, isCart)}
+						>
+						{renderCourses(courses)}
+						{provided.placeholder}
+					</div>
+				)}
+			</Droppable>
+		</div>
+	</Paper>
+);
 
-export default class TermBoard extends Component {
+TermBoard.propTypes = {
+	index: PropTypes.string,
+	boardHeader: PropTypes.string,
+	courses: PropTypes.array,
+	isCart: PropTypes.bool
+};
 
-	static propTypes = {
-		index: PropTypes.string,
-		boardHeader: PropTypes.string,
-		courses: PropTypes.array,
-		isCart: PropTypes.bool
-	};
+TermBoard.defaultProps = {
+	index: '',
+	boardHeader: '',
+	courses: [],
+	isCart: false
+};
 
-	static defaultProps = {
-		index: '',
-		boardHeader: '',
-		courses: [],
-		isCart: false
-	};
-
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			index: props.index || props.boardHeader,
-			boardHeader: props.boardHeader,
-			courses: props.courses,
-			isCart: props.isCart
-		};
-	}
-
-	componentWillReceiveProps(nextProps) {
-	  if (nextProps.courses !== this.state.courses) {
-			this.setState({ courses: nextProps.courses });
-		}
-	}
-
-	render() {
-		return (
-			<Paper
-				className="term-paper"
-				zDepth={1}
-				style={(this.state.isCart) ? styles.cartBoard : styles.board}
-				>
-				<div className="term-header">
-					<span>{this.state.boardHeader}</span>
-				</div>
-				<div style={{ height: '93%' }}>
-					<Droppable
-						droppableId={this.state.index}
-						type={DragTypes.COURSE}
-					>
-						{(provided, snapshot) => (
-							<div
-								ref={provided.innerRef}
-								style={styles.dragArea(snapshot.isDraggingOver, this.state.isCart)}
-								>
-								{renderCourses(this.state.courses)}
-								{provided.placeholder}
-							</div>
-						)}
-					</Droppable>
-				</div>
-			</Paper>
-		);
-	}
-
-}
+export default TermBoard;

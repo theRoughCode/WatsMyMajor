@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
-import Cart from './Cart';
+import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { addToCart, removeFromCart, reorderCart } from '../../actions/index';
@@ -100,7 +100,7 @@ class CourseBoard extends Component {
 			case 'Trash':
 				return null;
 			default:
-				return this.state.courseList[id].courses;
+				return this.state.courseList[id].courses || [];
 		}
 	}
 
@@ -145,7 +145,7 @@ class CourseBoard extends Component {
 					<div className="course-board">
 						{renderTerms(this.state.courseList)}
 					</div>
-					<Cart courses={this.state.cart} />
+					<MyCourseSideBar cartCourses={this.state.cart} />
 				</div>
 			</DragDropContext>
 		);

@@ -3,19 +3,26 @@ import PropTypes from 'prop-types';
 import TermBoard from './TermBoard';
 import Paper from 'material-ui/Paper';
 import FontIcon from 'material-ui/FontIcon';
+import Button from 'material-ui/RaisedButton';
+import AddIcon from 'material-ui/svg-icons/content/add';
 import { Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 
+const width = 200;
 
 const styles = {
+	addButton: {
+		width,
+		margin: '10px auto'
+	},
 	trashContainer: {
-		width: '200px',
+		width,
 		margin: '10px auto',
 		height: '100px',
 		display: 'flex'
 	},
 	droppableContainer: isDraggingOver => ({
-		width: '196px',
+		width,
 		height: '96px',
 		display: 'flex',
 		margin: 'auto',
@@ -55,34 +62,26 @@ const Trash = () => (
 );
 
 
-export default class Cart extends Component {
+const MyCourseSideBar = ({ cartCourses }) => (
+	<div className="cart">
+		<Button
+			onClick={() => {}}
+			label="Add Term"
+			backgroundColor="#a4c639"
+			style={styles.addButton}
+			icon={<AddIcon />}
+		/>
+		<Trash />
+		<TermBoard
+			boardHeader={'Cart'}
+			courses={cartCourses}
+			isCart={true}
+		/>
+	</div>
+);
 
-	static propTypes = {
-		courses: PropTypes.array.isRequired
-	};
+MyCourseSideBar.propTypes = {
+	cartCourses: PropTypes.array.isRequired
+};
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			courses: props.courses
-		};
-
-		this.addCourseHandler = props.addCourseHandler;
-		this.removeCourseHandler = props.removeCourseHandler;
-	}
-
-	render() {
-		return (
-			<div className="cart">
-				<Trash />
-				<TermBoard
-					boardHeader={'Cart'}
-					courses={this.state.courses}
-					isCart={true}
-					/>
-			</div>
-		);
-	}
-
-}
+export default MyCourseSideBar;

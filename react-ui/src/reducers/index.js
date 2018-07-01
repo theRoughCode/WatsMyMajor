@@ -98,9 +98,9 @@ function snack(state = snackInitialState, action) {
 function courseList(state = [], action) {
 	switch (action.type) {
 		case SET_USER:
-			return action.payload.courseList;
+			return action.payload.courseList || [];
 		case UPDATE_USER_COURSES:
-			return action.meta.courseList;
+			return action.meta.courseList || state;
 		default:
 			return state;
 	}
