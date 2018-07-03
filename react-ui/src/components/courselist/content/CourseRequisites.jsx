@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import {Tabs, Tab} from '@material-ui/core/Tabs';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
+import Paper from '@material-ui/core/Paper';
 import SwipeableViews from 'react-swipeable-views';
 import Prereqs from './Prereqs';
 

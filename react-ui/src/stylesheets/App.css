@@ -9,23 +9,8 @@ html, body, #root, .App {
 .App {
 	text-align: center;
 	display: flex;
-	flex-direction: column;
-}
-
-.App-logo {
-	animation: App-logo-spin infinite 20s linear;
-	height: 80px;
-}
-
-.App-header {
-	background-color: #656e77;
-	height: 150px;
-	padding: 20px;
-	color: white;
-}
-
-.App-intro {
-	font-size: large;
+	position: relative;
+	width: 100%;
 }
 
 .App a {
@@ -47,34 +32,4 @@ html, body, #root, .App {
 @keyframes App-logo-spin {
 	from { transform: rotate(0deg); }
 	to { transform: rotate(360deg); }
-}
-
-/* SideBar menu */
-/*.App-header div {
-  background-color: rgb(62, 75, 92) !important;
-  color: rgb(180, 188, 200) !important;
-}*/
-
-.App-header div .titleBar  {
-  padding-top: 60px;
-  background-color: rgb(43, 54, 67) !important;
-}
-
-.avatar-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.avatar-icon {
-  margin: auto;
-}
-
-.avatar-name {
-  color: white;
-  margin: auto;
-}
-
-.sidebar-courses a {
-	color: rgba(0, 0, 0, 0.87);
-	text-decoration: none !important;
 }

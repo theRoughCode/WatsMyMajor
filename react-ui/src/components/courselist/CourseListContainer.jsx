@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import uuidv4 from 'uuid/v4';
-import ErrorIcon from 'material-ui/svg-icons/alert/error';
+import ErrorIcon from '@material-ui/icons/Error';
 import CourseContent from './CourseContent';
 import CourseSideBar from './CourseSideBarContainer';
 import LoadingView from '../tools/LoadingView';

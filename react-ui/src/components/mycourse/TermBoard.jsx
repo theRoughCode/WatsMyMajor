@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
-import CourseCard from './CourseCard';
+import Paper from '@material-ui/core/Paper';
+import CourseBoard from './CourseBoard';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 
@@ -61,7 +61,7 @@ const renderCourses = (courseList) => {
 				type={DragTypes.COURSE}
 				>
 				{(provided, snapshot) => (
-					<CourseCard
+					<CourseBoard
 						subject={course.subject}
 						catalogNumber={course.catalogNumber}
 						provided={provided}
@@ -77,7 +77,7 @@ const renderCourses = (courseList) => {
 const TermBoard = ({ index, boardHeader, courses, isCart }) => (
 	<Paper
 		className="term-paper"
-		zDepth={1}
+		elevation={1}
 		style={(isCart) ? styles.cartBoard : styles.board}
 		>
 		<div className="term-header">

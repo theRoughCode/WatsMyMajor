@@ -4,9 +4,8 @@ import {
   Step,
   Stepper,
   StepButton,
-} from 'material-ui/Stepper';
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
+} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import '../../stylesheets/InstructionsView.css';
 
 const styles = {
@@ -78,7 +77,11 @@ export default class ParserInstructions extends Component {
 
     const formView = (
       <div className="instructions">
-        <Stepper linear={ false } activeStep={ stepIndex }>
+        <Stepper
+          nonLinear
+          activeStep={ stepIndex }
+          style={{ backgroundColor: 'inherit'}}
+        >
           {
             stepContents.map(({ button }, stepIndex) => (
               <Step key={ stepIndex }>
@@ -92,17 +95,20 @@ export default class ParserInstructions extends Component {
         <div style={ styles.stepperInfo }>
           { this.getStepContent(stepIndex) }
           <div style={{ marginTop: 12 }}>
-            <FlatButton
-              label="Back"
+            <Button
+              onClick={ this.handlePrev }
               disabled={ stepIndex === 0 }
-              onClick={this.handlePrev}
               style={{ marginRight: 12 }}
-            />
-            <RaisedButton
-              label={ nextButtonText }
-              primary={ true }
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
               onClick={ this.handleNext }
-            />
+            >
+              { nextButtonText }
+            </Button>
           </div>
         </div>
       </div>

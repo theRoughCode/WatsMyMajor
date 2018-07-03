@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import TermBoard from './TermBoard';
-import Paper from 'material-ui/Paper';
-import FontIcon from 'material-ui/FontIcon';
-import Button from 'material-ui/RaisedButton';
-import AddIcon from 'material-ui/svg-icons/content/add';
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
 import { Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 
@@ -13,7 +14,11 @@ const width = 200;
 const styles = {
 	addButton: {
 		width,
-		margin: '10px auto'
+		margin: '10px auto',
+		backgroundColor: '#a4c639',
+		'&:hover': {
+      backgroundColor: '#b3d83e',
+    },
 	},
 	trashContainer: {
 		width,
@@ -36,7 +41,7 @@ const styles = {
 }
 
 const Trash = () => (
-	<Paper zDepth={1} style={styles.trashContainer}>
+	<Paper elevation={1} style={styles.trashContainer}>
 		<Droppable
 			droppableId={'Trash'}
 			type={DragTypes.COURSE}
@@ -46,7 +51,7 @@ const Trash = () => (
 					ref={provided.innerRef}
 					style={styles.droppableContainer(snapshot.isDraggingOver)}
 					>
-					<FontIcon
+					<Icon
 						className="material-icons"
 						style={styles.trashIcon}
 					>
@@ -54,7 +59,7 @@ const Trash = () => (
 							? 'delete_forever'
 							: 'delete'
 						}
-					</FontIcon>
+					</Icon>
 				</div>
 			)}
 		</Droppable>
@@ -62,15 +67,16 @@ const Trash = () => (
 );
 
 
-const MyCourseSideBar = ({ cartCourses }) => (
+const MyCourseSideBar = ({ cartCourses, classes }) => (
 	<div className="cart">
 		<Button
+			variant="contained"
 			onClick={() => {}}
-			label="Add Term"
-			backgroundColor="#a4c639"
-			style={styles.addButton}
-			icon={<AddIcon />}
-		/>
+			className={classes.addButton}
+		>
+			<AddIcon />
+			Add Term
+		</Button>
 		<Trash />
 		<TermBoard
 			boardHeader={'Cart'}
@@ -84,4 +90,4 @@ MyCourseSideBar.propTypes = {
 	cartCourses: PropTypes.array.isRequired
 };
 
-export default MyCourseSideBar;
+export default withStyles(styles)(MyCourseSideBar);

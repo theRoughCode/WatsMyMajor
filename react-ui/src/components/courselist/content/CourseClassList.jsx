@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
+import Paper from '@material-ui/core/Paper';
 import {
 	Table,
 	TableBody,
 	TableRow,
 	TableRowColumn,
-} from 'material-ui/Table';
+} from '@material-ui/core/Table';
 
 
 const styles = {

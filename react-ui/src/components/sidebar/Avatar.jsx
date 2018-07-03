@@ -1,16 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Avatar from 'material-ui/Avatar';
+import Avatar from '@material-ui/core/Avatar';
+import { withStyles } from '@material-ui/core/styles';
 
+const styles = {
+	avatarWrapper: {
+		display: 'flex',
+	  flexDirection: 'column',
+		margin: 'auto',
+		width: 'auto'
+	},
+	avatarIcon: {
+		margin: 'auto',
+		width: 100,
+		height: 100
+	},
+	avatarName: {
+		color: 'white',
+	  margin: 'auto'
+	}
+};
 
-const SideBarAvatar = ({ name }) => (
-	<div className="avatar-wrapper">
+const SideBarAvatar = ({ name, classes }) => (
+	<div style={styles.avatarWrapper}>
 		<Avatar
-			className="avatar-icon"
+			className={classes.avatarIcon}
 			src='images/avatar.jpg'
-			size={100}
-			/>
-		<span className="avatar-name">{ name }</span>
+		/>
+		<span className={classes.avatarName}>{ name }</span>
 	</div>
 );
 
@@ -22,4 +39,4 @@ SideBarAvatar.defaultProps = {
 	name: ''
 };
 
-export default SideBarAvatar;
+export default withStyles(styles)(SideBarAvatar);

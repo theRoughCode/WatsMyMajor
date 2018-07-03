@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
-import Divider from 'material-ui/Divider';
-import PersonIcon from 'material-ui/svg-icons/social/person';
-import PeopleIcon from 'material-ui/svg-icons/social/people';
-import CheckIcon from 'material-ui/svg-icons/navigation/check';
-import BlockIcon from 'material-ui/svg-icons/content/block';
+import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
+import PersonIcon from '@material-ui/icons/Person';
+import PeopleIcon from '@material-ui/icons/People';
+import CheckIcon from '@material-ui/icons/Check';
+import BlockIcon from '@material-ui/icons/Block';
 import FontAwesome from 'react-fontawesome';
 
 const styles = {

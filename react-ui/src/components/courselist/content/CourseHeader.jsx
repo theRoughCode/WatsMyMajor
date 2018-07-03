@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
+import Button from '@material-ui/core/Button';
 import StarRatings from 'react-star-ratings';
-import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
+import CartIcon from '@material-ui/icons/LocalGroceryStore';
 
 const styles = {
 	button: {
@@ -45,13 +45,14 @@ const CourseHeader = (props) => {
 				{termsOffered.length > 0 && (
 					<span>Offered in: {termsOffered.join(', ')}</span>
 				)}
-				<RaisedButton
+				<Button
 					onClick={() => addToCartHandler(subject, catalogNumber)}
-					label="Add To Cart"
 					backgroundColor="#a4c639"
 					style={styles.button}
-					icon={<CartIcon />}
-				/>
+				>
+					<CartIcon />
+					Add To Cart
+				</Button>
 			</div>
 		</div>
 	);

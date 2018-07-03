@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Calendar, Event } from './calendar';
 import moment from 'moment';
-import Drawer from 'material-ui/Drawer';
+import { withTheme } from '@material-ui/core/styles'
+import Drawer from '@material-ui/core/Drawer';
 import MenuItem from 'material-ui/MenuItem';
-import AppBar from 'material-ui/AppBar';
+import AppBar from '@material-ui/core/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import DatePicker from 'material-ui/DatePicker';
@@ -331,4 +332,4 @@ class CalendarContainer extends Component {
   }
 }
 
-export default CalendarContainer;
+export default withTheme()(CalendarContainer);

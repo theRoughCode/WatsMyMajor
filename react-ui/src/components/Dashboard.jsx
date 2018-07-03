@@ -1,39 +1,35 @@
-import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
+import React from 'react';
 import logo from '../logo.svg';
 
-
-export default class Dashboard extends Component {
-
-	constructor(props) {
-		super(props);
-
-		this.state = {
-
-		};
+const styles = {
+	header: {
+		backgroundColor: '#656e77',
+		height: 150,
+		padding: 20,
+		color: 'white'
+	},
+	logo: {
+		animation: 'App-logo-spin infinite 20s linear',
+		height: 80
+	},
+	intro: {
+		fontSize: 'large'
 	}
+};
 
-	render() {
-		return (
-			<div>
-				<div className="App-header">
-					<img src={logo} className="App-logo" alt="logo" />
-					<h2>Welcome to React</h2>
-				</div>
-				<p className="App-intro">
-					{'This is '}
-					<a href="https://github.com/mars/heroku-cra-node">
-						{'create-react-app with a custom Node/Express server'}
-					</a><br/>
-				</p>
-				<RaisedButton label="Default" />
-				<p className="App-intro">
-					{this.state.fetching
-						? 'Fetching message from API'
-						: this.state.message}
-				</p>
-			</div>
-		);
-	}
+const Dashboard = () => (
+	<div>
+		<div style={styles.header}>
+			<img src={logo} style={styles.logo} alt="logo" />
+			<h2>Welcome to React</h2>
+		</div>
+		<p style={styles.intro}>
+			{'This is '}
+			<a href="https://github.com/mars/heroku-cra-node">
+				{'create-react-app with a custom Node/Express server'}
+			</a><br/>
+		</p>
+	</div>
+);
 
-}
+export default Dashboard;

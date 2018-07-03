@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardActions, CardHeader } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
+import { Card, CardActions, CardHeader } from '@material-ui/core/Card';
+import Button from '@material-ui/core/Button';
 
 const CourseCard = ({
 	title,
@@ -27,8 +27,8 @@ const CourseCard = ({
 			</div>
 		</div>
 		<CardActions>
-			<FlatButton label="See more" />
-			<FlatButton label="Quick add" />
+			<Button>See more</Button>
+			<Button>Quick add</Button>
 		</CardActions>
   </Card>
 );

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
-import Avatar from 'material-ui/Avatar';
-import Chip from 'material-ui/Chip';
-import Divider from 'material-ui/Divider';
-import CircularProgress from 'material-ui/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import Avatar from '@material-ui/core/Avatar';
+import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';

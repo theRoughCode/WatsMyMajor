@@ -6,18 +6,14 @@ import SearchBar from 'material-ui-search-bar';
 import { setCourse } from '../actions/index';
 
 
+const style = {
+  maxWidth: 800
+};
+
 class AppSearchBar extends Component {
 
   static propTypes = {
     selectCourseHandler: PropTypes.func.isRequired,
-    style: PropTypes.object
-  };
-
-  static defaultProps = {
-    style: {
-      marginTop: '5px',
-      maxWidth: 800
-    }
   };
 
   constructor(props) {
@@ -25,8 +21,7 @@ class AppSearchBar extends Component {
 
     this.state = {
 			dataSource: [],
-			selectCourseHandler: props.selectCourseHandler,
-      style: props.style
+			selectCourseHandler: props.selectCourseHandler
     };
   }
 
@@ -65,16 +60,19 @@ class AppSearchBar extends Component {
 		this.state.selectCourseHandler(subject, catalogNumber);
 	}
 
+
+// TODO: Reimplement this when material-ui-search-bar code is updated
+    // hintText="Search for courses"
+    // dataSource={ this.state.dataSource }
+    // onNewRequest={ this.searchCourse.bind(this) }
+    // filter={ (searchValue, key) => searchValue.length }
+
   render() {
     return (
       <SearchBar
-        hintText="Search for courses"
-        dataSource={ this.state.dataSource }
-        filter={ (searchValue, key) => searchValue.length }
         onChange={ this.queryForCourse.bind(this) }
         onRequestSearch={ this.searchCourse.bind(this) }
-        onNewRequest={ this.searchCourse.bind(this) }
-        style={ this.state.style }
+        style={ style }
       />
     );
   }

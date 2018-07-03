@@ -1,15 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
+import Paper from '@material-ui/core/Paper';
 
-const CourseCard = ({
+const CourseBoard = ({
 	subject,
 	catalogNumber,
 	provided,
 	snapshot,
 	getItemStyle
 }) => (
-	<Paper zDepth={1}>
+	<Paper elevation={1}>
 		<div
 			ref={provided.innerRef}
 			{...provided.draggableProps}
@@ -25,7 +25,7 @@ const CourseCard = ({
 	</Paper>
 );
 
-CourseCard.propTypes = {
+CourseBoard.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
 
@@ -36,4 +36,4 @@ CourseCard.propTypes = {
 	getItemStyle: PropTypes.func.isRequired
 };
 
-export default CourseCard;
+export default CourseBoard;
