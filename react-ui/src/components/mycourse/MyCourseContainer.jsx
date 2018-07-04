@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import uuidv4 from 'uuid/v4';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { arrayOfObjectEquals } from '../../utils/arrays';
@@ -11,14 +10,13 @@ import { updateUserCourses } from '../../actions/index';
 import '../../stylesheets/CourseView.css';
 
 
-const parseCourses = ({ term, courses}) => {
+const parseCourses = ({ term, courses }) => {
 	const parsedCourses = [];
 
 	for (let subject in courses) {
 		parsedCourses.push(...courses[subject].map(catalogNumber => ({
 			subject,
-			catalogNumber,
-			id: uuidv4()
+			catalogNumber
 		})));
 	}
 

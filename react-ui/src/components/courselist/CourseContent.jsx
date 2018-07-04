@@ -21,7 +21,10 @@ const CourseContent = (props) => {
 		postreqs,
 		term,
 		classes,
-		addToCartHandler
+		taken,
+		inCart,
+		addToCartHandler,
+		removeFromCartHandler,
 	} = props;
 
 	return (
@@ -33,6 +36,9 @@ const CourseContent = (props) => {
 				rating={rating}
 				termsOffered={termsOffered}
 				addToCartHandler={addToCartHandler}
+				removeFromCartHandler={removeFromCartHandler}
+				taken={taken}
+				inCart={inCart}
 			/>
 			<CourseDescription
 				description={description}
@@ -72,7 +78,10 @@ CourseContent.propTypes = {
 	postreqs: PropTypes.array.isRequired,
 	term: PropTypes.string.isRequired,
 	classes: PropTypes.array.isRequired,
-	addToCartHandler: PropTypes.func.isRequired
+	taken: PropTypes.bool.isRequired,
+	inCart: PropTypes.bool.isRequired,
+	addToCartHandler: PropTypes.func.isRequired,
+	removeFromCartHandler: PropTypes.func.isRequired,
 }
 
 export default CourseContent;

@@ -2,7 +2,6 @@ import { combineReducers } from 'redux'
 import {
 	TOGGLE_SIDEBAR,
 	SET_USER,
-	SET_COURSE,
 	SET_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
@@ -10,15 +9,6 @@ import {
 	REMOVE_FROM_CART,
 	REORDER_CART
 } from '../actions/index';
-
-function course(state = { subject: 'CS', catalogNumber: '136' }, action) {
-	switch(action.type) {
-		case SET_COURSE:
-			return action.course;
-		default:
-			return state;
-	}
-}
 
 function expandedCourse(state={}, action) {
 	switch(action.type) {
@@ -106,6 +96,25 @@ function courseList(state = [], action) {
 	}
 }
 
+// Helper function for myCourses
+function getMyCourses(courseList) {
+	if (!courseList) return [];
+	courseList = courseList.map(term => term.courses || []);
+	// Flatten array
+	return [].concat.apply([], courseList);
+}
+// List of courses in My Courses
+function myCourses(state = [], action) {
+	switch (action.type) {
+		case SET_USER:
+			return getMyCourses(action.payload.courseList);
+		case UPDATE_USER_COURSES:
+			return getMyCourses(action.meta.courseList);
+		default:
+			return state;
+	}
+}
+
 function cart(state = [], action) {
 	switch (action.type) {
 		case SET_USER:
@@ -114,7 +123,10 @@ function cart(state = [], action) {
 			state.push(action.course);
 			return state;
 		case REMOVE_FROM_CART:
-			return state.filter(course => course.id !== action.id);
+			return state.filter(course =>
+				course.subject !== action.subject ||
+				course.catalogNumber !== action.catalogNumber
+			);
 		case REORDER_CART:
 			return action.cart;
 		default:
@@ -143,11 +155,11 @@ function user(state = defaultUser, action) {
 }
 
 const reducers = combineReducers({
-	course,
 	expandedCourse,
 	sideBarOpen,
 	snack,
 	courseList,
+	myCourses,
 	cart,
 	user
 });

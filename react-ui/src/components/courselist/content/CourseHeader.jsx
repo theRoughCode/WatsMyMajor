@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import StarRatings from 'react-star-ratings';
 import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
+import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
+import CheckIcon from 'material-ui/svg-icons/action/check-circle';
 
 const styles = {
 	button: {
@@ -11,8 +13,14 @@ const styles = {
 	},
 	stars: {
 		starRatedColor: '#ffcc00',
-		starWidthAndHeight: '25px',
+		starDimension: '25px',
 		starSpacing: '1px'
+	},
+	taken: {
+		display: 'flex',
+		alignItems: 'center',
+		margin: '5px 0',
+		color: '#2e9619'
 	}
 };
 
@@ -23,8 +31,27 @@ const CourseHeader = (props) => {
 		title,
 		rating,
 		termsOffered,
-		addToCartHandler
+		addToCartHandler,
+		removeFromCartHandler,
+		taken,
+		inCart
 	} = props;
+
+	const cartButton = (inCart)
+		? <RaisedButton
+				onClick={() => removeFromCartHandler(subject, catalogNumber)}
+				label="Remove From Cart"
+				backgroundColor="#ef4f59"
+				style={styles.button}
+				icon={<RemoveCartIcon />}
+			/>
+		: <RaisedButton
+				onClick={() => addToCartHandler(subject, catalogNumber)}
+				label="Add To Cart"
+				backgroundColor="#a4c639"
+				style={styles.button}
+				icon={<CartIcon />}
+			/>;
 
 	return (
 		<div className="course-header">
@@ -40,18 +67,20 @@ const CourseHeader = (props) => {
 					/>
 				</div>
 				<span className="title">{title}</span>
+				{
+					taken && (
+						<div style={styles.taken}>
+							<CheckIcon style={{ marginRight: 5 }} />
+							<span>You've taken this course</span>
+						</div>
+					)
+				}
 			</div>
 			<div className="course-header-right">
 				{termsOffered.length > 0 && (
 					<span>Offered in: {termsOffered.join(', ')}</span>
 				)}
-				<RaisedButton
-					onClick={() => addToCartHandler(subject, catalogNumber)}
-					label="Add To Cart"
-					backgroundColor="#a4c639"
-					style={styles.button}
-					icon={<CartIcon />}
-				/>
+				{ cartButton }
 			</div>
 		</div>
 	);
@@ -63,7 +92,10 @@ CourseHeader.propTypes = {
 	title: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
 	termsOffered: PropTypes.array.isRequired,
-	addToCartHandler: PropTypes.func.isRequired
+	addToCartHandler: PropTypes.func.isRequired,
+	removeFromCartHandler: PropTypes.func.isRequired,
+	taken: PropTypes.bool.isRequired,
+	inCart: PropTypes.bool.isRequired,
 };
 
 export default CourseHeader;

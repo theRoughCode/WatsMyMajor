@@ -3,13 +3,10 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import SearchBar from 'material-ui-search-bar';
-import { setCourse } from '../actions/index';
-
 
 class AppSearchBar extends Component {
 
   static propTypes = {
-    selectCourseHandler: PropTypes.func.isRequired,
     style: PropTypes.object
   };
 
@@ -25,7 +22,6 @@ class AppSearchBar extends Component {
 
     this.state = {
 			dataSource: [],
-			selectCourseHandler: props.selectCourseHandler,
       style: props.style
     };
   }
@@ -62,7 +58,6 @@ class AppSearchBar extends Component {
     const subject = strArr[0];
     const catalogNumber = strArr[1];
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.state.selectCourseHandler(subject, catalogNumber);
 	}
 
   render() {
@@ -78,15 +73,6 @@ class AppSearchBar extends Component {
       />
     );
   }
-
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-		selectCourseHandler: (subject, catalogNumber) => {
-			dispatch(setCourse(subject, catalogNumber));
-		}
-  }
-};
-
-export default withRouter(connect(null, mapDispatchToProps)(AppSearchBar));
+export default withRouter(AppSearchBar);

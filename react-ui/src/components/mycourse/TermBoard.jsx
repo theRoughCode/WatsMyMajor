@@ -67,7 +67,7 @@ const renderCourses = (courseList) => {
 						provided={provided}
 						snapshot={snapshot}
 						getItemStyle={getItemStyle}
-						/>
+					/>
 				)}
 			</Draggable>
 		);

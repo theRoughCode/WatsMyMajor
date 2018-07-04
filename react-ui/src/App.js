@@ -8,7 +8,7 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { setUser, toggleSideBar, setCourse, createSnack } from './actions/index';
+import { setUser, toggleSideBar, createSnack } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
@@ -31,7 +31,6 @@ class App extends Component {
 	static propTypes = {
     onSetUser: PropTypes.func.isRequired,
 		onToggleSideBar: PropTypes.func.isRequired,
-		selectCourseHandler: PropTypes.func.isRequired,
 		onUndoSnack: PropTypes.func.isRequired
 	};
 
@@ -46,7 +45,6 @@ class App extends Component {
 			sideBarOpen,
 			snack,
 			onToggleSideBar,
-			selectCourseHandler,
 			onUndoSnack
 		} = props;
 
@@ -66,7 +64,6 @@ class App extends Component {
 		this.handleRequestClose = this.handleRequestClose.bind(this);
 		this.handleActionClick = this.handleActionClick.bind(this);
 		this.onToggleSideBar = onToggleSideBar;
-		this.selectCourseHandler = selectCourseHandler;
 		this.onUndoSnack = onUndoSnack;
 	}
 
@@ -142,9 +139,6 @@ const mapDispatchToProps = dispatch => {
     onToggleSideBar: () => {
       dispatch(toggleSideBar());
     },
-		selectCourseHandler: (subject, catalogNumber) => {
-			dispatch(setCourse(subject, catalogNumber));
-		},
 		onUndoSnack: (msg) => {
 			dispatch(createSnack(msg));
 		}

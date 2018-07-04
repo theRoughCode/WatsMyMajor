@@ -6,7 +6,7 @@ import TermBoard from './TermBoard';
 import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
-import { addToCart, removeFromCart, reorderCart } from '../../actions/index';
+import { reorderCart } from '../../actions/index';
 
 
 const renderTerms = (courseList) => {
@@ -26,8 +26,6 @@ class CourseBoard extends Component {
 	static propTypes = {
 		updateCourseHandler: PropTypes.func.isRequired,
 		cart: PropTypes.array.isRequired,
-		addCourseHandler: PropTypes.func.isRequired,
-		removeCourseHandler: PropTypes.func.isRequired,
 		reorderCartHandler: PropTypes.func.isRequired,
 		courseList: PropTypes.array,
 	};
@@ -59,8 +57,6 @@ class CourseBoard extends Component {
 		this.reorder = this.reorder.bind(this);
 		this.move = this.move.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
-		this.addCourseHandler = addCourseHandler;
-		this.removeCourseHandler = removeCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
 	}
 
@@ -155,12 +151,6 @@ class CourseBoard extends Component {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addCourseHandler: course => {
-			dispatch(addToCart(course));
-		},
-		removeCourseHandler: id => {
-			dispatch(removeFromCart(id));
-		},
 		reorderCartHandler: cart => {
 			dispatch(reorderCart(cart));
 		}

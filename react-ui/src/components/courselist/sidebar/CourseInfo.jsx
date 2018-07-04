@@ -41,23 +41,23 @@ const DetailedInfo = (info) => {
 			<Info
 				icon={<PersonIcon style={styles.icon} />}
 				info={`Instructor: ${instructor}`}
-				/>
+			/>
 			<Info
 				icon={<PeopleIcon style={styles.icon} />}
 				info={`Enrollment cap: ${enrollmentCap}`}
-				/>
+			/>
 			<Info
 				icon={<CheckIcon style={styles.icon} />}
 				info={`Attending: ${attending}`}
-				/>
+			/>
 			<Info
 				icon={<BlockIcon style={styles.icon} />}
 				info={`Reserved cap: ${reservedCap}`}
-				/>
+			/>
 			<Info
 				icon={<CheckIcon style={styles.icon} />}
 				info={`Reserved enrolled: ${reserved}`}
-				/>
+			/>
 		</div>
 	);
 };

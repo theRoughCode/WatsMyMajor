@@ -20,8 +20,7 @@
     "react-star-ratings": "^2.2.0",
     "react-swipeable-views": "^0.12.13",
     "redux": "^4.0.0",
-    "redux-api-middleware": "^2.3.0",
-    "uuid": "^3.2.1"
+    "redux-api-middleware": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

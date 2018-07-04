@@ -4,8 +4,10 @@ import CourseInfo from './sidebar/CourseInfo';
 import CourseProf from './sidebar/CourseProf';
 import '../../stylesheets/CourseSideBar.css';
 
+// TODO: Implement as Drawer
+
 const styles =  {
-	instructor: (isVisible) => ({
+	sidebar: (isVisible) => ({
 		height: 'auto',
 		width: 270,
 		margin: 15,
@@ -36,7 +38,8 @@ export default class CourseSideBarContainer extends Component {
 		reserved: PropTypes.string.isRequired,
 		reservedCap: PropTypes.string.isRequired,
 		classNumber: PropTypes.string.isRequired,
-		lastUpdated: PropTypes.string.isRequired
+		lastUpdated: PropTypes.string.isRequired,
+		isVisible: PropTypes.bool.isRequired
 	};
 
 	constructor(props) {
@@ -51,7 +54,8 @@ export default class CourseSideBarContainer extends Component {
 			reserved,
 			reservedCap,
 			classNumber,
-			lastUpdated
+			lastUpdated,
+			isVisible
 		} = props;
 
 		this.state = {
@@ -59,6 +63,7 @@ export default class CourseSideBarContainer extends Component {
 			catalogNumber,
 			classNumber,
 			instructor,
+			isVisible,
 			info: {
 				attending,
 				enrollmentCap,
@@ -94,13 +99,15 @@ export default class CourseSideBarContainer extends Component {
 			reserved,
 			reservedCap,
 			classNumber,
-			lastUpdated
+			lastUpdated,
+			isVisible
 		} = nextProps;
 
 		if (classNumber !== this.props.classNumber) {
 			this.setState({
 				classNumber,
 				instructor,
+				isVisible,
 				info: {
 					attending,
 					enrollmentCap,
@@ -133,14 +140,15 @@ export default class CourseSideBarContainer extends Component {
 			instructor,
 			info,
 			prof,
-			fetchingRMP
+			fetchingRMP,
+			isVisible
 		} = this.state;
 		const id = (instructor) ? 'slide' : '';
 
 		return (
 			<div className="course-side-bar">
 				<CourseInfo
-					style={styles.instructor(instructor)}
+					style={styles.sidebar(isVisible)}
 					id={id}
 					subject={subject}
 					catalogNumber={catalogNumber}
@@ -148,7 +156,7 @@ export default class CourseSideBarContainer extends Component {
 					{...info}
 				/>
 				<CourseProf
-					style={styles.instructor(instructor)}
+					style={styles.sidebar(instructor)}
 					id={id}
 					instructor={instructor}
 					loading={fetchingRMP}

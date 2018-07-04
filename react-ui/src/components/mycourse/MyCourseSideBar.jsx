@@ -40,7 +40,7 @@ const Trash = () => (
 		<Droppable
 			droppableId={'Trash'}
 			type={DragTypes.COURSE}
-			>
+		>
 			{(provided, snapshot) => (
 				<div
 					ref={provided.innerRef}

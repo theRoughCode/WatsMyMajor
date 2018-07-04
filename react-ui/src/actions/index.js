@@ -6,7 +6,6 @@ import { RSAA } from 'redux-api-middleware';
 
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_USER = 'SET_USER';
-export const SET_COURSE = 'SET_COURSE';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
@@ -30,16 +29,6 @@ export function setUser(username) {
 			endpoint: `/users/${username}`,
 			method: 'GET',
 			types: ['', { type: SET_USER, meta: { username } }, '']
-		}
-	};
-}
-
-export function setCourse(subject, catalogNumber) {
-	return {
-		type: SET_COURSE,
-		course: {
-			subject,
-			catalogNumber
 		}
 	};
 }
@@ -102,18 +91,15 @@ export function updateUserCourses(username, courseList) {
 export function addToCart(subject, catalogNumber, id) {
 	return {
 		type: ADD_TO_CART,
-		course: {
-			subject,
-			catalogNumber,
-			id
-		}
+		course: { subject, catalogNumber }
 	};
 }
 
-export function removeFromCart(id) {
+export function removeFromCart(subject, catalogNumber) {
 	return {
 		type: REMOVE_FROM_CART,
-		id
+		subject,
+		catalogNumber
 	};
 }
 

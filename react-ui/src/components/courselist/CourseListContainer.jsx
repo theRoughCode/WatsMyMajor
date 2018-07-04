@@ -2,16 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import uuidv4 from 'uuid/v4';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import CourseContent from './CourseContent';
 import CourseSideBar from './CourseSideBarContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
-import { objectEquals } from '../../utils/arrays';
+import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
 import '../../stylesheets/CourseView.css';
 import {
-	setCourse,
 	setExpandedCourse,
 	createSnack,
 	addToCart,
@@ -29,51 +27,31 @@ const getCourseData = (subject, catalogNumber) => {
 	});
 };
 
-function updatePageInfo(subject, catalogNumber) {
-	this.setState({ subject, catalogNumber });
-	// fetch course data
-	getCourseData(subject, catalogNumber)
-	.then(json => {
-		let {
-			title,
-			description,
-			prereqs,
-			antireqs,
-			coreqs,
-			crosslistings,
-			terms,
-			url,
-			parPrereq,
-			parCoreq,
-			classList
-		} = json;
+// Check if course is in user's courses
+const hasTakenCourse = (subject, catalogNumber, myCourses) => {
+	if (!myCourses || !subject || ! catalogNumber) return false;
+	for (var i = 0; i < myCourses.length; i++) {
+		if (myCourses[i].subject === subject &&
+			myCourses[i].catalogNumber === catalogNumber) {
+			return true;
+		}
+	}
+	return false;
+}
 
-		const course = {
-			title,
-			description,
-			rating: 2.1,
-			termsOffered: terms,
-			antireqs,
-			coreqs,
-			prereqs,
-			postreqs: parPrereq,
-			term: (classList) ? classList.term : '',
-			classes: (classList) ? classList.classes : []
-		};
-
-		this.setState({ loading: false, course });
-	}).catch(error => {
-		console.error(`ERROR: ${error}`);
-		this.setState({ loading: false, error });
-	});
-};
-
+// Check if course is in cart
+const isInCart = (subject, catalogNumber, cart) => {
+	for (var i = 0; i < cart.length; i++) {
+		if (subject === cart[i].subject && catalogNumber === cart[i].catalogNumber) {
+			return true;
+		}
+	}
+	return false;
+}
 
 class CourseListContainer extends Component {
 
 	static propTypes = {
-		subject: PropTypes.string,
-		catalogNumber: PropTypes.string,
 		instructor: PropTypes.string,
 		attending: PropTypes.string,
 		enrollmentCap: PropTypes.string,
@@ -82,14 +60,12 @@ class CourseListContainer extends Component {
 		classNumber: PropTypes.string,
 		lastUpdated: PropTypes.string,
 		selectedClassIndex: PropTypes.number,
-		selectCourseHandler: PropTypes.func.isRequired,
 		expandCourseHandler: PropTypes.func.isRequired,
-		addToCartHandler: PropTypes.func.isRequired
+		addToCartHandler: PropTypes.func.isRequired,
+		removeFromCartHandler: PropTypes.func.isRequired
 	};
 
 	static defaultProps = {
-		subject: 'CS',
-		catalogNumber: '100',
 		instructor: '',
 		attending: '',
 		enrollmentCap: '',
@@ -103,11 +79,15 @@ class CourseListContainer extends Component {
 	constructor(props) {
 		super(props);
 
+		const { subject, catalogNumber } = props.match.params;
+
 		this.state = {
-			subject: props.match.params.subject,
-			catalogNumber: props.match.params.catalogNumber,
+			subject,
+			catalogNumber,
 			loading: true,
 			error: false,
+			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
+			inCart: isInCart(subject, catalogNumber, props.cart),
 			course: {
 				title: '',
 				rating: 0,
@@ -128,33 +108,44 @@ class CourseListContainer extends Component {
 				reservedCap: props.reservedCap,
 				classNumber: props.classNumber,
 				lastUpdated: props.lastUpdated
-			}
+			},
 		}
 
 		this.selectedClassIndex = props.selectedClassIndex;
-		this.selectCourseHandler = props.selectCourseHandler;
 		this.expandCourseHandler = props.expandCourseHandler;
+		this.updatePageInfo = this.updatePageInfo.bind(this);
 		this.selectCourse = this.selectCourse.bind(this);
-		this.addToCart = this.addToCart.bind(this);
+		this.addCourseToCart = this.addCourseToCart.bind(this);
+		this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
 	}
 
 	componentDidMount() {
 		const { subject, catalogNumber } = this.state;
-
-		if (subject && catalogNumber)
-			updatePageInfo.call(this, subject.toUpperCase(), catalogNumber);
+		this.updatePageInfo(subject, catalogNumber);
 	}
 
 	componentWillReceiveProps(nextProps) {
-		if (!objectEquals(nextProps, this.props)) {
-			const isNewCourse = (this.props.subject !== nextProps.subject || this.props.catalogNumber !== nextProps.catalogNumber);
-			const isNewClass = (this.props.classNumber !== nextProps.classNumber);
+		const { subject, catalogNumber } = this.props.match.params;
+		const nextSubject = nextProps.match.params.subject;
+		const nextCatNum = nextProps.match.params.catalogNumber;
+		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
+		const updatedCourseList = !arrayOfObjectEquals(nextProps.myCourses, this.props.myCourses);
+		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
+		const isNewClass = (this.props.classNumber !== nextProps.classNumber);
 
+		if (isNewClass || isNewCourse || updatedCart || updatedCourseList) {
 			// User selected new course
-			if (isNewCourse) {
-				const { subject, catalogNumber } = nextProps;
-				this.setState({ loading: true });
-				updatePageInfo.call(this, subject, catalogNumber);
+			if (isNewCourse || updatedCourseList) {
+				const { myCourses } = nextProps;
+				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+				this.setState({ loading: true, taken });
+				this.updatePageInfo(nextSubject, nextCatNum);
+			}
+
+			if (isNewCourse || updatedCart) {
+				const { cart } = nextProps;
+				const inCart = isInCart(nextSubject, nextCatNum, cart);
+				this.setState({ inCart });
 			}
 
 			// User selected new class
@@ -185,25 +176,57 @@ class CourseListContainer extends Component {
 		}
 	}
 
+	updatePageInfo(subject, catalogNumber) {
+		if (!subject || !catalogNumber) return;
+		// fetch course data
+		getCourseData(subject, catalogNumber)
+		.then(json => {
+			let {
+				title,
+				description,
+				prereqs,
+				antireqs,
+				coreqs,
+				crosslistings,
+				terms,
+				url,
+				parPrereq,
+				parCoreq,
+				classList
+			} = json;
+
+			const course = {
+				title,
+				description,
+				rating: 2.1,
+				termsOffered: terms,
+				antireqs,
+				coreqs,
+				prereqs,
+				postreqs: parPrereq,
+				term: (classList) ? classList.term : '',
+				classes: (classList) ? classList.classes : []
+			};
+
+			this.setState({ loading: false, course, subject, catalogNumber });
+		}).catch(error => {
+			console.error(`ERROR: ${error}`);
+			this.setState({ loading: false, error, subject, catalogNumber });
+		});
+	};
+
 	selectCourse(subject, catalogNumber) {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.selectCourseHandler(subject, catalogNumber);
 	}
 
-	addToCart(subject, catalogNumber) {
-		const { courseList, addToCartHandler } = this.props;
-		let courseExists = false;
-		for (let i = 0; i < courseList.length; i++) {
-			const termCourses = courseList[i].courses;
-			if (termCourses == null) continue;
-			for (let j = 0; j < termCourses.length; j++) {
-				const course = termCourses[j];
-				if (subject === course.subject && catalogNumber === course.catalogNumber) {
-					courseExists = true;
-				}
-			}
-		}
-		addToCartHandler(subject, catalogNumber, courseExists);
+	addCourseToCart(subject, catalogNumber) {
+		const { addToCartHandler } = this.props;
+		addToCartHandler(subject, catalogNumber, this.state.taken);
+	}
+
+	removeCourseFromCart(subject, catalogNumber) {
+		const { removeFromCartHandler } = this.props;
+		removeFromCartHandler(subject, catalogNumber);
 	}
 
 	render() {
@@ -215,14 +238,18 @@ class CourseListContainer extends Component {
 					expandCourse={this.expandCourseHandler}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
-					addToCartHandler={this.addToCart.bind(this, this.state.subject, this.state.catalogNumber)}
+					taken={this.state.taken}
+					inCart={this.state.inCart}
+					addToCartHandler={this.addCourseToCart}
+					removeFromCartHandler={this.removeCourseFromCart}
 					{...this.state.course}
-					/>
+				/>
 				<CourseSideBar
 					{...this.state.classInfo}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
-					/>
+					isVisible={this.state.classInfo.classNumber.length > 0}
+				/>
 			</div>
 		);
 
@@ -242,8 +269,7 @@ class CourseListContainer extends Component {
 
 }
 
-const mapStateToProps = ({ course, expandedCourse, courseList }) => {
-	const { subject, catalogNumber } = course;
+const mapStateToProps = ({ expandedCourse, myCourses, cart }) => {
 	const {
 		instructor,
 		attending,
@@ -256,8 +282,6 @@ const mapStateToProps = ({ course, expandedCourse, courseList }) => {
 	} = expandedCourse;
 
 	return {
-		subject,
-		catalogNumber,
 		instructor,
 		attending,
 		enrollmentCap,
@@ -266,31 +290,36 @@ const mapStateToProps = ({ course, expandedCourse, courseList }) => {
 		classNumber,
 		lastUpdated,
 		selectedClassIndex,
-		courseList
+		myCourses,
+		cart
 	};
 };
 
 const mapDispatchToProps = dispatch => {
 	return {
-		selectCourseHandler: (subject, catalogNumber) => {
-			dispatch(setCourse(subject, catalogNumber));
-		},
 		expandCourseHandler: (courseObj, index) => {
 			dispatch(setExpandedCourse(courseObj, index));
 		},
-		addToCartHandler: (subject, catalogNumber, courseExists) => {
-			if (courseExists) {
-				const msg = `${subject}${catalogNumber} already exists in your courses!`;
-				dispatch(createSnack(msg, "", "", null));
+		addToCartHandler: (subject, catalogNumber, hasTaken) => {
+			if (hasTaken) {
+				const msg = `${subject} ${catalogNumber} is already in your courses.`;
+				dispatch(createSnack(msg));
 			} else {
-				const msg = `${subject}${catalogNumber} has been added to your cart.`;
+				const msg = `${subject} ${catalogNumber} has been added to your cart.`;
 				const actionMsg = 'undo';
-				const undoMsg = `${subject}${catalogNumber} has been removed from your cart.`;
-				const id = uuidv4();
-				const handleActionClick = () => dispatch(removeFromCart(id));
-				dispatch(addToCart(subject, catalogNumber, id));
+				const undoMsg = `${subject} ${catalogNumber} has been removed from your cart.`;
+				const handleActionClick = () => dispatch(removeFromCart(subject, catalogNumber));
+				dispatch(addToCart(subject, catalogNumber));
 				dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
 			}
+		},
+		removeFromCartHandler: (subject, catalogNumber) => {
+			const msg = `${subject} ${catalogNumber} has been removed from your cart.`;
+			const actionMsg = 'undo';
+			const undoMsg = `${subject} ${catalogNumber} has been re-added to your cart.`;
+			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber));
+			dispatch(removeFromCart(subject, catalogNumber));
+			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
 		}
 	};
 };
