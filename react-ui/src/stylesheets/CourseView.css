@@ -197,13 +197,14 @@
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
-  text-align: center;
   border-left-style: solid;
   border-left-color: rgba(116, 122, 132, 0.5);
 }
 
 .reqs-link a {
   padding: 1px;
+  padding-left: 30px;
+  text-align: left;
   cursor: pointer;
   color: black;
 }

@@ -8,6 +8,7 @@ import CourseSideBar from './CourseSideBarContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
+import { hasTakenCourse, isInCart } from '../../utils/courses';
 import '../../stylesheets/CourseView.css';
 import {
 	setExpandedCourse,
@@ -26,28 +27,6 @@ const getCourseData = (subject, catalogNumber) => {
 		return response.json();
 	});
 };
-
-// Check if course is in user's courses
-const hasTakenCourse = (subject, catalogNumber, myCourses) => {
-	if (!myCourses || !subject || ! catalogNumber) return false;
-	for (var i = 0; i < myCourses.length; i++) {
-		if (myCourses[i].subject === subject &&
-			myCourses[i].catalogNumber === catalogNumber) {
-			return true;
-		}
-	}
-	return false;
-}
-
-// Check if course is in cart
-const isInCart = (subject, catalogNumber, cart) => {
-	for (var i = 0; i < cart.length; i++) {
-		if (subject === cart[i].subject && catalogNumber === cart[i].catalogNumber) {
-			return true;
-		}
-	}
-	return false;
-}
 
 class CourseListContainer extends Component {
 

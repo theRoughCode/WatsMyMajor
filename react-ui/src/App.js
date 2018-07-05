@@ -15,7 +15,7 @@ import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
 import MyCourseView from './components/mycourse/MyCourseContainer';
 import MyScheduleView from './components/schedule/MySchedule';
-import CourseListBrowseView from './components/CourseListBrowseContainer';
+import BrowseCourse from './components/courselist/BrowseCourse';
 import CourseListView from './components/courselist/CourseListContainer';
 
 let styles = {
@@ -108,7 +108,7 @@ class App extends Component {
     					<Route exact path='/' component={ Dashboard } />
               <Route path='/my-courses' component={ MyCourseView } />
               <Route path='/schedule' component={ MyScheduleView } />
-    					<Route exact path='/courses' component={ CourseListBrowseView } />
+    					<Route exact path='/courses' component={ BrowseCourse } />
     					<Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
     				</Switch>
     			</div>

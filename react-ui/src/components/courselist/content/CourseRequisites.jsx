@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import {Tabs, Tab} from 'material-ui/Tabs';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
+import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
+import { hasTakenCourse, isInCart } from '../../../utils/courses';
 import Prereqs from './Prereqs';
 
 
@@ -27,15 +29,15 @@ const styles = {
 	},
 };
 
-
-export default class CourseRequisites extends Component {
+class CourseRequisites extends Component {
 
 	static propTypes = {
 		antireqs: PropTypes.array.isRequired,
 		coreqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.object.isRequired,
 		postreqs: PropTypes.array.isRequired,
-		selectCourse: PropTypes.func.isRequired
+		selectCourse: PropTypes.func.isRequired,
+		myCourses: PropTypes.array.isRequired
 	};
 
 	constructor(props) {
@@ -51,16 +53,30 @@ export default class CourseRequisites extends Component {
 		});
 	};
 
-	formatReqs = (course, index) => (typeof course === "string")
-		? course
-		: (
+	formatReqs = (course, index) => {
+		if (typeof course === "string") return course;
+
+		const { myCourses } = this.props;
+		const { subject, catalogNumber } = course;
+		let style = {};
+
+		if (hasTakenCourse(subject, catalogNumber, myCourses)) {
+			style = {
+				color: 'green'
+			};
+		}
+
+		return (
 			<a
 				key={ index }
-				onClick={ () => this.props.selectCourse(course.subject, course.catalogNumber) }
+				onClick={ () => this.props.selectCourse(subject, catalogNumber) }
+				style={ style }
 			>
-				{ `${course.subject} ${course.catalogNumber}` }
+				{ `${subject} ${catalogNumber}` }
+				{ hasTakenCourse(subject, catalogNumber, myCourses) ? ' ✔' : '' }
 			</a>
-		);
+		)
+	}
 
 	formatPrereqs = (prereq, index) => {
 		if (!Object.keys(prereq).length) return [];
@@ -143,3 +159,9 @@ export default class CourseRequisites extends Component {
 		);
 	}
 };
+
+const mapStateToProps = ({ myCourses }) => {
+	return { myCourses };
+};
+
+export default connect(mapStateToProps, null)(CourseRequisites);
