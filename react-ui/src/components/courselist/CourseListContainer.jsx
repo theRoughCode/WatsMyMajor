@@ -8,7 +8,7 @@ import CourseSideBar from './CourseSideBarContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
-import { hasTakenCourse, isInCart } from '../../utils/courses';
+import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
 import '../../stylesheets/CourseView.css';
 import {
 	setExpandedCourse,
@@ -67,6 +67,7 @@ class CourseListContainer extends Component {
 			error: false,
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
+			eligible: false,
 			course: {
 				title: '',
 				rating: 0,
@@ -187,7 +188,9 @@ class CourseListContainer extends Component {
 				classes: (classList) ? classList.classes : []
 			};
 
-			this.setState({ loading: false, course, subject, catalogNumber });
+			const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
+
+			this.setState({ loading: false, course, subject, catalogNumber, eligible });
 		}).catch(error => {
 			console.error(`ERROR: ${error}`);
 			this.setState({ loading: false, error, subject, catalogNumber });
@@ -219,6 +222,7 @@ class CourseListContainer extends Component {
 					catalogNumber={this.state.catalogNumber}
 					taken={this.state.taken}
 					inCart={this.state.inCart}
+					eligible={this.state.eligible}
 					addToCartHandler={this.addCourseToCart}
 					removeFromCartHandler={this.removeCourseFromCart}
 					{...this.state.course}

@@ -42,8 +42,20 @@ class CourseRequisites extends Component {
 
 	constructor(props) {
 		super(props);
+
+		const {
+			antireqs,
+			coreqs,
+			prereqs,
+			postreqs
+		} = this.props;
+
 		this.state = {
 			slideIndex: 0,
+			prereqs: this.formatPrereqs(prereqs),
+			coreqs: coreqs.map(this.formatReqs),
+			antireqs: antireqs.map(this.formatReqs),
+			postreqs: postreqs.map(this.formatReqs),
 		};
 	}
 
@@ -78,22 +90,22 @@ class CourseRequisites extends Component {
 		)
 	}
 
-	formatPrereqs = (prereq, index) => {
-		if (!Object.keys(prereq).length) return [];
+	formatPrereqs = (prereqs, index) => {
+		if (!Object.keys(prereqs).length) return [];
 		// Base case: list of courses
-		if (prereq.hasOwnProperty('subject')) {
-			return this.formatReqs(prereq, index);
+		if (prereqs.hasOwnProperty('subject')) {
+			return this.formatReqs(prereqs, index);
 		}
 
 		// Inductive case: list of courses with choose
-		switch (prereq.choose) {
-			case 0: return prereq.reqs.map(this.formatPrereqs);
+		switch (prereqs.choose) {
+			case 0: return prereqs.reqs.map(this.formatPrereqs);
 			default:
-				const newReqsArr = prereq.reqs.map(this.formatPrereqs);
+				const newReqsArr = prereqs.reqs.map(this.formatPrereqs);
 				return [
 					<Prereqs
 						key={0}
-						choose={ prereq.choose }
+						choose={ prereqs.choose }
 						reqs={ newReqsArr }
 					/>
 				];
@@ -106,15 +118,10 @@ class CourseRequisites extends Component {
 			coreqs,
 			prereqs,
 			postreqs
-		} = this.props;
+		} = this.state;
 
 		const titles = [ 'Prereqs', 'Antireqs', 'Coreqs', 'Postreqs' ];
-		const reqs = [
-			this.formatPrereqs(prereqs),
-			antireqs.map(this.formatReqs),
-			coreqs.map(this.formatReqs),
-			postreqs.map(this.formatReqs)
-		];
+		const reqs = [ prereqs, antireqs, coreqs, postreqs ];
 
 		return (
 			<div className="course-requisites">

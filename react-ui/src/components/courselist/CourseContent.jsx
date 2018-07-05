@@ -23,6 +23,7 @@ const CourseContent = (props) => {
 		classes,
 		taken,
 		inCart,
+		eligible,
 		addToCartHandler,
 		removeFromCartHandler,
 	} = props;
@@ -39,6 +40,7 @@ const CourseContent = (props) => {
 				removeFromCartHandler={removeFromCartHandler}
 				taken={taken}
 				inCart={inCart}
+				eligible={eligible}
 			/>
 			<CourseDescription
 				description={description}
@@ -80,6 +82,7 @@ CourseContent.propTypes = {
 	classes: PropTypes.array.isRequired,
 	taken: PropTypes.bool.isRequired,
 	inCart: PropTypes.bool.isRequired,
+	eligible: PropTypes.bool.isRequired,
 	addToCartHandler: PropTypes.func.isRequired,
 	removeFromCartHandler: PropTypes.func.isRequired,
 }

@@ -34,7 +34,8 @@ const CourseHeader = (props) => {
 		addToCartHandler,
 		removeFromCartHandler,
 		taken,
-		inCart
+		inCart,
+		eligible
 	} = props;
 
 	const cartButton = (inCart)
@@ -53,6 +54,13 @@ const CourseHeader = (props) => {
 				icon={<CartIcon />}
 			/>;
 
+		let takeStatus = null;
+		if (taken) {
+			takeStatus = "You've taken this course";
+		} else if (eligible) {
+			takeStatus = "You are eligible to take this course";
+		}
+
 	return (
 		<div className="course-header">
 			<div className="course-header-left">
@@ -68,10 +76,10 @@ const CourseHeader = (props) => {
 				</div>
 				<span className="title">{title}</span>
 				{
-					taken && (
+					takeStatus && (
 						<div style={styles.taken}>
 							<CheckIcon style={{ marginRight: 5 }} />
-							<span>You've taken this course</span>
+							<span>{ takeStatus }</span>
 						</div>
 					)
 				}
@@ -96,6 +104,7 @@ CourseHeader.propTypes = {
 	removeFromCartHandler: PropTypes.func.isRequired,
 	taken: PropTypes.bool.isRequired,
 	inCart: PropTypes.bool.isRequired,
+	eligible: PropTypes.bool.isRequired,
 };
 
 export default CourseHeader;
