@@ -28,6 +28,7 @@ class CourseBoard extends Component {
 		cart: PropTypes.array.isRequired,
 		reorderCartHandler: PropTypes.func.isRequired,
 		courseList: PropTypes.array,
+		username: PropTypes.string.isRequired,
 	};
 
 	static defaultProps = {
@@ -43,12 +44,14 @@ class CourseBoard extends Component {
 			updateCourseHandler,
 			addCourseHandler,
 			removeCourseHandler,
-			reorderCartHandler
+			reorderCartHandler,
+			username
 		} = props;
 
 		this.state = {
 			courseList,
-			cart
+			cart,
+			username
 		};
 
 		this.onDragEnd = this.onDragEnd.bind(this);
@@ -66,6 +69,9 @@ class CourseBoard extends Component {
 		}
 		if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
 			this.setState({ cart: nextProps.cart });
+		}
+		if (nextProps.username !== this.state.username) {
+			this.setState({ username: nextProps.username });
 		}
 	}
 
@@ -105,7 +111,7 @@ class CourseBoard extends Component {
 		switch (id) {
 			case 'Cart':
 				this.setState({ cart: board });
-				this.reorderCartHandler(board);
+				this.reorderCartHandler(board, this.state.username);
 				break;
 			case 'Trash': break;
 			default:
@@ -118,6 +124,7 @@ class CourseBoard extends Component {
 
 	// Reorder term board
 	reorder(id, fromIndex, toIndex) {
+		if (fromIndex === toIndex) return;
 		const board = this.getBoard(id);
 		const [removed] = board.splice(fromIndex, 1);
 		board.splice(toIndex, 0, removed);
@@ -149,12 +156,14 @@ class CourseBoard extends Component {
 
 }
 
+const mapStateToProps = ({ user }) => ({ username: user.username });
+
 const mapDispatchToProps = dispatch => {
 	return {
-		reorderCartHandler: cart => {
-			dispatch(reorderCart(cart));
+		reorderCartHandler: (cart, username) => {
+			dispatch(reorderCart(cart, username));
 		}
 	};
 };
 
-export default withRouter(connect(null, mapDispatchToProps)(CourseBoard));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseBoard));

@@ -9,7 +9,7 @@ import CheckIcon from 'material-ui/svg-icons/action/check-circle';
 const styles = {
 	button: {
 		margin: '10px auto',
-		width: 150,
+		fontSize: 13,
 	},
 	stars: {
 		starRatedColor: '#ffcc00',

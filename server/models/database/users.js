@@ -70,16 +70,16 @@ function getUser(username, callback) {
  *													*
  ****************************/
 
-function setCart(userId, cart, callback) {
-  setField(userId, 'cart', cart, callback);
+function setCart(username, cart, callback) {
+  setField(username, 'cart', cart, callback);
 }
 
-function setSchedule(userId, schedule, callback) {
-  setField(userId, 'schedule', schedule, callback);
+function setSchedule(username, schedule, callback) {
+  setField(username, 'schedule', schedule, callback);
 }
 
-function setCourseList(userId, courseList, callback) {
-  setField(userId, 'courseList', courseList, callback);
+function setCourseList(username, courseList, callback) {
+  setField(username, 'courseList', courseList, callback);
 }
 
 module.exports = {

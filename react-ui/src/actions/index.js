@@ -11,9 +11,9 @@ export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const UPDATE_USER_COURSES_SUCCESS = 'UPDATE_USER_COURSES_SUCCESS';	// not used
 export const UPDATE_USER_COURSES_FAILURE = 'UPDATE_USER_COURSES_FAILURE';	// not used
-export const ADD_TO_CART = 'ADD_TO_CART';
-export const REMOVE_FROM_CART = 'REMOVE_FROM_CART';
-export const REORDER_CART = 'REORDER_CART';
+export const SET_CART = 'SET_CART';
+export const SET_CART_SUCCESS = 'SET_CART_SUCCESS';	// not used
+export const SET_CART_FAILURE = 'SET_CART_FAILURE';	// not used
 
 /*
  * action creators
@@ -67,6 +67,8 @@ export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
 	};
 }
 
+// TODO: Change approach to update immediately and then fallback on failure
+
 export function updateUserCourses(username, courseList) {
 	return {
 		[RSAA]: {
@@ -88,24 +90,70 @@ export function updateUserCourses(username, courseList) {
 	};
 }
 
-export function addToCart(subject, catalogNumber, id) {
+export function addToCart(subject, catalogNumber, username, cart) {
+	cart = cart.concat([{ subject, catalogNumber }]);
 	return {
-		type: ADD_TO_CART,
-		course: { subject, catalogNumber }
+		[RSAA]: {
+			endpoint: `/users/set/cart/${username}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ cart }),
+			types: [
+				{
+					type: SET_CART,
+					meta: { cart }
+				},
+				SET_CART_SUCCESS,
+				SET_CART_FAILURE
+			]
+		}
 	};
 }
 
-export function removeFromCart(subject, catalogNumber) {
+export function removeFromCart(subject, catalogNumber, username, cart) {
+	cart = cart.filter(course =>
+		course.subject !== subject ||
+		course.catalogNumber !== catalogNumber
+	);
 	return {
-		type: REMOVE_FROM_CART,
-		subject,
-		catalogNumber
+		[RSAA]: {
+			endpoint: `/users/set/cart/${username}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ cart }),
+			types: [
+				{
+					type: SET_CART,
+					meta: { cart }
+				},
+				SET_CART_SUCCESS,
+				SET_CART_FAILURE
+			]
+		}
 	};
 }
 
-export function reorderCart(cart) {
+export function reorderCart(cart, username) {
 	return {
-		type: REORDER_CART,
-		cart
+		[RSAA]: {
+			endpoint: `/users/set/cart/${username}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ cart }),
+			types: [
+				{
+					type: SET_CART,
+					meta: { cart }
+				},
+				SET_CART_SUCCESS,
+				SET_CART_FAILURE
+			]
+		}
 	};
 }

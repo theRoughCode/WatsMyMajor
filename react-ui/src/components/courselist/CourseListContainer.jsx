@@ -31,6 +31,8 @@ const getCourseData = (subject, catalogNumber) => {
 class CourseListContainer extends Component {
 
 	static propTypes = {
+		username: PropTypes.string.isRequired,
+		cart: PropTypes.array.isRequired,
 		instructor: PropTypes.string,
 		attending: PropTypes.string,
 		enrollmentCap: PropTypes.string,
@@ -138,7 +140,7 @@ class CourseListContainer extends Component {
 					reservedCap,
 					classNumber,
 					lastUpdated,
-					selectedClassIndex
+					selectedClassIndex,
 				} = nextProps;
 
 				const classInfo = {
@@ -202,13 +204,14 @@ class CourseListContainer extends Component {
 	}
 
 	addCourseToCart(subject, catalogNumber) {
-		const { addToCartHandler } = this.props;
-		addToCartHandler(subject, catalogNumber, this.state.taken);
+		const { addToCartHandler, username, cart } = this.props;
+		const { taken } = this.state;
+		addToCartHandler(username, cart, subject, catalogNumber, taken);
 	}
 
 	removeCourseFromCart(subject, catalogNumber) {
-		const { removeFromCartHandler } = this.props;
-		removeFromCartHandler(subject, catalogNumber);
+		const { removeFromCartHandler, username, cart } = this.props;
+		removeFromCartHandler(username, cart, subject, catalogNumber);
 	}
 
 	render() {
@@ -252,7 +255,7 @@ class CourseListContainer extends Component {
 
 }
 
-const mapStateToProps = ({ expandedCourse, myCourses, cart }) => {
+const mapStateToProps = ({ expandedCourse, myCourses, cart, user }) => {
 	const {
 		instructor,
 		attending,
@@ -274,7 +277,8 @@ const mapStateToProps = ({ expandedCourse, myCourses, cart }) => {
 		lastUpdated,
 		selectedClassIndex,
 		myCourses,
-		cart
+		cart,
+		username: user.username
 	};
 };
 
@@ -283,7 +287,7 @@ const mapDispatchToProps = dispatch => {
 		expandCourseHandler: (courseObj, index) => {
 			dispatch(setExpandedCourse(courseObj, index));
 		},
-		addToCartHandler: (subject, catalogNumber, hasTaken) => {
+		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken) => {
 			if (hasTaken) {
 				const msg = `${subject} ${catalogNumber} is already in your courses.`;
 				dispatch(createSnack(msg));
@@ -292,16 +296,16 @@ const mapDispatchToProps = dispatch => {
 				const actionMsg = 'undo';
 				const undoMsg = `${subject} ${catalogNumber} has been removed from your cart.`;
 				const handleActionClick = () => dispatch(removeFromCart(subject, catalogNumber));
-				dispatch(addToCart(subject, catalogNumber));
+				dispatch(addToCart(subject, catalogNumber, username, cart));
 				dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
 			}
 		},
-		removeFromCartHandler: (subject, catalogNumber) => {
+		removeFromCartHandler: (username, cart, subject, catalogNumber) => {
 			const msg = `${subject} ${catalogNumber} has been removed from your cart.`;
 			const actionMsg = 'undo';
 			const undoMsg = `${subject} ${catalogNumber} has been re-added to your cart.`;
 			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber));
-			dispatch(removeFromCart(subject, catalogNumber));
+			dispatch(removeFromCart(subject, catalogNumber, username, cart));
 			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
 		}
 	};

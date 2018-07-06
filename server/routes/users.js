@@ -32,34 +32,34 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 
 // Set cart
 // Body: { cart }
-UsersRouter.post('/set/cart/:userId', function(req, res) {
-  const userId = req.params.userId;
+UsersRouter.post('/set/cart/:username', function(req, res) {
+  const username = req.params.username;
 
-  users.setCart(userId, req.body.cart, err => {
+  users.setCart(username, req.body.cart, err => {
     if (err) res.status(400).send(err);
-    else res.status(200).send(`Cart for User ${userId} updated successfully.`)
+    else res.status(200).send(`Cart for User ${username} updated successfully.`)
   });
 });
 
 // Set schedule
 // Body: { schedule }
-UsersRouter.post('/set/schedule/:userId', function(req, res) {
-  const userId = req.params.userId;
+UsersRouter.post('/set/schedule/:username', function(req, res) {
+  const username = req.params.username;
 
-  users.setSchedule(userId, req.body.schedule, err => {
+  users.setSchedule(username, req.body.schedule, err => {
     if (err) res.status(400).send(err);
-    else res.status(200).send(`Schedule for User ${userId} updated successfully.`)
+    else res.status(200).send(`Schedule for User ${username} updated successfully.`)
   });
 });
 
 // Set courseList
 // Body: { courseList }
-UsersRouter.post('/set/courselist/:userId', function(req, res) {
-  const userId = req.params.userId;
+UsersRouter.post('/set/courselist/:username', function(req, res) {
+  const username = req.params.username;
 
-  users.setCourseList(userId, req.body.courseList, err => {
+  users.setCourseList(username, req.body.courseList, err => {
     if (err) res.status(400).send(err);
-    else res.status(200).send(`Course list for ${userId} updated successfully.`)
+    else res.status(200).send(`Course list for ${username} updated successfully.`)
   });
 });
 

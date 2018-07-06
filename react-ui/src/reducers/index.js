@@ -5,9 +5,7 @@ import {
 	SET_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
-	ADD_TO_CART,
-	REMOVE_FROM_CART,
-	REORDER_CART
+	SET_CART
 } from '../actions/index';
 
 function expandedCourse(state={}, action) {
@@ -119,16 +117,8 @@ function cart(state = [], action) {
 	switch (action.type) {
 		case SET_USER:
 			return action.payload.cart || state;
-		case ADD_TO_CART:
-			state.push(action.course);
-			return state;
-		case REMOVE_FROM_CART:
-			return state.filter(course =>
-				course.subject !== action.subject ||
-				course.catalogNumber !== action.catalogNumber
-			);
-		case REORDER_CART:
-			return action.cart;
+		case SET_CART:
+			return action.meta.cart;
 		default:
 			return state;
 	}
