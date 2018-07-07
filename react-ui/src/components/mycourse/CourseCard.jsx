@@ -78,6 +78,7 @@ const mapStateToProps = ({ courseCardPrereqs }) => ({ courseCardPrereqs });
 
 const mapDispatchToProps = dispatch => ({
 	highlightPrereqsHandler: (prereqs) => {
+		console.log(prereqs)
 		if (prereqs == null || prereqs.length === 0) return;
 		dispatch(highlightPrereqs(prereqs));
 	}

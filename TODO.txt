@@ -26,3 +26,4 @@ Important:
 - Fix AMATH 271 coreqs
 - Add view cart
 - Implement multi-drag
+- Add click on course in My Courses to open at side
