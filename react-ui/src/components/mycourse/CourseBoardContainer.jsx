@@ -44,6 +44,7 @@ class CourseBoard extends Component {
 		this.move = this.move.bind(this);
 		this.renderTerms = this.renderTerms.bind(this);
 		this.clearCart = this.clearCart.bind(this);
+		this.addBoard = this.addBoard.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
 		this.deselectCourseHandler = deselectCourseHandler;
@@ -142,6 +143,13 @@ class CourseBoard extends Component {
 		this.reorderCartHandler([]);
 	}
 
+	addBoard(name) {
+		const { courseList } = this.state;
+		courseList.push({ term: name, courses: [] });
+		this.setState({ courseList });
+		this.updateCourseHandler(courseList);
+	}
+
 	deleteBoard(id) {
 		const { courseList } = this.state;
 		courseList.splice(id, 1);
@@ -173,6 +181,7 @@ class CourseBoard extends Component {
 					<MyCourseSideBar
 						cartCourses={ this.state.cart }
 						onClearCart={ this.clearCart }
+						onAddBoard={ this.addBoard }
 					/>
 				</div>
 			</DragDropContext>

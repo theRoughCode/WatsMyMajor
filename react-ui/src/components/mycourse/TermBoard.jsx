@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import Popover from 'material-ui/Popover';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Dialog from 'material-ui/Dialog';
@@ -127,50 +126,33 @@ export default class TermBoard extends Component {
 		onRenameBoard: () => null,
 	};
 
-	constructor(props) {
-		super(props);
+	state = {
+		dialogOpen: false,
+		settingsOpen: false,
+		rename: ''
+	};
 
-		this.state = {
-			dialogOpen: false,
-			settingsOpen: false,
-			rename: ''
-		};
+	toggleSettings = (open) => this.setState({ settingsOpen: open });
 
-		this.toggleSettings = this.toggleSettings.bind(this);
-		this.openDialog = this.openDialog.bind(this);
-		this.closeDialog = this.closeDialog.bind(this);
-		this.onChangeText = this.onChangeText.bind(this);
-		this.onSubmit = this.onSubmit.bind(this);
-		this.clearBoard = this.clearBoard.bind(this);
-		this.onRenameBoard = props.onRenameBoard;
-		this.onClearBoard = props.onClearBoard;
-		this.onDeleteBoard = props.onDeleteBoard;
-	}
+	openDialog = () => this.setState({ settingsOpen: false, dialogOpen: true });
 
-	toggleSettings(open) {
-		this.setState({ settingsOpen: open });
-	}
+	closeDialog = () => this.setState({ rename: '', dialogOpen: false });
 
-	openDialog() {
-		this.setState({ settingsOpen: false, dialogOpen: true });
-	}
+	onChangeText = (e, text) => this.setState({ rename: text });
 
-	closeDialog() {
-		this.setState({ rename: '', dialogOpen: false });
-	}
-
-	onChangeText(event, text) {
-		this.setState({ rename: text });
-	}
-
-	onSubmit() {
+	onSubmit = () => {
 		const { rename } = this.state;
-		this.onRenameBoard(rename);
+		this.props.onRenameBoard(rename);
 		this.closeDialog();
 	}
 
-	clearBoard() {
-		this.onClearBoard();
+	clearBoard = () => {
+		this.props.onClearBoard();
+		this.toggleSettings(false);
+	}
+
+	deleteBoard = () => {
+		this.props.onDeleteBoard();
 		this.toggleSettings(false);
 	}
 
@@ -219,7 +201,7 @@ export default class TermBoard extends Component {
 										<div>
 											<MenuItem primaryText="Edit Name" onClick={this.openDialog} />
 											<MenuItem primaryText="Clear Term" onClick={this.clearBoard} />
-											<MenuItem primaryText="Delete Term" onClick={this.onDeleteBoard} />
+											<MenuItem primaryText="Delete Term" onClick={this.deleteBoard} />
 										</div>
 									)
 							}
