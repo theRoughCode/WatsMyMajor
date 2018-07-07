@@ -9,31 +9,27 @@ export const SET_USER = 'SET_USER';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
-export const UPDATE_USER_COURSES_SUCCESS = 'UPDATE_USER_COURSES_SUCCESS';	// not used
-export const UPDATE_USER_COURSES_FAILURE = 'UPDATE_USER_COURSES_FAILURE';	// not used
+export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
 export const SET_CART = 'SET_CART';
-export const SET_CART_SUCCESS = 'SET_CART_SUCCESS';	// not used
-export const SET_CART_FAILURE = 'SET_CART_FAILURE';	// not used
+export const SET_CART_PREREQS = 'SET_CART_PREREQS';
+export const HIGHLIGHT_PREREQS = 'HIGHLIGHT_PREREQS';
+export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
 
 /*
  * action creators
  */
 
-export function toggleSideBar() {
-	return { type: TOGGLE_SIDEBAR };
-}
+export const toggleSideBar = () => ({ type: TOGGLE_SIDEBAR });
 
-export function setUser(username) {
-	return {
-		[RSAA]: {
-			endpoint: `/users/${username}`,
-			method: 'GET',
-			types: ['', { type: SET_USER, meta: { username } }, '']
-		}
-	};
-}
+export const setUser = (username) => ({
+	[RSAA]: {
+		endpoint: `/users/${username}`,
+		method: 'GET',
+		types: ['', { type: SET_USER, meta: { username } }, '']
+	}
+});
 
-export function setExpandedCourse(courseObj, index) {
+export const setExpandedCourse = (courseObj, index) => {
 	const {
 		instructor,
 		enrollment_total,
@@ -57,40 +53,55 @@ export function setExpandedCourse(courseObj, index) {
 	};
 }
 
-export function createSnack(msg, actionMsg, undoMsg, handleActionClick) {
-	return {
-		type: CREATE_SNACK,
-		msg,
-		actionMsg,
-		undoMsg,
-		handleActionClick
-	};
-}
+export const createSnack = (
+	msg,
+	actionMsg,
+	undoMsg,
+	handleActionClick
+) => ({
+	type: CREATE_SNACK,
+	msg,
+	actionMsg,
+	undoMsg,
+	handleActionClick
+});
+
 
 // TODO: Change approach to update immediately and then fallback on failure
+// Used when adding to courses
+export const updateUserCourses = (username, courseList) => ({
+	[RSAA]: {
+		endpoint: `/users/set/courselist/${username}`,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ courseList }),
+		types: [
+			{ type: UPDATE_USER_COURSES, meta: { courseList } },
+			{ type: UPDATE_USER_COURSES_PREREQS },
+			''
+		]
+	}
+});
 
-export function updateUserCourses(username, courseList) {
-	return {
-		[RSAA]: {
-			endpoint: `/users/set/courselist/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ courseList }),
-			types: [
-				{
-					type: UPDATE_USER_COURSES,
-					meta: { courseList }
-				},
-				UPDATE_USER_COURSES_SUCCESS,
-				UPDATE_USER_COURSES_FAILURE
-			]
-		}
-	};
-}
+export const reorderUserCourses = (username, courseList) => ({
+	[RSAA]: {
+		endpoint: `/users/reorder/courselist/${username}`,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ courseList }),
+		types: [
+			{ type: UPDATE_USER_COURSES, meta: { courseList } },
+			'',
+			''
+		]
+	}
+});
 
-export function addToCart(subject, catalogNumber, username, cart) {
+export const addToCart = (subject, catalogNumber, username, cart) => {
 	cart = cart.concat([{ subject, catalogNumber }]);
 	return {
 		[RSAA]: {
@@ -101,18 +112,15 @@ export function addToCart(subject, catalogNumber, username, cart) {
 			},
 			body: JSON.stringify({ cart }),
 			types: [
-				{
-					type: SET_CART,
-					meta: { cart }
-				},
-				SET_CART_SUCCESS,
-				SET_CART_FAILURE
+				{ type: SET_CART, meta: { cart } },
+				{ type: SET_CART_PREREQS },
+				''
 			]
 		}
 	};
 }
 
-export function removeFromCart(subject, catalogNumber, username, cart) {
+export const removeFromCart = (subject, catalogNumber, username, cart) => {
 	cart = cart.filter(course =>
 		course.subject !== subject ||
 		course.catalogNumber !== catalogNumber
@@ -125,35 +133,23 @@ export function removeFromCart(subject, catalogNumber, username, cart) {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ cart }),
-			types: [
-				{
-					type: SET_CART,
-					meta: { cart }
-				},
-				SET_CART_SUCCESS,
-				SET_CART_FAILURE
-			]
+			types: [{ type: SET_CART, meta: { cart } }, '', '']
 		}
 	};
 }
 
-export function reorderCart(cart, username) {
-	return {
-		[RSAA]: {
-			endpoint: `/users/set/cart/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ cart }),
-			types: [
-				{
-					type: SET_CART,
-					meta: { cart }
-				},
-				SET_CART_SUCCESS,
-				SET_CART_FAILURE
-			]
-		}
-	};
-}
+export const reorderCart = (username, cart) => ({
+	[RSAA]: {
+		endpoint: `/users/reorder/cart/${username}`,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ cart }),
+		types: [{ type: SET_CART, 	meta: { cart } }, '', '']
+	}
+});
+
+export const highlightPrereqs = (prereqs) => ({ type: HIGHLIGHT_PREREQS, prereqs });
+
+export const unhighlightPrereqs = () => ({ type: UNHIGHLIGHT_PREREQS })

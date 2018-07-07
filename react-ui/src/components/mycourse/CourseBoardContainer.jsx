@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
 import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
-import { reorderCart } from '../../actions/index';
 
 
 const renderTerms = (courseList) => {
@@ -24,11 +22,11 @@ const renderTerms = (courseList) => {
 class CourseBoard extends Component {
 
 	static propTypes = {
-		updateCourseHandler: PropTypes.func.isRequired,
-		cart: PropTypes.array.isRequired,
-		reorderCartHandler: PropTypes.func.isRequired,
 		courseList: PropTypes.array,
-		username: PropTypes.string.isRequired,
+		cart: PropTypes.array.isRequired,
+		updateCourseHandler: PropTypes.func.isRequired,
+		reorderCartHandler: PropTypes.func.isRequired,
+		deselectCourseHandler: PropTypes.func.isRequired,
 	};
 
 	static defaultProps = {
@@ -42,16 +40,13 @@ class CourseBoard extends Component {
 			courseList,
 			cart,
 			updateCourseHandler,
-			addCourseHandler,
-			removeCourseHandler,
 			reorderCartHandler,
-			username
+			deselectCourseHandler,
 		} = props;
 
 		this.state = {
 			courseList,
 			cart,
-			username
 		};
 
 		this.onDragEnd = this.onDragEnd.bind(this);
@@ -61,6 +56,7 @@ class CourseBoard extends Component {
 		this.move = this.move.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
+		this.deselectCourseHandler = deselectCourseHandler;
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -70,9 +66,6 @@ class CourseBoard extends Component {
 		if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
 			this.setState({ cart: nextProps.cart });
 		}
-		if (nextProps.username !== this.state.username) {
-			this.setState({ username: nextProps.username });
-		}
 	}
 
 	getTermList(id) {
@@ -80,12 +73,11 @@ class CourseBoard extends Component {
 	}
 
 	onDragEnd(result) {
-		const { courseList } = this.state;
 		const { source, destination } = result;
+		this.deselectCourseHandler();
+
 		// dropped outside the list
-		if (!destination) {
-			return;
-		}
+		if (!destination) return;
 
 		if (source.droppableId === destination.droppableId) {
 			this.reorder(source.droppableId, source.index, destination.index);
@@ -111,7 +103,7 @@ class CourseBoard extends Component {
 		switch (id) {
 			case 'Cart':
 				this.setState({ cart: board });
-				this.reorderCartHandler(board, this.state.username);
+				this.reorderCartHandler(board);
 				break;
 			case 'Trash': break;
 			default:
@@ -153,17 +145,6 @@ class CourseBoard extends Component {
 			</DragDropContext>
 		);
 	}
-
 }
 
-const mapStateToProps = ({ user }) => ({ username: user.username });
-
-const mapDispatchToProps = dispatch => {
-	return {
-		reorderCartHandler: (cart, username) => {
-			dispatch(reorderCart(cart, username));
-		}
-	};
-};
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseBoard));
+export default withRouter(CourseBoard);

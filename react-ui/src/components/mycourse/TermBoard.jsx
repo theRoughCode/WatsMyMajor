@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import CourseCard from './CourseCard';
@@ -33,18 +33,22 @@ const styles = {
 };
 
 
-const getItemStyle = (isDragging, draggableStyle) => ({
+const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
   padding: space * 2,
   margin: `0 0 ${space}px 0`,
-	border: isDragging
+	border: (isDragging || isPrereq)
 		? '1px solid #4f4f4f'
 		: '1px solid #bcbcbc',
 	borderRadius: '5px',
 
   // change background colour if dragging
-  background: isDragging ? '#8be58b' : '#f2f2f2',
+  background: isDragging
+		? '#8be58b'
+		: isPrereq
+			? '#9ef442'
+			: '#f2f2f2',
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -62,8 +66,7 @@ const renderCourses = (courseList) => {
 				>
 				{(provided, snapshot) => (
 					<CourseCard
-						subject={course.subject}
-						catalogNumber={course.catalogNumber}
+						course={course}
 						provided={provided}
 						snapshot={snapshot}
 						getItemStyle={getItemStyle}

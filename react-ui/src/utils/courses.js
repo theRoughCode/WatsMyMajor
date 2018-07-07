@@ -11,9 +11,9 @@ export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
 }
 
 // Check if course is in cart
-export const isInCart = (subject, catalogNumber, cart) => {
-	for (var i = 0; i < cart.length; i++) {
-		if (subject === cart[i].subject && catalogNumber === cart[i].catalogNumber) {
+export const isInCart = (subject, catalogNumber, arr) => {
+	for (var i = 0; i < arr.length; i++) {
+		if (subject === arr[i].subject && catalogNumber === arr[i].catalogNumber) {
 			return true;
 		}
 	}
@@ -22,7 +22,7 @@ export const isInCart = (subject, catalogNumber, cart) => {
 
 const fulfillPrereqs = (myCourses, prereqs) => {
 	if (!Object.keys(prereqs).length) return true;
-	// Base case: list of courses
+	// Base case: course
 	if (prereqs.hasOwnProperty('subject')) {
 		return hasTakenCourse(prereqs.subject, prereqs.catalogNumber, myCourses);
 	}

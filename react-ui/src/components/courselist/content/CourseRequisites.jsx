@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
-import { hasTakenCourse, isInCart } from '../../../utils/courses';
+import { hasTakenCourse } from '../../../utils/courses';
 import Prereqs from './Prereqs';
 
 

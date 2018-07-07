@@ -1,10 +1,10 @@
 const UsersRouter = require('express').Router();
+const { setCourseListPrereqs, setCoursesPrereqs } = require('../models/utils');
 const users = require('../models/database/users');
 
 // Get user
 UsersRouter.get('/:username', function(req, res) {
 	const username = req.params.username;
-	console.log(username)
 
 	users.getUser(username, (err, user) => {
 		if (err) res.status(400).send(err);
@@ -26,7 +26,7 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 
   users.setUser(username, user, err => {
     if (err) res.status(400).send(err);
-    else res.status(200).send(`User ${username} updated successfully.`)
+    else res.status(200).send(`User ${username} updated successfully.`);
   });
 });
 
@@ -35,10 +35,21 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 UsersRouter.post('/set/cart/:username', function(req, res) {
   const username = req.params.username;
 
-  users.setCart(username, req.body.cart, err => {
-    if (err) res.status(400).send(err);
-    else res.status(200).send(`Cart for User ${username} updated successfully.`)
-  });
+	setCoursesPrereqs(req.body.cart, cart => {
+		users.setCart(username, cart, err => {
+	    if (err) res.status(400).send(err);
+	    else res.json(cart);
+	  });
+	});
+});
+
+UsersRouter.post('/reorder/cart/:username', function(req, res) {
+  const username = req.params.username;
+
+	users.setCart(username, req.body.cart, err => {
+		if (err) res.status(400).send(err);
+		else res.status(200).send(`Cart for User ${username} updated successfully.`);
+	});
 });
 
 // Set schedule
@@ -48,7 +59,7 @@ UsersRouter.post('/set/schedule/:username', function(req, res) {
 
   users.setSchedule(username, req.body.schedule, err => {
     if (err) res.status(400).send(err);
-    else res.status(200).send(`Schedule for User ${username} updated successfully.`)
+    else res.status(200).send(`Schedule for User ${username} updated successfully.`);
   });
 });
 
@@ -57,10 +68,21 @@ UsersRouter.post('/set/schedule/:username', function(req, res) {
 UsersRouter.post('/set/courselist/:username', function(req, res) {
   const username = req.params.username;
 
-  users.setCourseList(username, req.body.courseList, err => {
-    if (err) res.status(400).send(err);
-    else res.status(200).send(`Course list for ${username} updated successfully.`)
-  });
+	setCourseListPrereqs(req.body.courseList, courseList => {
+		users.setCourseList(username, courseList, err => {
+	    if (err) res.status(400).send(err);
+	    else res.json(courseList);
+	  });
+	});
+});
+
+UsersRouter.post('/reorder/courselist/:username', function(req, res) {
+  const username = req.params.username;
+
+	users.setCourseList(username, req.body.courseList, err => {
+		if (err) res.status(400).send(err);
+		else res.status(200).send(`Course list for User ${username} updated successfully.`);
+	});
 });
 
 module.exports = UsersRouter;

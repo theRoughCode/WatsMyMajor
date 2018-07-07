@@ -1,3 +1,6 @@
+const { getPrereqs } = require('./database/requisites');
+const async = require('async');
+
 // Separate subject, catalog number, and title from course string
 function parseCourse(courseStr) {
 	// Get title
@@ -100,12 +103,62 @@ function unpick(str) {
 	} else return parseCourse(str);
 }
 
+function flattenPrereqs(prereqs) {
+	if (prereqs == null || !Object.keys(prereqs).length) return [];
 
+	// Base case: course
+	if (prereqs.hasOwnProperty('subject')) {
+		const { subject, catalogNumber } = prereqs;
+		return [{ subject, catalogNumber }];
+	}
+
+	// Inductive case: list of courses
+	if (prereqs.hasOwnProperty('reqs')) {
+		// flatten map
+		return [].concat.apply([], prereqs.reqs.map(req => flattenPrereqs(req)));
+	}
+
+	console.error('Unknown format', prereqs);
+	return [];
+}
+
+function setCoursesPrereqs(courses, callback) {
+	async.map(courses, (course, innerCallback) => {
+		const { subject, catalogNumber } = course;
+		if (course.prereqs != null) {
+			innerCallback(null, course);
+		} else {
+			getPrereqs(subject, catalogNumber, (err, prereqs) => {
+				if (err) {
+					console.error(err);
+					innerCallback(null, course);
+				} else {
+					prereqs = flattenPrereqs(prereqs);
+					innerCallback(null, { subject, catalogNumber, prereqs });
+				}
+			});
+		}
+	}, (_, courses) => {
+		callback(courses);
+	});
+}
+
+// Used when updating user's courselist/cart
+// We want to flatten the prereqs of each course and attach them to the course
+// to be used as a course card.
+function setCourseListPrereqs(courseList, callback) {
+	async.map(courseList, (termCourses, outerCallback) => {
+		let { term, courses } = termCourses;
+		setCoursesPrereqs(courses, courses => outerCallback(null, { term, courses }));
+	}, (_, termCourses) => callback(termCourses));
+}
 
 
 module.exports = {
 	parseCourse,
 	nestReqs,
 	parseReqs,
-	unpick
+	unpick,
+	setCoursesPrereqs,
+	setCourseListPrereqs
 };

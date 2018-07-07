@@ -25,3 +25,4 @@ Important:
   - maybe do it in backend and check if any number is above 12
 - Fix AMATH 271 coreqs
 - Add view cart
+- Implement multi-drag

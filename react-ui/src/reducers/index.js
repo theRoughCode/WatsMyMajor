@@ -5,7 +5,11 @@ import {
 	SET_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
-	SET_CART
+	UPDATE_USER_COURSES_PREREQS,
+	SET_CART,
+	SET_CART_PREREQS,
+	HIGHLIGHT_PREREQS,
+	UNHIGHLIGHT_PREREQS,
 } from '../actions/index';
 
 function expandedCourse(state={}, action) {
@@ -89,6 +93,8 @@ function courseList(state = [], action) {
 			return action.payload.courseList || [];
 		case UPDATE_USER_COURSES:
 			return action.meta.courseList || state;
+		case UPDATE_USER_COURSES_PREREQS:
+			return action.payload || state;
 		default:
 			return state;
 	}
@@ -97,7 +103,15 @@ function courseList(state = [], action) {
 // Helper function for myCourses
 function getMyCourses(courseList) {
 	if (!courseList) return [];
-	courseList = courseList.map(term => term.courses || []);
+	courseList = courseList.map(term => {
+		if (!Array.isArray(term.courses)) return []
+
+		// Remove prereqs
+		return term.courses.map(course => {
+			const { subject, catalogNumber } = course;
+			return { subject, catalogNumber };
+		});
+	});
 	// Flatten array
 	return [].concat.apply([], courseList);
 }
@@ -119,6 +133,8 @@ function cart(state = [], action) {
 			return action.payload.cart || state;
 		case SET_CART:
 			return action.meta.cart;
+		case SET_CART_PREREQS:
+			return action.payload || state;
 		default:
 			return state;
 	}
@@ -144,6 +160,17 @@ function user(state = defaultUser, action) {
 	}
 }
 
+function courseCardPrereqs(state = [], action) {
+	switch (action.type) {
+		case HIGHLIGHT_PREREQS:
+			return action.prereqs || state;
+		case UNHIGHLIGHT_PREREQS:
+			return [];
+		default:
+			return state;
+	}
+}
+
 const reducers = combineReducers({
 	expandedCourse,
 	sideBarOpen,
@@ -151,7 +178,8 @@ const reducers = combineReducers({
 	courseList,
 	myCourses,
 	cart,
-	user
+	user,
+	courseCardPrereqs,
 });
 
 export default reducers;

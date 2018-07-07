@@ -6,7 +6,7 @@ import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import CourseBoard from './CourseBoardContainer';
-import { updateUserCourses } from '../../actions/index';
+import { reorderUserCourses, reorderCart, unhighlightPrereqs } from '../../actions/index';
 import '../../stylesheets/CourseView.css';
 
 
@@ -34,6 +34,7 @@ class MyCourseContainer extends Component {
 		courseList: PropTypes.array.isRequired,
 		cart: PropTypes.array.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired,
+		reorderCartHandler: PropTypes.func.isRequired,
 		text: PropTypes.string
 	};
 
@@ -47,11 +48,14 @@ class MyCourseContainer extends Component {
 		this.state = {
 			loading: false,  //TODO: Change back to true
 			error: false,
+			username: props.username,
 			courseList: props.courseList,
 			cart: props.cart
 		};
 
-		this.updateCourseHandler = props.updateCourseHandler.bind(this, props.username);
+		this.updateCourseHandler = props.updateCourseHandler;
+		this.reorderCartHandler = props.reorderCartHandler;
+		this.deselectCourseHandler = props.deselectCourseHandler;
 		this.getCourses = this.getCourses.bind(this);
 	}
 
@@ -60,12 +64,15 @@ class MyCourseContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { courseList, cart } = nextProps;
+		const { courseList, cart, username } = nextProps;
 	  if (!arrayOfObjectEquals(courseList, this.state.courseList)) {
 			this.setState({ courseList });
 		}
 		if (!arrayOfObjectEquals(cart, this.state.cart)) {
 			this.setState({ cart });
+		}
+		if (username !== this.state.username) {
+			this.setState({ username });
 		}
 	}
 
@@ -96,8 +103,10 @@ class MyCourseContainer extends Component {
 				<CourseBoard
 					courseList={this.state.courseList}
 					cart={this.state.cart}
-					updateCourseHandler={this.updateCourseHandler}
-					/>
+					updateCourseHandler={this.updateCourseHandler.bind(this, this.state.username)}
+					reorderCartHandler={this.reorderCartHandler.bind(this, this.state.username)}
+					deselectCourseHandler={this.deselectCourseHandler}
+				/>
 			</div>
 		);
 
@@ -125,7 +134,13 @@ const mapStateToProps = ({ courseList, cart, user }) => {
 const mapDispatchToProps = dispatch => {
 	return {
 		updateCourseHandler: (username, courseList) => {
-			dispatch(updateUserCourses(username, courseList));
+			dispatch(reorderUserCourses(username, courseList));
+		},
+		reorderCartHandler: (username, cart) => {
+			dispatch(reorderCart(username, cart));
+		},
+		deselectCourseHandler: () => {
+			dispatch(unhighlightPrereqs());
 		}
 	};
 };
