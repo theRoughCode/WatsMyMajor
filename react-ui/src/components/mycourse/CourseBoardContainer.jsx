@@ -7,18 +7,6 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 
 
-const renderTerms = (courseList) => {
-	return courseList.map(({ term, courses }, index) => (
-		<TermBoard
-			key={ index }
-			index={ index.toString() }
-			boardHeader={ term }
-			courses={ courses }
-		/>
-	));
-};
-
-
 class CourseBoard extends Component {
 
 	static propTypes = {
@@ -54,6 +42,8 @@ class CourseBoard extends Component {
 		this.updateBoard = this.updateBoard.bind(this);
 		this.reorder = this.reorder.bind(this);
 		this.move = this.move.bind(this);
+		this.renderTerms = this.renderTerms.bind(this);
+		this.clearCart = this.clearCart.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
 		this.deselectCourseHandler = deselectCourseHandler;
@@ -133,14 +123,57 @@ class CourseBoard extends Component {
 		this.updateBoard(dest.droppableId, destBoard);
 	}
 
+	renameBoard(id, name) {
+		const { courseList } = this.state;
+		courseList[id].term = name;
+		this.setState({ courseList });
+		this.updateCourseHandler(courseList);
+	}
+
+	clearBoard(id) {
+		const { courseList } = this.state;
+		courseList[id].courses = [];
+		this.setState({ courseList });
+		this.updateCourseHandler(courseList);
+	}
+
+	clearCart() {
+		this.setState({ cart: [] });
+		this.reorderCartHandler([]);
+	}
+
+	deleteBoard(id) {
+		const { courseList } = this.state;
+		courseList.splice(id, 1);
+		this.setState({ courseList });
+		this.updateCourseHandler(courseList);
+	}
+
+	renderTerms(courseList) {
+		return this.state.courseList.map(({ term, courses }, index) => (
+			<TermBoard
+				key={ index }
+				index={ index.toString() }
+				boardHeader={ term }
+				courses={ courses }
+				onClearBoard={ this.clearBoard.bind(this, index) }
+				onRenameBoard={ this.renameBoard.bind(this, index) }
+				onDeleteBoard={ this.deleteBoard.bind(this, index) }
+			/>
+		));
+	};
+
 	render() {
 		return (
 			<DragDropContext onDragEnd={this.onDragEnd}>
 				<div className="course-view">
 					<div className="course-board">
-						{renderTerms(this.state.courseList)}
+						{ this.renderTerms() }
 					</div>
-					<MyCourseSideBar cartCourses={this.state.cart} />
+					<MyCourseSideBar
+						cartCourses={ this.state.cart }
+						onClearCart={ this.clearCart }
+					/>
 				</div>
 			</DragDropContext>
 		);

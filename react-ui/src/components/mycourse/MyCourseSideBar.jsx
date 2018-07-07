@@ -62,7 +62,7 @@ const Trash = () => (
 );
 
 
-const MyCourseSideBar = ({ cartCourses }) => (
+const MyCourseSideBar = ({ cartCourses, onClearCart }) => (
 	<div className="cart">
 		<Button
 			onClick={() => {}}
@@ -76,12 +76,14 @@ const MyCourseSideBar = ({ cartCourses }) => (
 			boardHeader={'Cart'}
 			courses={cartCourses}
 			isCart={true}
+			onClearBoard={onClearCart}
 		/>
 	</div>
 );
 
 MyCourseSideBar.propTypes = {
-	cartCourses: PropTypes.array.isRequired
+	cartCourses: PropTypes.array.isRequired,
+	onClearCart: PropTypes.func.isRequired,
 };
 
 export default MyCourseSideBar;
