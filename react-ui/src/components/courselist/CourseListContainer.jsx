@@ -111,7 +111,7 @@ class CourseListContainer extends Component {
 		const nextSubject = nextProps.match.params.subject;
 		const nextCatNum = nextProps.match.params.catalogNumber;
 		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
-		const updatedCourseList = !arrayOfObjectEquals(nextProps.myCourses, this.props.myCourses);
+		const updatedCourseList = !objectEquals(nextProps.myCourses, this.props.myCourses);
 		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
 		const isNewClass = (this.props.classNumber !== nextProps.classNumber);
 

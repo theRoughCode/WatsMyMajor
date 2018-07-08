@@ -28,7 +28,7 @@ class PrerequisitesTree extends Component {
           top: 50
         }}
         svgProps={{ className: 'tree' }}
-        keyProp="key"
+        keyProp="id"
         animated
       />
     );

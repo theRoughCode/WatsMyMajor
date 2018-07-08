@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import classNames from 'classnames';
 import Tree from './PrerequisitesTree';
+import { hasTakenCourse } from '../../utils/courses';
+import { objectEquals } from '../../utils/arrays';
 import '../../stylesheets/Tree.css';
 
 
@@ -30,10 +34,17 @@ const styles = {
   }
 };
 
-export default class PrerequisitesTreeContainer extends Component {
+const getTree = (subject, catalogNumber, callback) => {
+  fetch(`/tree/${subject}/${catalogNumber}`)
+    .then(response => response.json())
+    .then(callback);
+};
+
+class PrerequisitesTreeContainer extends Component {
 
   static propTypes = {
     match: PropTypes.object.isRequired,
+    myCourses: PropTypes.object.isRequired,
   };
 
   state = {
@@ -42,42 +53,99 @@ export default class PrerequisitesTreeContainer extends Component {
 
   componentWillMount() {
     const { subject, catalogNumber } = this.props.match.params;
-    fetch(`/tree/${subject}/${catalogNumber}`)
-      .then(response => response.json())
-      .then(tree => {
-        tree = this.bindOnClick(tree);
-        this.setState({ data: tree });
-      });
+    getTree(subject, catalogNumber, tree => {
+      tree = this.parseNodes(tree, this.props.myCourses);
+      this.setState({ data: tree });
+    });
   }
 
-  bindOnClick(node) {
+  componentWillReceiveProps(nextProps) {
+    if (!objectEquals(nextProps.myCourses, this.props.myCourses)) {
+      const tree = this.parseNodes(this.state.data, nextProps.myCourses);
+      this.setState({ data: tree });
+    }
+  }
+
+  parseNodes(node, myCourses) {
     // Create random id
     const id = Math.random().toString(36).substr(2, 9);
     if (node.hasOwnProperty('subject')) {
       node.name = `${node.subject} ${node.catalogNumber}`;
-      node.key = node.name + '_' + id;
-      if (node.children == null || node.children.length === 0) return node;
-      node.gProps = {
-        className: 'parent',
-        onClick: this.onClick.bind(this, node)
-      };
+      node.id = node.name + '_' + id;
+      node.taken = hasTakenCourse(node.subject, node.catalogNumber, myCourses);
+
+      let children = node.children || node._children;
+      // Has children
+      if (children != null && children.length > 0) {
+        node.gProps = {
+          onClick: this.toggleNode.bind(this, node)
+        };
+        children = children.map(child => this.parseNodes(child, myCourses));
+        node.children = children;
+        node.isOpen = true;
+      } else {
+        node.isLeaf = true;
+        node.gProps = {
+          className: 'leaf'
+        };
+      }
     } else {
       node.name = `Choose ${node.choose} of:`;
-      node.key = id;
+      node.id = id;
+      node.isOpen = true;
       node.gProps = {
         className: `choose-${node.choose}`,
-        onClick: this.onClick.bind(this, node)
+        onClick: this.toggleNode.bind(this, node)
       };
+      let children = node.children || node._children;
+      children = children.map(child => this.parseNodes(child, myCourses));
+      node.children = children;
+
+      // Check children to see if number of taken courses meet requirements
+      let counter = node.choose;
+      for (let i = 0; i < children.length; i++) {
+        if (counter === 0) break;
+        if (children[i].taken) counter--;
+      }
+      if (counter === 0) {
+        node.taken = true;
+      }
     }
-    const children = node.children.map(child => this.bindOnClick(child));
-    node.children = children;
+
+    // Set taken class name
+    if (node.taken) {
+      if (node.gProps.className != null) {
+        const names = { taken: true };
+        names[node.gProps.className] = true;
+        node.gProps.className = classNames(names);
+      } else {
+        node.gProps.className = 'taken';
+      }
+    }
     return node;
   }
 
-  onClick(node) {
-    const temp = node._children;
+  // Depth-first traversal to close tree
+  closeTree(node) {
+    if (node.isLeaf) return;
+    if (node.children == null || node.children.length === 0) return;
+    for (let i = 0; i < node.children.length; i++) {
+      this.closeTree(node.children[i]);
+    }
     node._children = node.children;
-    node.children = temp;
+    node.children = null;
+  }
+
+  toggleNode(node) {
+    if (node.isLeaf) return;
+    if (node.isOpen) {
+      this.closeTree(node);
+      node.isOpen = false;
+    } else {
+      node.children = node._children;
+      node._children = null;
+      node.isOpen = true;
+    }
     this.forceUpdate();
   }
 
@@ -97,3 +165,7 @@ export default class PrerequisitesTreeContainer extends Component {
   }
 
 }
+
+const mapStateToProps = ({ myCourses }) => ({ myCourses });
+
+export default connect(mapStateToProps, null)(PrerequisitesTreeContainer);

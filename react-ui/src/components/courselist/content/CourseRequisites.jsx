@@ -37,7 +37,7 @@ class CourseRequisites extends Component {
 		prereqs: PropTypes.object.isRequired,
 		postreqs: PropTypes.array.isRequired,
 		selectCourse: PropTypes.func.isRequired,
-		myCourses: PropTypes.array.isRequired
+		myCourses: PropTypes.object.isRequired
 	};
 
 	constructor(props) {

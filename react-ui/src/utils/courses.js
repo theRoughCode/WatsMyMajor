@@ -1,13 +1,7 @@
 // Check if course is in user's courses
 export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
-	if (!myCourses || !subject || ! catalogNumber) return false;
-	for (var i = 0; i < myCourses.length; i++) {
-		if (myCourses[i].subject === subject &&
-			myCourses[i].catalogNumber === catalogNumber) {
-			return true;
-		}
-	}
-	return false;
+	if (myCourses[subject] == null) return false;
+	return myCourses[subject].hasOwnProperty(catalogNumber);
 }
 
 // Check if course is in cart

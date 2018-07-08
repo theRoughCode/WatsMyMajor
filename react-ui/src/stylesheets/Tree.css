@@ -1,13 +1,8 @@
 svg.tree circle {
-  fill: #5dd350;
+  fill: #F3F3FF;
 	stroke: #2593B8;
 	stroke-width: 1.5px;
-}
-
-svg.tree .node circle {
-	fill: #F3F3FF;
-	stroke: #2593B8;
-	stroke-width: 1.5px;
+  cursor: pointer;
 }
 
 svg.tree text {
@@ -18,8 +13,17 @@ svg.tree text {
   margin-left: 3px;
 }
 
-svg.tree .parent {
-	cursor: pointer;
+svg.tree .leaf circle {
+	fill: #87969b;
+  cursor: default;
+}
+
+svg.tree .taken circle {
+	fill: #32c967;
+}
+
+svg.tree .taken text {
+	fill: #32c967;
 }
 
 svg.tree .choose-0 circle {

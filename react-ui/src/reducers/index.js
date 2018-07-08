@@ -102,21 +102,26 @@ function courseList(state = [], action) {
 
 // Helper function for myCourses
 function getMyCourses(courseList) {
-	if (!courseList) return [];
-	courseList = courseList.map(term => {
-		if (!Array.isArray(term.courses)) return []
+	if (!courseList) return {};
 
-		// Remove prereqs
-		return term.courses.map(course => {
-			const { subject, catalogNumber } = course;
-			return { subject, catalogNumber };
-		});
-	});
-	// Flatten array
-	return [].concat.apply([], courseList);
+	const courseMap = {};
+
+	for (var i = 0; i < courseList.length; i++) {
+		const { courses } = courseList[i];
+		if (courses == null) continue;
+
+		for (var j = 0; j < courses.length; j++) {
+			const { subject, catalogNumber} = courses[j];
+			if (subject == null) continue;
+
+			if (!courseMap.hasOwnProperty(subject)) courseMap[subject] = {};
+			courseMap[subject][catalogNumber] = true;
+		}
+	}
+	return courseMap;
 }
 // List of courses in My Courses
-function myCourses(state = [], action) {
+function myCourses(state = {}, action) {
 	switch (action.type) {
 		case SET_USER:
 			return getMyCourses(action.payload.courseList);
