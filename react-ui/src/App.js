@@ -110,8 +110,8 @@ class App extends Component {
               <Route path='/my-courses' component={ MyCourseView } />
               <Route path='/schedule' component={ MyScheduleView } />
     					<Route exact path='/courses' component={ BrowseCourse } />
-                <Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
-    					<Route path='/tree/:subject/:catalogNumber' component={ PrereqsTree } />
+              <Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
+    					<Route path='/tree/prereqs/:subject/:catalogNumber' component={ PrereqsTree } />
     				</Switch>
     			</div>
 					<Snackbar
