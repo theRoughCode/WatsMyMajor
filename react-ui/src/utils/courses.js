@@ -1,7 +1,9 @@
 // Check if course is in user's courses
 export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
 	if (myCourses[subject] == null) return false;
-	return myCourses[subject].hasOwnProperty(catalogNumber);
+	const advancedCSCatNum = catalogNumber + 'E';
+	return myCourses[subject].hasOwnProperty(catalogNumber) ||
+		myCourses[subject].hasOwnProperty(advancedCSCatNum);
 }
 
 // Check if course is in cart

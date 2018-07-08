@@ -14,7 +14,7 @@ const AppAppBar = ({ toggleSideBar }) => (
 	<AppBar
 		style={styles}
 		onLeftIconButtonClick={ toggleSideBar }
-		title="Wat'sMyMajor"
+		title="WatsMyMajor"
 	>
 		<SearchBar />
 	</AppBar>

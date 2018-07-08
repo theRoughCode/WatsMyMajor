@@ -48,84 +48,129 @@ class PrerequisitesTreeContainer extends Component {
   };
 
   state = {
-    data: null
+    data: null,
+    tree: null
   };
 
   componentWillMount() {
     const { subject, catalogNumber } = this.props.match.params;
-    getTree(subject, catalogNumber, tree => {
-      tree = this.parseNodes(tree, this.props.myCourses);
-      this.setState({ data: tree });
+    getTree(subject, catalogNumber, data => {
+      const tree = this.parseNodes(data, this.props.myCourses);
+      this.setState({ data, tree });
     });
   }
 
   componentWillReceiveProps(nextProps) {
     if (!objectEquals(nextProps.myCourses, this.props.myCourses)) {
       const tree = this.parseNodes(this.state.data, nextProps.myCourses);
-      this.setState({ data: tree });
+      this.setState({ tree });
     }
+  }
+
+  // Returns true if node is a Course node.  False if it is a Choose node.
+  isCourseNode(node) {
+    return node.hasOwnProperty('subject');
+  }
+
+  // Generates random id
+  generateRandomId() {
+    return Math.random().toString(36).substr(2, 9);
   }
 
   parseNodes(node, myCourses) {
-    // Create random id
-    const id = Math.random().toString(36).substr(2, 9);
-    if (node.hasOwnProperty('subject')) {
-      node.name = `${node.subject} ${node.catalogNumber}`;
-      node.id = node.name + '_' + id;
-      node.taken = hasTakenCourse(node.subject, node.catalogNumber, myCourses);
+    if (node == null) return;
+    let treeNode = {};
 
-      let children = node.children || node._children;
-      // Has children
-      if (children != null && children.length > 0) {
-        node.gProps = {
-          onClick: this.toggleNode.bind(this, node)
-        };
-        children = children.map(child => this.parseNodes(child, myCourses));
-        node.children = children;
-        node.isOpen = true;
-      } else {
-        node.isLeaf = true;
-        node.gProps = {
-          className: 'leaf'
-        };
-      }
+    if (this.isCourseNode(node)) {
+      treeNode = this.parseCourseNode(node, myCourses);
     } else {
-      node.name = `Choose ${node.choose} of:`;
-      node.id = id;
-      node.isOpen = true;
-      node.gProps = {
-        className: `choose-${node.choose}`,
-        onClick: this.toggleNode.bind(this, node)
-      };
-      let children = node.children || node._children;
-      children = children.map(child => this.parseNodes(child, myCourses));
-      node.children = children;
-
-      // Check children to see if number of taken courses meet requirements
-      let counter = node.choose;
-      for (let i = 0; i < children.length; i++) {
-        if (counter === 0) break;
-        if (children[i].taken) counter--;
-      }
-      if (counter === 0) {
-        node.taken = true;
-      }
+      treeNode = this.parseChooseNode(node, myCourses);
     }
 
     // Set taken class name
-    if (node.taken) {
-      if (node.gProps.className != null) {
+    if (treeNode.taken) {
+      // If there is an existing class name, combine them
+      // Assume max of 1 other class name.  If not, need to change this.
+      if (treeNode.gProps.className != null) {
         const names = { taken: true };
-        names[node.gProps.className] = true;
-        node.gProps.className = classNames(names);
+        names[treeNode.gProps.className] = true;
+        treeNode.gProps.className = classNames(names);
       } else {
-        node.gProps.className = 'taken';
+        treeNode.gProps.className = 'taken';
       }
     }
-    return node;
+    return treeNode;
   }
 
-  // Depth-first traversal to close tree
+  parseCourseNode(node, myCourses) {
+    const { subject, catalogNumber, choose, children } = node;
+    const id = this.generateRandomId();
+    const courseNode = {
+      name: `${subject} ${catalogNumber}`,
+      id: `${subject}${catalogNumber}_${id}`,
+      taken: hasTakenCourse(subject, catalogNumber, myCourses),
+      isOpen: true,
+      isLeaf: false,
+      gProps: {},
+    };
+
+    // Has children
+    if (children != null && children.length > 0) {
+      // Attach open/close click listener
+      courseNode.gProps.onClick = this.toggleNode.bind(this, courseNode);
+
+      // Have to take all prereqs of this course
+      if (!choose) {
+        courseNode.children = children.map(child => this.parseNodes(child, myCourses));
+      } else {
+        // i.e. Only need x number of children to fulfill prereqs
+        // We need a Choose node in the middle
+        const chooseNode = { choose, children };
+        const parsedChooseNode = this.parseChooseNode(chooseNode, myCourses);
+        courseNode.children = [parsedChooseNode];
+      }
+    } else {  // Leaf node
+      courseNode.isOpen = false;
+      courseNode.isLeaf = true;
+      courseNode.gProps.className = 'leaf';
+    }
+
+    return courseNode;
+  }
+
+  parseChooseNode(node, myCourses) {
+    const { choose, children } = node;
+    const id = this.generateRandomId();
+    const chooseNode = {
+      name: `Choose ${choose} of:`,
+      id,
+      taken: false,
+      isOpen: true,
+      isLeaf: false,
+      gProps: {
+        className: `choose-${choose}`,
+      },
+      children: children.map(child => this.parseNodes(child, myCourses)),
+    };
+
+    // Attach open/close click listener
+    chooseNode.gProps.onClick = this.toggleNode.bind(this, chooseNode);
+
+    // Check children to see if number of taken courses meet requirements
+    let counter = choose;
+    for (let i = 0; i < chooseNode.children.length; i++) {
+      if (counter === 0) break;
+      if (chooseNode.children[i].taken) counter--;
+    }
+    // If 'choose' requirement is met, mark this Choose node as taken.
+    if (counter === 0) {
+      chooseNode.taken = true;
+    }
+
+    return chooseNode;
+  }
+
+  // Depth-first traversal to close tree nodes
   closeTree(node) {
     if (node.isLeaf) return;
     if (node.children == null || node.children.length === 0) return;
@@ -136,6 +181,7 @@ class PrerequisitesTreeContainer extends Component {
     node.children = null;
   }
 
+  // Open/close node.
   toggleNode(node) {
     if (node.isLeaf) return;
     if (node.isOpen) {
@@ -150,14 +196,15 @@ class PrerequisitesTreeContainer extends Component {
   }
 
   render() {
-    const { data } = this.state;
-    if (data == null) return null;
+    const { tree } = this.state;
+    if (tree == null) return null;
+
     return (
       <div style={styles.container}>
         <span style={styles.title}>Prerequisites Tree</span>
-        { data && (
+        { tree && (
           <div style={styles.treeContainer}>
-            <Tree data={data} />
+            <Tree data={tree} />
           </div>
         ) }
       </div>
