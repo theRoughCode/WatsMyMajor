@@ -13,6 +13,7 @@ import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
+import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/MyCourseContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import BrowseCourse from './components/courselist/BrowseCourse';
@@ -109,7 +110,8 @@ class App extends Component {
               <Route path='/my-courses' component={ MyCourseView } />
               <Route path='/schedule' component={ MyScheduleView } />
     					<Route exact path='/courses' component={ BrowseCourse } />
-    					<Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
+                <Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
+    					<Route path='/tree/:subject/:catalogNumber' component={ PrereqsTree } />
     				</Switch>
     			</div>
 					<Snackbar

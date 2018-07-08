@@ -6,11 +6,12 @@ routes.get('/', function(req, res){
 });
 
 routes.use('/courses', require('./courses'));
-routes.use('/users', require('./users'));
 routes.use('/parse', require('./parse'));
 routes.use('/prof', require('./prof'));
 routes.use('/reqs', require('./reqs'));
+routes.use('/tree', require('./tree'));
 routes.use('/update', require('./update'));
+routes.use('/users', require('./users'));
 routes.use('/wat', require('./wat'));
 
 // All remaining requests return the React app, so it can handle routing.

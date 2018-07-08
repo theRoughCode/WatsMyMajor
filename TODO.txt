@@ -27,3 +27,5 @@ Important:
 - Add view cart
 - Implement multi-drag
 - Add click on course in My Courses to open at side
+- Course templates based on interest/major
+- Cache rmp requests

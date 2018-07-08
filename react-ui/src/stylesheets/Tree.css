@@ -1,0 +1,41 @@
+svg.tree circle {
+  fill: #5dd350;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+svg.tree .node circle {
+	fill: #F3F3FF;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+svg.tree text {
+	font-size: 15px;
+	background-color: #444;
+	fill: #F4F4F4;
+	text-shadow: 0 1px 4px black;
+  margin-left: 3px;
+}
+
+svg.tree .parent {
+	cursor: pointer;
+}
+
+svg.tree .choose-0 circle {
+	fill: #d25050;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+svg.tree .choose-1 circle {
+	fill: #52b5ce;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}
+
+svg.tree path.link {
+	fill: none;
+	stroke: #2593B8;
+	stroke-width: 1.5px;
+}

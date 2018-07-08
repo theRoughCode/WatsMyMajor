@@ -6,10 +6,6 @@ ReqsRouter.get('/:subject/:number', function(req, res) {
 	const subject = req.params.subject.toUpperCase();
 	const number = req.params.number;
 
-	res.set('Content-Type', 'application/json');
-	// waterloo.getReqs(subject, number, (err, reqs) => {
-	// 	res.json({ err, reqs });
-	// });
 	requisites.getRequisites(subject, number, (err, reqs) => {
 		if (err) {
 			console.error(err);
