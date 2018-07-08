@@ -43,6 +43,8 @@ const CourseContent = (props) => {
 				eligible={eligible}
 			/>
 			<CourseDescription
+				subject={subject}
+				catalogNumber={catalogNumber}
 				description={description}
         antireqs={antireqs}
 				coreqs={coreqs}

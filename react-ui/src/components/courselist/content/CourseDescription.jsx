@@ -1,8 +1,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import RaisedButton from 'material-ui/RaisedButton';
 import CourseRequisites from './CourseRequisites';
 
+const styles = {
+	leftContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		marginLeft: 20,
+	},
+	description: {
+		fontSize: 15,
+	  margin: 'auto',
+	  marginLeft: 0,
+	  textAlign: 'left',
+	  lineHeight: 1.5,
+	  color: '#5c6e84',
+	},
+	treeButton: {
+		marginBottom: 20,
+		width: '100%'
+	},
+}
+
 const CourseDescription = ({
+	subject,
+	catalogNumber,
 	description,
 	antireqs,
 	coreqs,
@@ -11,20 +35,30 @@ const CourseDescription = ({
 	selectCourse
 }) => (
 	<div className="course-description">
-		<p className="description">
+		<p style={styles.description}>
 			{description}
 		</p>
-		<CourseRequisites
-			antireqs={antireqs}
-			coreqs={coreqs}
-			prereqs={prereqs}
-			postreqs={postreqs}
-			selectCourse={selectCourse}
-		/>
+		<div style={styles.leftContainer}>
+			<Link to={`/tree/prereqs/${subject}/${catalogNumber}`}>
+				<RaisedButton
+					label="View Requisites Tree"
+					style={styles.treeButton}
+				/>
+			</Link>
+			<CourseRequisites
+				antireqs={antireqs}
+				coreqs={coreqs}
+				prereqs={prereqs}
+				postreqs={postreqs}
+				selectCourse={selectCourse}
+			/>
+		</div>
 	</div>
 );
 
 CourseDescription.propTypes = {
+	subject: PropTypes.string.isRequired,
+	catalogNumber: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   antireqs: PropTypes.array.isRequired,
   coreqs: PropTypes.array.isRequired,

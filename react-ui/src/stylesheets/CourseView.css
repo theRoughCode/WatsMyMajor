@@ -162,16 +162,6 @@
   display: flex;
 }
 
-.course-description .description {
-  font-size: 15px;
-  margin: auto;
-  margin-left: 0;
-  text-align: left;
-  width: 55%;
-  line-height: 1.5;
-  color: #5c6e84;
-}
-
 .course-requisites {
   margin: auto;
   margin-right: 0;
