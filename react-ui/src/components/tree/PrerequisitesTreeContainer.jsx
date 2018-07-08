@@ -62,7 +62,7 @@ export default class PrerequisitesTreeContainer extends Component {
         onClick: this.onClick.bind(this, node)
       };
     } else {
-      node.name = `Choose ${node.choose}`;
+      node.name = `Choose ${node.choose} of:`;
       node.key = id;
       node.gProps = {
         className: `choose-${node.choose}`,
