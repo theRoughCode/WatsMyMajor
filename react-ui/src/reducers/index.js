@@ -2,6 +2,8 @@ import { combineReducers } from 'redux'
 import {
 	TOGGLE_SIDEBAR,
 	SET_USER,
+	LOGIN_USER,
+	LOGOUT_USER,
 	SET_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
@@ -152,17 +154,32 @@ const defaultUser = {
 	username: '',
 	name: ''
 };
+const usernameKey = 'wat-username';  // Used to cache user's session
 function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
 			const { username, user } = action;
-			if (user == null) return { username };
+			if (user == null) {
+				localStorage.removeItem(usernameKey);
+				return { username };
+			}
+			localStorage.setItem(usernameKey, username);
 			const { name, schedule } = user;
 			return {
 				username: username || '',
 				name: name || '',
 				schedule: schedule || []
 			};
+		case LOGIN_USER:
+			const { meta, payload } = action;
+			return {
+				username: meta.username || '',
+				name: payload.name || '',
+				schedule: payload.schedule || []
+			};
+		case LOGOUT_USER:
+			localStorage.removeItem(usernameKey);
+			return defaultUser;
 		default:
 			return state;
 	}

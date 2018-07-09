@@ -9,7 +9,8 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { toggleSideBar, createSnack } from './actions/index';
+import { toggleSideBar, createSnack, loginUser, logoutUser } from './actions/index';
+import { objectEquals } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
@@ -33,7 +34,9 @@ let styles = {
 class App extends Component {
 
 	static propTypes = {
-		onToggleSideBar: PropTypes.func.isRequired,
+    onToggleSideBar: PropTypes.func.isRequired,
+    onLogin: PropTypes.func.isRequired,
+		onLogout: PropTypes.func.isRequired,
 		onUndoSnack: PropTypes.func.isRequired
 	};
 
@@ -41,22 +44,29 @@ class App extends Component {
     super(props);
 
 		const {
-			view,
 			sideBarOpen,
 			snack,
       username,
-			onToggleSideBar,
+      onToggleSideBar,
+      onLogin,
+			onLogout,
 			onUndoSnack
 		} = props;
 
+    let cachedUsername = null;
+    // Check localStorage if username is not set
+    if (!username) {
+      cachedUsername = localStorage.getItem('wat-username');
+      if (cachedUsername) onLogin(cachedUsername);
+    }
+
     this.state = {
-      username,
+      username: username || cachedUsername || '',
 			subject: '',
 			catalogNumber: '',
       message: null,
       fetching: true,
 			hasSnack: false,
-			view,
 			sideBarOpen,
 			snackAutoHideDuration: 2000,
 			snackOpen: false,
@@ -66,14 +76,15 @@ class App extends Component {
 		this.handleRequestClose = this.handleRequestClose.bind(this);
     this.handleActionClick = this.handleActionClick.bind(this);
 		this.addRedirect = this.addRedirect.bind(this);
-		this.onToggleSideBar = onToggleSideBar;
+    this.onToggleSideBar = onToggleSideBar;
+    this.onLogin = onLogin;
+		this.onLogout = onLogout;
 		this.onUndoSnack = onUndoSnack;
 	}
 
 	componentWillReceiveProps(nextProps) {
-	  if (nextProps.view !== this.state.view ||
-				nextProps.sideBarOpen !== this.state.sideBarOpen) {
-			this.setState(nextProps);
+	  if (nextProps.sideBarOpen !== this.state.sideBarOpen) {
+			this.setState({ sideBarOpen: nextProps.sideBarOpen });
 		}
 
 		if (nextProps.snack !== this.state.snack) {
@@ -115,7 +126,10 @@ class App extends Component {
     return (
 			<Router>
 				<div className="App">
-					<AppBar toggleSideBar={this.onToggleSideBar} />
+					<AppBar
+            toggleSideBar={this.onToggleSideBar}
+            onLogout={this.onLogout}
+          />
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
     				<Switch>
@@ -144,8 +158,8 @@ class App extends Component {
 
 }
 
-const mapStateToProps = ({ view, sideBarOpen, snack, user }) => {
-	return { view, sideBarOpen, snack, username: user.name };
+const mapStateToProps = ({ sideBarOpen, snack, user }) => {
+	return { sideBarOpen, snack, username: user.name };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -155,7 +169,13 @@ const mapDispatchToProps = dispatch => {
     },
 		onUndoSnack: (msg) => {
 			dispatch(createSnack(msg));
-		}
+		},
+    onLogin: (username) => {
+      dispatch(loginUser(username));
+    },
+    onLogout: () => {
+      dispatch(logoutUser());
+    },
   }
 };
 

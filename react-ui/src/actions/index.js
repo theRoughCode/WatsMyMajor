@@ -6,6 +6,8 @@ import { RSAA } from 'redux-api-middleware';
 
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_USER = 'SET_USER';
+export const LOGIN_USER = 'LOGIN_USER';
+export const LOGOUT_USER = 'LOGOUT_USER';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
@@ -26,6 +28,16 @@ export const setUser = (username, user) => ({
 	username,
 	user
 });
+
+export const loginUser = (username) => ({
+	[RSAA]: {
+		endpoint: `/users/${username}`,
+		method: 'GET',
+		types: ['', { type: LOGIN_USER, meta: { username } }, '']
+	}
+});
+
+export const logoutUser = () => ({ type: LOGOUT_USER });
 
 export const setExpandedCourse = (courseObj, index) => {
 	const {

@@ -1,24 +1,40 @@
 import React from 'react';
-import AppBar from 'material-ui/AppBar';
+import Bar from 'material-ui/AppBar';
+import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
 
 
 const styles = {
-	backgroundColor: 'rgb(43, 54, 67)',
-	textAlign: 'left',
-	color: '#E0F7FA',
-	position: 'fixed'
+	container: {
+		backgroundColor: 'rgb(43, 54, 67)',
+		textAlign: 'left',
+		color: '#E0F7FA',
+		position: 'fixed',
+	},
+	logoutButton: {
+		marginTop: 11,
+		marginRight: 20
+	},
+	logoutLabel: {
+		color: 'white'
+	}
 };
 
-const AppAppBar = ({ toggleSideBar }) => (
-	<AppBar
-		style={styles}
+const AppBar = ({ toggleSideBar, onLogout }) => (
+	<Bar
+		style={ styles.container }
 		onLeftIconButtonClick={ toggleSideBar }
 		title="WatsMyMajor"
 	>
+		<FlatButton
+			label="Logout"
+			onClick={ onLogout }
+			labelStyle={ styles.logoutLabel }
+			style={ styles.logoutButton }
+		/>
 		<SearchBar />
-	</AppBar>
+	</Bar>
 );
 
 
-export default AppAppBar;
+export default AppBar;
