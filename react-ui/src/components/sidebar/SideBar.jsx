@@ -30,7 +30,7 @@ const SideBar = ({ username, open }) => (
 		<MenuItem
 			style={ styles.avatarMenuItem }
 			>
-			<Avatar name={ username } />
+			{ username && <Avatar name={ username } /> }
 		</MenuItem>
 		<List>
 			<ListItem

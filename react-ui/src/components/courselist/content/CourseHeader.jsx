@@ -24,20 +24,18 @@ const styles = {
 	}
 };
 
-const CourseHeader = (props) => {
-	const {
-		subject,
-		catalogNumber,
-		title,
-		rating,
-		termsOffered,
-		addToCartHandler,
-		removeFromCartHandler,
-		taken,
-		inCart,
-		eligible
-	} = props;
-
+const CourseHeader = ({
+	subject,
+	catalogNumber,
+	title,
+	rating,
+	termsOffered,
+	addToCartHandler,
+	removeFromCartHandler,
+	taken,
+	inCart,
+	eligible
+}) => {
 	const cartButton = (inCart)
 		? <RaisedButton
 				onClick={() => removeFromCartHandler(subject, catalogNumber)}

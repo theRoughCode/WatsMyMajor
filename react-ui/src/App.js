@@ -100,8 +100,8 @@ class App extends Component {
 
   // Redirects to Login if not logged in
   addRedirect(Component) {
-    return () => (
-      (this.state.username) ? <Component /> : <Redirect to="/login" />
+    return (props) => (
+      (this.state.username) ? <Component {...props} /> : <Redirect to="/login" />
     );
   }
 
@@ -119,14 +119,14 @@ class App extends Component {
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
     				<Switch>
-              <Route exact path='/' component={ this.addRedirect(Dashboard) } />
+              <Route exact path='/' render={ this.addRedirect(Dashboard) } />
               <Route exact path='/register' component={ Register } />
     					<Route exact path='/login' component={ Login } />
-              <Route path='/my-courses' component={ this.addRedirect(MyCourseView) } />
-              <Route path='/schedule' component={ this.addRedirect(MyScheduleView) } />
-    					<Route exact path='/courses' component={ this.addRedirect(BrowseCourse) } />
-              <Route path='/courses/:subject/:catalogNumber' component={ this.addRedirect(CourseListView) } />
-    					<Route path='/tree/prereqs/:subject/:catalogNumber' component={ this.addRedirect(PrereqsTree) } />
+              <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
+              <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
+    					<Route exact path='/courses' render={ this.addRedirect(BrowseCourse) } />
+              <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
+    					<Route path='/tree/prereqs/:subject/:catalogNumber' render={ this.addRedirect(PrereqsTree) } />
     				</Switch>
     			</div>
 					<Snackbar
