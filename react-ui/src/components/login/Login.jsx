@@ -144,10 +144,10 @@ class Login extends Component {
                 onClick={this.onLogin}
                 type="submit"
               />
-          </form>
+            </form>
           </Paper>
           <div style={styles.footer}>
-            Don't have an account yet? <Link to="/register">Register</Link>
+            Don't have an account yet? <Link to="/register">Sign up</Link>
           </div>
         </div>
       </div>

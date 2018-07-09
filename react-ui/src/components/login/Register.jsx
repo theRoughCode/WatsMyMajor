@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -52,6 +53,9 @@ const styles = {
   },
   registerText: {
     color: 'white',
+  },
+  footer: {
+    marginTop: 40,
   }
 };
 
@@ -179,6 +183,9 @@ class Register extends Component {
               />
             </form>
           </Paper>
+          <div style={styles.footer}>
+            Already have an account yet? <Link to="/login">Sign in</Link>
+          </div>
         </div>
       </div>
     );
