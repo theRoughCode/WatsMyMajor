@@ -73,6 +73,7 @@ class Register extends Component {
       nameError: '',
       emailError: '',
       passwordError: '',
+      keyError: '',
     }
 
     this.removeErrors = this.removeErrors.bind(this);
@@ -87,6 +88,7 @@ class Register extends Component {
         nameError: '',
         emailError: '',
         passwordError: '',
+        keyError: '',
       });
     }
   }
@@ -97,16 +99,23 @@ class Register extends Component {
     const name = this.refs.name.getValue();
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
+    const key = this.refs.key.getValue();
 
-    if (!username || !name || !email || !password) {
+    if (!username || !name || !email || !password || !key) {
       const errMessage = 'This field is required';
       const errors = {}
       if (!username) errors.usernameError = errMessage;
       if (!name) errors.nameError = errMessage;
       if (!email) errors.emailError = errMessage;
       if (!password) errors.passwordError = errMessage;
+      if (!key) errors.keyError = errMessage;
 
       this.setState(errors);
+      return;
+    }
+
+    if (key !== 'MRGOOSE') {
+      this.setState({ keyError: 'Invalid beta key.' });
       return;
     }
 
@@ -116,7 +125,7 @@ class Register extends Component {
 				username,
         name,
         email,
-        password
+        password,
 			}),
 			headers: {
 	      'content-type': 'application/json'
@@ -172,6 +181,12 @@ class Register extends Component {
                 errorText={this.state.passwordError}
                 onChange={this.removeErrors}
                 ref="password"
+              /><br />
+              <TextField
+                floatingLabelText="Beta Access Key"
+                errorText={this.state.keyError}
+                onChange={this.removeErrors}
+                ref="key"
               /><br />
               <RaisedButton
                 label="Sign up"
