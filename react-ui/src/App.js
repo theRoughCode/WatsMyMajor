@@ -5,6 +5,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
+  Redirect,
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
@@ -43,11 +44,13 @@ class App extends Component {
 			view,
 			sideBarOpen,
 			snack,
+      username,
 			onToggleSideBar,
 			onUndoSnack
 		} = props;
 
     this.state = {
+      username,
 			subject: '',
 			catalogNumber: '',
       message: null,
@@ -61,7 +64,8 @@ class App extends Component {
     };
 
 		this.handleRequestClose = this.handleRequestClose.bind(this);
-		this.handleActionClick = this.handleActionClick.bind(this);
+    this.handleActionClick = this.handleActionClick.bind(this);
+		this.addRedirect = this.addRedirect.bind(this);
 		this.onToggleSideBar = onToggleSideBar;
 		this.onUndoSnack = onUndoSnack;
 	}
@@ -90,6 +94,13 @@ class App extends Component {
 		this.props.onUndoSnack(this.state.snack.undoMsg);
 	}
 
+  // Redirects to Login if not logged in
+  addRedirect(component) {
+    return () => (
+      (this.state.username) ? component : <Redirect to="/login" />
+    );
+  }
+
   render() {
     const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
 		const transition = (this.state.sideBarOpen)
@@ -104,14 +115,14 @@ class App extends Component {
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
     				<Switch>
-              <Route exact path='/' component={ Dashboard } />
+              <Route exact path='/' component={ this.addRedirect(Dashboard) } />
               <Route exact path='/register' component={ Register } />
     					<Route exact path='/login' component={ Login } />
-              <Route path='/my-courses' component={ MyCourseView } />
-              <Route path='/schedule' component={ MyScheduleView } />
-    					<Route exact path='/courses' component={ BrowseCourse } />
-              <Route path='/courses/:subject/:catalogNumber' component={ CourseListView } />
-    					<Route path='/tree/prereqs/:subject/:catalogNumber' component={ PrereqsTree } />
+              <Route path='/my-courses' component={ this.addRedirect(MyCourseView) } />
+              <Route path='/schedule' component={ this.addRedirect(MyScheduleView) } />
+    					<Route exact path='/courses' component={ this.addRedirect(BrowseCourse) } />
+              <Route path='/courses/:subject/:catalogNumber' component={ this.addRedirect(CourseListView) } />
+    					<Route path='/tree/prereqs/:subject/:catalogNumber' component={ this.addRedirect(PrereqsTree) } />
     				</Switch>
     			</div>
 					<Snackbar
@@ -129,8 +140,8 @@ class App extends Component {
 
 }
 
-const mapStateToProps = ({ view, sideBarOpen, snack }) => {
-	return { view, sideBarOpen, snack };
+const mapStateToProps = ({ view, sideBarOpen, snack, username }) => {
+	return { view, sideBarOpen, snack, username };
 };
 
 const mapDispatchToProps = dispatch => {
