@@ -21,12 +21,10 @@ export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
 
 export const toggleSideBar = () => ({ type: TOGGLE_SIDEBAR });
 
-export const setUser = (username) => ({
-	[RSAA]: {
-		endpoint: `/users/${username}`,
-		method: 'GET',
-		types: ['', { type: SET_USER, meta: { username } }, '']
-	}
+export const setUser = (username, user) => ({
+	type: SET_USER,
+	username,
+	user
 });
 
 export const setExpandedCourse = (courseObj, index) => {

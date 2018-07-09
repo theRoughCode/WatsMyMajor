@@ -12,6 +12,48 @@ UsersRouter.get('/:username', function(req, res) {
 	});
 });
 
+// Register user
+UsersRouter.post('/auth/create', function(req, res) {
+	const username = req.body.username;
+	const name = req.body.name;
+	const email = req.body.email;
+	const password = req.body.password;
+
+	users.createUser(username, email, name, password, (err) => {
+		if (err) {
+			console.log(err)
+			res.status(400).send(err);
+		}
+		else res.send(`User ${username} created successfully.`);
+	});
+});
+
+// Login user
+UsersRouter.post('/auth/login', function(req, res) {
+	const username = req.body.username;
+	const password = req.body.password;
+
+	users.verifyUser(username, password, (err, user) => {
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		} else res.json(user);
+	});
+});
+
+// Update user
+UsersRouter.post('/auth/edit', function(req, res) {
+	const username = req.body.username;
+	const password = req.body.password;
+
+	users.updateUserSettings(username, password, req.body, err => {
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		} else res.status(200).send(`User ${username} settings updated successfully.`);
+	});
+});
+
 // Set user
 // Body: { user }
 UsersRouter.post('/set/user/:username', function(req, res) {

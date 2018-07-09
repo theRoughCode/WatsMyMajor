@@ -12,7 +12,7 @@ const coreqExceptions = ['HLTH333'];
 
 // instantiate client
 const uwclient = new watApi({
-	API_KEY : process.env.API_KEY
+	API_KEY : process.env.WATERLOO_API_KEY
 });
 
 function getInstructor(instructor) {

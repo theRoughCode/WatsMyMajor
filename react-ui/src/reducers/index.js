@@ -90,7 +90,8 @@ function snack(state = snackInitialState, action) {
 function courseList(state = [], action) {
 	switch (action.type) {
 		case SET_USER:
-			return action.payload.courseList || [];
+			if (action.user == null) return [];
+			return action.user.courseList || [];
 		case UPDATE_USER_COURSES:
 			return action.meta.courseList || state;
 		case UPDATE_USER_COURSES_PREREQS:
@@ -124,7 +125,8 @@ function getMyCourses(courseList) {
 function myCourses(state = {}, action) {
 	switch (action.type) {
 		case SET_USER:
-			return getMyCourses(action.payload.courseList);
+			if (action.user == null) return {};
+			return getMyCourses(action.user.courseList);
 		case UPDATE_USER_COURSES:
 			return getMyCourses(action.meta.courseList);
 		default:
@@ -135,7 +137,8 @@ function myCourses(state = {}, action) {
 function cart(state = [], action) {
 	switch (action.type) {
 		case SET_USER:
-			return action.payload.cart || state;
+			if (action.user == null) return [];
+			return action.user.cart || state;
 		case SET_CART:
 			return action.meta.cart;
 		case SET_CART_PREREQS:
@@ -146,14 +149,15 @@ function cart(state = [], action) {
 }
 
 const defaultUser = {
-	username: 'theroughcode',
-	name: 'Raphael Koh'
+	username: '',
+	name: ''
 };
 function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
-			const { username } = action.meta;
-			const { name, schedule } = action.payload;
+			const { username } = action;
+			if (action.user == null) return { username };
+			const { name, schedule } = action.user;
 			const user = {
 				username: username || '',
 				name: name || '',

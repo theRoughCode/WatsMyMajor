@@ -8,11 +8,13 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { setUser, toggleSideBar, createSnack } from './actions/index';
+import { toggleSideBar, createSnack } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
+import Login from './components/login/Login';
+import Register from './components/login/Register';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/MyCourseContainer';
 import MyScheduleView from './components/schedule/MySchedule';
@@ -30,16 +32,12 @@ let styles = {
 class App extends Component {
 
 	static propTypes = {
-    onSetUser: PropTypes.func.isRequired,
 		onToggleSideBar: PropTypes.func.isRequired,
 		onUndoSnack: PropTypes.func.isRequired
 	};
 
   constructor(props) {
     super(props);
-
-    // TODO: Remove once login functionality has been implemented
-    props.onSetUser('theroughcode');
 
 		const {
 			view,
@@ -106,7 +104,9 @@ class App extends Component {
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
     				<Switch>
-    					<Route exact path='/' component={ Dashboard } />
+              <Route exact path='/' component={ Dashboard } />
+              <Route exact path='/register' component={ Register } />
+    					<Route exact path='/login' component={ Login } />
               <Route path='/my-courses' component={ MyCourseView } />
               <Route path='/schedule' component={ MyScheduleView } />
     					<Route exact path='/courses' component={ BrowseCourse } />
@@ -135,9 +135,6 @@ const mapStateToProps = ({ view, sideBarOpen, snack }) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onSetUser: (username) => {
-      dispatch(setUser(username));
-    },
     onToggleSideBar: () => {
       dispatch(toggleSideBar());
     },
