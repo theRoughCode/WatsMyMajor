@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import Toggle from 'material-ui/Toggle';
 import Tree from './PrerequisitesTree';
 import { hasTakenCourse } from '../../utils/courses';
 import { objectEquals } from '../../utils/arrays';
@@ -21,12 +22,22 @@ const styles = {
     display: 'flex',
     flexDirection: 'column'
   },
-  title: {
+  header: {
+    margin: 20,
+    marginBottom: 0,
     textAlign: 'left',
-    marginLeft: 20,
-    marginTop: 20,
+    display: 'flex',
+  },
+  title: {
     fontSize: 25,
     color: 'white',
+    flex: 1,
+  },
+  toggle: {
+    width: 200,
+  },
+  toggleLabel: {
+    color: 'white'
   },
   treeContainer: {
     height: '90%',
@@ -40,6 +51,27 @@ const getTree = (subject, catalogNumber, callback) => {
     .then(callback);
 };
 
+// Returns true if node is a Course node.  False if it is a Choose node.
+const isCourseNode = (node) => node.hasOwnProperty('subject');
+
+// Generates random id
+const generateRandomId = () => Math.random().toString(36).substr(2, 9);
+
+// Checks if node is taken.  If so, apply taken class name (for styling).
+const setTakenClass = (node) => {
+  if (!node.taken) return;
+
+  // If there is an existing class name, combine them
+  // Assume max of 1 other class name.  If not, need to change this.
+  if (node.gProps.className != null) {
+    const names = { taken: true };
+    names[node.gProps.className] = true;
+    node.gProps.className = classNames(names);
+  } else {
+    node.gProps.className = 'taken';
+  }
+}
+
 class PrerequisitesTreeContainer extends Component {
 
   static propTypes = {
@@ -47,10 +79,16 @@ class PrerequisitesTreeContainer extends Component {
     myCourses: PropTypes.object.isRequired,
   };
 
-  state = {
-    data: null,
-    tree: null
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      data: null,
+      tree: null,
+    };
+
+    this.toggleSimplifiedView = this.toggleSimplifiedView.bind(this);
+  }
 
   componentWillMount() {
     const { subject, catalogNumber } = this.props.match.params;
@@ -67,45 +105,28 @@ class PrerequisitesTreeContainer extends Component {
     }
   }
 
-  // Returns true if node is a Course node.  False if it is a Choose node.
-  isCourseNode(node) {
-    return node.hasOwnProperty('subject');
-  }
-
-  // Generates random id
-  generateRandomId() {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
+  // Parses data tree and create node tree.
+  // *Does not mutate original node.
   parseNodes(node, myCourses) {
     if (node == null) return;
     let treeNode = {};
 
-    if (this.isCourseNode(node)) {
+    if (isCourseNode(node)) {
       treeNode = this.parseCourseNode(node, myCourses);
     } else {
       treeNode = this.parseChooseNode(node, myCourses);
     }
 
-    // Set taken class name
-    if (treeNode.taken) {
-      // If there is an existing class name, combine them
-      // Assume max of 1 other class name.  If not, need to change this.
-      if (treeNode.gProps.className != null) {
-        const names = { taken: true };
-        names[treeNode.gProps.className] = true;
-        treeNode.gProps.className = classNames(names);
-      } else {
-        treeNode.gProps.className = 'taken';
-      }
-    }
     return treeNode;
   }
 
   parseCourseNode(node, myCourses) {
     const { subject, catalogNumber, choose, children } = node;
-    const id = this.generateRandomId();
+    const id = generateRandomId();
     const courseNode = {
+      subject,
+      catalogNumber,
+      choose,
       name: `${subject} ${catalogNumber}`,
       id: `${subject}${catalogNumber}_${id}`,
       taken: hasTakenCourse(subject, catalogNumber, myCourses),
@@ -135,12 +156,14 @@ class PrerequisitesTreeContainer extends Component {
       courseNode.gProps.className = 'leaf';
     }
 
+    setTakenClass(courseNode);
+
     return courseNode;
   }
 
   parseChooseNode(node, myCourses) {
     const { choose, children } = node;
-    const id = this.generateRandomId();
+    const id = generateRandomId();
     const chooseNode = {
       name: `Choose ${choose} of:`,
       id,
@@ -165,14 +188,107 @@ class PrerequisitesTreeContainer extends Component {
     // If 'choose' requirement is met, mark this Choose node as taken.
     if (counter === 0) {
       chooseNode.taken = true;
+      setTakenClass(chooseNode);
     }
 
     return chooseNode;
   }
 
+  // Depth-first traversal to simplify tree.
+  // Basically, this checks if a parent has a child course that has been taken.
+  // If so, we only show that child node.
+  // *Does not mutate original node.
+  simplifyTree(node) {
+    // Create copy
+    const simpNode = Object.assign({}, node);
+
+    // If it's a leaf, we can't simplify it
+    if (simpNode.isLeaf) return simpNode;
+
+    let { children, _children } = simpNode;
+    if (!children) children = [];
+    if (!_children) _children = [];
+
+    // If it is a course node or is a choose node that does not have all its
+    // prereqs satisfied, we keep all children and recursively simplify tree.
+    if (isCourseNode(simpNode) || !simpNode.taken) {
+      simpNode.children = children.map(child => this.simplifyTree(child));
+      simpNode._children = _children.map(child => this.simplifyTree(child));
+    } else {
+      // If it is a choose node that has its prereqs fulfilled, we only display
+      // the courses that fulfilled it.
+      const hiddenChildren = []
+      const takenChildren = [];
+
+      const sortChild = (child) => {
+        // Simplify child simpNode
+        const simpChild = this.simplifyTree(child);
+        if (simpChild.taken) takenChildren.push(simpChild);
+        else hiddenChildren.push(simpChild);
+      };
+
+      // Sort children into appropriate bucket
+      children.forEach(sortChild);
+      _children.forEach(sortChild);
+
+      if (simpNode.isOpen) {
+        simpNode.children = takenChildren;
+        simpNode._children = [];
+      } else {
+        simpNode._children = takenChildren;
+        simpNode.children = [];
+      }
+      simpNode.hidden = hiddenChildren;
+    }
+
+    // Re-attach open/close listener
+    simpNode.gProps.onClick = this.toggleNode.bind(this, simpNode);
+
+    return simpNode;
+  }
+
+  // Returns simplified tree to original
+  // *Does not mutate original node.
+  unSimplifyTree(node) {
+    // Create copy
+    const origNode = Object.assign({}, node);
+
+    // If it's a leaf, it wasn't simplified
+    if (origNode.isLeaf) return origNode;
+
+    const { children, _children, hidden } = origNode;
+    const newChildren =
+      (children)
+        ? children.map(child => this.unSimplifyTree(child))
+        : [];
+    const _newChildren =
+      (_children)
+        ? _children.map(child => this.unSimplifyTree(child))
+        : [];
+
+    const sortChild = (child) => {
+      const origChild = this.unSimplifyTree(child);
+      // Put child in visible children if parent node is open
+      if (origNode.isOpen) newChildren.push(origChild);
+      else _newChildren.push(origChild);
+    }
+
+    // Sort children into appropriate bucket
+    if (hidden) hidden.forEach(sortChild);
+    delete(origNode.hidden);
+
+    origNode.children = newChildren;
+    origNode._children = _newChildren;
+
+    // Re-attach open/close listener
+    origNode.gProps.onClick = this.toggleNode.bind(this, origNode);
+
+    return origNode;
+  }
+
   // Depth-first traversal to close tree nodes
   closeTree(node) {
-    if (node.isLeaf) return;
+    if (node.isLeaf || !node.isOpen) return;
     if (node.children == null || node.children.length === 0) return;
     for (let i = 0; i < node.children.length; i++) {
       this.closeTree(node.children[i]);
@@ -195,13 +311,31 @@ class PrerequisitesTreeContainer extends Component {
     this.forceUpdate();
   }
 
+  toggleSimplifiedView(ev, isToggled) {
+    let { tree } = this.state;
+
+    if (isToggled) tree = this.simplifyTree(tree); // Want to simplify tree
+    else tree = this.unSimplifyTree(tree); // Want to unsimplify tree
+
+    this.setState({ tree });
+  }
+
   render() {
     const { tree } = this.state;
     if (tree == null) return null;
 
     return (
       <div style={styles.container}>
-        <span style={styles.title}>Prerequisites Tree</span>
+        <div style={styles.header}>
+          <span style={styles.title}>Prerequisites Tree</span>
+          <Toggle
+            label="Simplified View"
+            style={styles.toggle}
+            labelStyle={styles.toggleLabel}
+            labelPosition="right"
+            onToggle={this.toggleSimplifiedView}
+          />
+        </div>
         { tree && (
           <div style={styles.treeContainer}>
             <Tree data={tree} />
