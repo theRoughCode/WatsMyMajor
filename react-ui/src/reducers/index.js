@@ -155,15 +155,14 @@ const defaultUser = {
 function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
-			const { username } = action;
-			if (action.user == null) return { username };
-			const { name, schedule } = action.user;
-			const user = {
+			const { username, user } = action;
+			if (user == null) return { username };
+			const { name, schedule } = user;
+			return {
 				username: username || '',
 				name: name || '',
 				schedule: schedule || []
-			}
-			return user;
+			};
 		default:
 			return state;
 	}

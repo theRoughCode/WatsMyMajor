@@ -87,7 +87,8 @@ class Register extends Component {
     }
   }
 
-  onRegister() {
+  onRegister(ev) {
+    ev.preventDefault();
     const username = this.refs.username.getValue();
     const name = this.refs.name.getValue();
     const email = this.refs.email.getValue();
@@ -119,9 +120,9 @@ class Register extends Component {
 		})
       .then(response => {
   			if (!response.ok) throw new Error(`status ${response.status}`);
-  			return;
+  			else return response.json();
   		})
-      .then(user => {
+      .then(() => {
         this.props.onSetUser(username, null);
         this.props.history.push("/");
       })
@@ -138,7 +139,7 @@ class Register extends Component {
             <span style={styles.subtitle}>Sign up to begin organizing your courses.</span>
           </div>
           <Paper style={styles.formContainer} zDepth={2} rounded={false}>
-            <div style={styles.body}>
+            <form style={styles.body}>
               <TextField
                 hintText="e.g. Ferigoose123"
                 floatingLabelText="Username"
@@ -174,8 +175,9 @@ class Register extends Component {
                 style={styles.registerButton}
                 labelStyle={styles.registerText}
                 onClick={this.onRegister}
+                type="submit"
               />
-            </div>
+            </form>
           </Paper>
         </div>
       </div>

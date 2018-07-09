@@ -76,7 +76,8 @@ class Login extends Component {
     this.onLogin = this.onLogin.bind(this);
   }
 
-  onLogin() {
+  onLogin(ev) {
+    ev.preventDefault();
     const username = this.refs.username.getValue();
     const password = this.refs.password.getValue();
 
@@ -121,7 +122,7 @@ class Login extends Component {
             <span style={styles.subtitle}>Log in to see your courses.</span>
           </div>
           <Paper style={styles.formContainer} zDepth={2} rounded={false}>
-            <div style={styles.body}>
+            <form style={styles.body}>
               <TextField
                 hintText="e.g. Ferigoose123"
                 floatingLabelText="Username"
@@ -141,8 +142,9 @@ class Login extends Component {
                 style={styles.loginButton}
                 labelStyle={styles.loginText}
                 onClick={this.onLogin}
+                type="submit"
               />
-            </div>
+          </form>
           </Paper>
           <div style={styles.footer}>
             Don't have an account yet? <Link to="/register">Register</Link>

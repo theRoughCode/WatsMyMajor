@@ -82,6 +82,10 @@ class App extends Component {
 				snack: nextProps.snack
 			});
 		}
+
+    if (nextProps.username !== this.state.username) {
+      this.setState({ username: nextProps.username });
+    }
 	}
 
 	handleRequestClose() {
@@ -95,9 +99,9 @@ class App extends Component {
 	}
 
   // Redirects to Login if not logged in
-  addRedirect(component) {
+  addRedirect(Component) {
     return () => (
-      (this.state.username) ? component : <Redirect to="/login" />
+      (this.state.username) ? <Component /> : <Redirect to="/login" />
     );
   }
 
@@ -140,8 +144,8 @@ class App extends Component {
 
 }
 
-const mapStateToProps = ({ view, sideBarOpen, snack, username }) => {
-	return { view, sideBarOpen, snack, username };
+const mapStateToProps = ({ view, sideBarOpen, snack, user }) => {
+	return { view, sideBarOpen, snack, username: user.name };
 };
 
 const mapDispatchToProps = dispatch => {
