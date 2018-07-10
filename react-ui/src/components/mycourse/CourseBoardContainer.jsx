@@ -170,8 +170,13 @@ class CourseBoardContainer extends Component {
 
 	loadCourses(id, newCourses) {
 		const { username, courseList } = this.state;
-		const courses = courseList[id].courses || [];
-		courseList[id].courses = courses.concat(newCourses);
+		let courses = courseList[id].courses || [];
+		courses = courses.concat(newCourses);
+		// Dedup courses
+		const courseMap = {};
+		courses.forEach(course => courseMap[`${course.subject}${course.catalogNumber}`] = course);
+		courses = Object.values(courseMap);
+		courseList[id].courses = courses;
 
 		this.setState({ courseList });
 		this.updateCourseHandler(username, courseList);
