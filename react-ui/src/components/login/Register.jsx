@@ -132,11 +132,12 @@ class Register extends Component {
 	    }
 		})
       .then(response => {
+        console.log(response)
   			if (!response.ok) throw new Error(`status ${response.status}`);
   			else return response.json();
   		})
-      .then(() => {
-        this.props.onSetUser(username, null);
+      .then(user => {
+        this.props.onSetUser(username, user);
         this.props.history.push("/");
       })
       .catch(() => alert('Failed to create account. Please contact an administrator.'));

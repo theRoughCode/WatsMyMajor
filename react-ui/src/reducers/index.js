@@ -150,38 +150,31 @@ function cart(state = [], action) {
 	}
 }
 
-const defaultUser = {
-	username: '',
-	name: ''
-};
+const defaultUser = { username: '', name: '' };
 const usernameKey = 'wat-username';  // Used to cache user's session
+
 function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
-			const { username, user } = action;
-			if (user == null) {
-				localStorage.removeItem(usernameKey);
-				return { username };
-			}
-			localStorage.setItem(usernameKey, username);
-			const { name, schedule } = user;
-			return {
-				username: username || '',
-				name: name || '',
-				schedule: schedule || []
-			};
+			localStorage.setItem(usernameKey, action.username);
+			return action.user || defaultUser;
 		case LOGIN_USER:
 			const { meta, payload } = action;
-			return {
-				username: meta.username || '',
-				name: payload.name || '',
-				schedule: payload.schedule || []
-			};
+			localStorage.setItem(usernameKey, meta.username);
+			return payload || defaultUser;
 		case LOGOUT_USER:
 			localStorage.removeItem(usernameKey);
 			return defaultUser;
 		default:
 			return state;
+	}
+}
+
+function isLoggedIn(state = false, action) {
+	switch (action.type) {
+		case SET_USER: case LOGIN_USER: return true;
+		case LOGOUT_USER: return false;
+		default: return state;
 	}
 }
 
@@ -204,6 +197,7 @@ const reducers = combineReducers({
 	myCourses,
 	cart,
 	user,
+	isLoggedIn,
 	courseCardPrereqs,
 });
 

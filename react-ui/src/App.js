@@ -34,6 +34,9 @@ let styles = {
 class App extends Component {
 
 	static propTypes = {
+    sideBarOpen: PropTypes.bool.isRequired,
+    snack: PropTypes.object.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     onToggleSideBar: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
 		onLogout: PropTypes.func.isRequired,
@@ -46,22 +49,18 @@ class App extends Component {
 		const {
 			sideBarOpen,
 			snack,
-      username,
+      isLoggedIn,
       onToggleSideBar,
       onLogin,
 			onLogout,
 			onUndoSnack
 		} = props;
 
-    let cachedUsername = null;
     // Check localStorage if username is not set
-    if (!username) {
-      cachedUsername = localStorage.getItem('wat-username');
-      if (cachedUsername) onLogin(cachedUsername);
-    }
+    const cachedUsername = localStorage.getItem('wat-username');
+    if (cachedUsername) onLogin(cachedUsername);
 
     this.state = {
-      username: username || cachedUsername || '',
 			subject: '',
 			catalogNumber: '',
       message: null,
@@ -70,7 +69,8 @@ class App extends Component {
 			sideBarOpen,
 			snackAutoHideDuration: 2000,
 			snackOpen: false,
-			snack
+			snack,
+      isLoggedIn,
     };
 
 		this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -94,8 +94,8 @@ class App extends Component {
 			});
 		}
 
-    if (nextProps.username !== this.state.username) {
-      this.setState({ username: nextProps.username });
+    if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
+      this.setState({ isLoggedIn: nextProps.isLoggedIn});
     }
 	}
 
@@ -112,7 +112,7 @@ class App extends Component {
   // Redirects to Login if not logged in
   addRedirect(Component) {
     return (props) => (
-      (this.state.username) ? <Component {...props} /> : <Redirect to="/login" />
+      (this.state.isLoggedIn) ? <Component {...props} /> : <Redirect to="/login" />
     );
   }
 
@@ -129,6 +129,7 @@ class App extends Component {
 					<AppBar
             toggleSideBar={this.onToggleSideBar}
             onLogout={this.onLogout}
+            isLoggedIn={this.state.isLoggedIn}
           />
 					<SideBar open={this.state.sideBarOpen} />
           <div style={styles}>
@@ -158,8 +159,8 @@ class App extends Component {
 
 }
 
-const mapStateToProps = ({ sideBarOpen, snack, user }) => {
-	return { sideBarOpen, snack, username: user.name };
+const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn }) => {
+	return { sideBarOpen, snack, isLoggedIn };
 };
 
 const mapDispatchToProps = dispatch => {

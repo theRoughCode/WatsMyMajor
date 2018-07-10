@@ -19,12 +19,11 @@ UsersRouter.post('/auth/create', function(req, res) {
 	const email = req.body.email;
 	const password = req.body.password;
 
-	users.createUser(username, email, name, password, (err) => {
+	users.createUser(username, email, name, password, (err, user) => {
 		if (err) {
-			console.log(err)
+			console.log(err);
 			res.status(400).send(err);
-		}
-		else res.send(`User ${username} created successfully.`);
+		} else res.json({ username, email, name });
 	});
 });
 

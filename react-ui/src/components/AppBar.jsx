@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
@@ -20,21 +21,29 @@ const styles = {
 	}
 };
 
-const AppBar = ({ toggleSideBar, onLogout }) => (
+const AppBar = ({ toggleSideBar, onLogout, isLoggedIn }) => (
 	<Bar
 		style={ styles.container }
 		onLeftIconButtonClick={ toggleSideBar }
 		title="WatsMyMajor"
 	>
-		<FlatButton
-			label="Logout"
-			onClick={ onLogout }
-			labelStyle={ styles.logoutLabel }
-			style={ styles.logoutButton }
-		/>
+		{ isLoggedIn && (
+			<FlatButton
+				label="Logout"
+				onClick={ onLogout }
+				labelStyle={ styles.logoutLabel }
+				style={ styles.logoutButton }
+			/>
+		) }
 		<SearchBar />
 	</Bar>
 );
+
+AppBar.propTypes = {
+	toggleSideBar: PropTypes.func.isRequired,
+	onLogout: PropTypes.func.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
+}
 
 
 export default AppBar;
