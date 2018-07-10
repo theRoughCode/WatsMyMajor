@@ -67,6 +67,17 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 
   users.setUser(username, user, err => {
     if (err) res.status(400).send(err);
+    else res.json(user);
+  });
+});
+
+// Update user
+// Body: { user }
+UsersRouter.post('/edit/:username', function(req, res) {
+  const username = req.params.username;
+
+  users.updateUser(username, req.body, err => {
+    if (err) res.status(400).send(err);
     else res.status(200).send(`User ${username} updated successfully.`);
   });
 });

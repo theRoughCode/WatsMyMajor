@@ -11,13 +11,19 @@ import '../../stylesheets/InstructionsView.css';
 
 const styles = {
   stepperInfo: {
-    height: '100%'
+    height: '100%',
+    margin: 'auto',
+  },
+  buttonContainer: {
+    marginTop: 30,
+    display: 'flex'
   }
 };
 
 export default class ParserInstructions extends Component {
   static propTypes = {
-    stepContents: PropTypes.array.isRequired
+    stepContents: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -25,7 +31,6 @@ export default class ParserInstructions extends Component {
 
     this.state = {
       text: '',
-      submitted: false,
       stepIndex: 0,
       stepContents: props.stepContents
     };
@@ -69,14 +74,13 @@ export default class ParserInstructions extends Component {
   }
 
   handleChange(e) {
-    this.setState({ text: e.target.value })
+    this.props.onChange(e.target.value);
   }
 
   render() {
-    const { stepIndex, submitted, text, stepContents } = this.state;
-    const nextButtonText = (stepIndex === stepContents.length - 1) ? 'Submit' : 'Next';
+    const { stepIndex, text, stepContents } = this.state;
 
-    const formView = (
+    return (
       <div className="instructions">
         <Stepper linear={ false } activeStep={ stepIndex }>
           {
@@ -91,26 +95,25 @@ export default class ParserInstructions extends Component {
         </Stepper>
         <div style={ styles.stepperInfo }>
           { this.getStepContent(stepIndex) }
-          <div style={{ marginTop: 12 }}>
-            <FlatButton
-              label="Back"
-              disabled={ stepIndex === 0 }
-              onClick={this.handlePrev}
-              style={{ marginRight: 12 }}
-            />
-            <RaisedButton
-              label={ nextButtonText }
-              primary={ true }
-              onClick={ this.handleNext }
-            />
+          <div style={ styles.buttonContainer }>
+            <div style={{ margin: 'auto' }}>
+              <FlatButton
+                label="Back"
+                disabled={ stepIndex === 0 }
+                onClick={this.handlePrev}
+                style={{ marginRight: 12 }}
+                />
+              <RaisedButton
+                label="Next"
+                disabled={ stepIndex === stepContents.length - 1 }
+                primary={ true }
+                onClick={ this.handleNext }
+              />
+            </div>
           </div>
         </div>
       </div>
     );
-
-    return (submitted)
-      ? React.cloneElement(this.props.child, { text })
-      : formView;
   }
 
 }

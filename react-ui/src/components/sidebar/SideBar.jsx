@@ -25,12 +25,12 @@ const styles = {
 	}
 }
 
-const SideBar = ({ username, open }) => (
+const SideBar = ({ name, isLoggedIn, open }) => (
 	<Drawer open={ open } style={ styles.drawer }>
 		<MenuItem
 			style={ styles.avatarMenuItem }
 			>
-			{ username && <Avatar name={ username } /> }
+			{ isLoggedIn && <Avatar name={ name } /> }
 		</MenuItem>
 		<List>
 			<ListItem
@@ -72,12 +72,9 @@ const SideBar = ({ username, open }) => (
 );
 
 SideBar.propTypes = {
-	username: PropTypes.string,
+	name: PropTypes.string.isRequired,
+	isLoggedIn: PropTypes.bool.isRequired,
 	open: PropTypes.bool.isRequired
-};
-
-SideBar.defaultProps = {
-	username: ""
 };
 
 export default SideBar;

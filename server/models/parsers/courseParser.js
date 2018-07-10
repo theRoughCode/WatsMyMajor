@@ -1,7 +1,7 @@
 const { read } = require('./utils');
 
 function parseCourses(textArr) {
-  const courses = {};
+  const courseSet = {};
 
   // Populate courses object
   for (let i = 0; i < textArr.length - 3; i += 3) {
@@ -11,20 +11,21 @@ function parseCourses(textArr) {
     if (subject === 'SEQ') continue;
     if (subject !== subject.toUpperCase()) break;
 
-    if (!courses.hasOwnProperty(subject)) {
+    if (!courseSet.hasOwnProperty(subject)) {
       // Use sets to prevent dups
-      courses[subject] = new Set([ catalogNumber ]);
+      courseSet[subject] = new Set([ catalogNumber ]);
     } else {
-      courses[subject].add(catalogNumber);
+      courseSet[subject].add(catalogNumber);
     }
   }
 
+  const courseList = [];
   // Convert from set to array
-  for (var subject in courses) {
-    courses[subject] = Array.from(courses[subject]);
+  for (var subject in courseSet) {
+    courseSet[subject].forEach(catalogNumber => courseList.push({ subject, catalogNumber }));
   }
 
-  return courses;
+  return courseList;
 }
 
 function parseText(text, callback) {

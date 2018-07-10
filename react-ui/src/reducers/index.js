@@ -94,6 +94,11 @@ function courseList(state = [], action) {
 		case SET_USER:
 			if (action.user == null) return [];
 			return action.user.courseList || [];
+		case LOGIN_USER:
+			if (action.payload == null) return [];
+			return action.payload.courseList || state;
+		case LOGOUT_USER:
+			return [];
 		case UPDATE_USER_COURSES:
 			return action.meta.courseList || state;
 		case UPDATE_USER_COURSES_PREREQS:
@@ -129,6 +134,11 @@ function myCourses(state = {}, action) {
 		case SET_USER:
 			if (action.user == null) return {};
 			return getMyCourses(action.user.courseList);
+		case LOGIN_USER:
+			if (action.payload == null) return [];
+			return getMyCourses(action.payload.courseList) || state;
+		case LOGOUT_USER:
+			return {};
 		case UPDATE_USER_COURSES:
 			return getMyCourses(action.meta.courseList);
 		default:
@@ -141,6 +151,11 @@ function cart(state = [], action) {
 		case SET_USER:
 			if (action.user == null) return [];
 			return action.user.cart || state;
+		case LOGIN_USER:
+			if (action.payload == null) return [];
+			return action.payload.cart || state;
+		case LOGOUT_USER:
+			return [];
 		case SET_CART:
 			return action.meta.cart;
 		case SET_CART_PREREQS:
@@ -161,6 +176,7 @@ function user(state = defaultUser, action) {
 		case LOGIN_USER:
 			const { meta, payload } = action;
 			localStorage.setItem(usernameKey, meta.username);
+			payload.username = meta.username;
 			return payload || defaultUser;
 		case LOGOUT_USER:
 			localStorage.removeItem(usernameKey);

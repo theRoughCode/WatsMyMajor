@@ -1,17 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 import TermBoard from './TermBoard';
 import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
+import { reorderUserCourses, reorderCart, unhighlightPrereqs } from '../../actions/index';
 
+const styles = {
+	board: {
+		width: '70%',
+	  height: '100%',
+	  display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+	  padding: '0 60px',
+	}
+}
 
-class CourseBoard extends Component {
+class CourseBoardContainer extends Component {
 
 	static propTypes = {
 		courseList: PropTypes.array,
 		cart: PropTypes.array.isRequired,
+		username: PropTypes.string.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired,
 		reorderCartHandler: PropTypes.func.isRequired,
 		deselectCourseHandler: PropTypes.func.isRequired,
@@ -27,6 +40,7 @@ class CourseBoard extends Component {
 		const {
 			courseList,
 			cart,
+			username,
 			updateCourseHandler,
 			reorderCartHandler,
 			deselectCourseHandler,
@@ -35,6 +49,7 @@ class CourseBoard extends Component {
 		this.state = {
 			courseList,
 			cart,
+			username,
 		};
 
 		this.onDragEnd = this.onDragEnd.bind(this);
@@ -56,6 +71,9 @@ class CourseBoard extends Component {
 		}
 		if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
 			this.setState({ cart: nextProps.cart });
+		}
+		if (nextProps.username !== this.state.username) {
+			this.setState({ username: nextProps.username });
 		}
 	}
 
@@ -98,10 +116,10 @@ class CourseBoard extends Component {
 				break;
 			case 'Trash': break;
 			default:
-				const { courseList } = this.state;
+				const { username, courseList } = this.state;
 				courseList[id].courses = board;
 				this.setState({ courseList });
-				this.updateCourseHandler(courseList);
+				this.updateCourseHandler(username, courseList);
 		}
 	}
 
@@ -125,17 +143,17 @@ class CourseBoard extends Component {
 	}
 
 	renameBoard(id, name) {
-		const { courseList } = this.state;
+		const { username, courseList } = this.state;
 		courseList[id].term = name;
 		this.setState({ courseList });
-		this.updateCourseHandler(courseList);
+		this.updateCourseHandler(username, courseList);
 	}
 
 	clearBoard(id) {
-		const { courseList } = this.state;
+		const { username, courseList } = this.state;
 		courseList[id].courses = [];
 		this.setState({ courseList });
-		this.updateCourseHandler(courseList);
+		this.updateCourseHandler(username, courseList);
 	}
 
 	clearCart() {
@@ -144,17 +162,26 @@ class CourseBoard extends Component {
 	}
 
 	addBoard(name) {
-		const { courseList } = this.state;
+		const { username, courseList } = this.state;
 		courseList.push({ term: name, courses: [] });
 		this.setState({ courseList });
-		this.updateCourseHandler(courseList);
+		this.updateCourseHandler(username, courseList);
+	}
+
+	loadCourses(id, newCourses) {
+		const { username, courseList } = this.state;
+		const courses = courseList[id].courses || [];
+		courseList[id].courses = courses.concat(newCourses);
+
+		this.setState({ courseList });
+		this.updateCourseHandler(username, courseList);
 	}
 
 	deleteBoard(id) {
-		const { courseList } = this.state;
+		const { username, courseList } = this.state;
 		courseList.splice(id, 1);
 		this.setState({ courseList });
-		this.updateCourseHandler(courseList);
+		this.updateCourseHandler(username, courseList);
 	}
 
 	renderTerms(courseList) {
@@ -167,6 +194,7 @@ class CourseBoard extends Component {
 				onClearBoard={ this.clearBoard.bind(this, index) }
 				onRenameBoard={ this.renameBoard.bind(this, index) }
 				onDeleteBoard={ this.deleteBoard.bind(this, index) }
+				onUpdateCourses={ this.loadCourses.bind(this, index) }
 			/>
 		));
 	};
@@ -175,7 +203,7 @@ class CourseBoard extends Component {
 		return (
 			<DragDropContext onDragEnd={this.onDragEnd}>
 				<div className="course-view">
-					<div className="course-board">
+					<div style={ styles.board }>
 						{ this.renderTerms() }
 					</div>
 					<MyCourseSideBar
@@ -189,4 +217,23 @@ class CourseBoard extends Component {
 	}
 }
 
-export default withRouter(CourseBoard);
+const mapStateToProps = ({ courseList, cart, user }) => {
+	const { username } = user;
+	return { courseList, cart, username };
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		updateCourseHandler: (username, courseList) => {
+			dispatch(reorderUserCourses(username, courseList));
+		},
+		reorderCartHandler: (username, cart) => {
+			dispatch(reorderCart(username, cart));
+		},
+		deselectCourseHandler: () => {
+			dispatch(unhighlightPrereqs());
+		}
+	};
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseBoardContainer));

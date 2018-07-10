@@ -18,7 +18,7 @@ import Dashboard from './components/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
-import MyCourseView from './components/mycourse/MyCourseContainer';
+import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import BrowseCourse from './components/courselist/BrowseCourse';
 import CourseListView from './components/courselist/CourseListContainer';
@@ -70,7 +70,7 @@ class App extends Component {
 			snackAutoHideDuration: 2000,
 			snackOpen: false,
 			snack,
-      isLoggedIn,
+      isLoggedIn: isLoggedIn || (cachedUsername != null),
     };
 
 		this.handleRequestClose = this.handleRequestClose.bind(this);

@@ -1,8 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import MyCourseContainer from './MyCourseContainer';
 import ParserInstructions from '../tools/ParserInstructions';
 
-const ParseCourses = () => {
+const ParseCourses = ({ onChange }) => {
   const stepContents = [
     {
       button: 'Log in to Quest',
@@ -22,9 +23,11 @@ const ParseCourses = () => {
     },
   ];
 
-  return (
-    <ParserInstructions stepContents={ stepContents } child={ <MyCourseContainer /> } />
-  );
+  return <ParserInstructions stepContents={ stepContents } onChange={onChange} />;
+};
+
+ParseCourses.propTypes = {
+  onChange: PropTypes.func.isRequired,
 };
 
 

@@ -9,7 +9,9 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import CourseCard from './CourseCard';
+import Parser from './ParseCourses';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { arrayOfObjectEquals } from '../../utils/arrays';
 import { DragTypes } from '../../constants/DragTypes';
 
 const space = 8;
@@ -114,6 +116,7 @@ export default class TermBoard extends Component {
 		courses: PropTypes.array,
 		isCart: PropTypes.bool,
 		onRenameBoard: PropTypes.func,
+		onUpdateCourses: PropTypes.func,
 		onDeleteBoard: PropTypes.func,
 		onClearBoard: PropTypes.func.isRequired,
 	};
@@ -127,23 +130,48 @@ export default class TermBoard extends Component {
 	};
 
 	state = {
-		dialogOpen: false,
+		renameDialogOpen: false,
+		loadDialogOpen: false,
 		settingsOpen: false,
-		rename: ''
+		rename: '',
+		loadText: ''
 	};
 
 	toggleSettings = (open) => this.setState({ settingsOpen: open });
 
-	openDialog = () => this.setState({ settingsOpen: false, dialogOpen: true });
+	openRenameDialog = () => this.setState({ settingsOpen: false, renameDialogOpen: true });
+	openLoadDialog = () => this.setState({ settingsOpen: false, loadDialogOpen: true });
 
-	closeDialog = () => this.setState({ rename: '', dialogOpen: false });
+	closeRenameDialog = () => this.setState({ rename: '', renameDialogOpen: false });
+	closeLoadDialog = () => this.setState({ rename: '', loadDialogOpen: false });
 
-	onChangeText = (e, text) => this.setState({ rename: text });
+	onChangeRenameText = (e, text) => this.setState({ rename: text });
+	onChangeLoadText = (text) => this.setState({ loadText: text });
 
-	onSubmit = () => {
+	onRename = () => {
 		const { rename } = this.state;
 		this.props.onRenameBoard(rename);
-		this.closeDialog();
+		this.closeRenameDialog();
+	}
+
+	onLoad = () => {
+		const { loadText } = this.state;
+		this.closeLoadDialog();
+
+		fetch('/parse/courses', {
+			method: 'POST',
+			body: JSON.stringify({ text: loadText }),
+			headers: {
+				'content-type': 'application/json'
+			}
+		}).then(response => {
+			if (!response.ok) throw new Error(`status ${response.status}`);
+			else return response.json();
+		}).then((termCourses) => {
+			this.setState({ loading: false });
+			const { courses } = termCourses;
+			this.props.onUpdateCourses(courses);
+		}).catch(err => alert(`Failed to parse your courses. Error: ${err.message}`));
 	}
 
 	clearBoard = () => {
@@ -159,16 +187,29 @@ export default class TermBoard extends Component {
 	render() {
 		const { index, boardHeader, courses, isCart } = this.props;
 
-		const dialogActions = [
+		const renameDialogActions = [
       <FlatButton
         label="Cancel"
         primary={true}
-        onClick={this.closeDialog}
+        onClick={this.closeRenameDialog}
       />,
       <FlatButton
         label="Submit"
         primary={true}
-        onClick={this.onSubmit}
+        onClick={this.onRename}
+      />,
+    ];
+
+		const loadDialogActions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onClick={this.closeLoadDialog}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        onClick={this.onLoad}
       />,
     ];
 
@@ -199,7 +240,8 @@ export default class TermBoard extends Component {
 									? <MenuItem primaryText="Clear Cart" onClick={this.clearBoard} />
 								: (
 										<div>
-											<MenuItem primaryText="Edit Name" onClick={this.openDialog} />
+											<MenuItem primaryText="Edit Name" onClick={this.openRenameDialog} />
+											<MenuItem primaryText="Load Courses" onClick={this.openLoadDialog} />
 											<MenuItem primaryText="Clear Term" onClick={this.clearBoard} />
 											<MenuItem primaryText="Delete Term" onClick={this.deleteBoard} />
 										</div>
@@ -226,17 +268,27 @@ export default class TermBoard extends Component {
 				</div>
 				<Dialog
           title="Rename Board"
-          actions={dialogActions}
+          actions={renameDialogActions}
           modal={false}
-          open={this.state.dialogOpen}
-          onRequestClose={this.closeDialog}
+          open={this.state.renameDialogOpen}
+          onRequestClose={this.closeRenameDialog}
 					contentStyle={{ width: 400 }}
         >
 					<TextField
 			      hintText="e.g. Fall 2018"
 			      floatingLabelText="New Board Name"
-						onChange={this.onChangeText}
+						onChange={this.onChangeRenameText}
 			    />
+        </Dialog>
+				<Dialog
+          title="Load Courses"
+          actions={loadDialogActions}
+          modal={false}
+          open={this.state.loadDialogOpen}
+          onRequestClose={this.closeLoadDialog}
+					contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
+        >
+					{ <Parser onChange={this.onChangeLoadText} /> }
         </Dialog>
 			</Paper>
 		);

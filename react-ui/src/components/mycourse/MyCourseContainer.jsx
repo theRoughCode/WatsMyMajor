@@ -46,8 +46,6 @@ class MyCourseContainer extends Component {
 		super(props);
 
 		this.state = {
-			loading: false,  //TODO: Change back to true
-			error: false,
 			username: props.username,
 			courseList: props.courseList,
 			cart: props.cart
@@ -56,11 +54,6 @@ class MyCourseContainer extends Component {
 		this.updateCourseHandler = props.updateCourseHandler;
 		this.reorderCartHandler = props.reorderCartHandler;
 		this.deselectCourseHandler = props.deselectCourseHandler;
-		this.getCourses = this.getCourses.bind(this);
-	}
-
-	componentDidMount() {
-	  // this.getCourses();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -76,52 +69,19 @@ class MyCourseContainer extends Component {
 		}
 	}
 
-	getCourses() {
-		return fetch('/parse/courses', {
-			method: 'POST',
-			body: JSON.stringify({
-				text: this.props.text
-			}),
-			headers: {
-	      'content-type': 'application/json'
-	    }
-		}).then(response => {
-			if (!response.ok) {
-				throw new Error(`status ${response.status}`);
-			}
-			return response.json();
-		}).then((termCourse) => {
-			this.setState({ loading: false });
-			const courseList = [...this.state.courseList, parseCourses(termCourse)];
-			this.updateCourseHandler(courseList);
-		}).catch(err => this.setState({ loading: false, error: err.message }));
-	}
-
 	render() {
-		const renderedView = (
+		return (
 			<div>
 				<CourseBoard
 					courseList={this.state.courseList}
 					cart={this.state.cart}
-					updateCourseHandler={this.updateCourseHandler.bind(this, this.state.username)}
-					reorderCartHandler={this.reorderCartHandler.bind(this, this.state.username)}
+					username={this.state.username}
+					updateCourseHandler={this.updateCourseHandler}
+					reorderCartHandler={this.reorderCartHandler}
 					deselectCourseHandler={this.deselectCourseHandler}
 				/>
 			</div>
 		);
-
-		if (this.state.loading) {
-			return <LoadingView />;
-		} else if (this.state.error) {
-			return (
-				<ErrorView
-					msgHeader={`Oops!  We encountered an error trying to fetch ${this.state.subject} ${this.state.catalogNumber}.`}
-					msgBody={`Error message: ${this.state.error}`}
-				/>
-			);
-		} else {
-			return renderedView;
-		}
 	}
 
 }

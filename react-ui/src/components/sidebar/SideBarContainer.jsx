@@ -3,17 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import SideBar from './SideBar';
 
-const SideBarContainer = ({ user, open }) => (
-  <SideBar username={ user.name } open={ open } />
+const SideBarContainer = ({ name, isLoggedIn, open }) => (
+  <SideBar name={ name } isLoggedIn={ isLoggedIn } open={ open } />
 );
 
 SideBarContainer.propTypes = {
-  user: PropTypes.object.isRequired,
+  name: PropTypes.string.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
   open: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = ({ user }) => {
-  return { user };
+const mapStateToProps = ({ isLoggedIn, user }) => {
+  const { name } = user;
+  return { isLoggedIn, name };
 };
 
 export default connect(mapStateToProps, null)(SideBarContainer);
