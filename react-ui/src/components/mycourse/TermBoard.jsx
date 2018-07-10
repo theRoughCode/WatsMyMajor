@@ -131,22 +131,22 @@ export default class TermBoard extends Component {
 
 	state = {
 		renameDialogOpen: false,
-		loadDialogOpen: false,
+		importDialogOpen: false,
 		settingsOpen: false,
 		rename: '',
-		loadText: ''
+		importText: ''
 	};
 
 	toggleSettings = (open) => this.setState({ settingsOpen: open });
 
 	openRenameDialog = () => this.setState({ settingsOpen: false, renameDialogOpen: true });
-	openLoadDialog = () => this.setState({ settingsOpen: false, loadDialogOpen: true });
+	openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
 
 	closeRenameDialog = () => this.setState({ rename: '', renameDialogOpen: false });
-	closeLoadDialog = () => this.setState({ rename: '', loadDialogOpen: false });
+	closeImportDialog = () => this.setState({ rename: '', importDialogOpen: false });
 
 	onChangeRenameText = (e, text) => this.setState({ rename: text });
-	onChangeLoadText = (text) => this.setState({ loadText: text });
+	onChangeImportText = (text) => this.setState({ importText: text });
 
 	onRename = () => {
 		const { rename } = this.state;
@@ -154,13 +154,13 @@ export default class TermBoard extends Component {
 		this.closeRenameDialog();
 	}
 
-	onLoad = () => {
-		const { loadText } = this.state;
-		this.closeLoadDialog();
+	onImport = () => {
+		const { importText } = this.state;
+		this.closeImportDialog();
 
 		fetch('/parse/courses', {
 			method: 'POST',
-			body: JSON.stringify({ text: loadText }),
+			body: JSON.stringify({ text: importText }),
 			headers: {
 				'content-type': 'application/json'
 			}
@@ -168,7 +168,7 @@ export default class TermBoard extends Component {
 			if (!response.ok) throw new Error(`status ${response.status}`);
 			else return response.json();
 		}).then((termCourses) => {
-			this.setState({ loading: false });
+			this.setState({ importing: false });
 			const { courses } = termCourses;
 			this.props.onUpdateCourses(courses);
 		}).catch(err => alert(`Failed to parse your courses. Error: ${err.message}`));
@@ -200,16 +200,16 @@ export default class TermBoard extends Component {
       />,
     ];
 
-		const loadDialogActions = [
+		const importDialogActions = [
       <FlatButton
         label="Cancel"
         primary={true}
-        onClick={this.closeLoadDialog}
+        onClick={this.closeImportDialog}
       />,
       <FlatButton
         label="Submit"
         primary={true}
-        onClick={this.onLoad}
+        onClick={this.onImport}
       />,
     ];
 
@@ -241,7 +241,7 @@ export default class TermBoard extends Component {
 								: (
 										<div>
 											<MenuItem primaryText="Edit Name" onClick={this.openRenameDialog} />
-											<MenuItem primaryText="Load Courses" onClick={this.openLoadDialog} />
+											<MenuItem primaryText="Import Courses" onClick={this.openImportDialog} />
 											<MenuItem primaryText="Clear Term" onClick={this.clearBoard} />
 											<MenuItem primaryText="Delete Term" onClick={this.deleteBoard} />
 										</div>
@@ -281,14 +281,14 @@ export default class TermBoard extends Component {
 			    />
         </Dialog>
 				<Dialog
-          title="Load Courses"
-          actions={loadDialogActions}
+          title="Import Courses"
+          actions={importDialogActions}
           modal={false}
-          open={this.state.loadDialogOpen}
-          onRequestClose={this.closeLoadDialog}
+          open={this.state.importDialogOpen}
+          onRequestClose={this.closeImportDialog}
 					contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
         >
-					{ <Parser onChange={this.onChangeLoadText} /> }
+					{ <Parser onChange={this.onChangeImportText} /> }
         </Dialog>
 			</Paper>
 		);
