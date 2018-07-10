@@ -172,9 +172,13 @@ function user(state = defaultUser, action) {
 
 function isLoggedIn(state = false, action) {
 	switch (action.type) {
-		case SET_USER: case LOGIN_USER: return true;
-		case LOGOUT_USER: return false;
-		default: return state;
+		case SET_USER:
+		case LOGIN_USER:
+			return true;
+		case LOGOUT_USER:
+			return false;
+		default:
+			return state;
 	}
 }
 

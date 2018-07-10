@@ -116,6 +116,13 @@ class App extends Component {
     );
   }
 
+  // Redirects to dashboard if logged in
+  addUndirect(Component) {
+    return (props) => (
+      (this.state.isLoggedIn) ? <Redirect to="/" /> : <Component {...props} />
+    );
+  }
+
   render() {
     const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
 		const transition = (this.state.sideBarOpen)
@@ -135,8 +142,8 @@ class App extends Component {
           <div style={styles}>
     				<Switch>
               <Route exact path='/' render={ this.addRedirect(Dashboard) } />
-              <Route exact path='/register' component={ Register } />
-    					<Route exact path='/login' component={ Login } />
+              <Route exact path='/register' render={ this.addUndirect(Register) } />
+    					<Route exact path='/login' render={ this.addUndirect(Login) } />
               <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
               <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
     					<Route exact path='/courses' render={ this.addRedirect(BrowseCourse) } />
