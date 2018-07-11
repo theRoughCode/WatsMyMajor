@@ -2,6 +2,11 @@ const async = require('async');
 const bcrypt = require('bcrypt');
 const { usersRef } = require('./index');
 
+const ERROR_USERNAME_EXISTS = 100;
+const ERROR_USERNAME_NOT_FOUND = 101;
+const ERROR_WRONG_PASSWORD = 105;
+const ERROR_SERVER_ERROR = 400;
+
 /****************************
  *													*
  *			   A U T H 			    *
@@ -11,10 +16,16 @@ const { usersRef } = require('./index');
 const saltRounds = 10;
 const BYPASS = process.env.AUTH_BYPASS;
 
-function createUser(username, email, name, password, callback) {
+async function createUser(username, email, name, password, callback) {
+  const isDuplicate = await userExists(username);
+
+  if (isDuplicate) {
+    callback({ code: ERROR_USERNAME_EXISTS, message: 'Username already exists' });
+    return;
+  }
   bcrypt.hash(password, saltRounds, function(err, hash) {
     if (err) {
-      callback(err);
+      callback({ code: ERROR_SERVER_ERROR, message: err.message });
       return;
     }
     setUser(username, {
@@ -33,13 +44,13 @@ function verifyUser(username, password, callback) {
     }
 
     if (user == null) {
-      callback('User not found', null);
+      callback({ code: ERROR_USERNAME_NOT_FOUND, message: 'Username not found' }, null);
       return;
     }
 
     bcrypt.compare(password, user.password, function(err, res) {
-      if (err) callback(err, null);
-      else if (!res) callback('Wrong password', null);
+      if (err) callback({ code: ERROR_SERVER_ERROR, message: err.message }, null);
+      else if (!res) callback({ code: ERROR_WRONG_PASSWORD, message: 'Wrong password'}, null);
       else callback(null, user);
     });
   });
@@ -135,12 +146,18 @@ function setField(userId, field, data, callback) {
  *													*
  ****************************/
 
-function getUser(username, callback) {
-  usersRef
-    .child(username)
-		.once('value')
-    .then(snapshot => callback(null, snapshot.val()))
-    .catch(err => callback(err, null));
+async function getUser(username, callback) {
+  try {
+    const snapshot = await usersRef.child(username).once('value')
+    callback(null, snapshot.val());
+  } catch (err) {
+    callback(err, null)
+  }
+}
+
+async function userExists(username) {
+  const snapshot = await usersRef.child(username).once('value')
+  return snapshot.exists();
 }
 
 

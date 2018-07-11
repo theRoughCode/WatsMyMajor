@@ -22,7 +22,7 @@ UsersRouter.post('/auth/create', function(req, res) {
 	users.createUser(username, email, name, password, (err, user) => {
 		if (err) {
 			console.log(err);
-			res.status(400).send(err);
+			res.status(400).json(err);
 		} else res.json({ username, email, name });
 	});
 });

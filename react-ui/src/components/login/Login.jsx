@@ -76,7 +76,11 @@ class Login extends Component {
     this.onLogin = this.onLogin.bind(this);
   }
 
-  onLogin(ev) {
+  removeErrors() {
+    this.setState({ usernameError: '', passwordError: '' });
+  }
+
+  async onLogin(ev) {
     ev.preventDefault();
     const username = this.refs.username.getValue();
     const password = this.refs.password.getValue();
@@ -91,25 +95,43 @@ class Login extends Component {
       return;
     }
 
-    fetch('/users/auth/login', {
-			method: 'POST',
-			body: JSON.stringify({
-				username,
-        password
-			}),
-			headers: {
-	      'content-type': 'application/json'
-	    }
-		})
-      .then(response => {
-  			if (!response.ok) throw new Error(`status ${response.status}`);
-  			return response.json();
-  		})
-      .then(user => {
+    try {
+      const response = await fetch('/users/auth/login', {
+  			method: 'POST',
+  			body: JSON.stringify({
+  				username,
+          password
+  			}),
+  			headers: {
+  	      'content-type': 'application/json'
+  	    }
+  		});
+      if (!response.ok) {
+        const { code } = await response.json();
+        const ERROR_USERNAME_NOT_FOUND = 101;
+        const ERROR_WRONG_PASSWORD = 105;
+        const ERROR_SERVER_ERROR = 400;
+
+        switch (code) {
+          case ERROR_USERNAME_NOT_FOUND:
+            this.setState({ usernameError: 'Username not found' });
+            return;
+          case ERROR_WRONG_PASSWORD:
+            this.setState({ passwordError: 'Wrong password' });
+            return;
+          case ERROR_SERVER_ERROR:
+            alert('Failed to create account. Please contact an administrator.');
+            return;
+        }
+      } else {
+        const user = await response.json();
         this.props.onSetUser(username, user);
         this.props.history.push("/");
-      })
-      .catch(() => alert('Incorrect username/password'));
+      }
+    } catch (err) {
+      alert('Failed to create account. Please contact an administrator.');
+      console.error(err);
+    }
   }
 
   render() {

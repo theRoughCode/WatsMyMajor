@@ -56,7 +56,40 @@ const styles = {
   },
   footer: {
     marginTop: 40,
+    marginBottom: 20,
   }
+};
+
+const missingFieldError = 'This field is required';
+const tooShortError = (number) => `Must be at least ${number} characters long`;
+const noWhitespace = 'Must not have white space';
+const waterlooEmail = 'Has to be a UWaterloo email address';
+const wrongKey = 'Invalid beta key';
+const validateFields = ({ username, name, email, password, key }) => {
+  const errors = {};
+
+  // validate username
+  if (!username) errors.usernameError = missingFieldError;
+  else if (username.length < 6) errors.usernameError = tooShortError(6);
+  else if (/\s/g.test(username)) errors.usernameError = noWhitespace;
+
+  // Validate name
+  if (!name) errors.nameError = missingFieldError;
+
+  // Validate email
+  if (!email) errors.emailError = missingFieldError;
+  else if (!(/.+@(edu.)?uwaterloo.ca/g.test(email))) errors.emailError = waterlooEmail;
+
+  // Va;idate password
+  if (!password) errors.passwordError = missingFieldError;
+  else if (password.length < 6) errors.passwordError = tooShortError(6);
+  else if (/\s/g.test(password)) errors.passwordError = noWhitespace;
+
+  // Validate key
+  if (!key) errors.keyError = missingFieldError;
+  else if (key !== 'MRGOOSE') errors.keyError = wrongKey;
+
+  return errors;
 };
 
 class Register extends Component {
@@ -81,19 +114,16 @@ class Register extends Component {
   }
 
   removeErrors() {
-    const { usernameError, nameError, emailError, passwordError } = this.state;
-    if (usernameError || nameError || emailError || passwordError) {
-      this.setState({
-        usernameError: '',
-        nameError: '',
-        emailError: '',
-        passwordError: '',
-        keyError: '',
-      });
-    }
+    this.setState({
+      usernameError: '',
+      nameError: '',
+      emailError: '',
+      passwordError: '',
+      keyError: '',
+    });
   }
 
-  onRegister(ev) {
+  async onRegister(ev) {
     ev.preventDefault();
     const username = this.refs.username.getValue();
     const name = this.refs.name.getValue();
@@ -101,46 +131,48 @@ class Register extends Component {
     const password = this.refs.password.getValue();
     const key = this.refs.key.getValue();
 
-    if (!username || !name || !email || !password || !key) {
-      const errMessage = 'This field is required';
-      const errors = {}
-      if (!username) errors.usernameError = errMessage;
-      if (!name) errors.nameError = errMessage;
-      if (!email) errors.emailError = errMessage;
-      if (!password) errors.passwordError = errMessage;
-      if (!key) errors.keyError = errMessage;
-
+    const errors = validateFields({ username, name, email, password, key });
+    if (Object.keys(errors).length > 0) {
       this.setState(errors);
       return;
     }
 
-    if (key !== 'MRGOOSE') {
-      this.setState({ keyError: 'Invalid beta key.' });
-      return;
-    }
+    try {
+      const response = await fetch('/users/auth/create', {
+        method: 'POST',
+  			body: JSON.stringify({
+  				username,
+          name,
+          email,
+          password,
+  			}),
+  			headers: {
+  	      'content-type': 'application/json'
+  	    }
+  		});
 
-    fetch('/users/auth/create', {
-			method: 'POST',
-			body: JSON.stringify({
-				username,
-        name,
-        email,
-        password,
-			}),
-			headers: {
-	      'content-type': 'application/json'
-	    }
-		})
-      .then(response => {
-        console.log(response)
-  			if (!response.ok) throw new Error(`status ${response.status}`);
-  			else return response.json();
-  		})
-      .then(user => {
+      if (!response.ok) {
+        const { code } = await response.json();
+        const ERROR_USERNAME_EXISTS = 100;
+        const ERROR_SERVER_ERROR = 400;
+
+        switch (code) {
+          case ERROR_USERNAME_EXISTS:
+            this.setState({ usernameError: 'Username already exists' });
+            return;
+          case ERROR_SERVER_ERROR:
+            alert('Failed to create account. Please contact an administrator.');
+            return;
+        }
+      } else {
+        const user = await response.json();
         this.props.onSetUser(username, user);
         this.props.history.push("/");
-      })
-      .catch(() => alert('Failed to create account. Please contact an administrator.'));
+      }
+    } catch (err) {
+      alert('Failed to create account. Please contact an administrator.');
+      console.error(err);
+    }
   }
 
   render() {
