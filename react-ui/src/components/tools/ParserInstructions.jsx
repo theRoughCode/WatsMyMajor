@@ -32,33 +32,28 @@ export default class ParserInstructions extends Component {
     this.state = {
       text: '',
       stepIndex: 0,
+      maxIndex: props.stepContents.length + 1,
       stepContents: props.stepContents
     };
 
     this.handleNext = this.handleNext.bind(this);
     this.handlePrev = this.handlePrev.bind(this);
     this.handleChange = this.handleChange.bind(this);
+  }
 
+  componentDidMount() {
     // Add parser box
-    this.state.stepContents.push({
+    const stepContents = this.props.stepContents.concat([{
       button: 'Submit for parsing',
-      text: (
-        <div className="instructions-form">
-          <p>Paste your copied text below:</p>
-          <form>
-            <textarea rows="4" cols="100" type="text" onChange={ this.handleChange } />
-          </form>
-        </div>
-      )
-    });
+    }]);
+
+    this.setState({ stepContents });
   }
 
   handleNext() {
     const { stepIndex } = this.state;
     if (stepIndex < this.state.stepContents.length - 1) {
       this.setState({ stepIndex: stepIndex + 1 });
-    } else {
-      this.setState({ submitted: true });
     }
   };
 
@@ -70,11 +65,30 @@ export default class ParserInstructions extends Component {
   };
 
   getStepContent(stepIndex) {
-    return this.state.stepContents[stepIndex].text;
+    if (stepIndex < this.state.maxIndex - 1) {
+      return this.state.stepContents[stepIndex].text;
+    } else {
+      return (
+        <div className="instructions-form">
+          <p>Paste your copied text below:</p>
+          <form>
+            <textarea
+              rows="4"
+              cols="100"
+              type="text"
+              value={ this.state.text }
+              onChange={ this.handleChange }
+            />
+          </form>
+        </div>
+      );
+    }
   }
 
   handleChange(e) {
-    this.props.onChange(e.target.value);
+    const text = e.target.value;
+    this.props.onChange(text);
+    this.setState({ text });
   }
 
   render() {

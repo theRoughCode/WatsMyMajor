@@ -1,39 +1,27 @@
 import React, { Component } from 'react';
-import RaisedButton from 'material-ui/RaisedButton';
-import logo from '../logo.svg';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
+const Dashboard = ({ name }) => (
+	<div>
+		<div className="App-header">
+			<img src="images/logo.png" className="App-logo" alt="logo" />
+			<h2>Welcome to WatsMyMajor, { name }!</h2>
+		</div>
+		<p className="App-intro">
+			{"Congrats, you are one of our beta access users!"}<br />
+			{"If you find a bug, you can let me know or submit an issue "}
+			<a href="https://github.com/theRoughCode/watsmymajorbeta/issues">
+				here
+			</a>!<br/>
+		</p>
+	</div>
+);
 
-export default class Dashboard extends Component {
+Dashboard.propTypes = {
+	name: PropTypes.string.isRequired,
+};
 
-	constructor(props) {
-		super(props);
+const mapStateToProps = ({ user }) => ({ name: user.name });
 
-		this.state = {
-
-		};
-	}
-
-	render() {
-		return (
-			<div>
-				<div className="App-header">
-					<img src={logo} className="App-logo" alt="logo" />
-					<h2>Welcome to React</h2>
-				</div>
-				<p className="App-intro">
-					{'This is '}
-					<a href="https://github.com/mars/heroku-cra-node">
-						{'create-react-app with a custom Node/Express server'}
-					</a><br/>
-				</p>
-				<RaisedButton label="Default" />
-				<p className="App-intro">
-					{this.state.fetching
-						? 'Fetching message from API'
-						: this.state.message}
-				</p>
-			</div>
-		);
-	}
-
-}
+export default connect(mapStateToProps, null)(Dashboard);
