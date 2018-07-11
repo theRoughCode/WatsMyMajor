@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import MyCourseContainer from './MyCourseContainer';
 import ParserInstructions from '../tools/ParserInstructions';
 
 const ParseCourses = ({ onChange }) => {

@@ -92,7 +92,7 @@ export default class ParserInstructions extends Component {
   }
 
   render() {
-    const { stepIndex, text, stepContents } = this.state;
+    const { stepIndex, stepContents } = this.state;
 
     return (
       <div className="instructions">

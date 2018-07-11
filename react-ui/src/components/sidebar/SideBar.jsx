@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import { List, ListItem } from 'material-ui/List';
@@ -22,59 +22,95 @@ const styles = {
 		paddingTop: '20px',
 		paddingBottom: '5px',
 		backgroundColor: 'rgb(54, 65, 80)'
+	},
+	listItem: (isSelected) => {
+		if (isSelected) return { backgroundColor: 'rgba(0, 0, 0, 0.1)' };
+		else return {};
 	}
 }
 
-const SideBar = ({ name, isLoggedIn, open }) => (
-	<Drawer open={ open } style={ styles.drawer }>
-		<MenuItem
-			style={ styles.avatarMenuItem }
-			>
-			{ isLoggedIn && <Avatar name={ name } /> }
-		</MenuItem>
-		<List>
-			<ListItem
-				primaryText="Dashboard"
-				leftIcon={<DashboardIcon />}
-				containerElement={ <Link to="/" /> }
-			/>
-			<ListItem
-				primaryText="Courses"
-				leftIcon={<SchoolIcon />}
-				initiallyOpen={false}
-				primaryTogglesNestedList={true}
-				nestedItems={[
+class SideBar extends Component {
+	static propTypes = {
+		name: PropTypes.string.isRequired,
+		isLoggedIn: PropTypes.bool.isRequired,
+		open: PropTypes.bool.isRequired,
+		location: PropTypes.object.isRequired, // router
+	};
+
+	state = {
+		pathname: this.props.location.pathname
+	};
+
+	componentWillReceiveProps(nextProps) {
+	  if (nextProps.location.pathname !== this.state.pathname) {
+			this.setState({ pathname: nextProps.location.pathname });
+		}
+	}
+
+	// TODO: Figure out a better way.  Maybe check why location.pathname is not
+	// being updated when clicking on listitem
+	handleClick(pathname) {
+		this.setState({ pathname });
+	}
+
+	render() {
+		const { name, isLoggedIn, open } = this.props;
+		const { pathname } = this.state;
+
+		return (
+			<Drawer open={ open } style={ styles.drawer }>
+				<MenuItem
+					style={ styles.avatarMenuItem }
+					>
+					{ isLoggedIn && <Avatar name={ name } /> }
+				</MenuItem>
+				<List>
 					<ListItem
-						className="sidebar-courses"
-						key={1}
-						primaryText="My Courses"
-						containerElement={ <Link to="/my-courses" /> }
-						leftIcon={<MyCoursesIcon />}
-					/>,
-					<ListItem
-						className="sidebar-courses"
-						key={2}
-						primaryText="My Schedule"
-						containerElement={ <Link to="/schedule" /> }
-						leftIcon={<ScheduleIcon />}
-					/>,
-					<ListItem
-						className="sidebar-courses"
-						key={3}
-						primaryText="Browse Courses"
-						containerElement={ <Link to="/courses" /> }
-						leftIcon={<BrowseIcon />}
+						primaryText="Dashboard"
+						leftIcon={<DashboardIcon />}
+						style={ styles.listItem(pathname === "/") }
+						onClick={ this.handleClick.bind(this, "/") }
+						containerElement={ <Link to="/" /> }
 					/>
-				]}
-			/>
-		</List>
-	</Drawer>
-);
+					<ListItem
+						primaryText="Courses"
+						leftIcon={<SchoolIcon />}
+						initiallyOpen={false}
+						primaryTogglesNestedList={true}
+						nestedItems={[
+							<ListItem
+								className="sidebar-courses"
+								key={1}
+								primaryText="My Courses"
+								style={ styles.listItem(pathname === "/my-courses") }
+								onClick={ this.handleClick.bind(this, "/my-courses") }
+								containerElement={ <Link to="/my-courses" /> }
+								leftIcon={<MyCoursesIcon />}
+							/>,
+							<ListItem
+								className="sidebar-courses"
+								key={2}
+								primaryText="My Schedule"
+								style={ styles.listItem(pathname === "/schedule") }
+								onClick={ this.handleClick.bind(this, "/schedule") }
+								containerElement={ <Link to="/schedule" /> }
+								leftIcon={<ScheduleIcon />}
+							/>,
+							<ListItem
+								className="sidebar-courses"
+								key={3}
+								primaryText="Browse Courses"
+								style={ styles.listItem(pathname === "/courses") }
+								onClick={ this.handleClick.bind(this, "/courses") }
+								containerElement={ <Link to="/courses" /> }
+								leftIcon={<BrowseIcon />}
+							/>
+						]}
+					/>
+				</List>
+			</Drawer>
+		);
+	}
+}
 
-SideBar.propTypes = {
-	name: PropTypes.string.isRequired,
-	isLoggedIn: PropTypes.bool.isRequired,
-	open: PropTypes.bool.isRequired
-};
-
-export default SideBar;
+export default withRouter(SideBar);

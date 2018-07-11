@@ -1,6 +1,7 @@
 /* Course View */
 .course-view {
   width: 100%;
+  height: 95%;
   display: flex;
   padding-top: 20px;
 }

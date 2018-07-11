@@ -16,6 +16,13 @@ const styles = {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 	  padding: '0 60px',
+	},
+	noItems: {
+		width: '90%',
+		height: '90%',
+		margin: 'auto',
+		border: '2px dashed black',
+		borderRadius: 20,
 	}
 }
 
@@ -190,7 +197,13 @@ class CourseBoardContainer extends Component {
 	}
 
 	renderTerms(courseList) {
-		return this.state.courseList.map(({ term, courses }, index) => (
+		if (courseList.length === 0) {
+			return (
+				<div style={ styles.noItems }></div>
+			);
+		}
+
+		return courseList.map(({ term, courses }, index) => (
 			<TermBoard
 				key={ index }
 				index={ index.toString() }
@@ -209,7 +222,7 @@ class CourseBoardContainer extends Component {
 			<DragDropContext onDragEnd={this.onDragEnd}>
 				<div className="course-view">
 					<div style={ styles.board }>
-						{ this.renderTerms() }
+						{ this.renderTerms(this.state.courseList) }
 					</div>
 					<MyCourseSideBar
 						cartCourses={ this.state.cart }

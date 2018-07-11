@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
@@ -10,7 +9,6 @@ import {
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
 import { toggleSideBar, createSnack, loginUser, logoutUser } from './actions/index';
-import { objectEquals } from './actions/index';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
@@ -131,39 +129,36 @@ class App extends Component {
 		styles = Object.assign({}, styles, { marginLeft, transition });
 
     return (
-			<Router>
-				<div className="App">
-					<AppBar
-            toggleSideBar={this.onToggleSideBar}
-            onLogout={this.onLogout}
-            isLoggedIn={this.state.isLoggedIn}
-          />
-					<SideBar open={this.state.sideBarOpen} />
-          <div style={styles}>
-    				<Switch>
-              <Route exact path='/' render={ this.addRedirect(Dashboard) } />
-              <Route exact path='/register' render={ this.addUndirect(Register) } />
-    					<Route exact path='/login' render={ this.addUndirect(Login) } />
-              <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
-              <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
-    					<Route exact path='/courses' render={ this.addRedirect(BrowseCourse) } />
-              <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
-    					<Route path='/tree/prereqs/:subject/:catalogNumber' render={ this.addRedirect(PrereqsTree) } />
-    				</Switch>
-    			</div>
-					<Snackbar
-						open={this.state.snackOpen}
-						message={this.state.snack.msg}
-						action={this.state.snack.actionMsg}
-						autoHideDuration={this.state.snackAutoHideDuration}
-						onActionClick={this.handleActionClick}
-						onRequestClose={this.handleRequestClose}
-					/>
-				</div>
-			</Router>
+			<div className="App">
+				<AppBar
+          toggleSideBar={this.onToggleSideBar}
+          onLogout={this.onLogout}
+          isLoggedIn={this.state.isLoggedIn}
+        />
+				<SideBar open={this.state.sideBarOpen} />
+        <div style={styles}>
+  				<Switch>
+            <Route exact path='/' render={ this.addRedirect(Dashboard) } />
+            <Route exact path='/register' render={ this.addUndirect(Register) } />
+  					<Route exact path='/login' render={ this.addUndirect(Login) } />
+            <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
+            <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
+  					<Route exact path='/courses' render={ this.addRedirect(BrowseCourse) } />
+            <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
+  					<Route path='/tree/prereqs/:subject/:catalogNumber' render={ this.addRedirect(PrereqsTree) } />
+  				</Switch>
+  			</div>
+				<Snackbar
+					open={this.state.snackOpen}
+					message={this.state.snack.msg}
+					action={this.state.snack.actionMsg}
+					autoHideDuration={this.state.snackAutoHideDuration}
+					onActionClick={this.handleActionClick}
+					onRequestClose={this.handleRequestClose}
+				/>
+			</div>
     );
   }
-
 }
 
 const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn }) => {
