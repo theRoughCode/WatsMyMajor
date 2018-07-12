@@ -8,7 +8,7 @@ import logger from 'redux-logger'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './App';
 import './stylesheets/index.css';
-import reducers from './reducers/index';
+import reducers from './reducers';
 
 const store = createStore(
 	reducers,

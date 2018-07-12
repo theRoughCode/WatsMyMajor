@@ -6,7 +6,7 @@ import TermBoard from './TermBoard';
 import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
-import { reorderUserCourses, reorderCart, unhighlightPrereqs } from '../../actions/index';
+import { reorderUserCourses, reorderCart, unhighlightPrereqs } from '../../actions';
 
 const styles = {
 	board: {

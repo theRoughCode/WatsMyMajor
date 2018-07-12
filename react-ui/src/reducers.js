@@ -5,6 +5,7 @@ import {
 	LOGIN_USER,
 	LOGOUT_USER,
 	SET_EXPANDED_COURSE,
+	REMOVE_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
 	UPDATE_USER_COURSES_PREREQS,
@@ -12,9 +13,19 @@ import {
 	SET_CART_PREREQS,
 	HIGHLIGHT_PREREQS,
 	UNHIGHLIGHT_PREREQS,
-} from '../actions/index';
+} from './actions';
 
-function expandedCourse(state={}, action) {
+const defaultExpandedCourse = {
+	instructor: '',
+	attending: '',
+	enrollmentCap: '',
+	reserved: '',
+	reservedCap: '',
+	classNumber: '',
+	lastUpdated: '',
+	index: -1,
+};
+function expandedCourse(state=defaultExpandedCourse, action) {
 	switch(action.type) {
 		case SET_EXPANDED_COURSE:
 			let {
@@ -28,16 +39,7 @@ function expandedCourse(state={}, action) {
 				index
 			} = action;
 
-			if (state.selectedClassIndex === index) {
-				instructor = '';
-				attending = '';
-				enrollmentCap = '';
-				reserved = '';
-				reservedCap = '';
-				classNumber = '';
-				lastUpdated = '';
-				index = -1;
-			}
+			if (state.selectedClassIndex === index) return defaultExpandedCourse;
 
 			return {
 				instructor,
@@ -49,6 +51,8 @@ function expandedCourse(state={}, action) {
 				lastUpdated,
 				selectedClassIndex: index
 			};
+		case REMOVE_EXPANDED_COURSE:
+			return defaultExpandedCourse;
 		default:
 			return state;
 	}

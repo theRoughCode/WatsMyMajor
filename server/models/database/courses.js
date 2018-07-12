@@ -60,7 +60,7 @@ function getSearchResults(query, num, callback) {
  			const filteredMatches = Object.keys(matches[matchSubject])
  				.filter(key =>
  					!catalogNumber ||
- 					String(key).includes(String(catalogNumber))
+ 					String(key).toLowerCase().includes(String(catalogNumber).toLowerCase())
  				)
  				.reduce((matchArr, matchCatNum) => {
  					if (matchArr.length >= num) return matchArr;

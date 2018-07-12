@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { setUser } from '../../actions/index';
+import { setUser } from '../../actions';
 
 const styles = {
   viewContainer: {

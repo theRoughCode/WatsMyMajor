@@ -14,8 +14,9 @@ import {
 	setExpandedCourse,
 	createSnack,
 	addToCart,
-	removeFromCart
-} from '../../actions/index';
+	removeFromCart,
+	removeExpandedCourse
+} from '../../actions';
 
 
 const getCourseData = (subject, catalogNumber) => {
@@ -42,6 +43,7 @@ class CourseListContainer extends Component {
 		lastUpdated: PropTypes.string,
 		selectedClassIndex: PropTypes.number,
 		expandCourseHandler: PropTypes.func.isRequired,
+		removeExpandedCourseHandler: PropTypes.func.isRequired,
 		addToCartHandler: PropTypes.func.isRequired,
 		removeFromCartHandler: PropTypes.func.isRequired
 	};
@@ -70,6 +72,7 @@ class CourseListContainer extends Component {
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
+			selectedClassIndex: props.selectedClassIndex,
 			course: {
 				title: '',
 				rating: 0,
@@ -93,7 +96,6 @@ class CourseListContainer extends Component {
 			},
 		}
 
-		this.selectedClassIndex = props.selectedClassIndex;
 		this.expandCourseHandler = props.expandCourseHandler;
 		this.updatePageInfo = this.updatePageInfo.bind(this);
 		this.selectCourse = this.selectCourse.bind(this);
@@ -201,6 +203,7 @@ class CourseListContainer extends Component {
 
 	selectCourse(subject, catalogNumber) {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+		this.props.removeExpandedCourseHandler();
 	}
 
 	addCourseToCart(subject, catalogNumber) {
@@ -218,7 +221,7 @@ class CourseListContainer extends Component {
 		const renderedView = (
 			<div className="course-view">
 				<CourseContent
-					selectedClassIndex={this.selectedClassIndex}
+					selectedClassIndex={this.state.selectedClassIndex}
 					selectCourse={this.selectCourse}
 					expandCourse={this.expandCourseHandler}
 					subject={this.state.subject}
@@ -287,6 +290,7 @@ const mapDispatchToProps = dispatch => {
 		expandCourseHandler: (courseObj, index) => {
 			dispatch(setExpandedCourse(courseObj, index));
 		},
+		removeExpandedCourseHandler: () => dispatch(removeExpandedCourse()),
 		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken) => {
 			if (hasTaken) {
 				const msg = `${subject} ${catalogNumber} is already in your courses.`;

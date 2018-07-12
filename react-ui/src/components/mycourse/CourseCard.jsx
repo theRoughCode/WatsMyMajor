@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
-import { highlightPrereqs } from '../../actions/index';
+import { highlightPrereqs } from '../../actions';
 
 const isInPrereqs = (subject, catalogNumber, prereqs) => {
 	for (var i = 0; i < prereqs.length; i++) {

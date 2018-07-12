@@ -30,3 +30,4 @@ Important:
 - Course templates based on interest/major
 - Cache rmp requests
 - Separate server and app
+- Fix schedule parser (MM/DD/YYYY)

@@ -9,6 +9,7 @@ export const SET_USER = 'SET_USER';
 export const LOGIN_USER = 'LOGIN_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
+export const REMOVE_EXPANDED_COURSE = 'REMOVE_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
@@ -62,6 +63,8 @@ export const setExpandedCourse = (courseObj, index) => {
 		lastUpdated: last_updated
 	};
 }
+
+export const removeExpandedCourse = () => ({ type: REMOVE_EXPANDED_COURSE });
 
 export const createSnack = (
 	msg,

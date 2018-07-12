@@ -8,7 +8,7 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { toggleSideBar, createSnack, loginUser, logoutUser } from './actions/index';
+import { toggleSideBar, createSnack, loginUser, logoutUser } from './actions';
 import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';

@@ -41,16 +41,12 @@ class SideBar extends Component {
 		pathname: this.props.location.pathname
 	};
 
-	componentWillReceiveProps(nextProps) {
-	  if (nextProps.location.pathname !== this.state.pathname) {
-			this.setState({ pathname: nextProps.location.pathname });
-		}
-	}
-
-	// TODO: Figure out a better way.  Maybe check why location.pathname is not
-	// being updated when clicking on listitem
-	handleClick(pathname) {
-		this.setState({ pathname });
+	componentDidMount() {
+		this.props.history.listen(location => {
+		  if (location.pathname !== this.state.pathname) {
+				this.setState({ pathname: location.pathname });
+		  }
+		});
 	}
 
 	render() {
@@ -69,7 +65,6 @@ class SideBar extends Component {
 						primaryText="Dashboard"
 						leftIcon={<DashboardIcon />}
 						style={ styles.listItem(pathname === "/") }
-						onClick={ this.handleClick.bind(this, "/") }
 						containerElement={ <Link to="/" /> }
 					/>
 					<ListItem
@@ -83,7 +78,6 @@ class SideBar extends Component {
 								key={1}
 								primaryText="My Courses"
 								style={ styles.listItem(pathname === "/my-courses") }
-								onClick={ this.handleClick.bind(this, "/my-courses") }
 								containerElement={ <Link to="/my-courses" /> }
 								leftIcon={<MyCoursesIcon />}
 							/>,
@@ -92,7 +86,6 @@ class SideBar extends Component {
 								key={2}
 								primaryText="My Schedule"
 								style={ styles.listItem(pathname === "/schedule") }
-								onClick={ this.handleClick.bind(this, "/schedule") }
 								containerElement={ <Link to="/schedule" /> }
 								leftIcon={<ScheduleIcon />}
 							/>,
@@ -100,8 +93,7 @@ class SideBar extends Component {
 								className="sidebar-courses"
 								key={3}
 								primaryText="Browse Courses"
-								style={ styles.listItem(pathname === "/courses") }
-								onClick={ this.handleClick.bind(this, "/courses") }
+								style={ styles.listItem(pathname.startsWith("/courses")) }
 								containerElement={ <Link to="/courses" /> }
 								leftIcon={<BrowseIcon />}
 							/>
