@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A web app that helps Waterloo students pick their courses",
   "engines": {
-    "node": "6.11.x"
+    "node": "8.11.x"
   },
   "scripts": {
     "start": "node server",
