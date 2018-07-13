@@ -9,8 +9,10 @@ import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse } from '../../utils/courses';
 import {
 	reorderUserCourses,
+	updateUserCourses,
 	reorderCart,
 	unhighlightPrereqs,
+	highlightPrereqs,
 	createSnack
 } from '../../actions';
 import { DragTypes } from '../../constants/DragTypes';
@@ -70,6 +72,7 @@ class CourseBoardContainer extends Component {
 		updateCourseHandler: PropTypes.func.isRequired,
 		reorderCartHandler: PropTypes.func.isRequired,
 		deselectCourseHandler: PropTypes.func.isRequired,
+		highlightPrereqsHandler: PropTypes.func.isRequired,
 		sendDuplicateCourseSnack: PropTypes.func.isRequired,
 	};
 
@@ -81,9 +84,9 @@ class CourseBoardContainer extends Component {
 			cart,
 			username,
 			updateCourseHandler,
+			reorderCourseHandler,
 			reorderCartHandler,
 			deselectCourseHandler,
-			sendDuplicateCourseSnack,
 		} = props;
 
 		this.state = {
@@ -92,6 +95,7 @@ class CourseBoardContainer extends Component {
 			username,
 		};
 
+		this.onDragStart = this.onDragStart.bind(this);
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragTerm = this.onDragTerm.bind(this);
 		this.onDragCourse = this.onDragCourse.bind(this);
@@ -103,6 +107,7 @@ class CourseBoardContainer extends Component {
 		this.clearCart = this.clearCart.bind(this);
 		this.addBoard = this.addBoard.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
+		this.reorderCourseHandler = reorderCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
 		this.deselectCourseHandler = deselectCourseHandler;
 	}
@@ -121,6 +126,17 @@ class CourseBoardContainer extends Component {
 
 	getTermList(id) {
 		return this.state.courseList[id].courses;
+	}
+
+	// Highlight prereqs when dragging a course card
+	onDragStart(start) {
+		if (start.type !== DragTypes.COURSE) return;
+		const splitId = start.draggableId.split("/");
+		if (splitId.length < 3) return;
+		const [ subject, catalogNumber ] = splitId;
+		const prereqs = this.props.myCourses[subject][catalogNumber];
+		if (prereqs == null || prereqs.length === 0) return;
+		this.props.highlightPrereqsHandler(prereqs);
 	}
 
 	onDragEnd(result) {
@@ -148,7 +164,7 @@ class CourseBoardContainer extends Component {
 		const [removed] = courseList.splice(fromIndex, 1);
 		courseList.splice(toIndex, 0, removed);
 		this.setState({ courseList });
-		this.updateCourseHandler(username, courseList);
+		this.reorderCourseHandler(username, courseList);
 	}
 
 	onDragCourse(source, destination) {
@@ -183,7 +199,7 @@ class CourseBoardContainer extends Component {
 				const { username, courseList } = this.state;
 				courseList[id].courses = board;
 				this.setState({ courseList });
-				this.updateCourseHandler(username, courseList);
+				this.reorderCourseHandler(username, courseList);
 		}
 	}
 
@@ -193,7 +209,7 @@ class CourseBoardContainer extends Component {
 		const board = this.getBoard(id);
 		const [removed] = board.splice(fromIndex, 1);
 		board.splice(toIndex, 0, removed);
-		this.updateBoard(id, board);
+		this.reorderCourseHandler(id, board);
 	}
 
 	// Move an item between lists
@@ -210,14 +226,14 @@ class CourseBoardContainer extends Component {
 		const { username, courseList } = this.state;
 		courseList[id].term = name;
 		this.setState({ courseList });
-		this.updateCourseHandler(username, courseList);
+		this.reorderCourseHandler(username, courseList);
 	}
 
 	clearBoard(id) {
 		const { username, courseList } = this.state;
 		courseList[id].courses = [];
 		this.setState({ courseList });
-		this.updateCourseHandler(username, courseList);
+		this.reorderCourseHandler(username, courseList);
 	}
 
 	clearCart() {
@@ -229,7 +245,7 @@ class CourseBoardContainer extends Component {
 		const { username, courseList } = this.state;
 		courseList.push({ term: name, courses: [] });
 		this.setState({ courseList });
-		this.updateCourseHandler(username, courseList);
+		this.reorderCourseHandler(username, courseList);
 	}
 
 	loadCourses(id, newCourses) {
@@ -255,7 +271,7 @@ class CourseBoardContainer extends Component {
 		const { username, courseList } = this.state;
 		courseList.splice(id, 1);
 		this.setState({ courseList });
-		this.updateCourseHandler(username, courseList);
+		this.reorderCourseHandler(username, courseList);
 	}
 
 	renderTerms(courseList) {
@@ -321,7 +337,7 @@ class CourseBoardContainer extends Component {
 				);
 
 		return (
-			<DragDropContext onDragEnd={this.onDragEnd}>
+			<DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
 				<div className="course-view">
 					<div style={ styles.boardContainer }>
 						{ mainBoard }
@@ -345,6 +361,9 @@ const mapStateToProps = ({ courseList, cart, user, myCourses }) => {
 const mapDispatchToProps = dispatch => {
 	return {
 		updateCourseHandler: (username, courseList) => {
+			dispatch(updateUserCourses(username, courseList));
+		},
+		reorderCourseHandler: (username, courseList) => {
 			dispatch(reorderUserCourses(username, courseList));
 		},
 		reorderCartHandler: (username, cart) => {
@@ -352,6 +371,10 @@ const mapDispatchToProps = dispatch => {
 		},
 		deselectCourseHandler: () => {
 			dispatch(unhighlightPrereqs());
+		},
+		highlightPrereqsHandler: (prereqs) => {
+			if (prereqs == null || prereqs.length === 0) return;
+			dispatch(highlightPrereqs(prereqs));
 		},
 		sendDuplicateCourseSnack: (subject, catalogNumber) => {
 			const msg = `${subject} ${catalogNumber} was removed as it was a duplicate.`;

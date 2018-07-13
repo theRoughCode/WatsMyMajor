@@ -111,7 +111,7 @@ const AddCourseCard = ({ onClick }) => (
 
 const renderCourses = (showAdd, courseList, onClick) => {
 	const courses = courseList.map((course, index) => {
-		const key = `${course.subject}.${course.catalogNumber}-${index}`;
+		const key = `${course.subject}/${course.catalogNumber}/${index}`;
 		return (
 			<Draggable
 				key={ key }

@@ -89,6 +89,7 @@ export const createSnack = (
 
 // TODO: Change approach to update immediately and then fallback on failure
 // Used when adding to courses
+// Updates course list.  Use this when adding new courses.
 export const updateUserCourses = (username, courseList) => ({
 	[RSAA]: {
 		endpoint: `/users/set/courselist/${username}`,
@@ -105,6 +106,8 @@ export const updateUserCourses = (username, courseList) => ({
 	}
 });
 
+// Reorders course list.  Does not create prereqs.  Do not call this function
+// if there are new courses added.
 export const reorderUserCourses = (username, courseList) => ({
 	[RSAA]: {
 		endpoint: `/users/reorder/courselist/${username}`,

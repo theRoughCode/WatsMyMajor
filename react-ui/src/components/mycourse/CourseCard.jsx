@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
-import { highlightPrereqs } from '../../actions';
 
 const isInPrereqs = (subject, catalogNumber, prereqs) => {
 	for (var i = 0; i < prereqs.length; i++) {
@@ -16,28 +15,13 @@ const isInPrereqs = (subject, catalogNumber, prereqs) => {
 const CourseCard = ({
 	course,
 	courseCardPrereqs,
-	highlightPrereqsHandler,
 	provided,
 	snapshot,
 	getItemStyle
 }) => {
 	const { subject, catalogNumber, prereqs } = course;
 
-	const onMouseDown = (() => {
-    // dragHandleProps might be null
-    if (!provided.dragHandleProps) {
-      return onMouseDown;
-    }
-
-    // creating a new onMouseDown function that calls highlightPrereqsHandler as
-		// well as the drag handle one.
-    return e => {
-			// Mark this card as selected if card is being dragged
-			highlightPrereqsHandler(prereqs);
-      provided.dragHandleProps.onMouseDown(e);
-    };
-  })();
-
+	// Mark this card as selected if is a prereq of dragged card
 	const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
 
 	return (
@@ -46,7 +30,6 @@ const CourseCard = ({
 				ref={provided.innerRef}
 				{...provided.draggableProps}
 				{...provided.dragHandleProps}
-				onMouseDown={onMouseDown}
 				style={getItemStyle(
 					snapshot.isDragging,
 					isPrereq,
@@ -64,7 +47,6 @@ CourseCard.propTypes = {
 
 	// Redux
 	courseCardPrereqs: PropTypes.array.isRequired,
-	highlightPrereqsHandler: PropTypes.func.isRequired,
 
 	// DnD
 	provided: PropTypes.object.isRequired,
@@ -75,11 +57,4 @@ CourseCard.propTypes = {
 
 const mapStateToProps = ({ courseCardPrereqs }) => ({ courseCardPrereqs });
 
-const mapDispatchToProps = dispatch => ({
-	highlightPrereqsHandler: (prereqs) => {
-		if (prereqs == null || prereqs.length === 0) return;
-		dispatch(highlightPrereqs(prereqs));
-	}
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(CourseCard);
+export default connect(mapStateToProps, null)(CourseCard);

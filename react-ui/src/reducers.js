@@ -105,8 +105,6 @@ function courseList(state = [], action) {
 			return [];
 		case UPDATE_USER_COURSES:
 			return action.meta.courseList || state;
-		case UPDATE_USER_COURSES_PREREQS:
-			return action.payload || state;
 		default:
 			return state;
 	}
@@ -123,11 +121,11 @@ function getMyCourses(courseList) {
 		if (courses == null) continue;
 
 		for (var j = 0; j < courses.length; j++) {
-			const { subject, catalogNumber} = courses[j];
+			const { subject, catalogNumber, prereqs } = courses[j];
 			if (subject == null) continue;
 
 			if (!courseMap.hasOwnProperty(subject)) courseMap[subject] = {};
-			courseMap[subject][catalogNumber] = true;
+			courseMap[subject][catalogNumber] = prereqs || [];
 		}
 	}
 	return courseMap;
@@ -145,6 +143,8 @@ function myCourses(state = {}, action) {
 			return {};
 		case UPDATE_USER_COURSES:
 			return getMyCourses(action.meta.courseList);
+		case UPDATE_USER_COURSES_PREREQS:
+			return getMyCourses(action.payload) || state;
 		default:
 			return state;
 	}
