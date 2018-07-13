@@ -176,7 +176,7 @@ class CourseBoardContainer extends Component {
 		switch (id) {
 			case 'Cart':
 				this.setState({ cart: board });
-				this.reorderCartHandler(board);
+				this.reorderCartHandler(this.state.username, board);
 				break;
 			case 'Trash': break;
 			default:
@@ -222,7 +222,7 @@ class CourseBoardContainer extends Component {
 
 	clearCart() {
 		this.setState({ cart: [] });
-		this.reorderCartHandler([]);
+		this.reorderCartHandler(this.state.username, []);
 	}
 
 	addBoard(name) {

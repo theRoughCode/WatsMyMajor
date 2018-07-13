@@ -61,7 +61,7 @@ const styles = {
 		width: stylesConst.width - space * 2,
 		minHeight: stylesConst.minHeight,
 		height: stylesConst.height,
-		background: isDraggingOver ? '#fafcf2' : 'inherit'
+		background: isDraggingOver ? '#bde580' : 'inherit'
 	}),
 	addCourseCard: {
 		padding: space,
@@ -109,7 +109,7 @@ const AddCourseCard = ({ onClick }) => (
 	</FlatButton>
 );
 
-const renderCourses = (courseList, onClick) => {
+const renderCourses = (showAdd, courseList, onClick) => {
 	const courses = courseList.map((course, index) => {
 		const key = `${course.subject}.${course.catalogNumber}-${index}`;
 		return (
@@ -130,7 +130,8 @@ const renderCourses = (courseList, onClick) => {
 			</Draggable>
 		);
 	});
-	courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
+	// Add "Add courses" button if not a cart
+	if (showAdd) courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
 	return courses;
 };
 
@@ -225,6 +226,7 @@ export default class TermBoard extends Component {
 
 	render() {
 		const { index, boardHeader, courses, isCart } = this.props;
+		const droppableId = (isCart) ? 'Cart' : index;
 
 		const renameDialogActions = [
       <FlatButton
@@ -313,7 +315,7 @@ export default class TermBoard extends Component {
 					</div>
 					<div>
 						<Droppable
-							droppableId={ index }
+							droppableId={ droppableId }
 							type={ DragTypes.COURSE }
 						>
 							{(provided, snapshot) => (
@@ -321,7 +323,7 @@ export default class TermBoard extends Component {
 									ref={provided.innerRef}
 									style={styles.dragArea(snapshot.isDraggingOver, isCart)}
 								>
-									{ renderCourses(courses, this.openAddDialog) }
+									{ renderCourses(!isCart && !snapshot.isDraggingOver, courses, this.openAddDialog) }
 									{ provided.placeholder }
 								</div>
 							)}
