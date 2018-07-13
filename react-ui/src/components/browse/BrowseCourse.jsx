@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import CourseCard from './browse/CourseCard';
+import CourseCard from './CourseCard';
 import SearchBar from '../SearchBar';
 import '../../stylesheets/CourseView.css';
 
@@ -34,10 +34,6 @@ const cards = {
 
 const BrowseCourse = ({ style }) => (
   <div className="course-browse">
-    <div className="browse-search">
-      <span>Search for a course!</span>
-      <SearchBar style={{  width: 600 }} />
-    </div>
     <div className="course-card-container">
       <span className="popular-text">Most popular courses</span>
       <div className="browse-recommended">

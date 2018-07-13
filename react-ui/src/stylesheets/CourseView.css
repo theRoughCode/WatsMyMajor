@@ -17,17 +17,6 @@
   flex-direction: column;
 }
 
-.browse-search {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-.browse-search span {
-  font-size: 30px;
-  margin-bottom: 20px;
-}
-
 .course-card-container {
   display: flex;
   flex-direction: column;

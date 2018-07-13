@@ -8,8 +8,10 @@ import MenuItem from 'material-ui/MenuItem';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import AddIcon from 'material-ui/svg-icons/content/add';
 import CourseCard from './CourseCard';
 import Parser from './ParseCourses';
+import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { DragTypes } from '../../constants/DragTypes';
@@ -60,7 +62,21 @@ const styles = {
 		minHeight: stylesConst.minHeight,
 		height: stylesConst.height,
 		background: isDraggingOver ? '#fafcf2' : 'inherit'
-	})
+	}),
+	addCourseCard: {
+		padding: space,
+		margin: `0 0 ${space}px 0`,
+		border: '1px dashed #bcbcbc',
+		borderRadius: '5px',
+		cursor: 'pointer',
+		width: '100%',
+		height: 'auto',
+	},
+	addIcon: {
+		width: 40,
+		height: 40,
+		cursor: 'pointer',
+	}
 };
 
 
@@ -85,8 +101,16 @@ const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
   ...draggableStyle,
 });
 
-const renderCourses = (courseList) => {
-	return courseList.map((course, index) => {
+const AddCourseCard = ({ onClick }) => (
+	<FlatButton style={ styles.addCourseCard } onClick={ onClick } >
+		<div style={{ display: 'inline-flex', verticalAlign: 'middle' }}>
+			<AddIcon style={ styles.addIcon } />
+		</div>
+	</FlatButton>
+);
+
+const renderCourses = (courseList, onClick) => {
+	const courses = courseList.map((course, index) => {
 		const key = `${course.subject}.${course.catalogNumber}-${index}`;
 		return (
 			<Draggable
@@ -106,6 +130,8 @@ const renderCourses = (courseList) => {
 			</Draggable>
 		);
 	});
+	courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
+	return courses;
 };
 
 export default class TermBoard extends Component {
@@ -130,12 +156,14 @@ export default class TermBoard extends Component {
 		provided: {},
 		snapshot: {},
 		isCart: false,
+		onUpdateCourses: () => null,
 		onRenameBoard: () => null,
 	};
 
 	state = {
 		renameDialogOpen: false,
 		importDialogOpen: false,
+		addDialogOpen: false,
 		settingsOpen: false,
 		rename: '',
 		importText: ''
@@ -145,9 +173,11 @@ export default class TermBoard extends Component {
 
 	openRenameDialog = () => this.setState({ settingsOpen: false, renameDialogOpen: true });
 	openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
+	openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
 	closeRenameDialog = () => this.setState({ rename: '', renameDialogOpen: false });
 	closeImportDialog = () => this.setState({ rename: '', importDialogOpen: false });
+	closeAddDialog = () => this.setState({ rename: '', addDialogOpen: false });
 
 	onChangeRenameText = (e, text) => this.setState({ rename: text });
 	onChangeImportText = (text) => this.setState({ importText: text });
@@ -176,6 +206,11 @@ export default class TermBoard extends Component {
 			const { courses } = termCourses;
 			this.props.onUpdateCourses(courses);
 		}).catch(err => alert(`Failed to parse your courses. Error: ${err.message}`));
+	}
+
+	onSearchResult = (subject, catalogNumber) => {
+		this.props.onUpdateCourses([{ subject, catalogNumber }])
+		this.closeAddDialog();
 	}
 
 	clearBoard = () => {
@@ -214,6 +249,14 @@ export default class TermBoard extends Component {
         label="Submit"
         primary={true}
         onClick={this.onImport}
+      />,
+    ];
+
+		const addDialogActions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onClick={this.closeAddDialog}
       />,
     ];
 
@@ -278,7 +321,7 @@ export default class TermBoard extends Component {
 									ref={provided.innerRef}
 									style={styles.dragArea(snapshot.isDraggingOver, isCart)}
 								>
-									{ renderCourses(courses) }
+									{ renderCourses(courses, this.openAddDialog) }
 									{ provided.placeholder }
 								</div>
 							)}
@@ -307,6 +350,15 @@ export default class TermBoard extends Component {
 						contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
 					>
 						{ <Parser onChange={this.onChangeImportText} /> }
+					</Dialog>
+					<Dialog
+						title="Add Course"
+						actions={addDialogActions}
+						modal={false}
+						open={this.state.addDialogOpen}
+						onRequestClose={this.closeAddDialog}
+					>
+						<SearchBar onResult={this.onSearchResult} />
 					</Dialog>
 				</Paper>
 			</div>

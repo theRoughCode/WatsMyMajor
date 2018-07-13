@@ -6,7 +6,13 @@ import TermBoard from './TermBoard';
 import MyCourseSideBar from './MyCourseSideBar';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { arrayOfObjectEquals } from '../../utils/arrays';
-import { reorderUserCourses, reorderCart, unhighlightPrereqs } from '../../actions';
+import { hasTakenCourse } from '../../utils/courses';
+import {
+	reorderUserCourses,
+	reorderCart,
+	unhighlightPrereqs,
+	createSnack
+} from '../../actions';
 import { DragTypes } from '../../constants/DragTypes';
 
 const styles = {
@@ -57,16 +63,14 @@ const styles = {
 class CourseBoardContainer extends Component {
 
 	static propTypes = {
-		courseList: PropTypes.array,
+		courseList: PropTypes.array.isRequired,
+		myCourses: PropTypes.object.isRequired,
 		cart: PropTypes.array.isRequired,
 		username: PropTypes.string.isRequired,
 		updateCourseHandler: PropTypes.func.isRequired,
 		reorderCartHandler: PropTypes.func.isRequired,
 		deselectCourseHandler: PropTypes.func.isRequired,
-	};
-
-	static defaultProps = {
-		courseList: []
+		sendDuplicateCourseSnack: PropTypes.func.isRequired,
 	};
 
 	constructor(props) {
@@ -79,6 +83,7 @@ class CourseBoardContainer extends Component {
 			updateCourseHandler,
 			reorderCartHandler,
 			deselectCourseHandler,
+			sendDuplicateCourseSnack,
 		} = props;
 
 		this.state = {
@@ -230,11 +235,16 @@ class CourseBoardContainer extends Component {
 	loadCourses(id, newCourses) {
 		const { username, courseList } = this.state;
 		let courses = courseList[id].courses || [];
-		courses = courses.concat(newCourses);
+
 		// Dedup courses
-		const courseMap = {};
-		courses.forEach(course => courseMap[`${course.subject}${course.catalogNumber}`] = course);
-		courses = Object.values(courseMap);
+		newCourses = newCourses.filter(({ subject, catalogNumber}) => {
+			const hasTaken = hasTakenCourse(subject, catalogNumber, this.props.myCourses);
+			if (hasTaken) this.props.sendDuplicateCourseSnack(subject, catalogNumber);
+			return !hasTaken;
+		});
+		if (newCourses.length === 0) return;
+
+		courses = courses.concat(newCourses);
 		courseList[id].courses = courses;
 
 		this.setState({ courseList });
@@ -327,9 +337,9 @@ class CourseBoardContainer extends Component {
 	}
 }
 
-const mapStateToProps = ({ courseList, cart, user }) => {
+const mapStateToProps = ({ courseList, cart, user, myCourses }) => {
 	const { username } = user;
-	return { courseList, cart, username };
+	return { courseList, cart, username, myCourses };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -342,6 +352,10 @@ const mapDispatchToProps = dispatch => {
 		},
 		deselectCourseHandler: () => {
 			dispatch(unhighlightPrereqs());
+		},
+		sendDuplicateCourseSnack: (subject, catalogNumber) => {
+			const msg = `${subject} ${catalogNumber} was removed as it was a duplicate.`;
+			dispatch(createSnack(msg))
 		}
 	};
 };

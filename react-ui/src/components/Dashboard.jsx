@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import BrowseCourse from './browse/BrowseCourse';
 
 const Dashboard = ({ name }) => (
 	<div>
@@ -15,6 +16,7 @@ const Dashboard = ({ name }) => (
 				here
 			</a>!<br/>
 		</p>
+		<BrowseCourse />
 	</div>
 );
 

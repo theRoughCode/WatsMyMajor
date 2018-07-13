@@ -89,14 +89,6 @@ class SideBar extends Component {
 								containerElement={ <Link to="/schedule" /> }
 								leftIcon={<ScheduleIcon />}
 							/>,
-							<ListItem
-								className="sidebar-courses"
-								key={3}
-								primaryText="Browse Courses"
-								style={ styles.listItem(pathname.startsWith("/courses")) }
-								containerElement={ <Link to="/courses" /> }
-								leftIcon={<BrowseIcon />}
-							/>
 						]}
 					/>
 				</List>

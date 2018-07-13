@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import SearchBar from 'material-ui-search-bar';
-import { removeExpandedCourse } from '../actions';
 
 async function fetchQuery(query, maxNumberOfResults) {
   const response = await fetch(`/courses/query/${query}/${maxNumberOfResults}`);
@@ -23,7 +20,7 @@ class AppSearchBar extends Component {
 
   static propTypes = {
     style: PropTypes.object,
-    removeExpandedCourseHandler: PropTypes.func.isRequired,
+    onResult: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -73,8 +70,7 @@ class AppSearchBar extends Component {
 
     const subject = strArr[0];
     const catalogNumber = strArr[1];
-		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-    this.props.removeExpandedCourseHandler();
+		this.props.onResult(subject, catalogNumber);
 	}
 
   render() {
@@ -86,7 +82,6 @@ class AppSearchBar extends Component {
         onChange={ this.queryForCourse }
         onClick={ this.onClick }
         onRequestSearch={ this.searchCourse }
-        onNewRequest={ this.searchCourse }
         style={ this.state.style }
         value={ this.state.query }
       />
@@ -94,8 +89,6 @@ class AppSearchBar extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  removeExpandedCourseHandler: () => dispatch(removeExpandedCourse())
-});
 
-export default withRouter(connect(null, mapDispatchToProps)(AppSearchBar));
+
+export default AppSearchBar;

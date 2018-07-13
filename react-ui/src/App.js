@@ -18,7 +18,6 @@ import Register from './components/login/Register';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MySchedule';
-import BrowseCourse from './components/courselist/BrowseCourse';
 import CourseListView from './components/courselist/CourseListContainer';
 
 let styles = {
@@ -143,7 +142,6 @@ class App extends Component {
   					<Route exact path='/login' render={ this.addUndirect(Login) } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
-  					<Route exact path='/courses' render={ this.addRedirect(BrowseCourse) } />
             <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
   					<Route path='/tree/prereqs/:subject/:catalogNumber' render={ this.addRedirect(PrereqsTree) } />
   				</Switch>
