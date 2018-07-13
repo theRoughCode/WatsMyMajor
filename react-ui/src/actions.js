@@ -30,13 +30,20 @@ export const setUser = (username, user) => ({
 	user
 });
 
-export const loginUser = (username) => ({
-	[RSAA]: {
-		endpoint: `/users/${username}`,
-		method: 'GET',
-		types: ['', { type: LOGIN_USER, meta: { username } }, '']
+export const loginUser = (username) => {
+	if (!username) {
+		console.error('Username is undefined. ' + username);
+		return {};
 	}
-});
+
+	return {
+		[RSAA]: {
+			endpoint: `/users/${username}`,
+			method: 'GET',
+			types: ['', { type: LOGIN_USER, meta: { username } }, '']
+		}
+	}
+};
 
 export const logoutUser = () => ({ type: LOGOUT_USER });
 

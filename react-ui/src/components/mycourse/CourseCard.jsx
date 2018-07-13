@@ -55,7 +55,6 @@ const CourseCard = ({
 			>
 				{`${subject} ${catalogNumber}`}
 			</div>
-			{provided.placeholder}
 		</Paper>
 	);
 }
