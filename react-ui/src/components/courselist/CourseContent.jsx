@@ -13,6 +13,7 @@ const CourseContent = (props) => {
 		expandCourse,
 		title,
 		rating,
+		url,
 		termsOffered,
 		description,
 		antireqs,
@@ -35,6 +36,7 @@ const CourseContent = (props) => {
 				catalogNumber={catalogNumber}
 				title={title}
 				rating={rating}
+				url={url}
 				termsOffered={termsOffered}
 				addToCartHandler={addToCartHandler}
 				removeFromCartHandler={removeFromCartHandler}
@@ -75,6 +77,7 @@ CourseContent.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
+	url: PropTypes.string.isRequired,
 	termsOffered: PropTypes.array.isRequired,
 	antireqs: PropTypes.array.isRequired,
   coreqs: PropTypes.array.isRequired,

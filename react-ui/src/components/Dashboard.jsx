@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import BrowseCourse from './browse/BrowseCourse';
+import BrowseCourse from './browse/BrowseCourseContainer';
 
 const Dashboard = ({ name }) => (
 	<div>

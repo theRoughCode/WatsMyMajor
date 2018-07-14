@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { Card, CardActions, CardHeader } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 
@@ -8,7 +9,9 @@ const CourseCard = ({
   subject,
   catalogNumber,
   description,
-  rating
+	taken,
+	inCart,
+	addToCart,
 }) => (
   <Card className="course-card">
 		<div className="card-content">
@@ -27,8 +30,14 @@ const CourseCard = ({
 			</div>
 		</div>
 		<CardActions>
-			<FlatButton label="See more" />
-			<FlatButton label="Quick add" />
+			<Link to={ `/courses/${subject}/${catalogNumber}` }>
+				<FlatButton label="See more" />
+			</Link>
+			<FlatButton
+				label="Quick add"
+				disabled={ taken || inCart }
+				onClick={ addToCart }
+			/>
 		</CardActions>
   </Card>
 );
@@ -38,7 +47,9 @@ CourseCard.propTypes = {
   subject: PropTypes.string.isRequired,
   catalogNumber: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired
+	taken: PropTypes.bool.isRequired,
+	inCart: PropTypes.bool.isRequired,
+	addToCart: PropTypes.func.isRequired,
 }
 
 export default CourseCard;

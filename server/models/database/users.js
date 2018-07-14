@@ -148,15 +148,39 @@ function setField(userId, field, data, callback) {
 
 async function getUser(username, callback) {
   try {
-    const snapshot = await usersRef.child(username).once('value')
+    const snapshot = await usersRef.child(username).once('value');
     callback(null, snapshot.val());
   } catch (err) {
     callback(err, null)
   }
 }
 
+async function getAllUserCourses() {
+  try {
+    const snapshot = await usersRef.once('value');
+    const courseCount = {};
+    snapshot.forEach(child => {
+      const username = child.key;
+      const { courseList } = child.val();
+      if (courseList == null || courseList.length === 0) return;
+      courseList.forEach(({ courses }) => {
+        if (courses == null || courses.length === 0) return;
+        courses.forEach(({ subject, catalogNumber }) => {
+          if (!subject) return;
+          const key = `${subject}-${catalogNumber}`;
+          if (!courseCount.hasOwnProperty(key)) courseCount[key] = 1;
+          else courseCount[key]++;
+        });
+      });
+    });
+    return { err: null, courseCount };
+  } catch (err) {
+    return { err, courseCount: [] };
+  }
+}
+
 async function userExists(username) {
-  const snapshot = await usersRef.child(username).once('value')
+  const snapshot = await usersRef.child(username).once('value');
   return snapshot.exists();
 }
 
@@ -185,8 +209,9 @@ module.exports = {
   updateUserSettings,
   setUser,
   updateUser,
+  getUser,
+  getAllUserCourses,
   setCart,
   setSchedule,
   setCourseList,
-  getUser
 };

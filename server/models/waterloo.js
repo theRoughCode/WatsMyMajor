@@ -100,7 +100,7 @@ function getCourseInfo(subject, cat_num, callback) {
 // { prereqString, prereqs }
 function getPrereqs(subject, course_number, callback) {
 	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
-		if(err) {
+		if (err) {
 			console.error(err);
 			return callback(err, null);
 		}
@@ -124,6 +124,19 @@ function getPrereqs(subject, course_number, callback) {
  })
 }
 
+// Gets description of course
+function getCourseDescription(subject, catalogNumber, callback) {
+	uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function(err, res) {
+		if (err) {
+			console.error(err);
+			return callback(err, null);
+		}
+		if (!Object.keys(res.data).length) 	return callback('No course found.', null);
+		const { title, description } = res.data;
+		callback(null, { subject, catalogNumber, title, description });
+	});
+}
+
 //  Gets requisites from UW-API
 // returns object with prereqs, coreqs, and antireqs
 function getReqs(subject, course_number, callback) {
@@ -131,16 +144,13 @@ function getReqs(subject, course_number, callback) {
 		if(err) return callback(err, null);
 
 		let { prereqString, prereqs } = prereqData;
-		console.log(prereqData)
 
 		uwclient.get(`/courses/${subject}/${course_number}.json`, (err, res) => {
 			if (err) {
 				console.error(err);
 				return callback(err, null);
 			}
-			if (!Object.keys(res.data).length)
-				return callback('No course found.', null);
-
+			if (!Object.keys(res.data).length)	return callback('No course found.', null);
 
 			let { title, description, crosslistings } = res.data;
 			const coreqString = res.data.corequisites || '';
@@ -350,6 +360,7 @@ function getParentReqs(subject, cat_num, callback) {
 // Exports
 module.exports = {
 	getCourseInfo,
+	getCourseDescription,
 	getCourses,
 	getReqs,
 	getDataReqs,

@@ -1,7 +1,6 @@
 /* Course View */
 .course-view {
   width: 100%;
-  height: 95%;
   display: flex;
   padding-top: 20px;
 }
@@ -30,7 +29,7 @@
   margin-left: 20px;
 }
 
-.browse-recommended {
+.browse-popular {
   display: flex;
 }
 
@@ -145,11 +144,18 @@
 
 .course-header .title {
   font-size: 20px;
+  text-decoration: none;
+  color: black;
+}
+
+.course-header .title:hover {
+  color: #f60;
 }
 
 .course-description {
   padding: 0 10px;
   display: flex;
+  width: 100%;
 }
 
 .course-requisites {

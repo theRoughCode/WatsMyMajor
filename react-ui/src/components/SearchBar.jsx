@@ -60,8 +60,7 @@ class AppSearchBar extends Component {
     this.setState({ dataSource });
 	}
 
-	async searchCourse() {
-    const { query } = this.state;
+	async searchCourse(query) {
     if (!query) return;
 
     const [result] = await fetchQuery(query, 1);
@@ -81,7 +80,8 @@ class AppSearchBar extends Component {
         filter={ (searchValue, key) => searchValue.length }
         onChange={ this.queryForCourse }
         onClick={ this.onClick }
-        onRequestSearch={ this.searchCourse }
+        onRequestSearch={ () => null }
+        onNewRequest={ this.searchCourse }
         style={ this.state.style }
         value={ this.state.query }
       />

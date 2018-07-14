@@ -29,6 +29,7 @@ const CourseHeader = ({
 	catalogNumber,
 	title,
 	rating,
+	url,
 	termsOffered,
 	addToCartHandler,
 	removeFromCartHandler,
@@ -72,7 +73,7 @@ const CourseHeader = ({
 						{...styles.stars}
 					/>
 				</div>
-				<span className="title">{title}</span>
+				<a href={url} className="title">{title}</a>
 				{
 					takeStatus && (
 						<div style={styles.taken}>

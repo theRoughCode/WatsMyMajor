@@ -76,6 +76,7 @@ class CourseListContainer extends Component {
 			course: {
 				title: '',
 				rating: 0,
+				url: '',
 				termsOffered: [],
 				description: '',
 				antireqs: [],
@@ -183,6 +184,7 @@ class CourseListContainer extends Component {
 				title,
 				description,
 				rating: 2.1,
+				url,
 				termsOffered: terms,
 				antireqs,
 				coreqs,

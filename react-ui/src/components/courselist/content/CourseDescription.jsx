@@ -35,9 +35,11 @@ const CourseDescription = ({
 	selectCourse
 }) => (
 	<div className="course-description">
-		<p style={styles.description}>
-			{description}
-		</p>
+		<div style={{ flex: 1 }}>
+			<p style={styles.description}>
+				{description}
+			</p>
+		</div>
 		<div style={styles.leftContainer}>
 			<Link to={`/tree/prereqs/${subject}/${catalogNumber}`}>
 				<RaisedButton

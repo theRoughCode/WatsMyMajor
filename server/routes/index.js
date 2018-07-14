@@ -9,6 +9,7 @@ routes.use('/courses', require('./courses'));
 routes.use('/parse', require('./parse'));
 routes.use('/prof', require('./prof'));
 routes.use('/reqs', require('./reqs'));
+routes.use('/stats', require('./stats'));
 routes.use('/tree', require('./tree'));
 routes.use('/update', require('./update'));
 routes.use('/users', require('./users'));
