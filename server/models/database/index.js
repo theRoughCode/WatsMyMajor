@@ -11,13 +11,15 @@ admin.initializeApp({
 });
 
 const coursesRef = admin.database().ref('/courses/');
+const majorsRef = admin.database().ref('/majors/');
 const reqsRef = admin.database().ref('/reqs/');
-const usersRef = admin.database().ref('/users/');
 const statsRef = admin.database().ref('/stats/');
+const usersRef = admin.database().ref('/users/');
 
 module.exports = {
 	coursesRef,
+  majorsRef,
   reqsRef,
-  usersRef,
   statsRef,
+  usersRef,
 };

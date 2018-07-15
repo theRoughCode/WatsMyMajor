@@ -15,6 +15,7 @@ import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
+import Majors from './components/majors/MajorsContainer';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MySchedule';
@@ -139,7 +140,8 @@ class App extends Component {
   				<Switch>
             <Route exact path='/' render={ this.addRedirect(Dashboard) } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
-  					<Route exact path='/login' render={ this.addUndirect(Login) } />
+            <Route exact path='/login' render={ this.addUndirect(Login) } />
+  					<Route exact path='/majors' render={ this.addRedirect(Majors) } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
             <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />

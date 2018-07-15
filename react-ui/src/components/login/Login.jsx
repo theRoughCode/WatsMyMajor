@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+// import FacebookLogin from 'react-facebook-login';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -58,6 +59,18 @@ const styles = {
     marginTop: 40,
   }
 };
+
+// const responseFacebook = (response) => {
+//   console.log(response);
+// };
+//
+//
+// <FacebookLogin
+//   appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+//   autoLoad={true}
+//   fields="name,email,picture"
+//   callback={responseFacebook}
+// />
 
 class Login extends Component {
 

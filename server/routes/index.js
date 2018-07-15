@@ -6,6 +6,7 @@ routes.get('/', function(req, res){
 });
 
 routes.use('/courses', require('./courses'));
+routes.use('/majors', require('./majors'));
 routes.use('/parse', require('./parse'));
 routes.use('/prof', require('./prof'));
 routes.use('/reqs', require('./reqs'));

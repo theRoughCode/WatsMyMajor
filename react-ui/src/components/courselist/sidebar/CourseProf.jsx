@@ -12,7 +12,7 @@ import StarRatings from 'react-star-ratings';
 const styles = {
 	stars: {
 		starRatedColor: '#ffcc00',
-		starWidthAndHeight: '15px',
+		starDimension: '15px',
 		starSpacing: '1px'
 	},
 	divider: {
@@ -31,8 +31,11 @@ const styles = {
 		marginRight: '10px'
 	},
 	chip: {
-    margin: 4
+    margin: 2,
   },
+	chipLabel: {
+		fontSize: 12,
+	},
 	loading: {
 		margin: 'auto',
 		padding: 20
@@ -84,6 +87,7 @@ const Rating = ({ difficulty, tags }) => {
 				{tags.map((tag, index) => (
 					<Chip
 	          style={styles.chip}
+						labelStyle={styles.chipLabel}
             key={index}
 	        >
 	          {tag}

@@ -68,6 +68,12 @@ class SideBar extends Component {
 						containerElement={ <Link to="/" /> }
 					/>
 					<ListItem
+						primaryText="View Majors"
+						leftIcon={<DashboardIcon />}
+						style={ styles.listItem(pathname === "/majors") }
+						containerElement={ <Link to="/majors" /> }
+					/>
+					<ListItem
 						primaryText="Courses"
 						leftIcon={<SchoolIcon />}
 						initiallyOpen={false}
