@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
 
-
 const styles = {
   iconStyle: {
     left: 0,
@@ -31,15 +30,15 @@ const styles = {
   }
 };
 
-const RangeCheck = ({ subject, from, to, choose, excluding, onCheck }) => {
+const LevelCheck = ({ subject, level, excluding, choose, onCheck }) => {
   const excludingStr = (excluding.length > 0) ? ` (excl. ${excluding.join(',')})` : '';
   return (
     <div>
       <Checkbox
-        label={ `${subject} ${from} - ${subject} ${to}${excludingStr}`}
+        label={ `${subject} ${level} - level${excludingStr}` }
         onCheck={ onCheck }
-        iconStyle={ styles.iconStyle }
         labelStyle={ styles.labelStyle }
+        iconStyle={ styles.iconStyle }
         style={ styles.checkbox }
         disabled={ choose > 1 }
       />
@@ -59,13 +58,16 @@ const RangeCheck = ({ subject, from, to, choose, excluding, onCheck }) => {
   );
 }
 
-RangeCheck.propTypes = {
+LevelCheck.propTypes = {
   subject: PropTypes.string.isRequired,
-  from: PropTypes.string.isRequired,
-  to: PropTypes.string.isRequired,
+  level: PropTypes.string.isRequired,
   choose: PropTypes.number.isRequired,
-  excluding: PropTypes.array.isRequired,
+  excluding: PropTypes.array,
   onCheck: PropTypes.func.isRequired,
 };
 
-export default RangeCheck;
+LevelCheck.defaultProps = {
+  excluding: [],
+};
+
+export default LevelCheck;

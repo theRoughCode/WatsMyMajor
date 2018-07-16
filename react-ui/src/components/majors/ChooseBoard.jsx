@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import CourseCheck from './CourseCheck';
 import RangeCheck from './RangeCheck';
+import LevelCheck from './LevelCheck';
+import OptionCheck from './OptionCheck';
+import SubjectCheck from './SubjectCheck';
+import AnyCheck from './AnyCheck';
 
 const styles = {
   board: (isFulfilled) => ({
@@ -38,6 +42,7 @@ const renderCourseNode = (node, index, choose, onCheck) => {
           subject={ node.subject }
           from={ node.from }
           to={ node.to }
+          excluding={ node.excluding || [] }
           choose={ choose }
           key={ index }
           onCheck={ onCheck }
@@ -45,9 +50,48 @@ const renderCourseNode = (node, index, choose, onCheck) => {
       );
     case "level":
       return (
-        <CourseCheck
+        <LevelCheck
           subject={ node.subject }
-          catalogNumber={ `${node.catalogNumber}-level` }
+          level={ node.catalogNumber }
+          excluding={ node.excluding }
+          choose={ choose }
+          key={ index }
+          onCheck={ onCheck }
+        />
+      );
+    case "option":
+      return (
+        <OptionCheck
+          options={ node.options }
+          key={ index }
+          onCheck={ onCheck }
+        />
+      );
+    case "subject":
+      return (
+        <SubjectCheck
+          subject={ node.subject }
+          choose={ choose }
+          note={ node.note }
+          key={ index }
+          onCheck={ onCheck }
+        />
+      );
+    case "subject-level":
+      return (
+        <SubjectCheck
+          subject={ node.subject }
+          level={ node.catalogNumber }
+          excluding={ node.excluding }
+          choose={ choose }
+          key={ index }
+          onCheck={ onCheck }
+        />
+      );
+    case "any":
+      return (
+        <AnyCheck
+          choose={ choose }
           key={ index }
           onCheck={ onCheck }
         />

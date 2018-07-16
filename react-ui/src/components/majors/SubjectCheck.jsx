@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 import Checkbox from 'material-ui/Checkbox';
 
 
@@ -31,15 +32,16 @@ const styles = {
   }
 };
 
-const RangeCheck = ({ subject, from, to, choose, excluding, onCheck }) => {
+const SubjectCheck = ({ subject, level, excluding, choose, note, onCheck }) => {
+  const levelStr = (level.length > 0) ? `${level}-level ` : '';
   const excludingStr = (excluding.length > 0) ? ` (excl. ${excluding.join(',')})` : '';
   return (
-    <div>
+    <div data-tip data-for='note'>
       <Checkbox
-        label={ `${subject} ${from} - ${subject} ${to}${excludingStr}`}
+        label={ `Any ${levelStr}${subject} course${excludingStr}` }
         onCheck={ onCheck }
-        iconStyle={ styles.iconStyle }
         labelStyle={ styles.labelStyle }
+        iconStyle={ styles.iconStyle }
         style={ styles.checkbox }
         disabled={ choose > 1 }
       />
@@ -55,17 +57,30 @@ const RangeCheck = ({ subject, from, to, choose, excluding, onCheck }) => {
           )) }
         </div>
       ) }
+      {
+        (note.length > 0) && (
+          <ReactTooltip id='note' type='info' effect='solid'>
+            <span>{ note }</span>
+          </ReactTooltip>
+        )
+      }
     </div>
   );
 }
 
-RangeCheck.propTypes = {
+SubjectCheck.propTypes = {
   subject: PropTypes.string.isRequired,
-  from: PropTypes.string.isRequired,
-  to: PropTypes.string.isRequired,
+  level: PropTypes.string,
+  excluding: PropTypes.array,
   choose: PropTypes.number.isRequired,
-  excluding: PropTypes.array.isRequired,
+  note: PropTypes.string,
   onCheck: PropTypes.func.isRequired,
 };
 
-export default RangeCheck;
+SubjectCheck.defaultProps = {
+  level: '',
+  excluding: [],
+  note: ''
+};
+
+export default SubjectCheck;

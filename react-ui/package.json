@@ -22,6 +22,7 @@
     "react-router-dom": "^4.2.2",
     "react-star-ratings": "^2.2.0",
     "react-swipeable-views": "^0.12.13",
+    "react-tooltip": "^3.6.1",
     "react-tree-graph": "^3.1.1",
     "redux": "^4.0.0",
     "redux-api-middleware": "^2.3.0"

@@ -6,11 +6,9 @@ const { majorsRef } = require('./index');
  *													*
  ****************************/
 
-async function setMajorRequirements(name, url, data) {
+async function setMajorRequirements(key, value) {
   try {
-    const childRef = majorsRef.child(name);
-    await childRef.child('url').set(url);
-    await childRef.child('data').set(data);
+    await majorsRef.child(key).set(value);
     return null;
   } catch (err) {
     return err;
@@ -33,7 +31,22 @@ async function getMajorRequirements(name) {
   }
 }
 
+async function getList() {
+  try {
+    const snapshot = await majorsRef.once('value');
+    const val = snapshot.val();
+    const list = Object.keys(val).map((key) => ({
+      key,
+      name: val[key].name
+    }));
+    return { err: null, list };
+  } catch (err) {
+    return { err, list: null };
+  }
+}
+
 module.exports = {
   setMajorRequirements,
-  getMajorRequirements
+  getMajorRequirements,
+  getList
 };
