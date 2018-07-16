@@ -19,7 +19,7 @@ const CourseCard = ({
 	snapshot,
 	getItemStyle
 }) => {
-	const { subject, catalogNumber, prereqs } = course;
+	const { subject, catalogNumber } = course;
 
 	// Mark this card as selected if is a prereq of dragged card
 	const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);

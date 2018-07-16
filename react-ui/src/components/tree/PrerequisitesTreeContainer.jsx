@@ -9,11 +9,6 @@ import { objectEquals } from '../../utils/arrays';
 import '../../stylesheets/Tree.css';
 
 
-const margin = {
-  width: 100,
-  height: 25,
-};
-
 const styles = {
   container: {
     backgroundColor: '#242424',

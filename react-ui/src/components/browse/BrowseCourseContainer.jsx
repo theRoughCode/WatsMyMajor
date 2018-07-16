@@ -33,7 +33,7 @@ class BrowseCourseContainer extends Component {
   }
 
   render() {
-    const { style, myCourses, cart, username, addToCartHandler } = this.props;
+    const { myCourses, cart, username, addToCartHandler } = this.props;
     return (
       <div className="course-browse">
         { (this.state.popular.length > 0) && (

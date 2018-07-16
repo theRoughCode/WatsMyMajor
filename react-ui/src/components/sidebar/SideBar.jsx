@@ -6,9 +6,9 @@ import MenuItem from 'material-ui/MenuItem';
 import { List, ListItem } from 'material-ui/List';
 import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
 import SchoolIcon from 'material-ui/svg-icons/social/school';
+import FolderIcon from 'material-ui/svg-icons/file/folder';
 import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
-import BrowseIcon from 'material-ui/svg-icons/action/subject';
 import Avatar from './Avatar';
 
 const styles = {
@@ -69,13 +69,13 @@ class SideBar extends Component {
 					/>
 					<ListItem
 						primaryText="View Majors"
-						leftIcon={<DashboardIcon />}
+						leftIcon={<SchoolIcon />}
 						style={ styles.listItem(pathname === "/majors") }
 						containerElement={ <Link to="/majors" /> }
 					/>
 					<ListItem
 						primaryText="Courses"
-						leftIcon={<SchoolIcon />}
+						leftIcon={<FolderIcon />}
 						initiallyOpen={false}
 						primaryTogglesNestedList={true}
 						nestedItems={[

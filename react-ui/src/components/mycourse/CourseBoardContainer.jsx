@@ -153,6 +153,7 @@ class CourseBoardContainer extends Component {
 			case DragTypes.COURSE:
 				this.onDragCourse(source, destination);
 				break;
+			default:
 		}
 	}
 
@@ -305,7 +306,7 @@ class CourseBoardContainer extends Component {
 			?  (
 					<div style={ styles.emptyContainer }>
 						<div style={ styles.emptyInnerDiv }>
-							<img src="images/empty_board.png" style={ styles.emptyImage } />
+							<img src="images/empty_board.png" alt="Empty Board" style={ styles.emptyImage } />
 							<div style={ styles.emptyTextDiv }>
 								<span style={ styles.emptyTextTitle }>
 									Oops, looks like there's nothing here yet.

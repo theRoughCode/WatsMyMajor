@@ -96,8 +96,8 @@ const renderCourseNode = (node, index, choose, onCheck) => {
           onCheck={ onCheck }
         />
       );
+    default: return null;
   }
-  return null;
 };
 
 export default class ChooseBoard extends Component {

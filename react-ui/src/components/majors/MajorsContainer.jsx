@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import ChooseBoard from './ChooseBoard';
@@ -41,8 +40,8 @@ const renderReqNode = ({ type, choose, courses }, index) => {
           courses={ courses }
         />
       );
+    default: return null;
   }
-  return null;
 };
 
 async function fetchRequirements(key) {

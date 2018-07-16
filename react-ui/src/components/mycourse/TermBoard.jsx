@@ -13,7 +13,6 @@ import CourseCard from './CourseCard';
 import Parser from './ParseCourses';
 import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { arrayOfObjectEquals } from '../../utils/arrays';
 import { DragTypes } from '../../constants/DragTypes';
 
 const space = 8;
