@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import ChooseBoard from './ChooseBoard';
@@ -20,7 +22,7 @@ const styles = {
   },
 };
 
-const renderReqNode = ({ type, choose, courses }, index) => {
+const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   switch (type) {
     case "choose":
       return (
@@ -29,6 +31,7 @@ const renderReqNode = ({ type, choose, courses }, index) => {
           choose={ choose }
           title={ `Choose ${choose} of:` }
           courses={ courses }
+          myCourses={ myCourses }
         />
       );
     case "all":
@@ -38,6 +41,7 @@ const renderReqNode = ({ type, choose, courses }, index) => {
           choose={ courses.length }
           title="Choose all of:"
           courses={ courses }
+          myCourses={ myCourses }
         />
       );
     default: return null;
@@ -57,7 +61,11 @@ async function fetchList() {
   return await response.json();
 }
 
-export default class MajorsContainer extends Component {
+class MajorsContainer extends Component {
+  static propTypes: {
+    myCourses: PropTypes.object.isRequired,
+  };
+
   state = {
     majorsList: [],
     key: '',
@@ -96,9 +104,13 @@ export default class MajorsContainer extends Component {
           <h1><a href={ this.state.url } target="_blank">{ this.state.name }</a></h1>
         </div>
         <div style={ styles.container }>
-          { this.state.reqs.map(renderReqNode) }
+          { this.state.reqs.map((req, index) => renderReqNode(req, index, this.props.myCourses)) }
         </div>
       </div>
     );
   }
 }
+
+const mapStateToProps = ({ myCourses }) => ({ myCourses });
+
+export default connect(mapStateToProps)(MajorsContainer);

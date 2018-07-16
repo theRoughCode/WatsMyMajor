@@ -17,7 +17,7 @@ const styles = {
     flexDirection: 'column',
     padding: 10,
     paddingBottom: 20,
-    backgroundColor: (isFulfilled) ? '#8fdb78' : 'inherit',
+    backgroundColor: (isFulfilled) ? '#baefb8' : 'inherit',
     border: (isFulfilled) ? '1px solid black' : 'inherit',
   }),
   boardTitle: {
@@ -25,7 +25,7 @@ const styles = {
   },
 };
 
-const renderCourseNode = (node, index, choose, onCheck) => {
+const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
   switch (node.type) {
     case "course":
       return (
@@ -34,6 +34,7 @@ const renderCourseNode = (node, index, choose, onCheck) => {
           catalogNumber={ node.catalogNumber }
           key={ index }
           onCheck={ onCheck }
+          myCourses={ myCourses }
         />
       );
     case "range":
@@ -100,12 +101,26 @@ const renderCourseNode = (node, index, choose, onCheck) => {
   }
 };
 
+// We need this so that set state happens synchonously
+// https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3
+const incrementChecked = () => ({ numChecked }, { choose }) => {
+  numChecked++;
+  const fulfilled = numChecked >= choose;
+  return { numChecked, fulfilled };
+};
+const decrementChecked = () => ({ numChecked }, { choose }) => {
+  numChecked--;
+  const fulfilled = numChecked >= choose;
+  return { numChecked, fulfilled };
+};
+
 export default class ChooseBoard extends Component {
 
   static propTypes = {
     title: PropTypes.string.isRequired,
     choose: PropTypes.number.isRequired,
     courses: PropTypes.array.isRequired,
+    myCourses: PropTypes.object.isRequired,
   };
 
   state = {
@@ -114,12 +129,11 @@ export default class ChooseBoard extends Component {
   };
 
   onCheck = (_, isChecked) => {
-    let { numChecked } = this.state;
-    if (!isChecked) numChecked--;
-    else numChecked++;
-
-    const fulfilled = numChecked === this.props.choose;
-    this.setState({ numChecked, fulfilled });
+    if (!isChecked) {
+      this.setState(decrementChecked());
+    } else {
+      this.setState(incrementChecked());
+    }
   }
 
   render() {
@@ -127,7 +141,8 @@ export default class ChooseBoard extends Component {
     return (
       <Paper style={ styles.board(this.state.fulfilled) }>
         <span style={ styles.boardTitle }>{ title }</span>
-        { courses.map((node, i) => renderCourseNode(node, i, choose, this.onCheck)) }
+        { courses.map((node, i) =>
+            renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
       </Paper>
     );
   }
