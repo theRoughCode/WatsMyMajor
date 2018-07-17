@@ -4,6 +4,14 @@ import CourseHeader from './content/CourseHeader';
 import CourseDescription from './content/CourseDescription';
 import CourseClassList from './content/CourseClassList';
 
+const styles = {
+	courseContent: {
+		height: '100%',
+	  display: 'flex',
+		flexWrap: 'wrap',
+	}
+}
+
 const CourseContent = (props) => {
 	const {
 		subject,
@@ -30,7 +38,7 @@ const CourseContent = (props) => {
 	} = props;
 
 	return (
-		<div className="course-content">
+		<div style={ styles.courseContent }>
 			<CourseHeader
 				subject={subject}
 				catalogNumber={catalogNumber}

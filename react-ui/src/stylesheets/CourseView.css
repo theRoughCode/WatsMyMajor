@@ -83,23 +83,16 @@
 }
 
 /* Course Content*/
-.course-content {
-  width: 78%;
-  height: 100%;
-  display: flex;
-	flex-wrap: wrap;
-  padding: 0 60px;
-}
-
 .course-header {
   border-bottom: 1px solid #dbdbdb;
-  width: 100%;
   text-align: left;
   display: flex;
   justify-content: flex-end;
   padding-left: 10px;
   padding-top: 20px;
   padding-bottom: 10px;
+  margin-left: 40px;
+  margin-right: 40px;
   margin-bottom: 25px;
 }
 
@@ -154,8 +147,8 @@
 
 .course-description {
   padding: 0 10px;
+  margin: 0 40px;
   display: flex;
-  width: 100%;
 }
 
 .course-requisites {
@@ -201,11 +194,10 @@
 }
 
 .course-class-list {
+  margin: auto;
   margin-top: 40px;
   display: inline-block;
   flex-direction: column;
-	width: 80%;
-	margin-left: 20px;
 }
 
 .course-class-list-header {

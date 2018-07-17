@@ -18,6 +18,12 @@ import {
 	removeExpandedCourse
 } from '../../actions';
 
+const styles = {
+	courseView: {
+		width: '100%',
+	  display: 'flex',
+	}
+};
 
 const getCourseData = (subject, catalogNumber) => {
 	return fetch(`/wat/${subject}/${catalogNumber}`)
@@ -221,7 +227,7 @@ class CourseListContainer extends Component {
 
 	render() {
 		const renderedView = (
-			<div className="course-view">
+			<div style={ styles.courseView }>
 				<CourseContent
 					selectedClassIndex={this.state.selectedClassIndex}
 					selectCourse={this.selectCourse}
