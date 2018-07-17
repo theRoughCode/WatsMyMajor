@@ -6,6 +6,31 @@ export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
 		myCourses[subject].hasOwnProperty(advancedCSCatNum);
 }
 
+// Check if taken a course in range
+export const getTakenCoursesInRange = (subject, from, to, myCourses) => {
+	if (myCourses[subject] == null) return [];
+	const fromNum = Number(from.trim());
+	const toNum = Number(to.trim());
+	if (isNaN(from)) {
+		console.error(`From: ${from} is not a number!`);
+		return [];
+	}
+	if (isNaN(to)) {
+		console.error(`To: ${to} is not a number!`);
+		return [];
+	}
+
+	const catNums = Object.keys(myCourses[subject]);
+	return catNums.filter((catNum) => {
+		const num = Number(catNum.replace(/\D/g,'').trim());
+		if (isNaN(num)) {
+			console.error(`Catalog number ${num} (${catNum}) is not a number!`);
+			return false;
+		}
+		return (num >= fromNum && num <= toNum);
+	});
+}
+
 // Check if course is in cart
 export const isInCart = (subject, catalogNumber, arr) => {
 	for (var i = 0; i < arr.length; i++) {

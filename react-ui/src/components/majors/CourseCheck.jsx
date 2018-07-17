@@ -19,7 +19,14 @@ const styles = {
   }
 };
 
-class CourseCheck extends Component {
+export default class CourseCheck extends Component {
+  static propTypes = {
+    subject: PropTypes.string.isRequired,
+    catalogNumber: PropTypes.string.isRequired,
+    myCourses: PropTypes.object.isRequired,
+    onCheck: PropTypes.func.isRequired,
+  };
+
   state = {
     taken: false,
     isChecked: false
@@ -64,12 +71,3 @@ class CourseCheck extends Component {
     );
   }
 }
-
-CourseCheck.propTypes = {
-  subject: PropTypes.string.isRequired,
-  catalogNumber: PropTypes.string.isRequired,
-  myCourses: PropTypes.object.isRequired,
-  onCheck: PropTypes.func.isRequired,
-};
-
-export default CourseCheck;

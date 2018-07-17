@@ -7,6 +7,7 @@ import LevelCheck from './LevelCheck';
 import OptionCheck from './OptionCheck';
 import SubjectCheck from './SubjectCheck';
 import AnyCheck from './AnyCheck';
+import { arrayOfObjectEquals } from '../../utils/arrays';
 
 const styles = {
   board: (isFulfilled) => ({
@@ -47,6 +48,7 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
           choose={ choose }
           key={ index }
           onCheck={ onCheck }
+          myCourses={ myCourses }
         />
       );
     case "level":
@@ -101,18 +103,16 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
   }
 };
 
-// We need this so that set state happens synchonously
+// We need this callback so that set state happens synchonously when updating
+// the numChecked counter
 // https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3
-const incrementChecked = () => ({ numChecked }, { choose }) => {
-  numChecked++;
+const incrementChecked = (delta) => ({ numChecked }, { choose }) => {
+  numChecked += delta;
   const fulfilled = numChecked >= choose;
   return { numChecked, fulfilled };
 };
-const decrementChecked = () => ({ numChecked }, { choose }) => {
-  numChecked--;
-  const fulfilled = numChecked >= choose;
-  return { numChecked, fulfilled };
-};
+// Resets the numChecked counter and fulfilled boolean when major is changed
+const resetChecked = () => ({ numChecked }) => ({ numChecked: 0, fulfilled: false });
 
 export default class ChooseBoard extends Component {
 
@@ -128,19 +128,29 @@ export default class ChooseBoard extends Component {
     fulfilled: false,
   };
 
-  onCheck = (_, isChecked) => {
-    if (!isChecked) {
-      this.setState(decrementChecked());
-    } else {
-      this.setState(incrementChecked());
+  componentWillReceiveProps(nextProps) {
+    if (!arrayOfObjectEquals(nextProps.courses, this.props.courses)) {
+      this.setState(resetChecked());
     }
+  }
+
+  onCheck = (_, isChecked, delta = 1) => {
+    if (!isChecked) {
+      this.setState(incrementChecked(-delta));
+    } else {
+      this.setState(incrementChecked(delta));
+    }
+  }
+
+  onReset = () => {
+    this.setState(resetChecked());
   }
 
   render() {
     const { choose, courses, title } = this.props;
     return (
       <Paper style={ styles.board(this.state.fulfilled) }>
-        <span style={ styles.boardTitle }>{ title }</span>
+        <span style={ styles.boardTitle }>{ title }{ this.state.numChecked }</span>
         { courses.map((node, i) =>
             renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
       </Paper>
