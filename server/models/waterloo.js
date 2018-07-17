@@ -169,7 +169,8 @@ function getReqs(subject, course_number, callback) {
 
 			if (coreqs) {
 				// Edge case of "Oneof"
-				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number)) coreqs = utils.unpick(coreqs);
+				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number))
+					coreqs = utils.unpick(coreqs);
 
 				if (coreqs.hasOwnProperty('choose')) {
 					coreqs.reqs = utils.parseReqs(coreqs.reqs);

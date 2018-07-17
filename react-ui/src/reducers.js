@@ -176,6 +176,7 @@ function user(state = defaultUser, action) {
 	switch (action.type) {
 		case SET_USER:
 			localStorage.setItem(usernameKey, action.username);
+			action.user.username = action.username;
 			return action.user || defaultUser;
 		case LOGIN_USER:
 			const { meta, payload } = action;

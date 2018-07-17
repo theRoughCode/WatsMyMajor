@@ -66,6 +66,29 @@ function parseReqs(arr) {
 	}, []);
 }
 
+// Splits MATH235 into [ MATH, 235 ]
+function splitSubject(subjectStr) {
+	const index = /[0-9]/i.exec(subjectStr).index;
+	if (index === 0) return [subjectStr];
+	return [subjectStr.substring(0, index), subjectStr.substring(index)];
+}
+
+// Iterates through subject string arr and fills in missing subject
+// i.e. ['MATH237', '235'] => [{ subject: MATH, catalogNumber: 237}, { subject: MATH, catalogNumber: 235}]
+function fillInSubject(subjectStrArr) {
+	let prevSubject = '';
+	return subjectStrArr.map((str) => {
+		const reqStrArr = splitSubject(str);
+		// Add subject to front if subject is missing
+		if (reqStrArr.length === 1) {
+			return { subject: prevSubject, catalogNumber: reqStrArr[0] };
+		} else {
+			prevSubject = reqStrArr[0];
+			return{ subject: reqStrArr[0], catalogNumber: reqStrArr[1] };
+		}
+	});
+}
+
 // Converts weird data formatting to pick format
 function unpick(str) {
 	str = str.replace(/\s*and\s*/g,',');
@@ -88,17 +111,20 @@ function unpick(str) {
 		const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
 		return { choose, reqs: arr };
 	} else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
-		var open = str.indexOf('(');
-		var close = str.indexOf(')');
+		const open = str.indexOf('(');
+		const close = str.indexOf(')');
 		// replace 'or' with comma and split into array
-		var arr = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
-		arr.unshift(1); // add 1 to front
+		const chooseReqs = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
+		const arr = [{
+			choose: 1,
+			reqs: fillInSubject(chooseReqs)
+		}];
 		// Remove special chars
-		var checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
-		arr = [arr];
+		const checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
 		// remove 'arr' from original string and exclude commas before and after
-		str = str.slice(0, (open !== -1) ? open - 1 : open).concat(str.slice(close + 2));
-		arr.push(...str.replace(checkSpecial, '').split(','));
+		str = str.replace(/ *\([^)]*\) */g, "");
+		const reqsArr = str.replace(checkSpecial, '').split(',').filter(r => r.length > 0);
+		arr.push(...fillInSubject(reqsArr));
 		return arr;
 	} else return parseCourse(str);
 }

@@ -90,22 +90,22 @@ class CourseRequisites extends Component {
 		)
 	}
 
-	formatReqs = (prereqs, index) => {
-		if (!Object.keys(prereqs).length) return [];
+	formatReqs = (requisites, index) => {
+		if (!Object.keys(requisites).length) return [];
 		// Base case: list of courses
-		if (prereqs.hasOwnProperty('subject')) {
-			return this.formatCourseReq(prereqs, index);
+		if (requisites.hasOwnProperty('subject')) {
+			return this.formatCourseReq(requisites, index);
 		}
 
 		// Inductive case: list of courses with choose
-		switch (prereqs.choose) {
-			case 0: return prereqs.reqs.map(this.formatReqs);
+		switch (requisites.choose) {
+			case 0: return requisites.reqs.map(this.formatReqs);
 			default:
-				const newReqsArr = prereqs.reqs.map(this.formatReqs);
+				const newReqsArr = requisites.reqs.map(this.formatReqs);
 				return [
 					<Prereqs
 						key={0}
-						choose={ prereqs.choose }
+						choose={ requisites.choose }
 						reqs={ newReqsArr }
 					/>
 				];
