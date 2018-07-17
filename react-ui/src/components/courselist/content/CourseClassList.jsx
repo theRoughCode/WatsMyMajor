@@ -82,7 +82,8 @@ class Row extends Component {
 				<TableRowColumn>{class_number}</TableRowColumn>
 				<TableRowColumn>{campus}</TableRowColumn>
 				<TableRowColumn>{enrollment_total}/{enrollment_capacity}</TableRowColumn>
-				<TableRowColumn>{time}</TableRowColumn>									<TableRowColumn>{location}</TableRowColumn>
+				<TableRowColumn><b>{weekdays.join(', ')}</b> {time}</TableRowColumn>
+				<TableRowColumn>{location}</TableRowColumn>
 				<TableRowColumn>{instructor}</TableRowColumn>
 			</TableRow>
 		)

@@ -20,6 +20,15 @@ function getInstructor(instructor) {
 	return instructor.split(',').reverse().join(' ');
 }
 
+// Extract weekdays from courses
+function parseWeekdays(weekdays) {
+	const RE_DAY = /(M)?(Th|T)?(W)?(Th)?(F)?/g;
+	return RE_DAY.exec(weekdays)
+		.slice(1, 6)
+		.map((d) => (d == null) ? null : d)
+		.filter(d => d != null);
+}
+
 function getCourseInfo(subject, cat_num, callback) {
 	uwclient.get(`/terms/${TERM}/${subject}/${cat_num}/schedule.json`, function(err, res) {
 		if(err) return callback(null);
@@ -78,7 +87,7 @@ function getCourseInfo(subject, cat_num, callback) {
 				reserve_total: reserves.enrollment_total,
 				start_time,
 				end_time,
-				weekdays,
+				weekdays: parseWeekdays(weekdays),
 				is_tba,
 				is_cancelled,
 				is_closed,
