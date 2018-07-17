@@ -150,7 +150,7 @@ export default class ChooseBoard extends Component {
     const { choose, courses, title } = this.props;
     return (
       <Paper style={ styles.board(this.state.fulfilled) }>
-        <span style={ styles.boardTitle }>{ title }{ this.state.numChecked }</span>
+        <span style={ styles.boardTitle }>{ title }</span>
         { courses.map((node, i) =>
             renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
       </Paper>

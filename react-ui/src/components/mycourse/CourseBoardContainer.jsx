@@ -18,6 +18,12 @@ import {
 import { DragTypes } from '../../constants/DragTypes';
 
 const styles = {
+	viewContainer: {
+		width: '100%',
+		height: '90%',
+	  display: 'flex',
+	  paddingTop: 20,
+	},
 	boardContainer: {
 		width: '70%',
 	  height: '90%',
@@ -210,7 +216,7 @@ class CourseBoardContainer extends Component {
 		const board = this.getBoard(id);
 		const [removed] = board.splice(fromIndex, 1);
 		board.splice(toIndex, 0, removed);
-		this.reorderCourseHandler(id, board);
+		this.updateBoard(id, board);
 	}
 
 	// Move an item between lists
@@ -323,6 +329,7 @@ class CourseBoardContainer extends Component {
 						droppableId="board"
 						type={ DragTypes.COLUMN }
 						direction="horizontal"
+						ignoreContainerClipping={true}
 					>
 						{(provided, snapshot) => (
 							<div
@@ -339,7 +346,7 @@ class CourseBoardContainer extends Component {
 
 		return (
 			<DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
-				<div className="course-view">
+				<div style={ styles.viewContainer }>
 					<div style={ styles.boardContainer }>
 						{ mainBoard }
 					</div>
