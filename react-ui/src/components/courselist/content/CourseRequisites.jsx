@@ -52,7 +52,7 @@ class CourseRequisites extends Component {
 
 		this.state = {
 			slideIndex: 0,
-			prereqs: this.formatPrereqs(prereqs),
+			prereqs: this.formatReqs(prereqs),
 			coreqs: coreqs.map(this.formatReqs),
 			antireqs: antireqs.map(this.formatReqs),
 			postreqs: postreqs.map(this.formatReqs),
@@ -65,7 +65,7 @@ class CourseRequisites extends Component {
 		});
 	};
 
-	formatReqs = (course, index) => {
+	formatCourseReq = (course, index) => {
 		if (typeof course === "string") return course;
 
 		const { myCourses } = this.props;
@@ -90,18 +90,18 @@ class CourseRequisites extends Component {
 		)
 	}
 
-	formatPrereqs = (prereqs, index) => {
+	formatReqs = (prereqs, index) => {
 		if (!Object.keys(prereqs).length) return [];
 		// Base case: list of courses
 		if (prereqs.hasOwnProperty('subject')) {
-			return this.formatReqs(prereqs, index);
+			return this.formatCourseReq(prereqs, index);
 		}
 
 		// Inductive case: list of courses with choose
 		switch (prereqs.choose) {
-			case 0: return prereqs.reqs.map(this.formatPrereqs);
+			case 0: return prereqs.reqs.map(this.formatReqs);
 			default:
-				const newReqsArr = prereqs.reqs.map(this.formatPrereqs);
+				const newReqsArr = prereqs.reqs.map(this.formatReqs);
 				return [
 					<Prereqs
 						key={0}
