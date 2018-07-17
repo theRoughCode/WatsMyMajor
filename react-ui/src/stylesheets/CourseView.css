@@ -86,6 +86,7 @@
 .course-header {
   border-bottom: 1px solid #dbdbdb;
   text-align: left;
+  width: 100%;
   display: flex;
   justify-content: flex-end;
   padding-left: 10px;
@@ -194,7 +195,7 @@
 }
 
 .course-class-list {
-  margin: auto;
+  margin: 20px auto;
   margin-top: 40px;
   display: inline-block;
   flex-direction: column;
@@ -203,6 +204,7 @@
 .course-class-list-header {
   font-size: 30px;
   text-align: left;
+  margin-left: 10px;
   margin-bottom: 15px;
 }
 

@@ -1,9 +1,18 @@
 const request = require('request');
 const cheerio = require('cheerio');
 
+function removeMiddleName(name) {
+	const names = name.split(" ");
+	if (names.length === 2) return name;
+
+	return `${names[0]} ${names[names.length - 1]}`;
+}
+
 function getProfInfo(name, callback) {
 	const baseURL = 'http://www.ratemyprofessors.com';
-	const url = `${baseURL}/search.jsp?queryBy=teacherName&country=canada&stateselect=ON&queryoption=HEADER&query=${name}&facetSearch=true`;
+	const parsedName = removeMiddleName(name);
+	console.log(parsedName)
+	const url = `${baseURL}/search.jsp?queryBy=teacherName&country=canada&stateselect=ON&queryoption=HEADER&query=${parsedName}&facetSearch=true`;
 
 	request(url, function(error, response, html){
 		if(!error){

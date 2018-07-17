@@ -68,6 +68,7 @@ export default class RangeCheck extends Component {
 
   checkTaken = (subject, from, to, children, myCourses) => {
     const takenCourses = getTakenCoursesInRange(subject, from, to, myCourses);
+    if (takenCourses.length === 0) return;
 
     // If course is taken, increment count by 1
     if (this.props.choose === 1) {
