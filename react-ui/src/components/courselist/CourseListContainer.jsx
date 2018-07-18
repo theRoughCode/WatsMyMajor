@@ -125,6 +125,9 @@ class CourseListContainer extends Component {
 		const isNewClass = (this.props.classNumber !== nextProps.classNumber);
 
 		if (isNewClass || isNewCourse || updatedCart || updatedCourseList) {
+			if (isNewCourse) {
+				this.props.removeExpandedCourseHandler();
+			}
 			// User selected new course
 			if (isNewCourse || updatedCourseList) {
 				const { myCourses } = nextProps;
@@ -186,6 +189,9 @@ class CourseListContainer extends Component {
 				classList
 			} = json;
 
+			// Update page title
+			document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`
+
 			const course = {
 				title,
 				description,
@@ -211,7 +217,6 @@ class CourseListContainer extends Component {
 
 	selectCourse(subject, catalogNumber) {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.props.removeExpandedCourseHandler();
 	}
 
 	addCourseToCart(subject, catalogNumber) {

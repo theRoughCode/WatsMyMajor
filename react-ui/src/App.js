@@ -8,8 +8,6 @@ import {
 	withRouter
 } from 'react-router-dom';
 import Snackbar from 'material-ui/Snackbar';
-import { toggleSideBar, createSnack, loginUser, logoutUser } from './actions';
-import './stylesheets/App.css';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
@@ -20,6 +18,13 @@ import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import CourseListView from './components/courselist/CourseListContainer';
+import {
+  toggleSideBar,
+  createSnack,
+  loginUser,
+  logoutUser,
+} from './actions';
+import './stylesheets/App.css';
 
 let styles = {
 	marginLeft: 0,
@@ -51,7 +56,7 @@ class App extends Component {
       onToggleSideBar,
       onLogin,
 			onLogout,
-			onUndoSnack
+			onUndoSnack,
 		} = props;
 
     // Check localStorage if username is not set
@@ -71,6 +76,7 @@ class App extends Component {
       isLoggedIn: isLoggedIn || (cachedUsername != null),
     };
 
+    this.handleRouteChange = this.handleRouteChange.bind(this);
 		this.handleRequestClose = this.handleRequestClose.bind(this);
     this.handleActionClick = this.handleActionClick.bind(this);
 		this.addRedirect = this.addRedirect.bind(this);
@@ -79,6 +85,11 @@ class App extends Component {
 		this.onLogout = onLogout;
 		this.onUndoSnack = onUndoSnack;
 	}
+
+  componentDidMount() {
+    // Listen for route change
+    this.props.history.listen(this.handleRouteChange);
+  }
 
 	componentWillReceiveProps(nextProps) {
 	  if (nextProps.sideBarOpen !== this.state.sideBarOpen) {
@@ -96,6 +107,23 @@ class App extends Component {
       this.setState({ isLoggedIn: nextProps.isLoggedIn});
     }
 	}
+
+  handleRouteChange({ pathname }) {
+    const pathArr = pathname.split("/").slice(1);
+    switch (pathArr[0]) {
+      case "majors": // View majors
+        document.title = "View Majors :: WatsMyMajor";
+        break;
+      case "my-courses": // My courses
+        document.title = "My Courses :: WatsMyMajor";
+        break;
+      case "schedule": // My schedule
+        document.title = "My Schedule :: WatsMyMajor";
+        break;
+      default:
+        document.title = "WatsMyMajor";
+    }
+  }
 
 	handleRequestClose() {
 		this.setState({ snackOpen: false });
@@ -167,18 +195,10 @@ const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn }) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onToggleSideBar: () => {
-      dispatch(toggleSideBar());
-    },
-		onUndoSnack: (msg) => {
-			dispatch(createSnack(msg));
-		},
-    onLogin: (username) => {
-      dispatch(loginUser(username));
-    },
-    onLogout: () => {
-      dispatch(logoutUser());
-    },
+    onToggleSideBar: () => dispatch(toggleSideBar()),
+		onUndoSnack: (msg) =>	dispatch(createSnack(msg)),
+    onLogin: (username) => dispatch(loginUser(username)),
+    onLogout: () => dispatch(logoutUser()),
   }
 };
 

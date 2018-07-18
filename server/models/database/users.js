@@ -132,7 +132,8 @@ function updateUser(username, user, callback) {
 
 function setField(userId, field, data, callback) {
   usersRef
-    .child(`${userId}/${field}`)
+    .child(userId)
+    .child(field)
     .set(data)
     .then(() => callback(null))
     .catch(err => callback(err));
@@ -196,7 +197,8 @@ function setCart(username, cart, callback) {
 }
 
 function setSchedule(username, schedule, callback) {
-  setField(username, 'schedule', schedule, callback);
+  const { term, courses } = schedule;
+  setField(username, `schedule/${term}`, courses, callback);
 }
 
 function setCourseList(username, courseList, callback) {

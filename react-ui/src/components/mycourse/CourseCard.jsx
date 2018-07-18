@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 
 const isInPrereqs = (subject, catalogNumber, prereqs) => {
@@ -17,7 +18,8 @@ const CourseCard = ({
 	courseCardPrereqs,
 	provided,
 	snapshot,
-	getItemStyle
+	getItemStyle,
+	history
 }) => {
 	const { subject, catalogNumber } = course;
 
@@ -25,7 +27,10 @@ const CourseCard = ({
 	const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
 
 	return (
-		<Paper zDepth={1}>
+		<Paper
+			zDepth={1}
+			onClick={ () => history.push(`/courses/${subject}/${catalogNumber}`) }
+		>
 			<div
 				ref={provided.innerRef}
 				{...provided.draggableProps}
@@ -57,4 +62,4 @@ CourseCard.propTypes = {
 
 const mapStateToProps = ({ courseCardPrereqs }) => ({ courseCardPrereqs });
 
-export default connect(mapStateToProps, null)(CourseCard);
+export default withRouter(connect(mapStateToProps, null)(CourseCard));

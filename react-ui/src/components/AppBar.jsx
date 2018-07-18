@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
-import { removeExpandedCourse } from '../actions';
 
 
 const styles = {
@@ -29,12 +27,10 @@ class AppBar extends Component {
 		toggleSideBar: PropTypes.func.isRequired,
 		onLogout: PropTypes.func.isRequired,
 		isLoggedIn: PropTypes.bool.isRequired,
-		removeExpandedCourseHandler: PropTypes.func.isRequired,
 	};
 
 	onSearchResult = (subject, catalogNumber) => {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-		this.props.removeExpandedCourseHandler();
 	}
 
 	render() {
@@ -59,8 +55,4 @@ class AppBar extends Component {
 	}
 }
 
-const mapDispatchToProps = dispatch => ({
-  removeExpandedCourseHandler: () => dispatch(removeExpandedCourse())
-});
-
-export default withRouter(connect(null, mapDispatchToProps)(AppBar))
+export default withRouter(AppBar);

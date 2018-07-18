@@ -47,7 +47,7 @@ function parseCourses(textArr) {
     const classes = {};
     for (var i = 0; i < classArr.length; i += 7) {
       const component = parseComponent(classArr.slice(i, i + 7));
-      if (component != null) classes[component.type] = component.info;
+      if (component != null && component.type.length > 0) classes[component.type] = component.info;
     }
     courses.push({
       subject,
