@@ -96,6 +96,7 @@ class CourseRequisites extends Component {
 		if (requisites.hasOwnProperty('subject')) {
 			return this.formatCourseReq(requisites, index);
 		}
+		if (typeof requisites === 'string') return requisites;
 
 		// Inductive case: list of courses with choose
 		switch (requisites.choose) {

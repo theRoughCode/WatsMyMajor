@@ -5,7 +5,6 @@ import CourseCheck from './CourseCheck';
 import RangeCheck from './RangeCheck';
 import LevelCheck from './LevelCheck';
 import OptionCheck from './OptionCheck';
-import SubjectCheck from './SubjectCheck';
 import AnyCheck from './AnyCheck';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 
@@ -52,12 +51,15 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
         />
       );
     case "level":
+    case "subject":
+    case "subject-level":
       return (
         <LevelCheck
           subject={ node.subject }
           level={ node.catalogNumber }
           excluding={ node.excluding }
           choose={ choose }
+          note={ node.note }
           key={ index }
           onCheck={ onCheck }
           myCourses={ myCourses }
@@ -67,27 +69,6 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
       return (
         <OptionCheck
           options={ node.options }
-          key={ index }
-          onCheck={ onCheck }
-        />
-      );
-    case "subject":
-      return (
-        <SubjectCheck
-          subject={ node.subject }
-          choose={ choose }
-          note={ node.note }
-          key={ index }
-          onCheck={ onCheck }
-        />
-      );
-    case "subject-level":
-      return (
-        <SubjectCheck
-          subject={ node.subject }
-          level={ node.catalogNumber }
-          excluding={ node.excluding }
-          choose={ choose }
           key={ index }
           onCheck={ onCheck }
         />

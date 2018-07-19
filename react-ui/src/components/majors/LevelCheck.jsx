@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 import Checkbox from 'material-ui/Checkbox';
 
 const styles = {
@@ -30,42 +31,80 @@ const styles = {
   }
 };
 
-const getTakenCoursesInLevel = (subject, level, excluding, myCourses) => {
-  if (myCourses[subject] == null) return [];
-  const levelNum = Number(level.trim().charAt(0));
+// List of math subjects
+const coreSubjects = {
+  'math': ['ACTSC', 'AMATH', 'CO', 'COMM', 'CS', 'MATH', 'MATBUS',
+            'MTHEL', 'PMATH', 'SE', 'STAT'],
+};
+
+const getSubjectCourses = (subject, excluding, myCourses) => {
+  // If a core subject (i.e. math)
+  if (coreSubjects.hasOwnProperty(subject)) {
+    // List of subjects
+    const subjects = coreSubjects[subject].filter(s => !excluding.includes(s));
+    return subjects.map(s =>
+      (myCourses.hasOwnProperty(s))
+        ? ({ subject: s, catNums: Object.keys(myCourses[s]) })
+        : null
+      ).filter(c => c != null);
+  }
+  if (!myCourses.hasOwnProperty(subject)) return [];
+
+  // Regular subject (i.e. PMATH, MATH, CS)
+  return [{ subject, catNums: Object.keys(myCourses[subject]) }];
+}
+
+const getTakenCourses = (subject, level, excluding, myCourses) => {
+  const subjectCourses = getSubjectCourses(subject, excluding, myCourses);
+  if (subjectCourses.length === 0) return [];
+
+  const takenCourses = [];
+  subjectCourses.forEach(({ subject, catNums }) => {
+    catNums.forEach(catNum => takenCourses.push({ subject, catalogNumber: catNum }));
+  });
+  // Just check subject
+  if (level.length === 0) return takenCourses;
+
+  // Check level
+  level = level.trim();
+  const levelNum = Number(level.charAt(0));
   if (isNaN(levelNum)) {
 		console.error(`Level: ${levelNum} is not a number!`);
 		return [];
 	}
+  const isPlus = level.charAt(level.length - 1) === '+';
 
-  const catNums = Object.keys(myCourses[subject]);
-  return catNums.filter((catNum) => {
-		const catLevel = Number(catNum.trim().charAt(0));
-		if (isNaN(catLevel)) {
-			console.error(`Catalog number ${catLevel} (${catNum}) is not a number!`);
-			return false;
-		}
-    if (catLevel !== levelNum) return false;
-		// Check if course is in exclude list
-		for (let i = 0; i < excluding.length; i++) {
-			if (catNum === excluding[i]) return false;
-		}
-		return true;
-	});
+  // Filter out courses that aren't the right level or is in the exclusion list
+  return takenCourses.filter(({ catalogNumber }) => {
+    const catLevel = Number(catalogNumber.trim().charAt(0));
+    if (isNaN(catLevel)) {
+      console.error(`Catalog number ${catLevel} (${catalogNumber}) is not a number!`);
+      return false;
+    }
+    // If its lower than required level, we don't want it
+    if (catLevel < levelNum) return false;
+    // If it's not a xxx+ level course and the level is higher than the
+    // required level, we don't want it
+    if (!isPlus && catLevel > levelNum) return false;
+    return (catLevel >= levelNum) && !excluding.includes(catalogNumber);
+  });
 }
 
 export default class LevelCheck extends Component {
   static propTypes = {
     subject: PropTypes.string.isRequired,
-    level: PropTypes.string.isRequired,
-    choose: PropTypes.number.isRequired,
+    level: PropTypes.string,
     excluding: PropTypes.array,
+    choose: PropTypes.number.isRequired,
+    note: PropTypes.string,
     myCourses: PropTypes.object.isRequired,
     onCheck: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
+    level: '',
     excluding: [],
+    note: '',
   };
 
   state = {
@@ -92,7 +131,7 @@ export default class LevelCheck extends Component {
   }
 
   checkTaken = (subject, level, excluding, children, myCourses) => {
-    const takenCourses = getTakenCoursesInLevel(subject, level, excluding, myCourses);
+    let takenCourses = getTakenCourses(subject, level, excluding, myCourses);
     if (takenCourses.length === 0) return;
 
     // If course is taken, increment count by 1
@@ -100,8 +139,9 @@ export default class LevelCheck extends Component {
       this.props.onCheck(null, true);
       this.setState({ taken: true, isChecked: true });
     } else {
+      takenCourses = takenCourses.slice(0, this.props.choose);
       this.props.onCheck(null, true, takenCourses.length);
-      takenCourses.forEach((catalogNumber, index) => {
+      takenCourses.forEach(({ subject, catalogNumber }, index) => {
         children[index] = { subject, catalogNumber, checked: true };
       });
       this.setState({ children });
@@ -121,12 +161,13 @@ export default class LevelCheck extends Component {
   }
 
   render() {
-    const { subject, level, excluding, choose } = this.props;
+    const { subject, level, excluding, choose, note } = this.props;
+    const levelStr = (level.length > 0) ? `${level}-level ` : '';
     const excludingStr = (excluding.length > 0) ? ` (excl. ${excluding.join(',')})` : '';
     return (
-      <div>
+      <div data-tip data-for='note'>
         <Checkbox
-          label={ `${subject} ${level} - level${excludingStr}` }
+          label={ `Any ${levelStr}${subject} course${excludingStr}` }
           checked={ this.state.isChecked }
           onCheck={ this.onCheck.bind(this, -1) }
           labelStyle={ styles.labelStyle }
@@ -154,6 +195,13 @@ export default class LevelCheck extends Component {
             }) }
           </div>
         ) }
+        {
+          (note.length > 0) && (
+            <ReactTooltip id='note' type='info' effect='solid'>
+              <span>{ note }</span>
+            </ReactTooltip>
+          )
+        }
       </div>
     );
   }
