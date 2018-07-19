@@ -31,3 +31,4 @@ Important:
 - Cache rmp requests
 - Separate server and app
 - Fix schedule parser (MM/DD/YYYY)
+- Select all for majors

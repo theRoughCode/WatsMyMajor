@@ -29,7 +29,7 @@ function parseCourses(textArr) {
 }
 
 function parseText(text, callback) {
-  let textArr = text.split(/\n/);
+  let textArr = text.split(/\n/).filter(ln => ln.replace(/\t/g, '').length > 0);
   textArr = read(textArr, 'Groupbox', 0, 1);
   const term = textArr[0];
   textArr = read(textArr, 'Section', 0, 1);
