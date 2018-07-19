@@ -30,9 +30,9 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
     case "course":
       return (
         <CourseCheck
+          key={ index }
           subject={ node.subject }
           catalogNumber={ node.catalogNumber }
-          key={ index }
           onCheck={ onCheck }
           myCourses={ myCourses }
         />
@@ -40,12 +40,12 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
     case "range":
       return (
         <RangeCheck
+          key={ index }
           subject={ node.subject }
           from={ node.from }
           to={ node.to }
           excluding={ node.excluding || [] }
           choose={ choose }
-          key={ index }
           onCheck={ onCheck }
           myCourses={ myCourses }
         />
@@ -55,12 +55,12 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
     case "subject-level":
       return (
         <LevelCheck
+          key={ index }
           subject={ node.subject }
           level={ node.catalogNumber }
           excluding={ node.excluding }
           choose={ choose }
           note={ node.note }
-          key={ index }
           onCheck={ onCheck }
           myCourses={ myCourses }
         />
@@ -68,16 +68,18 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
     case "option":
       return (
         <OptionCheck
-          options={ node.options }
           key={ index }
+          options={ node.options }
+          myCourses={ myCourses }
           onCheck={ onCheck }
         />
       );
     case "any":
       return (
         <AnyCheck
-          choose={ choose }
           key={ index }
+          choose={ choose }
+          myCourses={ myCourses }
           onCheck={ onCheck }
         />
       );

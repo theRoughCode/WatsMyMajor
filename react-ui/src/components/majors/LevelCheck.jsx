@@ -177,22 +177,22 @@ export default class LevelCheck extends Component {
         />
         { (choose > 1) && (
           <div style={ styles.indentedChecks }>
-            { Array.from(Array(choose).keys()).map((_, index) => {
-              const child = this.state.children[index];
-              const label = (child) ? `${child.subject} ${child.catalogNumber}` : '';
-              const checked = (child) ? child.checked : false;
-              return (
-                <Checkbox
-                  key={ index }
-                  label={ label }
-                  checked={ checked }
-                  onCheck={ this.onCheck.bind(this, index) }
-                  labelStyle={ styles.labelStyle }
-                  iconStyle={ styles.innerIcon }
-                  style={ styles.innerChecks }
-                />
-              );
-            }) }
+            {
+              this.state.children.map(({ subject, catalogNumber, checked }, index) => {
+                const label = (subject.length > 0) ? `${subject} ${catalogNumber}` : '';
+                return (
+                  <Checkbox
+                    key={ index }
+                    label={ label }
+                    checked={ checked }
+                    onCheck={ this.onCheck.bind(this, index) }
+                    labelStyle={ styles.labelStyle }
+                    iconStyle={ styles.innerIcon }
+                    style={ styles.innerChecks }
+                  />
+                );
+              })
+            }
           </div>
         ) }
         {
