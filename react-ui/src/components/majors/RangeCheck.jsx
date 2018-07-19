@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
-import { getTakenCoursesInRange } from '../../utils/courses';
-
 
 const styles = {
   iconStyle: {
@@ -31,6 +29,36 @@ const styles = {
     width: 20,
   }
 };
+
+// Check if taken a course in range and not in the excluding list
+const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
+	if (myCourses[subject] == null) return [];
+	const fromNum = Number(from.trim());
+	const toNum = Number(to.trim());
+	if (isNaN(from)) {
+		console.error(`From: ${from} is not a number!`);
+		return [];
+	}
+	if (isNaN(to)) {
+		console.error(`To: ${to} is not a number!`);
+		return [];
+	}
+
+	const catNums = Object.keys(myCourses[subject]);
+	return catNums.filter((catNum) => {
+		const num = Number(catNum.replace(/\D/g,'').trim());
+		if (isNaN(num)) {
+			console.error(`Catalog number ${num} (${catNum}) is not a number!`);
+			return false;
+		}
+    if (num < fromNum || num > toNum) return false;
+		// Check if course is in exclude list
+		for (let i = 0; i < excluding.length; i++) {
+			if (catNum === excluding[i]) return false;
+		}
+		return true;
+	});
+}
 
 export default class RangeCheck extends Component {
   static propTypes = {

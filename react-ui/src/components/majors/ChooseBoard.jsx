@@ -60,6 +60,7 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
           choose={ choose }
           key={ index }
           onCheck={ onCheck }
+          myCourses={ myCourses }
         />
       );
     case "option":
