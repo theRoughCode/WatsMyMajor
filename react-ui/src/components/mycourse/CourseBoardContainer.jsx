@@ -140,8 +140,12 @@ class CourseBoardContainer extends Component {
 		const splitId = start.draggableId.split("/");
 		if (splitId.length < 3) return;
 		const [ subject, catalogNumber ] = splitId;
-		const prereqs = this.props.myCourses[subject][catalogNumber];
-		if (prereqs == null || prereqs.length === 0) return;
+		let prereqs = [];
+		if (this.props.myCourses.hasOwnProperty(subject)
+				&& this.props.myCourses[subject].hasOwnProperty(catalogNumber)) {
+			prereqs = this.props.myCourses[subject][catalogNumber];
+		}
+		if (prereqs.length === 0) return;
 		this.props.highlightPrereqsHandler(prereqs);
 	}
 

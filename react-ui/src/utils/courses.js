@@ -6,8 +6,8 @@ export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
 		myCourses[subject].hasOwnProperty(advancedCSCatNum);
 }
 
-// Check if taken a course in range
-export const getTakenCoursesInRange = (subject, from, to, myCourses) => {
+// Check if taken a course in range and not in the excluding list
+export const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
 	if (myCourses[subject] == null) return [];
 	const fromNum = Number(from.trim());
 	const toNum = Number(to.trim());
@@ -27,7 +27,11 @@ export const getTakenCoursesInRange = (subject, from, to, myCourses) => {
 			console.error(`Catalog number ${num} (${catNum}) is not a number!`);
 			return false;
 		}
-		return (num >= fromNum && num <= toNum);
+		// Check if course is in exclude list
+		for (let i = 0; i < excluding.length; i++) {
+			if (catNum === excluding[i]) return false;
+		}
+		return (num >= fromNum && num <= toNum && num !== excluding);
 	});
 }
 

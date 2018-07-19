@@ -50,24 +50,24 @@ export default class RangeCheck extends Component {
   };
 
   componentDidMount() {
-    const { subject, from, to, myCourses, choose } = this.props;
+    const { subject, from, to, excluding, myCourses, choose } = this.props;
     const children = Array.from(Array(choose).keys()).map(() =>
       ({ subject: '', catalogNumber: '', checked: false}));
     this.setState({ children });
-    this.checkTaken(subject, from, to, children, myCourses);
+    this.checkTaken(subject, from, to, excluding, children, myCourses);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { subject, from, to, myCourses } = nextProps;
+    const { subject, from, to, excluding, myCourses } = nextProps;
     if (subject !== this.props.subject
       || from !== this.props.from
       || to !== this.props.to) {
-      this.checkTaken(subject, from, to, this.state.children, myCourses);
+      this.checkTaken(subject, from, to, excluding, this.state.children, myCourses);
     }
   }
 
-  checkTaken = (subject, from, to, children, myCourses) => {
-    const takenCourses = getTakenCoursesInRange(subject, from, to, myCourses);
+  checkTaken = (subject, from, to, excluding, children, myCourses) => {
+    const takenCourses = getTakenCoursesInRange(subject, from, to, excluding, myCourses);
     if (takenCourses.length === 0) return;
 
     // If course is taken, increment count by 1
