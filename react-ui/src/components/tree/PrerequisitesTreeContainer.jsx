@@ -8,6 +8,8 @@ import { hasTakenCourse } from '../../utils/courses';
 import { objectEquals } from '../../utils/arrays';
 import '../../stylesheets/Tree.css';
 
+// Depth of tree to leave open.
+const INITIAL_DEPTH = 2;
 
 const styles = {
   container: {
@@ -89,13 +91,17 @@ class PrerequisitesTreeContainer extends Component {
     const { subject, catalogNumber } = this.props.match.params;
     getTree(subject, catalogNumber, data => {
       const tree = this.parseNodes(data, this.props.myCourses);
-      this.setState({ data, tree });
+      if (tree != null) {
+        this.closeAtDepth(tree, INITIAL_DEPTH);
+        this.setState({ data, tree });
+      }
     });
   }
 
   componentWillReceiveProps(nextProps) {
     if (!objectEquals(nextProps.myCourses, this.props.myCourses)) {
       const tree = this.parseNodes(this.state.data, nextProps.myCourses);
+      this.closeAtDepth(tree, INITIAL_DEPTH);
       this.setState({ tree });
     }
   }
@@ -115,6 +121,7 @@ class PrerequisitesTreeContainer extends Component {
     return treeNode;
   }
 
+  // Parses course node and formats it
   parseCourseNode(node, myCourses) {
     const { subject, catalogNumber, choose, children } = node;
     const id = generateRandomId();
@@ -159,8 +166,9 @@ class PrerequisitesTreeContainer extends Component {
   parseChooseNode(node, myCourses) {
     const { choose, children } = node;
     const id = generateRandomId();
+    const name = (choose === 0) ? 'Choose all of:' : `Choose ${choose} of:`;
     const chooseNode = {
-      name: `Choose ${choose} of:`,
+      name,
       id,
       taken: false,
       isOpen: true,
@@ -175,7 +183,7 @@ class PrerequisitesTreeContainer extends Component {
     chooseNode.gProps.onClick = this.toggleNode.bind(this, chooseNode);
 
     // Check children to see if number of taken courses meet requirements
-    let counter = choose;
+    let counter = (choose === 0) ? children.length : choose;
     for (let i = 0; i < chooseNode.children.length; i++) {
       if (counter === 0) break;
       if (chooseNode.children[i].taken) counter--;
@@ -281,13 +289,23 @@ class PrerequisitesTreeContainer extends Component {
     return origNode;
   }
 
+  // Closes tree from depth n onwards
+  closeAtDepth(node, n, currentDepth = 0) {
+    if (node.isLeaf || !node.isOpen) return;
+    if (node.children == null || node.children.length === 0) return;
+    // If we're at the required depth, close the tree
+    if (n === currentDepth) {
+      this.toggleNode(node);
+      return;
+    }
+    node.children.forEach(child => this.closeAtDepth(child, n, currentDepth + 1));
+  }
+
   // Depth-first traversal to close tree nodes
   closeTree(node) {
     if (node.isLeaf || !node.isOpen) return;
     if (node.children == null || node.children.length === 0) return;
-    for (let i = 0; i < node.children.length; i++) {
-      this.closeTree(node.children[i]);
-    }
+    node.children.forEach(child => this.closeTree(child));
     node._children = node.children;
     node.children = null;
   }
