@@ -94,6 +94,7 @@ class MajorsContainer extends Component {
             onChange={ this.handleChange.bind(this) }
             style={ styles.select }
             value={ this.state.key }
+            autoWidth
           >
             {
               this.state.majorsList.map(({ key, name }, index) => (

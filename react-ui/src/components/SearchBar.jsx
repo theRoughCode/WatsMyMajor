@@ -44,6 +44,11 @@ class AppSearchBar extends Component {
     this.searchCourse = this.searchCourse.bind(this);
   }
 
+  componentDidMount() {
+    // Auto focus search bar
+    this.searchBar.focus();
+  }
+
   onClick() {
     this.setState({ dataSource: [], query: '' });
   }
@@ -75,6 +80,7 @@ class AppSearchBar extends Component {
   render() {
     return (
       <SearchBar
+        ref={ (input) => this.searchBar = input }
         hintText="Search for courses"
         dataSource={ this.state.dataSource }
         filter={ (searchValue, key) => searchValue.length }

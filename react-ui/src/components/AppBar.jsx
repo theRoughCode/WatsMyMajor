@@ -15,10 +15,14 @@ const styles = {
 	},
 	logoutButton: {
 		marginTop: 11,
-		marginRight: 20
+		marginLeft: 20
 	},
 	logoutLabel: {
 		color: 'white'
+	},
+	searchBar: {
+		marginTop: '5px',
+		width: '30%',
 	}
 };
 
@@ -41,6 +45,7 @@ class AppBar extends Component {
 				onLeftIconButtonClick={ toggleSideBar }
 				title="WatsMyMajor"
 			>
+				<SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
 				{ isLoggedIn && (
 					<FlatButton
 						label="Logout"
@@ -49,7 +54,6 @@ class AppBar extends Component {
 						style={ styles.logoutButton }
 					/>
 				) }
-				<SearchBar onResult={ this.onSearchResult } />
 			</Bar>
 		);
 	}
