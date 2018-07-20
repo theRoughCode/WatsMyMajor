@@ -1,5 +1,38 @@
 # WatsMyMajorBeta
 A revamped version of [WatsMyMajor](https://github.com/theRoughCode/WatsMyMajor).
+This project was inspired when I was considering doing a double major in Mathematical Physics and Computer Science at the University of Waterloo.  To plan it out, I had to create a giant spreadsheet in Google Sheets and see if I could fulfill the requirements for both majors while still graduating on time.  Here's a screenshot of a part of it:
+
+![image](https://user-images.githubusercontent.com/19257435/42981890-7a2312c4-8b93-11e8-9896-ed00712e4ee7.png)
+
+After all the effort, it turned out that it was definitely not possible, even if I took 6 courses every term till I graduate. This is an issue that almost every student faces (unless you have all your courses planned out for you  *cough* Engineering kids *cough*).  I've even met a TA who had to stay back one term because he did not meet a requirement to graduate!  I find it crazy that students who are already paying tuition fees have such a difficult time planning out their courses and majors.
+
+After this feat, I realized that a lot of what I was doing in Google Sheets was repetitive and automatable.  That meant that I could write a program to do it for me. And thus, WatsMyMajor was born.
+
+## What It Does
+WatsMyMajor is a web app that assists University of Waterloo students in planning their courses.
+
+### Viewing Courses
+![image](https://user-images.githubusercontent.com/19257435/42982274-75652db0-8b95-11e8-8471-a1b185ba4532.png)
+The most accessible feature is viewing courses.  This is done by typing a course in the search bar. This page provides a summary of the course, including:
+- subject & catalog number
+- title of course
+- terms offered
+- description of course
+- whether you're eligible for the course
+- ability to add the course to your cart
+- current term's class list
+  - Clicking on a row in the class list will open up an expanded view where more information about the availability of the class is shown, together with any stats about the instructor teaching that class.
+- requisites.  This includes:
+  - Prerequisites: courses you need to take before you can take this course
+  - Corequisites: courses you need to take before or at the same time as this course
+  - Antirequisites: courses that you cannot have already taken
+  - Postrequisites: courses that require this course as a prerequisite
+- requisite tree
+  - This provides a tree view of the course and its prerequisites, recursively.  This will be explained below at [Requisite Tree](#requisite-tree).
+
+### Requisite Tree
+![image](https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png)
+The requisite tree provides a neat and cool way to visualize which courses are required to take a certain course.  If the user has their courses filled out, it will highlight taken courses in green.  The user can also toggle "Simplified View" on, which parses the tree via depth-first traversal and figure out which nodes can be taken out of three depending on courses the user has already taken.  In effect, it "simplifies" the tree down to just the information *you* need to know.
 
 ## Acknowledgements
 This project was structured with the help from https://github.com/mars/heroku-cra-node via the MIT license.
