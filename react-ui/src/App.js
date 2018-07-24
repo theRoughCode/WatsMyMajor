@@ -169,7 +169,7 @@ class App extends Component {
             <Route exact path='/' render={ this.addRedirect(Dashboard) } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
             <Route exact path='/login' render={ this.addUndirect(Login) } />
-  					<Route exact path='/majors' render={ this.addRedirect(Majors) } />
+  					<Route exact path='/majors/:majorKey?' render={ this.addRedirect(Majors) } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
             <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
