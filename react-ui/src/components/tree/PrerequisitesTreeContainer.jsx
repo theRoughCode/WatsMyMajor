@@ -80,8 +80,9 @@ class PrerequisitesTreeContainer extends Component {
     super(props);
 
     this.state = {
-      data: null,
-      tree: null,
+      data: null,  // contains data
+      tree: null,  // contains current tree view
+      canBeSimplified: false,  // true if tree can be simplified
     };
 
     this.toggleSimplifiedView = this.toggleSimplifiedView.bind(this);
@@ -136,6 +137,11 @@ class PrerequisitesTreeContainer extends Component {
       isLeaf: false,
       gProps: {},
     };
+
+    // Set canBeSimplified to true if a course has been taken
+    if (!this.state.canBeSimplified && courseNode.taken) {
+      this.setState({ canBeSimplified: true });
+    }
 
     // Has children
     if (children != null && children.length > 0) {
@@ -334,20 +340,24 @@ class PrerequisitesTreeContainer extends Component {
   }
 
   render() {
-    const { tree } = this.state;
+    const { tree, canBeSimplified } = this.state;
     if (tree == null) return null;
 
     return (
       <div style={styles.container}>
         <div style={styles.header}>
           <span style={styles.title}>Prerequisites Tree</span>
-          <Toggle
-            label="Simplified View"
-            style={styles.toggle}
-            labelStyle={styles.toggleLabel}
-            labelPosition="right"
-            onToggle={this.toggleSimplifiedView}
-          />
+          {
+            canBeSimplified && (
+              <Toggle
+                label="Simplified View"
+                style={styles.toggle}
+                labelStyle={styles.toggleLabel}
+                labelPosition="right"
+                onToggle={this.toggleSimplifiedView}
+              />
+            )
+          }
         </div>
         { tree && (
           <div style={styles.treeContainer}>
