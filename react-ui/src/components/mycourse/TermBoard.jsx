@@ -59,8 +59,10 @@ const styles = {
 		padding: space,
 		width: stylesConst.width - space * 2,
 		minHeight: stylesConst.minHeight,
+		maxHeight: isCart ? 400 : 'none',
 		height: stylesConst.height,
-		background: isDraggingOver ? '#bde580' : 'inherit'
+		background: isDraggingOver ? '#bde580' : 'inherit',
+		overflow: isCart ? 'auto' : 'none',
 	}),
 	addCourseCard: {
 		padding: space,

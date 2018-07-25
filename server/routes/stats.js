@@ -3,6 +3,7 @@ const waterloo = require('../models/waterloo');
 const users = require('../models/database/users');
 const stats = require('../models/database/stats');
 
+// Updates count of all users' courses
 StatsRouter.get('/update/popular', async function(req, res) {
 	let { err, courseCount } = await users.getAllUserCourses();
 	if (err) {
@@ -21,6 +22,7 @@ StatsRouter.get('/update/popular', async function(req, res) {
 	}
 });
 
+// Retrieves the top "limit" courses from the database
 StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
   const limitStr = req.params.limit;
   const limit = parseInt(limitStr);

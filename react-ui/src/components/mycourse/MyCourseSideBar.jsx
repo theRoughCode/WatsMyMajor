@@ -14,6 +14,14 @@ import { DragTypes } from '../../constants/DragTypes';
 const width = 200;
 
 const styles = {
+	container: {
+		position: 'fixed',
+		right: 0,
+		marginRight: 0,
+		width: '22%',
+		display: 'flex',
+		flexDirection: 'column',
+	},
 	addButton: {
 		width,
 		margin: '10px auto'
@@ -105,7 +113,7 @@ export default class MyCourseSideBar extends Component {
     ];
 
 		return (
-			<div className="cart">
+			<div style={styles.container}>
 				<Button
 					onClick={this.openDialog}
 					label="Add Term"

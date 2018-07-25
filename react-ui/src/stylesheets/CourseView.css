@@ -211,13 +211,3 @@
 .course-class-list-table td {
 	text-align: center !important;
 }
-
-/* Cart */
-.cart {
-	position: fixed;
-	right: 0;
-	margin-right: 0;
-	width: 22%;
-	display: flex;
-	flex-direction: column;
-}

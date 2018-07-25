@@ -33,8 +33,7 @@ const styles = {
 	board: {
 		width: '100%',
 		display: 'flex',
-		overflowX: 'auto',
-		overflowY: 'hidden',
+		overflow: 'auto',
 	},
 	emptyContainer: {
 		width: '90%',
