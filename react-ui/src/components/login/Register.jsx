@@ -138,7 +138,7 @@ class Register extends Component {
     }
 
     try {
-      const response = await fetch('/users/auth/create', {
+      const response = await fetch('/server/auth/register', {
         method: 'POST',
   			body: JSON.stringify({
   				username,
@@ -146,8 +146,10 @@ class Register extends Component {
           email,
           password,
   			}),
+        credentials: 'include',
   			headers: {
-  	      'content-type': 'application/json'
+  	      'content-type': 'application/json',
+          'x-secret': process.env.REACT_APP_SERVER_SECRET
   	    }
   		});
 

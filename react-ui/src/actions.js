@@ -1,4 +1,5 @@
 import { RSAA } from 'redux-api-middleware';
+import { getCookie, deleteCookie } from './utils/cookies';
 
 /*
  * action types
@@ -38,14 +39,21 @@ export const loginUser = (username) => {
 
 	return {
 		[RSAA]: {
-			endpoint: `/users/${username}`,
+			endpoint: `/server/users/${username}`,
 			method: 'GET',
+			headers: {
+				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+			},
 			types: ['', { type: LOGIN_USER, meta: { username } }, '']
 		}
 	}
 };
 
-export const logoutUser = () => ({ type: LOGOUT_USER });
+export const logoutUser = () => {
+	deleteCookie('watsmymajor_jwt');
+	return { type: LOGOUT_USER };
+};
 
 export const setExpandedCourse = (courseObj, index) => {
 	const {
@@ -92,10 +100,12 @@ export const createSnack = (
 // Updates course list.  Use this when adding new courses.
 export const updateUserCourses = (username, courseList) => ({
 	[RSAA]: {
-		endpoint: `/users/set/courselist/${username}`,
+		endpoint: `/server/users/set/courselist/${username}`,
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 		},
 		body: JSON.stringify({ courseList }),
 		types: [
@@ -110,10 +120,12 @@ export const updateUserCourses = (username, courseList) => ({
 // if there are new courses added.
 export const reorderUserCourses = (username, courseList) => ({
 	[RSAA]: {
-		endpoint: `/users/reorder/courselist/${username}`,
+		endpoint: `/server/users/reorder/courselist/${username}`,
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 		},
 		body: JSON.stringify({ courseList }),
 		types: [
@@ -128,10 +140,12 @@ export const addToCart = (subject, catalogNumber, username, cart) => {
 	cart = cart.concat([{ subject, catalogNumber }]);
 	return {
 		[RSAA]: {
-			endpoint: `/users/set/cart/${username}`,
+			endpoint: `/server/users/set/cart/${username}`,
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 			},
 			body: JSON.stringify({ cart }),
 			types: [
@@ -150,10 +164,12 @@ export const removeFromCart = (subject, catalogNumber, username, cart) => {
 	);
 	return {
 		[RSAA]: {
-			endpoint: `/users/set/cart/${username}`,
+			endpoint: `/server/users/set/cart/${username}`,
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 			},
 			body: JSON.stringify({ cart }),
 			types: [{ type: SET_CART, meta: { cart } }, '', '']
@@ -163,10 +179,12 @@ export const removeFromCart = (subject, catalogNumber, username, cart) => {
 
 export const reorderCart = (username, cart) => ({
 	[RSAA]: {
-		endpoint: `/users/reorder/cart/${username}`,
+		endpoint: `/server/users/reorder/cart/${username}`,
 		method: 'POST',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 		},
 		body: JSON.stringify({ cart }),
 		types: [{ type: SET_CART, 	meta: { cart } }, '', '']

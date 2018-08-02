@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import SearchBar from 'material-ui-search-bar';
 
 async function fetchQuery(query, maxNumberOfResults) {
-  const response = await fetch(`/courses/query/${query}/${maxNumberOfResults}`);
+  const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}`, {
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET
+    }
+  });
   if (response.status !== 200) {
     console.log('Looks like there was a problem. Status Code: ' +
       response.status);

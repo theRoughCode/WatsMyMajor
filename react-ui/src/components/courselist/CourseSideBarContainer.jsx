@@ -18,7 +18,11 @@ const styles =  {
 };
 
 const retrieveProfInfo = (instructor) => {
-	return fetch(`/prof/${instructor}`)
+	return fetch(`/server/prof/${instructor}`, {
+		headers: {
+			'x-secret': process.env.REACT_APP_SERVER_SECRET
+		}
+	})
 	.then(response => {
 		if (!response.ok) {
 			throw new Error(`status ${response.status}`);

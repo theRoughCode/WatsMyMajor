@@ -109,14 +109,16 @@ class Login extends Component {
     }
 
     try {
-      const response = await fetch('/users/auth/login', {
+      const response = await fetch('/server/auth/login', {
   			method: 'POST',
   			body: JSON.stringify({
   				username,
           password
   			}),
+        credentials: 'include',
   			headers: {
-  	      'content-type': 'application/json'
+  	      'content-type': 'application/json',
+          'x-secret': process.env.REACT_APP_SERVER_SECRET
   	    }
   		});
       if (!response.ok) {

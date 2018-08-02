@@ -177,13 +177,14 @@ class CalendarContainer extends Component {
 	}
 
 	getSchedule() {
-		return fetch('/parse/schedule', {
+		return fetch('/server/parse/schedule', {
 			method: 'POST',
 			body: JSON.stringify({
 				text: this.props.text
 			}),
 			headers: {
-	      'content-type': 'application/json'
+	      'content-type': 'application/json',
+				'x-secret': process.env.REACT_APP_SERVER_SECRET
 	    }
 		}).then(response => {
 			if (!response.ok) {

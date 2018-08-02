@@ -26,7 +26,11 @@ const styles = {
 };
 
 const getCourseData = (subject, catalogNumber) => {
-	return fetch(`/wat/${subject}/${catalogNumber}`)
+	return fetch(`/server/wat/${subject}/${catalogNumber}`, {
+		headers: {
+			'x-secret': process.env.REACT_APP_SERVER_SECRET
+		}
+	})
 	.then(response => {
 		if (!response.ok) {
 			throw new Error(`status ${response.status}`);

@@ -50,14 +50,22 @@ const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
 };
 
 async function fetchRequirements(key) {
-  const response = await fetch(`/majors/get/${key}`);
+  const response = await fetch(`/server/majors/get/${key}`, {
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET
+    }
+  });
   if (!response.ok) return { data: [], name: '', url: '' };
   const data = await response.json() || { data: [], name: '', url: '' };
   return data;
 }
 
 async function fetchList() {
-  const response = await fetch('/majors/list');
+  const response = await fetch('/server/majors/list', {
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET
+    }
+  });
   if (!response.ok) return;
   return await response.json();
 }

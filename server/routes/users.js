@@ -12,36 +12,8 @@ UsersRouter.get('/:username', function(req, res) {
 	});
 });
 
-// Register user
-UsersRouter.post('/auth/create', function(req, res) {
-	const username = req.body.username;
-	const name = req.body.name;
-	const email = req.body.email;
-	const password = req.body.password;
-
-	users.createUser(username, email, name, password, (err, user) => {
-		if (err) {
-			console.log(err);
-			res.status(400).json(err);
-		} else res.json({ username, email, name });
-	});
-});
-
-// Login user
-UsersRouter.post('/auth/login', function(req, res) {
-	const username = req.body.username;
-	const password = req.body.password;
-
-	users.verifyUser(username, password, (err, user) => {
-		if (err) {
-			console.log(err);
-			res.status(400).send(err);
-		} else res.json(user);
-	});
-});
-
 // Update user
-UsersRouter.post('/auth/edit', function(req, res) {
+UsersRouter.post('/edit', function(req, res) {
 	const username = req.body.username;
 	const password = req.body.password;
 

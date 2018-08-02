@@ -194,11 +194,12 @@ export default class TermBoard extends Component {
 		const { importText } = this.state;
 		this.closeImportDialog();
 
-		fetch('/parse/courses', {
+		fetch('/server/parse/courses', {
 			method: 'POST',
 			body: JSON.stringify({ text: importText }),
 			headers: {
-				'content-type': 'application/json'
+				'content-type': 'application/json',
+				'x-secret': process.env.REACT_APP_SERVER_SECRET
 			}
 		}).then(response => {
 			if (!response.ok) throw new Error(`status ${response.status}`);

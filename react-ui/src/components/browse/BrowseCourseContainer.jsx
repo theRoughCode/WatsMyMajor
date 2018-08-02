@@ -6,8 +6,6 @@ import { hasTakenCourse, isInCart } from '../../utils/courses';
 import { createSnack, addToCart, removeFromCart } from '../../actions';
 import '../../stylesheets/CourseView.css';
 
-
-
 class BrowseCourseContainer extends Component {
   static propTypes = {
     myCourses: PropTypes.object.isRequired,
@@ -26,7 +24,11 @@ class BrowseCourseContainer extends Component {
   }
 
   async fetchPopularCourses() {
-    const response = await fetch('/stats/courses/popular');
+    const response = await fetch('/server/stats/courses/popular', {
+      headers: {
+        "x-secret": process.env.REACT_APP_SERVER_SECRET
+      }
+    });
     if (!response.ok) return;
     const popular = await response.json();
     this.setState({ popular });

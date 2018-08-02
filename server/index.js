@@ -1,8 +1,10 @@
 const express = require('express');
 const path = require('path');
 const Raven = require('raven');
+const passport = require('passport');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
+const cookieParser = require('cookie-parser');
+const router = require('./router');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +13,13 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Allow use of cookies
+app.use(cookieParser());
+
+// Initialize passport authentication
+require('./helpers/passport');
+app.use(passport.initialize());
+
 // Priority serve any static files.
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
@@ -18,7 +27,7 @@ app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 Raven.config(process.env.SENTRY_DSN).install();
 
 // Connect all our routes to our application
-app.use('/', routes);
+app.use('/', router);
 
 app.listen(PORT, function () {
   console.log(`Listening on port ${PORT}`);
