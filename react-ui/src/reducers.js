@@ -191,6 +191,7 @@ function user(state = defaultUser, action) {
 	}
 }
 
+// TODO: Get login status from JWT
 function isLoggedIn(state = false, action) {
 	switch (action.type) {
 		case SET_USER:

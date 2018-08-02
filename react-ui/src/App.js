@@ -18,6 +18,7 @@ import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MySchedule';
 import CourseListView from './components/courselist/CourseListContainer';
+import LoadingView from './components/tools/LoadingView';
 import {
   toggleSideBar,
   createSnack,
@@ -59,10 +60,6 @@ class App extends Component {
 			onUndoSnack,
 		} = props;
 
-    // Check localStorage if username is not set
-    const cachedUsername = localStorage.getItem('wat-username');
-    if (cachedUsername) onLogin(cachedUsername);
-
     this.state = {
 			subject: '',
 			catalogNumber: '',
@@ -73,7 +70,8 @@ class App extends Component {
 			snackAutoHideDuration: 2000,
 			snackOpen: false,
 			snack,
-      isLoggedIn: isLoggedIn || (cachedUsername != null),
+      isLoggedIn: false,
+      loading: true,
     };
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -87,6 +85,12 @@ class App extends Component {
 	}
 
   componentDidMount() {
+    // Check localStorage if username is not set
+    const cachedUsername = localStorage.getItem('wat-username');
+    if (cachedUsername) {
+      this.onLogin(cachedUsername);
+    } else this.setState({ loading: false });
+
     // Listen for route change
     this.props.history.listen(this.handleRouteChange);
   }
@@ -104,7 +108,8 @@ class App extends Component {
 		}
 
     if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
-      this.setState({ isLoggedIn: nextProps.isLoggedIn});
+      this.setState({ isLoggedIn: nextProps.isLoggedIn });
+      if (this.state.loading) this.setState({ loading: false });
     }
 	}
 
@@ -155,6 +160,10 @@ class App extends Component {
 													? 'all 0.3s ease-in-out'
 													: 'all 0.225s ease-out';
 		styles = Object.assign({}, styles, { marginLeft, transition });
+
+    if (this.state.loading) {
+      return <LoadingView />;
+    }
 
     return (
 			<div className="App">

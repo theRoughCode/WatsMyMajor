@@ -45,7 +45,7 @@ export const loginUser = (username) => {
 				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
 				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
 			},
-			types: ['', { type: LOGIN_USER, meta: { username } }, '']
+			types: ['', { type: LOGIN_USER, meta: { username } }, { type: LOGOUT_USER }]
 		}
 	}
 };
