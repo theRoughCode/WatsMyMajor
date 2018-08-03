@@ -152,7 +152,19 @@ async function getUser(username, callback) {
     const snapshot = await usersRef.child(username).once('value');
     callback(null, snapshot.val());
   } catch (err) {
-    callback(err, null)
+    callback(err, null);
+  }
+}
+
+async function getUserByFacebookID(facebookId, callback) {
+  try {
+    const snapshot = await usersRef
+      .orderByChild('facebookID')
+      .equalTo(facebookId)
+      .once('value');
+    callback(null, snapshot.val());
+  } catch (err) {
+    callback(err, null);
   }
 }
 
@@ -205,6 +217,10 @@ function setCourseList(username, courseList, callback) {
   setField(username, 'courseList', courseList, callback);
 }
 
+function setFacebookID(username, facebookID, callback) {
+  setField(username, 'facebookID', facebookID, callback);
+}
+
 module.exports = {
   createUser,
   verifyUser,
@@ -212,8 +228,10 @@ module.exports = {
   setUser,
   updateUser,
   getUser,
+  getUserByFacebookID,
   getAllUserCourses,
   setCart,
   setSchedule,
   setCourseList,
+  setFacebookID,
 };

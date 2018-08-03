@@ -1,6 +1,7 @@
 const UsersRouter = require('express').Router();
 const { setCourseListPrereqs, setCoursesPrereqs } = require('../models/utils');
 const users = require('../models/database/users');
+const facebookUsers = require('../models/database/facebookUsers');
 
 // Get user
 UsersRouter.get('/:username', function(req, res) {
@@ -9,6 +10,31 @@ UsersRouter.get('/:username', function(req, res) {
 	users.getUser(username, (err, user) => {
 		if (err) res.status(400).send(err);
 		else res.json(user);
+	});
+});
+
+// Link facebook id to user
+UsersRouter.post('/link/facebook/:username', function(req, res) {
+	const username = req.params.username;
+	const facebookID = req.body.facebookID;
+
+	if (!facebookID) {
+		res.status(400).send('Missing facebook ID.');
+		return;
+	}
+
+	// Add facebook ID to user object
+	users.setFacebookID(username, facebookID, err => {
+		if (err) {
+			res.status(400).send(err);
+			return;
+		}
+
+		// Add facebook ID to facebookUser refererence
+		facebookUsers.setFacebookUser(facebookID, username, err => {
+			if (err) res.status(400).send(err);
+			else res.status(200).send(`User ${username}'s facebook account has been linked.`);
+		});
 	});
 });
 

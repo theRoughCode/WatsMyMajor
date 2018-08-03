@@ -3,7 +3,9 @@ const passportJWT = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
+const FacebookTokenStrategy = require('passport-facebook-token');
 const users = require('../models/database/users');
+const facebookUsers = require('../models/database/facebookUsers');
 
 const opt = {
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
@@ -24,4 +26,13 @@ passport.use('login', new LocalStrategy(
 passport.use(new JWTStrategy(opt, function(token, callback) {
   if (token.username) callback(null, token.username);
   else callback(true);
+}));
+
+// Facebook Authentication
+passport.use(new FacebookTokenStrategy({
+  clientID: process.env.FACEBOOK_APP_ID,
+  clientSecret: process.env.FACEBOOK_APP_SECRET
+}, function(accessToken, refreshToken, profile, callback) {
+  // Check if facebook user is in database and get corresponding username
+  facebookUsers.getFacebookUser(profile.id, callback);
 }));

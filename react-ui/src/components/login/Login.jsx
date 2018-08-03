@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-// import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -60,18 +60,6 @@ const styles = {
   }
 };
 
-// const responseFacebook = (response) => {
-//   console.log(response);
-// };
-//
-//
-// <FacebookLogin
-//   appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-//   autoLoad={true}
-//   fields="name,email,picture"
-//   callback={responseFacebook}
-// />
-
 class Login extends Component {
 
   static propTypes = {
@@ -87,6 +75,7 @@ class Login extends Component {
     }
 
     this.onLogin = this.onLogin.bind(this);
+    this.onFacebookLogin = this.onFacebookLogin.bind(this);
   }
 
   removeErrors() {
@@ -152,6 +141,34 @@ class Login extends Component {
     }
   }
 
+  async onFacebookLogin(response) {
+    console.log(response);
+    const { accessToken, id, picture } = response;
+
+    try {
+      const response = await fetch('/server/auth/facebook', {
+  			method: 'GET',
+        credentials: 'include',
+  			headers: {
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+          'authorization': `Bearer ${accessToken}`
+  	    }
+  		});
+      if (!response.ok) {
+        const err = await response.json();
+        alert('This Facebook account has not been linked yet.');
+        console.error(err);
+      } else {
+        const { username, user } = await response.json();
+        this.props.onSetUser(username, user);
+        this.props.history.push("/");
+      }
+    } catch (err) {
+      alert('Failed to create account. Please contact an administrator.');
+      console.error(err);
+    }
+  }
+
   render() {
     return  (
       <div style={styles.viewContainer}>
@@ -186,6 +203,12 @@ class Login extends Component {
               />
             </form>
           </Paper>
+          <FacebookLogin
+            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+            fields="picture"
+            scope="user_friends"
+            callback={this.onFacebookLogin}
+          />
           <div style={styles.footer}>
             Don't have an account yet? <Link to="/register">Sign up</Link>
           </div>
