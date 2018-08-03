@@ -13,7 +13,7 @@ import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
-import Settings from './components/settings/Settings';
+import Settings from './components/settings/SettingsContainer';
 import Majors from './components/majors/MajorsContainer';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
