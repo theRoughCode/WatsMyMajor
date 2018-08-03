@@ -13,6 +13,8 @@ import {
 	SET_CART_PREREQS,
 	HIGHLIGHT_PREREQS,
 	UNHIGHLIGHT_PREREQS,
+	EDIT_SETTINGS,
+	EDIT_SETTINGS_FAILURE,
 } from './actions';
 
 const defaultExpandedCourse = {
@@ -186,6 +188,12 @@ function user(state = defaultUser, action) {
 		case LOGOUT_USER:
 			localStorage.removeItem(usernameKey);
 			return defaultUser;
+		case EDIT_SETTINGS:
+			return Object.assign({}, state, action.meta.user);
+		case EDIT_SETTINGS_FAILURE:
+			console.log(action.payload);
+			alert('Failed to update settings.  Please contact an administrator.');
+			return state;
 		default:
 			return state;
 	}

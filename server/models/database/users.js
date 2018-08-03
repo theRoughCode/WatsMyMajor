@@ -58,29 +58,21 @@ function verifyUser(username, password, callback) {
 
 // Don't support changing username
 // Returns null or error
-function updateUserSettings(username, password, user, callback) {
-  verifyUser(username, password, (err, _) => {
-    if (password !== BYPASS && err) callback(err);
-    else {
-      const newPassword = user.newPassword;
-      delete(user.username);
-      delete(user.password);
-      delete(user.newPassword);
-      // If updating password
-      if (newPassword != null) {
-        bcrypt.hash(newPassword, saltRounds, function(err, hash) {
-          if (err) {
-            callback(err);
-            return;
-          }
-          user.password = hash;
-          updateUser(username, user, callback);
-        });
-      } else {
-        updateUser(username, user, callback);
+function updateUserSettings(username, user, callback) {
+  const password = user.password;
+  // If updating password
+  if (password != null) {
+    bcrypt.hash(password, saltRounds, function(err, hash) {
+      if (err) {
+        callback(err);
+        return;
       }
-    }
-  });
+      user.password = hash;
+      updateUser(username, user, callback);
+    });
+  } else {
+    updateUser(username, user, callback);
+  }
 }
 
 

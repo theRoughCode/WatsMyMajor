@@ -13,6 +13,7 @@ import SideBar from './components/sidebar/SideBarContainer';
 import Dashboard from './components/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
+import Settings from './components/settings/Settings';
 import Majors from './components/majors/MajorsContainer';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
@@ -178,6 +179,7 @@ class App extends Component {
             <Route exact path='/' render={ this.addRedirect(Dashboard) } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
             <Route exact path='/login' render={ this.addUndirect(Login) } />
+            <Route exact path='/settings' render={ this.addRedirect(Settings) } />
   					<Route exact path='/majors/:majorKey?' render={ this.addRedirect(Majors) } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />

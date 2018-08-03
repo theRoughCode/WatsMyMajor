@@ -9,7 +9,7 @@ const SideBarAvatar = ({ name }) => (
 			className="avatar-icon"
 			src='images/avatar.jpg'
 			size={100}
-			/>
+		/>
 		<span className="avatar-name">{ name }</span>
 	</div>
 );

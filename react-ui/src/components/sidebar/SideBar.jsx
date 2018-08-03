@@ -50,14 +50,15 @@ class SideBar extends Component {
 	}
 
 	render() {
-		const { name, isLoggedIn, open } = this.props;
+		const { name, isLoggedIn, open, history } = this.props;
 		const { pathname } = this.state;
 
 		return (
 			<Drawer open={ open } style={ styles.drawer }>
 				<MenuItem
 					style={ styles.avatarMenuItem }
-					>
+					onClick={ () => history.push('/settings') }
+				>
 					{ isLoggedIn && <Avatar name={ name } /> }
 				</MenuItem>
 				<List>

@@ -18,6 +18,8 @@ export const SET_CART = 'SET_CART';
 export const SET_CART_PREREQS = 'SET_CART_PREREQS';
 export const HIGHLIGHT_PREREQS = 'HIGHLIGHT_PREREQS';
 export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
+export const EDIT_SETTINGS = 'EDIT_SETTINGS';
+export const EDIT_SETTINGS_FAILURE = 'EDIT_SETTINGS_FAILURE';
 
 /*
  * action creators
@@ -193,4 +195,29 @@ export const reorderCart = (username, cart) => ({
 
 export const highlightPrereqs = (prereqs) => ({ type: HIGHLIGHT_PREREQS, prereqs });
 
-export const unhighlightPrereqs = () => ({ type: UNHIGHLIGHT_PREREQS })
+export const unhighlightPrereqs = () => ({ type: UNHIGHLIGHT_PREREQS });
+
+export const editSettings = (username, user) => {
+	if (!username) {
+		console.error('Username is undefined. ');
+		return { type: '' };
+	}
+
+	return {
+		[RSAA]: {
+			endpoint: `/server/users/edit/${username}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+			},
+			body: JSON.stringify(user),
+			types: [
+				{ type: EDIT_SETTINGS, meta: { user } },
+				'',
+				{ type: EDIT_SETTINGS_FAILURE }
+			]
+		}
+	}
+}

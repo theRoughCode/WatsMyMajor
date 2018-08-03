@@ -39,11 +39,10 @@ UsersRouter.post('/link/facebook/:username', function(req, res) {
 });
 
 // Update user
-UsersRouter.post('/edit', function(req, res) {
-	const username = req.body.username;
-	const password = req.body.password;
+UsersRouter.post('/edit/:username', function(req, res) {
+	const username = req.params.username;
 
-	users.updateUserSettings(username, password, req.body, err => {
+	users.updateUserSettings(username, req.body, err => {
 		if (err) {
 			console.log(err);
 			res.status(400).send(err);
