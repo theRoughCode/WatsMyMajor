@@ -5,6 +5,11 @@ const users = require('../models/database/users');
 
 const JWT_SECRET = process.env.SERVER_SECRET;
 
+// Sign JWT token and populate payload with username
+const getToken = (username) => {
+	return jwt.sign({ username }, JWT_SECRET);
+}
+
 // Register user
 AuthRouter.post('/register', function(req, res) {
 	const username = req.body.username;
@@ -17,9 +22,7 @@ AuthRouter.post('/register', function(req, res) {
 			console.log(err);
 			res.status(400).json(err);
 		} else {
-      // Sign JWT token and populate payload with username and email
-			const token = jwt.sign({ username }, JWT_SECRET);
-      res.cookie('watsmymajor_jwt', token).json({ username, email, name });
+      res.cookie('watsmymajor_jwt', getToken(username)).json({ username, email, name });
     }
 	});
 });
@@ -36,9 +39,7 @@ AuthRouter.post('/login', function(req, res) {
 		} else if (!user) {
 			res.status(400).send('User not found.');
 		} else {
-			// Sign JWT token and populate payload with username and email
-			const token = jwt.sign({ username }, JWT_SECRET);
-			res.cookie('watsmymajor_jwt', token).json(user);
+			res.cookie('watsmymajor_jwt', getToken(username)).json(user);
 		}
 	})(req, res);
 });
@@ -64,9 +65,7 @@ AuthRouter.get('/facebook', function(req, res) {
 			} else if (!user) {
 				res.status(400).send('User not found.');
 			} else {
-				// Sign JWT token and populate payload with username and email
-				const token = jwt.sign({ username }, JWT_SECRET);
-				res.cookie('watsmymajor_jwt', token).json({ username, user });
+				res.cookie('watsmymajor_jwt', getToken(username)).json({ username, user });
 			}
 		});
 	})(req, res);

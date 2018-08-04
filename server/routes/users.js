@@ -6,6 +6,10 @@ const facebookUsers = require('../models/database/facebookUsers');
 // Get user
 UsersRouter.get('/:username', function(req, res) {
 	const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	users.getUser(username, (err, user) => {
 		if (err) res.status(400).send(err);
@@ -17,6 +21,10 @@ UsersRouter.get('/:username', function(req, res) {
 UsersRouter.post('/link/facebook/:username', function(req, res) {
 	const username = req.params.username;
 	const facebookID = req.body.facebookID;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	if (!facebookID) {
 		res.status(400).send('Missing facebook ID.');
@@ -38,15 +46,29 @@ UsersRouter.post('/link/facebook/:username', function(req, res) {
 	});
 });
 
-// Update user
-UsersRouter.post('/edit/:username', function(req, res) {
+// Update user settings
+UsersRouter.post('/edit/settings/:username', function(req, res) {
 	const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
-	users.updateUserSettings(username, req.body, err => {
+	// Convert req.body to object
+	const user = Object.assign({}, req.body);
+
+	users.updateUserSettings(username, user, err => {
 		if (err) {
 			console.log(err);
 			res.status(400).send(err);
-		} else res.status(200).send(`User ${username} settings updated successfully.`);
+		} else {
+			users.getUser(username, (err, user) => {
+				if (err) {
+					console.log(err);
+					res.status(400).send(err);
+				} else res.status(200).json(user);
+			})
+		}
 	});
 });
 
@@ -54,6 +76,11 @@ UsersRouter.post('/edit/:username', function(req, res) {
 // Body: { user }
 UsersRouter.post('/set/user/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
+
 	const user = {
 		name: req.body.name || '',
 	  password: req.body.password || '',
@@ -72,6 +99,10 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 // Body: { user }
 UsersRouter.post('/edit/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
   users.updateUser(username, req.body, err => {
     if (err) res.status(400).send(err);
@@ -83,6 +114,10 @@ UsersRouter.post('/edit/:username', function(req, res) {
 // Body: { cart }
 UsersRouter.post('/set/cart/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	setCoursesPrereqs(req.body.cart, cart => {
 		users.setCart(username, cart, err => {
@@ -94,6 +129,10 @@ UsersRouter.post('/set/cart/:username', function(req, res) {
 
 UsersRouter.post('/reorder/cart/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	users.setCart(username, req.body.cart, err => {
 		if (err) res.status(400).send(err);
@@ -105,6 +144,10 @@ UsersRouter.post('/reorder/cart/:username', function(req, res) {
 // Body: { schedule }
 UsersRouter.post('/set/schedule/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
   users.setSchedule(username, req.body.schedule, err => {
     if (err) res.status(400).send(err);
@@ -116,6 +159,10 @@ UsersRouter.post('/set/schedule/:username', function(req, res) {
 // Body: { courseList }
 UsersRouter.post('/set/courselist/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	setCourseListPrereqs(req.body.courseList, courseList => {
 		users.setCourseList(username, courseList, err => {
@@ -127,6 +174,10 @@ UsersRouter.post('/set/courselist/:username', function(req, res) {
 
 UsersRouter.post('/reorder/courselist/:username', function(req, res) {
   const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
 
 	users.setCourseList(username, req.body.courseList, err => {
 		if (err) res.status(400).send(err);

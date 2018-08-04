@@ -205,7 +205,7 @@ export const editSettings = (username, user) => {
 
 	return {
 		[RSAA]: {
-			endpoint: `/server/users/edit/${username}`,
+			endpoint: `/server/users/edit/settings/${username}`,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',

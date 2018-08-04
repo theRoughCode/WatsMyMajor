@@ -191,8 +191,15 @@ function user(state = defaultUser, action) {
 		case EDIT_SETTINGS:
 			return Object.assign({}, state, action.meta.user);
 		case EDIT_SETTINGS_FAILURE:
-			console.log(action.payload);
-			alert('Failed to update settings.  Please contact an administrator.');
+			const ERROR_WRONG_PASSWORD = 105;
+			const { code } = action.payload.response;
+			switch (code) {
+				case ERROR_WRONG_PASSWORD:
+					alert('Incorrect password.');
+					break;
+				default:
+					alert('Failed to update settings.  Please contact an administrator.');
+			}
 			return state;
 		default:
 			return state;

@@ -16,7 +16,7 @@ const opt = {
 passport.use('login', new LocalStrategy(
   function(username, password, callback) {
     users.verifyUser(username, password, (err, user) => {
-      if (err) return callback(null, false, err);
+      if (err) return callback(err);
       return callback(null, user);
     });
   }

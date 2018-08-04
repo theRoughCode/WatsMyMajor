@@ -5,12 +5,15 @@ import TextField from 'material-ui/TextField';
 const styles = {
   fieldContainer: {
     display: 'flex',
-    margin: 30,
+    margin: 20,
+    marginTop: 0,
   },
   fieldIcon: {
     height: 35,
     width: 'auto',
-    margin: 'auto 0',
+    marginTop: 'auto',
+    marginBottom: 7,
+    marginLeft: 0,
     marginRight: 30,
   },
   fieldText: {
@@ -20,13 +23,23 @@ const styles = {
 }
 
 
-const Field = ({ name, value, isEditing, onChange, Icon }) => (
+const Field = ({
+  name,
+  value,
+  isEditing,
+  onChange,
+  Icon,
+  errorText,
+  type,
+}) => (
   <div style={ styles.fieldContainer }>
     <Icon style={ styles.fieldIcon } />
     <TextField
       id={ name }
       floatingLabelText={ name }
       value={ value }
+      type={ type }
+      errorText={ errorText }
       disabled={ !isEditing }
       onChange={ onChange }
       style={ styles.fieldText }
@@ -40,6 +53,13 @@ Field.propTypes = {
   isEditing: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,
   Icon: PropTypes.func.isRequired,
+  errorText: PropTypes.string,
+  type: PropTypes.string,
+};
+
+Field.defaultProps = {
+  errorText: '',
+  type: '',
 };
 
 export default Field;

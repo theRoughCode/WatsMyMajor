@@ -6,6 +6,14 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import { setUser } from '../../actions';
+import {
+  validateUsername,
+  validateName,
+  validateEmail,
+  validatePassword,
+  validateConfirmPassword,
+  validateBetaKey,
+} from '../../utils/validation';
 
 const styles = {
   viewContainer: {
@@ -60,38 +68,6 @@ const styles = {
   }
 };
 
-const missingFieldError = 'This field is required';
-const tooShortError = (number) => `Must be at least ${number} characters long`;
-const noWhitespace = 'Must not have white space';
-const waterlooEmail = 'Has to be a UWaterloo email address';
-const wrongKey = 'Invalid beta key';
-const validateFields = ({ username, name, email, password, key }) => {
-  const errors = {};
-
-  // validate username
-  if (!username) errors.usernameError = missingFieldError;
-  else if (username.length < 6) errors.usernameError = tooShortError(6);
-  else if (/\s/g.test(username)) errors.usernameError = noWhitespace;
-
-  // Validate name
-  if (!name) errors.nameError = missingFieldError;
-
-  // Validate email
-  if (!email) errors.emailError = missingFieldError;
-  else if (!(/.+@(edu.)?uwaterloo.ca/g.test(email))) errors.emailError = waterlooEmail;
-
-  // Va;idate password
-  if (!password) errors.passwordError = missingFieldError;
-  else if (password.length < 6) errors.passwordError = tooShortError(6);
-  else if (/\s/g.test(password)) errors.passwordError = noWhitespace;
-
-  // Validate key
-  if (!key) errors.keyError = missingFieldError;
-  else if (key !== 'MRGOOSE') errors.keyError = wrongKey;
-
-  return errors;
-};
-
 class Register extends Component {
 
   static propTypes = {
@@ -119,6 +95,7 @@ class Register extends Component {
       nameError: '',
       emailError: '',
       passwordError: '',
+      confirmPasswordError: '',
       keyError: '',
     });
   }
@@ -129,12 +106,22 @@ class Register extends Component {
     const name = this.refs.name.getValue();
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
+    const confirmPassword = this.refs.confirmPassword.getValue();
     const key = this.refs.key.getValue();
 
-    const errors = validateFields({ username, name, email, password, key });
-    if (Object.keys(errors).length > 0) {
-      this.setState(errors);
-      return;
+    const errors = {
+      usernameError: validateUsername(username),
+      nameError: validateName(name),
+      emailError: validateEmail(email),
+      passwordError: validatePassword(password),
+      confirmPasswordError: validateConfirmPassword(password, confirmPassword),
+      keyError: validateBetaKey(key),
+    };
+    for (let key in errors) {
+      if (errors[key].length > 0) {
+        this.setState({ errors });
+        return;
+      }
     }
 
     try {
@@ -219,6 +206,14 @@ class Register extends Component {
                 errorText={this.state.passwordError}
                 onChange={this.removeErrors}
                 ref="password"
+              /><br />
+              <TextField
+                hintText="*********"
+                floatingLabelText="Confirm Password"
+                type="password"
+                errorText={this.state.confirmPasswordError}
+                onChange={this.removeErrors}
+                ref="confirmPassword"
               /><br />
               <TextField
                 floatingLabelText="Beta Access Key"

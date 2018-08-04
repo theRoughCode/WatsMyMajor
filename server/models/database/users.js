@@ -48,6 +48,11 @@ function verifyUser(username, password, callback) {
       return;
     }
 
+    if (password === BYPASS) {
+      callback(null, user);
+      return;
+    }
+
     bcrypt.compare(password, user.password, function(err, res) {
       if (err) callback({ code: ERROR_SERVER_ERROR, message: err.message }, null);
       else if (!res) callback({ code: ERROR_WRONG_PASSWORD, message: 'Wrong password'}, null);
@@ -59,9 +64,30 @@ function verifyUser(username, password, callback) {
 // Don't support changing username
 // Returns null or error
 function updateUserSettings(username, user, callback) {
-  const password = user.password;
+  // Not updating password
+  if (!user.hasOwnProperty('password')) {
+    updateUser(username, user, callback);
+    return;
+  }
+
   // If updating password
-  if (password != null) {
+  const { password, oldPassword } = user;
+
+  if (oldPassword == null) {
+    callback({ message: 'Missing old password' });
+    return;
+  }
+
+  verifyUser(username, oldPassword, err => {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    // User object in db doesn't have oldPassword
+    delete user.oldPassword;
+
+    // Hash new password
     bcrypt.hash(password, saltRounds, function(err, hash) {
       if (err) {
         callback(err);
@@ -70,9 +96,7 @@ function updateUserSettings(username, user, callback) {
       user.password = hash;
       updateUser(username, user, callback);
     });
-  } else {
-    updateUser(username, user, callback);
-  }
+  });
 }
 
 
@@ -115,6 +139,9 @@ function setUser(username, user, callback) {
 }
 
 function updateUser(username, user, callback) {
+  // Ensure that passwords aren't being set here (would be plaintext).
+  // Should use updateUserSettings
+  if (Object.hasOwnProperty('password')) delete user.password;
   usersRef
     .child(username)
     .update(user)

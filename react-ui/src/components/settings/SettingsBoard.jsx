@@ -12,6 +12,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     margin: 'auto',
+    marginTop: 50,
     width: '100%',
   },
   boardHeaderContainer: {
@@ -32,6 +33,7 @@ const styles = {
     verticalAlign: 'sub',
   },
   boardBody: {
+    paddingBottom: 10,
   },
 };
 
@@ -41,10 +43,12 @@ const styles = {
 export default class SettingsBoard extends Component {
 
   static propTypes = {
+    boardName: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
     fields: PropTypes.array.isRequired,
     values: PropTypes.object.isRequired,
-    onEditSettings: PropTypes.func.isRequired,
+    onSaveSettings: PropTypes.func.isRequired,
+    verifyFields: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -53,6 +57,7 @@ export default class SettingsBoard extends Component {
     this.state = {
       isEditing: false,
       values: Object.assign({}, props.values),
+      errors: {},
     };
 
     this.onEdit = this.onEdit.bind(this);
@@ -70,8 +75,15 @@ export default class SettingsBoard extends Component {
   }
 
   onSave() {
-    this.props.onEditSettings(this.props.username, this.state.values);
-    this.setState({ isEditing: false });
+    const errors = this.props.verifyFields(this.state.values);
+    for (let key in errors) {
+      if (errors[key].length > 0) {
+        this.setState({ errors });
+        return;
+      }
+    }
+    this.props.onSaveSettings(this.props.username, this.state.values);
+    this.setState({ isEditing: false, errors: {} });
   }
 
   onCancel() {
@@ -81,6 +93,7 @@ export default class SettingsBoard extends Component {
     this.setState({
       isEditing: false,
       values,
+      errors: {},
     });
   }
 
@@ -94,6 +107,7 @@ export default class SettingsBoard extends Component {
               primary
               icon={ <SaveIcon style={ styles.buttonIcon } /> }
               onClick={ this.onSave.bind(this, 'profile') }
+              type="submit"
             />
             <RaisedButton
               label="Cancel"
@@ -116,17 +130,19 @@ export default class SettingsBoard extends Component {
         );
 
     return (
-      <div style={ styles.boardContainer }>
+      <form style={ styles.boardContainer } onSubmit={ e => e.preventDefault() }>
         <div style={ styles.boardHeaderContainer }>
-          <span style={ styles.boardText }>Profile</span>
+          <span style={ styles.boardText }>{ this.props.boardName }</span>
           { buttons }
         </div>
         <Paper style={ styles.boardBody }>
           {
-            this.props.fields.map(({ name, Icon }, index) => (
+            this.props.fields.map(({ name, label, type, Icon }, index) => (
               <Field
                 key={ index }
-                name={ name }
+                name={ label }
+                errorText={ this.state.errors[name] }
+                type={ type }
                 value={ this.state.values[name] }
                 isEditing={ this.state.isEditing }
                 onChange={ this.handleChange.bind(this, name) }
@@ -135,7 +151,7 @@ export default class SettingsBoard extends Component {
             ))
           }
         </Paper>
-      </div>
+      </form>
     );
   }
 }
