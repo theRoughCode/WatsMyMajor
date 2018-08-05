@@ -1,6 +1,7 @@
 const UsersRouter = require('express').Router();
 const { setCourseListPrereqs, setCoursesPrereqs } = require('../models/utils');
 const users = require('../models/database/users');
+const images = require('../models/database/images');
 const facebookUsers = require('../models/database/facebookUsers');
 
 // Get user
@@ -67,7 +68,7 @@ UsersRouter.post('/edit/settings/:username', function(req, res) {
 					console.log(err);
 					res.status(400).send(err);
 				} else res.status(200).json(user);
-			})
+			});
 		}
 	});
 });
@@ -183,6 +184,48 @@ UsersRouter.post('/reorder/courselist/:username', function(req, res) {
 		if (err) res.status(400).send(err);
 		else res.status(200).send(`Course list for User ${username} updated successfully.`);
 	});
+});
+
+const easterURL = images.getEasterURL();
+UsersRouter.post('/upload/profile/:username', function(req, res) {
+	const username = req.params.username;
+	if (req.user !== username) {
+		res.sendStatus(401);
+		return;
+	}
+
+	const { base64Str, contentType, easterRaph } = req.body;
+
+	// User found easter egg
+	if (easterRaph) {
+		users.updateUser(username, { profileURL: easterURL }, err => {
+			if (err) return res.status(400).send(err);
+
+			// Return user object
+			users.getUser(username, (err, user) => {
+				if (err) return	res.status(400).send(err);
+				else res.status(200).json(user);
+			});
+		});
+	} else if (!base64Str || !contentType) {
+		res.status(400).send('Missing fields');
+	} else {
+		// Upload image to storage
+		images.setProfilePicture(username, req.body, (err, url) => {
+			if (err) return res.status(400).send(err);
+
+			// Update new profile img url in user object
+			users.updateUser(username, { profileURL: url }, err => {
+				if (err) return res.status(400).send(err);
+
+				// Return user object
+				users.getUser(username, (err, user) => {
+					if (err) return	res.status(400).send(err);
+					else res.status(200).json(user);
+				});
+			});
+		});
+	}
 });
 
 module.exports = UsersRouter;

@@ -7,7 +7,8 @@ import LockIcon from 'material-ui/svg-icons/action/lock';
 import OpenLockIcon from 'material-ui/svg-icons/action/lock-open';
 import ConfirmIcon from 'material-ui/svg-icons/action/done';
 import SettingsBoard from './SettingsBoard';
-import { editSettings } from '../../actions';
+import ImageUpload from './ImageUpload';
+import { setUser, editSettings } from '../../actions';
 import {
   validateName,
   validateEmail,
@@ -40,6 +41,7 @@ const SettingsContainer = ({
   username,
   name,
   email,
+  onChangeImage,
   onSaveSettings
 }) => (
   <div style={ styles.settingsContainer }>
@@ -54,6 +56,7 @@ const SettingsContainer = ({
       onSaveSettings={ onSaveSettings }
       verifyFields={ verifyProfile }
     />
+    <ImageUpload username={ username } onChangeImage={ onChangeImage } />
     <SettingsBoard
       boardName="Password"
       username={ username }
@@ -73,6 +76,9 @@ const SettingsContainer = ({
 
 SettingsContainer.propTypes = {
   username: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  onChangeImage: PropTypes.func.isRequired,
   onSaveSettings: PropTypes.func.isRequired,
 };
 
@@ -84,6 +90,7 @@ const mapStateToProps = ({ user }) => ({
 
 const mapDispatchToProps = dispatch => {
   return {
+    onChangeImage: (username, user) => dispatch(setUser(username, user)),
     onSaveSettings: (username, user) => dispatch(editSettings(username, user)),
   };
 };

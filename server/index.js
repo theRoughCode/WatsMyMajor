@@ -10,8 +10,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Allow reading body of requests
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// Images are 5MB max
+app.use(bodyParser.json({ limit:'10mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit:'10mb' }));
 
 // Allow use of cookies
 app.use(cookieParser());

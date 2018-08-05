@@ -126,6 +126,7 @@ function updateUserSettings(username, user, callback) {
 //   name: '',
 //   email: '',
 //   password: '',
+//   profileURL: '',
 //   cart: [],
 //   schedule: [],
 //   courseList: []

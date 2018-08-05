@@ -142,7 +142,6 @@ class Login extends Component {
   }
 
   async onFacebookLogin(response) {
-    console.log(response);
     const { accessToken, id, picture } = response;
 
     try {

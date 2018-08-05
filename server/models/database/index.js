@@ -7,7 +7,8 @@ const serviceAccount = JSON.parse(process.env.FIREBASE);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://watsmymajor.firebaseio.com"
+  databaseURL: "https://watsmymajor.firebaseio.com",
+  storageBucket: "watsmymajor.appspot.com"
 });
 
 const coursesRef = admin.database().ref('/courses/');
@@ -16,6 +17,7 @@ const majorsRef = admin.database().ref('/majors/');
 const reqsRef = admin.database().ref('/reqs/');
 const statsRef = admin.database().ref('/stats/');
 const usersRef = admin.database().ref('/users/');
+const profilePicBucket = admin.storage().bucket();
 
 module.exports = {
 	coursesRef,
@@ -24,4 +26,5 @@ module.exports = {
   reqsRef,
   statsRef,
   usersRef,
+  profilePicBucket,
 };

@@ -13,7 +13,7 @@ const LoadingView = (props) => (
 			size={80}
 			thickness={5}
 			style={styles}
-			/>
+		/>
 	</div>
 );
 
