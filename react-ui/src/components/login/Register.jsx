@@ -62,6 +62,11 @@ const styles = {
   registerText: {
     color: 'white',
   },
+  privacy: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#888e99',
+  },
   footer: {
     marginTop: 40,
     marginBottom: 20,
@@ -231,6 +236,9 @@ class Register extends Component {
               />
             </form>
           </Paper>
+          <div style={ styles.privacy }>
+            <span>By signing up, you agree to our <a href="/privacy-policy">Privacy Policy</a>.</span>
+          </div>
           <div style={styles.footer}>
             Already have an account yet? <Link to="/login">Sign in</Link>
           </div>

@@ -11,7 +11,6 @@ import './stylesheets/index.css';
 import reducers from './reducers';
 
 const middlewares = [apiMiddleware];
-console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV !== 'production') {
 	middlewares.push(logger);
 }
