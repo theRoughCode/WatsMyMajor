@@ -14,11 +14,14 @@ const opt = {
 
 // Used to authenticate logins
 passport.use('login', new LocalStrategy(
-  function(username, password, callback) {
-    users.verifyUser(username, password, (err, user) => {
+  async function(username, password, callback) {
+    try {
+      const { err, user } = await users.verifyUser(username, password);
       if (err) return callback(err);
-      return callback(null, user);
-    });
+      callback(null, user);
+    } catch (err) {
+      callback(err);
+    }
   }
 ));
 

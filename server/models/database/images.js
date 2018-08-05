@@ -14,29 +14,37 @@ const getEasterURL = () => {
  ****************************/
 
 // Set profile picture from base64Str string
-async function setProfilePicture(username, { base64Str, contentType }, callback) {
+// Returns { err, publicUrl }
+async function setProfilePicture(username, { base64Str, contentType }) {
   const bufferStream = new stream.PassThrough();
   bufferStream.end(new Buffer(base64Str, 'base64'));
 
   // Delete user's previous images
-  const err = await profilePicBucket.deleteFiles({ prefix: `profile-pictures/${username}/` });
-  // Might return an empty array if successfull.
-  if (Array.isArray(err)) {
-    if (err.length > 0) return callback(err);
-  } else if (err) return callback(err);
+  try {
+    const err = await profilePicBucket.deleteFiles({ prefix: `profile-pictures/${username}/` });
+    // Might return an empty array if successfull.
+    if (Array.isArray(err)) {
+      if (err.length > 0) return { err };
+    } else if (err) return { err };
+  } catch (err) {
+    return { err };
+  }
 
   const file = profilePicBucket.file(`profile-pictures/${username}/${Date.now()}`);
   const publicUrl = `https://storage.googleapis.com/${profilePicBucket.name}/${file.name}?alt=media`;
-  bufferStream
-    .pipe(file.createWriteStream({
-      public: true,
-      metadata: {
-        contentType,
-        cacheControl: 'public, max-age=3600'
-      },
-    }))
-    .on('error', err => callback(err, null))
-    .on('finish', () => callback(null, publicUrl));
+
+  return new Promise((resolve, reject) => {
+    bufferStream
+      .pipe(file.createWriteStream({
+        public: true,
+        metadata: {
+          contentType,
+          cacheControl: 'public, max-age=3600'
+        },
+      }))
+      .on('error', err => resolve({ err }))
+      .on('finish', () => resolve({ publicUrl }));
+  });
 }
 
 function removeProfilePicture(fileName, callback) {

@@ -7,16 +7,13 @@ require('dotenv').config();
 
 const SERVER_SECRET = process.env.SERVER_SECRET;
 
-router.get('/', function(req, res){
-	res.send('By Raphael Koh');
-});
-
 // Pre-check to ensure that API secret key is set.
 router.use(function(req, res, next) {
 	if (req.headers['x-secret'] === SERVER_SECRET) next();
 	else res.sendStatus(401);
 });
 
+router.get('/', (req, res) => res.send('By Raphael Koh'));
 router.use('/auth', require('./auth'));
 router.use('/courses', require('./courses'));
 router.use('/majors', require('./majors'));

@@ -5,82 +5,117 @@ const images = require('../models/database/images');
 const facebookUsers = require('../models/database/facebookUsers');
 
 // Get user
-UsersRouter.get('/:username', function(req, res) {
+UsersRouter.get('/:username', async function(req, res) {
 	const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-	users.getUser(username, (err, user) => {
-		if (err) res.status(400).send(err);
-		else res.json(user);
-	});
+	const { err, user } = await users.getUser(username);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.json(user);
 });
 
 // Link facebook id to user
-UsersRouter.post('/link/facebook/:username', function(req, res) {
+UsersRouter.post('/link/facebook/:username', async function(req, res) {
 	const username = req.params.username;
-	const facebookID = req.body.facebookID;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	const { facebookID, hasFBPic } = req.body;
+	if (req.user !== username) return res.sendStatus(401);
 
 	if (!facebookID) {
-		res.status(400).send('Missing facebook ID.');
-		return;
+		return res.status(400).send('Missing facebook ID.');
 	}
 
-	// Add facebook ID to user object
-	users.setFacebookID(username, facebookID, err => {
-		if (err) {
-			res.status(400).send(err);
-			return;
-		}
+	// Add Facebook ID to user object
+	let err = await users.setFacebookID(username, facebookID);
+	if (err) {
+		console.log(err);
+		return res.status(400).send(err);
+	}
 
-		// Add facebook ID to facebookUser refererence
-		facebookUsers.setFacebookUser(facebookID, username, err => {
-			if (err) res.status(400).send(err);
-			else res.status(200).send(`User ${username}'s facebook account has been linked.`);
-		});
-	});
+	// Set Facebook picture
+	if (hasFBPic) {
+		err = await users.setProfilePicture(username, `https://graph.facebook.com/${facebookID}/picture?type=large`);
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}}
+
+
+	// Add facebook ID to facebookUser refererence
+	err = await facebookUsers.setFacebookUser(facebookID, username);
+	if (err) {
+		console.log(err);
+		return res.status(400).send(err);
+	}
+
+	// Return user object
+	({ err, user } = await users.getUser(username));
+	if (err) {
+		console.log(err);
+		return	res.status(400).send(err);
+	}
+	res.status(200).json(user);
+});
+
+// Unlink facebook id to user
+UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
+	const username = req.params.username;
+	if (req.user !== username) return res.sendStatus(401);
+
+	try {
+		const { user, err } = await users.getUser(username);
+		if (err) {
+			console.log(err);
+			return	res.status(400).send(err);
+		}
+		await users.updateUser(username, { facebookID: '', profileURL: '' });
+
+		// Remove Facebook user
+		await facebookUsers.removeFacebookUser(user.facebookID);
+
+		user.facebookID = '';
+		user.profileURL = '';
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		res.status(400).send(err);
+	}
 });
 
 // Update user settings
-UsersRouter.post('/edit/settings/:username', function(req, res) {
+UsersRouter.post('/edit/settings/:username', async function(req, res) {
 	const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
 	// Convert req.body to object
 	const user = Object.assign({}, req.body);
 
-	users.updateUserSettings(username, user, err => {
+	try {
+		let err = await users.updateUserSettings(username, user);
 		if (err) {
 			console.log(err);
-			res.status(400).send(err);
-		} else {
-			users.getUser(username, (err, user) => {
-				if (err) {
-					console.log(err);
-					res.status(400).send(err);
-				} else res.status(200).json(user);
-			});
+			return res.status(400).send(err);
 		}
-	});
+
+		// Return updated user
+		({ users, err } = await users.getUser(username));
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		res.status(400).send(err);
+	}
 });
 
 // Set user
 // Body: { user }
-UsersRouter.post('/set/user/:username', function(req, res) {
+UsersRouter.post('/set/user/:username', async function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
 	const user = {
 		name: req.body.name || '',
@@ -90,24 +125,26 @@ UsersRouter.post('/set/user/:username', function(req, res) {
 	  courseList: req.body.courseList || []
 	};
 
-  users.setUser(username, user, err => {
-    if (err) res.status(400).send(err);
-    else res.json(user);
-  });
+	try {
+		await users.setUser(username, user);
+		res.json(user);
+	} catch (err) {
+		console.log(err);
+		res.status(400).send(err);
+	}
 });
 
 // Update user
 // Body: { user }
 UsersRouter.post('/edit/:username', function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
   users.updateUser(username, req.body, err => {
-    if (err) res.status(400).send(err);
-    else res.status(200).send(`User ${username} updated successfully.`);
+    if (err) {
+			console.log(err);
+			res.status(400).send(err);
+    } else res.status(200).send(`User ${username} updated successfully.`);
   });
 });
 
@@ -115,116 +152,122 @@ UsersRouter.post('/edit/:username', function(req, res) {
 // Body: { cart }
 UsersRouter.post('/set/cart/:username', function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-	setCoursesPrereqs(req.body.cart, cart => {
-		users.setCart(username, cart, err => {
-	    if (err) res.status(400).send(err);
-	    else res.json(cart);
-	  });
+	setCoursesPrereqs(req.body.cart, async function(cart) {
+		const err = await users.setCart(username, cart);
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		} else res.json(cart);
 	});
 });
 
-UsersRouter.post('/reorder/cart/:username', function(req, res) {
+UsersRouter.post('/reorder/cart/:username', async function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-	users.setCart(username, req.body.cart, err => {
-		if (err) res.status(400).send(err);
-		else res.status(200).send(`Cart for User ${username} updated successfully.`);
-	});
+	const err = await users.setCart(username, req.body.cart);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.status(200).send(`Cart for User ${username} updated successfully.`);
 });
 
 // Set schedule
 // Body: { schedule }
-UsersRouter.post('/set/schedule/:username', function(req, res) {
+UsersRouter.post('/set/schedule/:username', async function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-  users.setSchedule(username, req.body.schedule, err => {
-    if (err) res.status(400).send(err);
-    else res.status(200).send(`Schedule for User ${username} updated successfully.`);
-  });
+  const err = await users.setSchedule(username, req.body.schedule);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.status(200).send(`Schedule for User ${username} updated successfully.`);
 });
 
 // Set courseList
 // Body: { courseList }
 UsersRouter.post('/set/courselist/:username', function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-	setCourseListPrereqs(req.body.courseList, courseList => {
-		users.setCourseList(username, courseList, err => {
-	    if (err) res.status(400).send(err);
-	    else res.json(courseList);
-	  });
+	setCourseListPrereqs(req.body.courseList, async function(courseList) {
+		const err = await users.setCourseList(username, courseList);
+		if (err) {
+			console.log(err);
+			res.status(400).send(err);
+		} else res.json(courseList);
 	});
 });
 
-UsersRouter.post('/reorder/courselist/:username', function(req, res) {
+UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
   const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
-	users.setCourseList(username, req.body.courseList, err => {
-		if (err) res.status(400).send(err);
-		else res.status(200).send(`Course list for User ${username} updated successfully.`);
-	});
+	const err = await users.setCourseList(username, req.body.courseList);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.status(200).send(`Course list for User ${username} updated successfully.`);
 });
 
 const easterURL = images.getEasterURL();
-UsersRouter.post('/upload/profile/:username', function(req, res) {
+UsersRouter.post('/upload/profile/:username', async function(req, res) {
 	const username = req.params.username;
-	if (req.user !== username) {
-		res.sendStatus(401);
-		return;
-	}
+	if (req.user !== username) return res.sendStatus(401);
 
 	const { base64Str, contentType, easterRaph } = req.body;
 
 	// User found easter egg
 	if (easterRaph) {
-		users.updateUser(username, { profileURL: easterURL }, err => {
-			if (err) return res.status(400).send(err);
+		try {
+			let err = await users.updateUser(username, { profileURL: easterURL });
+			if (err) {
+				console.log(err);
+				return res.status(400).send(err);
+			}
 
 			// Return user object
-			users.getUser(username, (err, user) => {
-				if (err) return	res.status(400).send(err);
-				else res.status(200).json(user);
-			});
-		});
-	} else if (!base64Str || !contentType) {
-		res.status(400).send('Missing fields');
-	} else {
-		// Upload image to storage
-		images.setProfilePicture(username, req.body, (err, url) => {
-			if (err) return res.status(400).send(err);
+			({ err, user } = await users.getUser(username));
+			if (err) {
+				console.log(err);
+				return	res.status(400).send(err);
+			}
+			return res.status(200).json(user);
+		} catch (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+	}
 
-			// Update new profile img url in user object
-			users.updateUser(username, { profileURL: url }, err => {
-				if (err) return res.status(400).send(err);
+	if (!base64Str || !contentType) return res.status(400).send('Missing fields');
 
-				// Return user object
-				users.getUser(username, (err, user) => {
-					if (err) return	res.status(400).send(err);
-					else res.status(200).json(user);
-				});
-			});
-		});
+	try {
+		let { err, publicUrl } = await images.setProfilePicture(username, req.body);
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+
+		// Update new profile img url in user object
+		err = await users.setProfilePicture(username, publicUrl);
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+
+		// Return user object
+		({ err, user } = await users.getUser(username));
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		res.status(400).send(err);
 	}
 });
 
