@@ -8,7 +8,8 @@ import OpenLockIcon from 'material-ui/svg-icons/action/lock-open';
 import ConfirmIcon from 'material-ui/svg-icons/action/done';
 import SettingsBoard from './SettingsBoard';
 import ImageUpload from './ImageUpload';
-import { setUser, editSettings } from '../../actions';
+import LinkFacebook from './LinkFacebook';
+import { setUser, editSettings, linkFacebook, unlinkFacebook } from '../../actions';
 import {
   validateName,
   validateEmail,
@@ -19,6 +20,7 @@ import {
 const styles = {
   settingsContainer: {
     margin: 'auto',
+    marginBottom: 50,
     maxWidth: 500,
     display: 'flex',
     flexDirection: 'column',
@@ -41,8 +43,11 @@ const SettingsContainer = ({
   username,
   name,
   email,
+  isLinked,
   onChangeImage,
-  onSaveSettings
+  onSaveSettings,
+  onLinkFacebook,
+  onUnlinkFacebook,
 }) => (
   <div style={ styles.settingsContainer }>
     <SettingsBoard
@@ -71,6 +76,12 @@ const SettingsContainer = ({
       }
       verifyFields={ verifyPassword }
     />
+    <LinkFacebook
+      username={ username }
+      isLinked={ isLinked }
+      onLink={ onLinkFacebook }
+      onUnlink={ onUnlinkFacebook }
+    />
   </div>
 );
 
@@ -78,20 +89,26 @@ SettingsContainer.propTypes = {
   username: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
+  isLinked: PropTypes.bool.isRequired,
   onChangeImage: PropTypes.func.isRequired,
   onSaveSettings: PropTypes.func.isRequired,
+  onLinkFacebook: PropTypes.func.isRequired,
+  onUnlinkFacebook: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ user }) => ({
   username: user.username,
   name: user.name,
   email: user.email,
+  isLinked: user.facebookID != null && user.facebookID.length > 0,
 });
 
 const mapDispatchToProps = dispatch => {
   return {
     onChangeImage: (username, user) => dispatch(setUser(username, user)),
     onSaveSettings: (username, user) => dispatch(editSettings(username, user)),
+    onLinkFacebook: (username, facebookID, hasFBPic) => dispatch(linkFacebook(username, facebookID, hasFBPic)),
+    onUnlinkFacebook: (username) => dispatch(unlinkFacebook(username)),
   };
 };
 

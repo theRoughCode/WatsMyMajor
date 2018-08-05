@@ -6,12 +6,19 @@ const { facebookUsersRef } = require('./index');
  *													*
  ****************************/
 
-function setFacebookUser(facebookID, userId, callback) {
-  facebookUsersRef
+function setFacebookUser(facebookID, userId) {
+  return facebookUsersRef
     .child(facebookID)
     .set(userId)
-    .then(() => callback(null))
-    .catch(err => callback(err));
+}
+
+async function removeFacebookUser(facebookID) {
+  try {
+    await facebookUsersRef.child(facebookID).remove();
+  } catch(err) {
+    console.log(err)
+    return err;
+  }
 }
 
 
@@ -33,5 +40,6 @@ async function getFacebookUser(facebookID, callback) {
 
 module.exports = {
   setFacebookUser,
+  removeFacebookUser,
   getFacebookUser,
 };

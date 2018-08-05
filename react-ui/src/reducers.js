@@ -15,6 +15,8 @@ import {
 	UNHIGHLIGHT_PREREQS,
 	EDIT_SETTINGS,
 	EDIT_SETTINGS_FAILURE,
+	LINK_FACEBOOK,
+	UNLINK_FACEBOOK,
 } from './actions';
 
 const defaultExpandedCourse = {
@@ -201,6 +203,12 @@ function user(state = defaultUser, action) {
 					alert('Failed to update settings.  Please contact an administrator.');
 			}
 			return state;
+		case LINK_FACEBOOK:
+		case UNLINK_FACEBOOK:
+			const user = action.payload;
+			if (!user) return state;
+			user.username = action.meta.username;
+			return user;
 		default:
 			return state;
 	}

@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import FacebookIcon from '../tools/FacebookIcon';
 import { setUser } from '../../actions';
 
 const styles = {
@@ -55,8 +56,31 @@ const styles = {
   loginText: {
     color: 'white',
   },
+  fbContainer: {
+    display: 'inline-flex',
+    flexDirection: 'column',
+    marginTop: 20,
+  },
+  fbButton: {
+    height: 40,
+    borderRadius: 6,
+    marginTop: 20,
+  },
+  fbInnerButton: {
+    borderRadius: 6,
+  },
+  fbIcon: {
+    width: 30,
+    height: 30,
+    marginBottom: 3,
+  },
+  fbText: {
+    fontSize: 17,
+    color: 'white',
+    textTransform: 'none',
+  },
   footer: {
-    marginTop: 40,
+    marginTop: 50,
   }
 };
 
@@ -142,7 +166,7 @@ class Login extends Component {
   }
 
   async onFacebookLogin(response) {
-    const { accessToken, id, picture } = response;
+    const { accessToken, id } = response;
 
     try {
       const response = await fetch('/server/auth/facebook', {
@@ -154,8 +178,8 @@ class Login extends Component {
   	    }
   		});
       if (!response.ok) {
-        const err = await response.json();
-        alert('This Facebook account has not been linked yet.');
+        const err = await response.text();
+        alert('This Facebook account has not been linked yet. Please log in to link your Facebook account.');
         console.error(err);
       } else {
         const { username, user } = await response.json();
@@ -202,12 +226,25 @@ class Login extends Component {
               />
             </form>
           </Paper>
-          <FacebookLogin
-            appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-            fields="picture"
-            scope="user_friends"
-            callback={this.onFacebookLogin}
-          />
+          <div style={styles.fbContainer}>
+            <span style={styles.subtitle}>or</span>
+            <FacebookLogin
+              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+              scope="user_friends"
+              callback={this.onFacebookLogin}
+              render={ renderProps => (
+                <RaisedButton
+                  label="Continue with Facebook"
+                  onClick={ renderProps.onClick }
+                  style={ styles.fbButton }
+                  buttonStyle={ styles.fbInnerButton }
+                  labelStyle={ styles.fbText }
+                  backgroundColor="#3b5998"
+                  icon={ <FacebookIcon style={ styles.fbIcon } /> }
+                  />
+              ) }
+              />
+          </div>
           <div style={styles.footer}>
             Don't have an account yet? <Link to="/register">Sign up</Link>
           </div>

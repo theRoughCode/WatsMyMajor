@@ -11,20 +11,23 @@ const getToken = (username) => {
 }
 
 // Register user
-AuthRouter.post('/register', function(req, res) {
+AuthRouter.post('/register', async function(req, res) {
 	const username = req.body.username;
 	const name = req.body.name;
 	const email = req.body.email;
 	const password = req.body.password;
 
-	users.createUser(username, email, name, password, (err, user) => {
+	try {
+		const { err, user } = await users.createUser(username, email, name, password);
 		if (err) {
 			console.log(err);
-			res.status(400).json(err);
-		} else {
-      res.cookie('watsmymajor_jwt', getToken(username)).json({ username, email, name });
-    }
-	});
+			return res.status(400).json(err);
+		}
+		res.cookie('watsmymajor_jwt', getToken(username)).json(user);
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send(err);
+	}
 });
 
 // Login user
@@ -46,19 +49,16 @@ AuthRouter.post('/login', function(req, res) {
 
 // Facebook authentication
 AuthRouter.get('/facebook', function(req, res) {
-	passport.authenticate('facebook-token', (err, username, info) => {
+	passport.authenticate('facebook-token', async function(err, username, info) {
 		if (err) {
 			console.log(err);
-			res.status(400).send(err);
-			return;
+			return res.status(400).send(err);
 		}
-		if (!username) {
-			res.status(400).send('Facebook User not found.');
-			return;
-		}
+		if (!username) return res.status(400).send('Facebook User not found.');
 
-		// Get user from database
-		users.getUser(username, (err, user) => {
+		try {
+			// Get user from database
+			const { user, err } = await users.getUser(username);
 			if (err) {
 				console.log(err);
 				res.status(400).send(err);
@@ -67,7 +67,10 @@ AuthRouter.get('/facebook', function(req, res) {
 			} else {
 				res.cookie('watsmymajor_jwt', getToken(username)).json({ username, user });
 			}
-		});
+		} catch(err) {
+			console.log(err);
+			res.status(400).send(err);
+		}
 	})(req, res);
 });
 

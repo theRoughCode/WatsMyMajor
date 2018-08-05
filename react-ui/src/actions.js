@@ -20,6 +20,8 @@ export const HIGHLIGHT_PREREQS = 'HIGHLIGHT_PREREQS';
 export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
 export const EDIT_SETTINGS = 'EDIT_SETTINGS';
 export const EDIT_SETTINGS_FAILURE = 'EDIT_SETTINGS_FAILURE';
+export const LINK_FACEBOOK = 'LINK_FACEBOOK';
+export const UNLINK_FACEBOOK = 'UNLINK_FACEBOOK';
 
 /*
  * action creators
@@ -221,3 +223,44 @@ export const editSettings = (username, user) => {
 		}
 	}
 }
+
+export const linkFacebook = (username, facebookID, hasFBPic) => {
+	if (!username) {
+		console.error('Username is undefined.');
+		return { type: '' };
+	}
+
+	return {
+		[RSAA]: {
+			endpoint: `/server/users/link/facebook/${username}`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+			},
+			body: JSON.stringify({ facebookID, hasFBPic }),
+			types: [
+				'',
+				{ type: LINK_FACEBOOK, meta: { username } },
+				''
+			]
+		}
+	}
+}
+
+export const unlinkFacebook = (username) => ({
+	[RSAA]: {
+		endpoint: `/server/users/unlink/facebook/${username}`,
+		method: 'GET',
+		headers: {
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+		},
+		types: [
+			'',
+			{ type: UNLINK_FACEBOOK, meta: { username } },
+			''
+		]
+	}
+});
