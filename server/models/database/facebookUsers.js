@@ -29,12 +29,13 @@ async function removeFacebookUser(facebookID) {
  ****************************/
 
 // Returns username corresponding to facebook user
-async function getFacebookUser(facebookID, callback) {
+async function getFacebookUser(facebookID) {
   try {
     const snapshot = await facebookUsersRef.child(facebookID).once('value');
-    callback(null, snapshot.val());
+    return { err: null, user: snapshot.val() };
   } catch (err) {
-    callback(err, null);
+    console.log(err);
+    return { err, user: null };
   }
 }
 

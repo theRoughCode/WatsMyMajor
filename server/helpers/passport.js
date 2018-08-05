@@ -35,7 +35,8 @@ passport.use(new JWTStrategy(opt, function(token, callback) {
 passport.use(new FacebookTokenStrategy({
   clientID: process.env.FACEBOOK_APP_ID,
   clientSecret: process.env.FACEBOOK_APP_SECRET
-}, function(accessToken, refreshToken, profile, callback) {
+}, async function(accessToken, refreshToken, profile, callback) {
   // Check if facebook user is in database and get corresponding username
-  facebookUsers.getFacebookUser(profile.id, callback);
+  const { err, user } = await facebookUsers.getFacebookUser(profile.id);
+  callback(err, user);
 }));

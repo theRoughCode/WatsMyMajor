@@ -16,7 +16,9 @@ import {
 	EDIT_SETTINGS,
 	EDIT_SETTINGS_FAILURE,
 	LINK_FACEBOOK,
+	LINK_FACEBOOK_FAILURE,
 	UNLINK_FACEBOOK,
+	UNLINK_FACEBOOK_FAILURE,
 } from './actions';
 
 const defaultExpandedCourse = {
@@ -209,6 +211,12 @@ function user(state = defaultUser, action) {
 			if (!user) return state;
 			user.username = action.meta.username;
 			return user;
+		case LINK_FACEBOOK_FAILURE:
+			alert('Failed to link Facebook.  Please contact an administrator.');
+			return state;
+		case UNLINK_FACEBOOK_FAILURE:
+			alert('Failed to unlink Facebook.  Please contact an administrator.');
+			return state;
 		default:
 			return state;
 	}

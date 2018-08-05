@@ -21,7 +21,9 @@ export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
 export const EDIT_SETTINGS = 'EDIT_SETTINGS';
 export const EDIT_SETTINGS_FAILURE = 'EDIT_SETTINGS_FAILURE';
 export const LINK_FACEBOOK = 'LINK_FACEBOOK';
+export const LINK_FACEBOOK_FAILURE = 'LINK_FACEBOOK_FAILURE';
 export const UNLINK_FACEBOOK = 'UNLINK_FACEBOOK';
+export const UNLINK_FACEBOOK_FAILURE = 'UNLINK_FACEBOOK_FAILURE';
 
 /*
  * action creators
@@ -243,7 +245,7 @@ export const linkFacebook = (username, facebookID, hasFBPic) => {
 			types: [
 				'',
 				{ type: LINK_FACEBOOK, meta: { username } },
-				''
+				{ type: LINK_FACEBOOK_FAILURE },
 			]
 		}
 	}
@@ -260,7 +262,7 @@ export const unlinkFacebook = (username) => ({
 		types: [
 			'',
 			{ type: UNLINK_FACEBOOK, meta: { username } },
-			''
+			{ type: UNLINK_FACEBOOK_FAILURE },
 		]
 	}
 });

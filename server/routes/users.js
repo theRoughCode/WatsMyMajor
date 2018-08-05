@@ -26,6 +26,9 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 		return res.status(400).send('Missing facebook ID.');
 	}
 
+	let { user } = await facebookUsers.getFacebookUser(facebookID);
+	if (user) return res.status(400).send('Facebook ID already linked.');
+
 	// Add Facebook ID to user object
 	let err = await users.setFacebookID(username, facebookID);
 	if (err) {
@@ -39,7 +42,8 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 		if (err) {
 			console.log(err);
 			return res.status(400).send(err);
-		}}
+		}
+	}
 
 
 	// Add facebook ID to facebookUser refererence
