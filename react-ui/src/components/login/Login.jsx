@@ -187,7 +187,7 @@ class Login extends Component {
         this.props.history.push("/");
       }
     } catch (err) {
-      alert('Failed to create account. Please contact an administrator.');
+      alert('Login failed. Please contact an administrator.');
       console.error(err);
     }
   }

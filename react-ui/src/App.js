@@ -42,6 +42,7 @@ class App extends Component {
     sideBarOpen: PropTypes.bool.isRequired,
     snack: PropTypes.object.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
     onToggleSideBar: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
 		onLogout: PropTypes.func.isRequired,
@@ -55,6 +56,7 @@ class App extends Component {
 			sideBarOpen,
 			snack,
       isLoggedIn,
+      username,
       onToggleSideBar,
       onLogin,
 			onLogout,
@@ -62,6 +64,7 @@ class App extends Component {
 		} = props;
 
     this.state = {
+      username,
 			subject: '',
 			catalogNumber: '',
       message: null,
@@ -89,6 +92,7 @@ class App extends Component {
     // Check localStorage if username is not set
     const cachedUsername = localStorage.getItem('wat-username');
     if (cachedUsername) {
+      this.setState({ username: cachedUsername });
       this.onLogin(cachedUsername);
     } else this.setState({ loading: false });
 
@@ -111,6 +115,10 @@ class App extends Component {
     if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
       this.setState({ isLoggedIn: nextProps.isLoggedIn });
       if (this.state.loading) this.setState({ loading: false });
+    }
+
+    if (nextProps.username !== this.state.username) {
+      this.setState({ loading: false, username: nextProps.username });
     }
 	}
 
@@ -200,8 +208,8 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn }) => {
-	return { sideBarOpen, snack, isLoggedIn };
+const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn, user }) => {
+	return { sideBarOpen, snack, isLoggedIn, username: user.username };
 };
 
 const mapDispatchToProps = dispatch => {
