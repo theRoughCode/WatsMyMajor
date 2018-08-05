@@ -10,9 +10,16 @@ import App from './App';
 import './stylesheets/index.css';
 import reducers from './reducers';
 
+const middlewares = [apiMiddleware];
+console.log(process.env.NODE_ENV)
+if (process.env.NODE_ENV !== 'production') {
+	middlewares.push(logger);
+}
+
+
 const store = createStore(
 	reducers,
-	applyMiddleware(apiMiddleware, logger)
+	applyMiddleware(...middlewares)
 );
 
 const Wrapper = () => (

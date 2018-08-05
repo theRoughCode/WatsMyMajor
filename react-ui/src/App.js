@@ -10,6 +10,7 @@ import {
 import Snackbar from 'material-ui/Snackbar';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
+import PrivacyPolicy from './components/privacy/PrivacyPolicy';
 import Dashboard from './components/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
@@ -185,6 +186,7 @@ class App extends Component {
         <div style={styles}>
   				<Switch>
             <Route exact path='/' render={ this.addRedirect(Dashboard) } />
+            <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
             <Route exact path='/login' render={ this.addUndirect(Login) } />
             <Route exact path='/settings' render={ this.addRedirect(Settings) } />
