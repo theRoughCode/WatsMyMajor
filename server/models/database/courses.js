@@ -1,7 +1,10 @@
 const async = require('async');
+const fuzzy = require('fuzzy');
 const { coursesRef } = require('./index');
 const waterloo = require('../waterloo');
 const utils = require('../utils');
+
+const coursesForSearch = [];
 
 /* A list of the courses available
     {
@@ -41,47 +44,65 @@ function updateCourseList(callback) {
  *													*
  ****************************/
 
+// Retrieves all courses as strings to be used for search
+async function getCoursesForSearch() {
+	// Get cached courses if cached
+	if (coursesForSearch.length > 0) return { err: null, courses: coursesForSearch };
 
-// Get course search results given query string and max number of results
-function getSearchResults(query, num, callback) {
- 	const { subject, catalogNumber } = utils.parseCourse(query);
+	try {
+		const snapshot = await coursesRef.once('value');
+		const courses = snapshot.val();
+		const subjects = Object.keys(courses);
+		subjects.forEach(subject => {
+			const catalogNumbers = Object.keys(courses[subject]);
+			catalogNumbers.forEach(catalogNumber => {
+				const title = courses[subject][catalogNumber];
+				coursesForSearch.push({ subject, catalogNumber, title });
+			});
+		});
+		return { err: null, courses: coursesForSearch };
+	} catch (err) {
+		console.log(err);
+		return { err, courses: null };
+	}
+}
 
- 	if (!num || isNaN(num)) num = 5;
 
- 	coursesRef
- 		.orderByKey()
- 		.startAt(subject)
- 		// .endAt(`${subject}\uf8ff`)
- 		.limitToFirst(1)
- 		.once('value')
- 		.then(snapshot => {
- 			const matches = snapshot.val();
- 			const matchSubject = Object.keys(matches)[0];
- 			const filteredMatches = Object.keys(matches[matchSubject])
- 				.filter(key =>
- 					!catalogNumber ||
- 					String(key).toLowerCase().includes(String(catalogNumber).toLowerCase())
- 				)
- 				.reduce((matchArr, matchCatNum) => {
- 					if (matchArr.length >= num) return matchArr;
+/****************************
+ *													*
+ *			   M I S C 			    *
+ *													*
+ ****************************/
 
- 					matchArr.push({
- 						subject: matchSubject,
- 						catalogNumber: matchCatNum,
- 						title: matches[matchSubject][matchCatNum]
- 					});
- 					return matchArr;
- 				}, []);
+// Extractors for fuzzy searching
+const simpleExtractor = ({ subject, catalogNumber }) => subject + catalogNumber;
+const titleExtractor = ({ subject, catalogNumber, title }) => subject + catalogNumber + title;
 
- 			callback(null, filteredMatches);
- 		})
- 		.catch(err => {
- 			console.error(err);
- 			callback(err);
- 		});
- }
+// Searches courses with query and a specified number of results to return
+async function searchCourses(query, limit) {
+	try {
+		const { err, courses } = await getCoursesForSearch();
+		if (err) return { err, result: null };
+
+		// If query length is <= 5, only search by subject and catalogNumber.
+		// Else include title in search as well.
+		const extract = (query.length <= 5) ? simpleExtractor : titleExtractor;
+		const matches = fuzzy.filter(query, coursesForSearch, { extract }).slice(0, limit);
+
+		// If using simple extractor and not enough to populate results, use title extractor.
+		if (query.length <= 5 && matches.length < limit) {
+			const matches2 = fuzzy.filter(query, coursesForSearch, { extract: titleExtractor }).slice(0, limit - matches.length);
+			matches.push(...matches2);
+		}
+		const result = matches.map(({ original }) => original);
+		return { err: null, result };
+	} catch (err) {
+		console.log(err);
+		return { err, result: null };
+	}
+}
 
 module.exports = {
   updateCourseList,
-  getSearchResults
+  searchCourses
 };
