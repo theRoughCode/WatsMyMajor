@@ -12,23 +12,6 @@ html, body, #root, .App {
 	flex-direction: column;
 }
 
-.App-logo {
-	animation: App-logo-spin infinite 20s linear;
-	height: 80px;
-}
-
-.App-header {
-	background-color: #656e77;
-	height: 150px;
-	padding: 20px;
-	color: white;
-}
-
-.App-intro {
-	font-size: large;
-	line-height: 40px;
-}
-
 .App a {
 	color: #356abf;
 }
@@ -51,15 +34,6 @@ html, body, #root, .App {
 }
 
 /* SideBar menu */
-/*.App-header div {
-  background-color: rgb(62, 75, 92) !important;
-  color: rgb(180, 188, 200) !important;
-}*/
-
-.App-header div .titleBar  {
-  padding-top: 60px;
-  background-color: rgb(43, 54, 67) !important;
-}
 
 .avatar-menu:hover {
 	background-color: rgb(74, 87, 104) !important;

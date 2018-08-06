@@ -17,7 +17,6 @@ const CourseContent = (props) => {
 		subject,
 		catalogNumber,
 		selectedClassIndex,
-		selectCourse,
 		expandCourse,
 		title,
 		rating,
@@ -60,7 +59,6 @@ const CourseContent = (props) => {
 				coreqs={coreqs}
 				prereqs={prereqs}
 				postreqs={postreqs}
-				selectCourse={selectCourse}
 			/>
 			{
 				classes.length > 0 && (
@@ -80,7 +78,6 @@ CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
 	selectedClassIndex: PropTypes.number.isRequired,
-	selectCourse: PropTypes.func.isRequired,
 	expandCourse: PropTypes.func.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,

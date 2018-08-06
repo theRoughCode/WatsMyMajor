@@ -32,7 +32,6 @@ const CourseDescription = ({
 	coreqs,
 	prereqs,
 	postreqs,
-	selectCourse
 }) => (
 	<div className="course-description">
 		<div style={{ flex: 1 }}>
@@ -52,7 +51,6 @@ const CourseDescription = ({
 				coreqs={coreqs}
 				prereqs={prereqs}
 				postreqs={postreqs}
-				selectCourse={selectCourse}
 			/>
 		</div>
 	</div>
@@ -66,7 +64,6 @@ CourseDescription.propTypes = {
   coreqs: PropTypes.array.isRequired,
   prereqs: PropTypes.object.isRequired,
   postreqs: PropTypes.array.isRequired,
-  selectCourse: PropTypes.func.isRequired
 };
 
 export default CourseDescription;

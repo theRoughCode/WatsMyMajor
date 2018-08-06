@@ -79,6 +79,7 @@ class CourseListContainer extends Component {
 			catalogNumber,
 			loading: true,
 			error: false,
+			sideBarOpen: false,
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
@@ -107,9 +108,9 @@ class CourseListContainer extends Component {
 			},
 		}
 
-		this.expandCourseHandler = props.expandCourseHandler;
+		this.onExpandCourse = this.onExpandCourse.bind(this);
+		this.closeSideBar = this.closeSideBar.bind(this);
 		this.updatePageInfo = this.updatePageInfo.bind(this);
-		this.selectCourse = this.selectCourse.bind(this);
 		this.addCourseToCart = this.addCourseToCart.bind(this);
 		this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
 	}
@@ -219,10 +220,6 @@ class CourseListContainer extends Component {
 		});
 	};
 
-	selectCourse(subject, catalogNumber) {
-		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-	}
-
 	addCourseToCart(subject, catalogNumber) {
 		const { addToCartHandler, username, cart } = this.props;
 		const { taken } = this.state;
@@ -234,13 +231,26 @@ class CourseListContainer extends Component {
 		removeFromCartHandler(username, cart, subject, catalogNumber);
 	}
 
+	onExpandCourse(courseObj, index) {
+		if (this.state.selectedClassIndex === index) {
+			this.closeSideBar();
+			return;
+		}
+		this.props.expandCourseHandler(courseObj, index);
+		this.setState({ sideBarOpen: true });
+	}
+
+	closeSideBar() {
+		this.props.removeExpandedCourseHandler();
+		this.setState({ sideBarOpen: false });
+	}
+
 	render() {
 		const renderedView = (
 			<div style={ styles.courseView }>
 				<CourseContent
 					selectedClassIndex={this.state.selectedClassIndex}
-					selectCourse={this.selectCourse}
-					expandCourse={this.expandCourseHandler}
+					expandCourse={this.onExpandCourse}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
 					taken={this.state.taken}
@@ -254,7 +264,8 @@ class CourseListContainer extends Component {
 					{...this.state.classInfo}
 					subject={this.state.subject}
 					catalogNumber={this.state.catalogNumber}
-					isVisible={this.state.classInfo.classNumber.length > 0}
+					open={this.state.sideBarOpen}
+					onClose={this.closeSideBar}
 				/>
 			</div>
 		);

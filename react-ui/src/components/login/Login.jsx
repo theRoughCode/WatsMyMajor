@@ -230,7 +230,6 @@ class Login extends Component {
             <span style={styles.subtitle}>or</span>
             <FacebookLogin
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-              scope="user_friends"
               callback={this.onFacebookLogin}
               onFailure={err => console.log(err)}
               render={ renderProps => (

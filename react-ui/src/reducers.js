@@ -45,8 +45,6 @@ function expandedCourse(state=defaultExpandedCourse, action) {
 				index
 			} = action;
 
-			if (state.selectedClassIndex === index) return defaultExpandedCourse;
-
 			return {
 				instructor,
 				attending,

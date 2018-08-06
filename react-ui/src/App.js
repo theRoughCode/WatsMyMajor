@@ -165,7 +165,7 @@ class App extends Component {
   }
 
   render() {
-    const marginLeft = (this.state.sideBarOpen) ? '256px' : 0;
+    const marginLeft = (this.state.sideBarOpen) ? 200 : 0;
 		const transition = (this.state.sideBarOpen)
 													? 'all 0.3s ease-in-out'
 													: 'all 0.225s ease-out';

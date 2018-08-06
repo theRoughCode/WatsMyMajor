@@ -63,7 +63,6 @@ export default class LinkFacebook extends Component {
         <FacebookLogin
           appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
           fields="picture"
-          scope="user_friends"
           callback={ this.onFBLink.bind(this) }
           render={ renderProps => (
             <RaisedButton

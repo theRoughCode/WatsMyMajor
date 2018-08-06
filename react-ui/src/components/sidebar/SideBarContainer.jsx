@@ -11,12 +11,15 @@ import FolderIcon from 'material-ui/svg-icons/file/folder';
 import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
+import GithubIcon from '../tools/GithubIcon';
 
 const styles = {
 	drawer: {
 		zIndex: 1000,
-		position: 'absolute',
-		textAlign: 'left'
+		position: 'fixed',
+		textAlign: 'left',
+		display: 'flex',
+		flexDirection: 'column',
 	},
 	avatarMenuItem: {
 		marginTop: '60px',
@@ -27,6 +30,20 @@ const styles = {
 	listItem: (isSelected) => {
 		if (isSelected) return { backgroundColor: 'rgba(0, 0, 0, 0.1)' };
 		else return {};
+	},
+	label: {
+		marginLeft: -12,
+	},
+	github: {
+		marginBottom: 20,
+		display: 'flex',
+	},
+	githubTextContainer: {
+		margin: 'auto',
+	},
+	githubIcon: {
+		marginLeft: 10,
+		verticalAlign: 'text-bottom',
 	}
 }
 
@@ -59,7 +76,7 @@ class SideBarContainer extends Component {
 		const { pathname } = this.state;
 
 		return (
-			<Drawer open={ open } style={ styles.drawer }>
+			<Drawer open={ open } width={ 200 } containerStyle={ styles.drawer }>
 				<MenuItem
 					className="avatar-menu"
 					style={ styles.avatarMenuItem }
@@ -67,21 +84,21 @@ class SideBarContainer extends Component {
 				>
 					{ isLoggedIn && <Avatar name={ name } profileURL={ profileURL } /> }
 				</MenuItem>
-				<List>
+				<List style={{ flex: 1 }}>
 					<ListItem
-						primaryText="Dashboard"
+						primaryText={ <span style={ styles.label }>Dashboard</span> }
 						leftIcon={<DashboardIcon />}
 						style={ styles.listItem(pathname === "/") }
 						containerElement={ <Link to="/" /> }
 					/>
 					<ListItem
-						primaryText="View Majors"
+						primaryText={ <span style={ styles.label }>View Majors</span> }
 						leftIcon={<SchoolIcon />}
 						style={ styles.listItem(pathname === "/majors") }
 						containerElement={ <Link to="/majors" /> }
 					/>
 					<ListItem
-						primaryText="Courses"
+						primaryText={ <span style={ styles.label }>Courses</span> }
 						leftIcon={<FolderIcon />}
 						initiallyOpen={false}
 						primaryTogglesNestedList={true}
@@ -89,7 +106,7 @@ class SideBarContainer extends Component {
 							<ListItem
 								className="sidebar-courses"
 								key={1}
-								primaryText="My Courses"
+								primaryText={ <span style={ styles.label }>My Courses</span> }
 								style={ styles.listItem(pathname === "/my-courses") }
 								containerElement={ <Link to="/my-courses" /> }
 								leftIcon={<MyCoursesIcon />}
@@ -97,7 +114,7 @@ class SideBarContainer extends Component {
 							<ListItem
 								className="sidebar-courses"
 								key={2}
-								primaryText="My Schedule"
+								primaryText={ <span style={ styles.label }>My Schedule</span> }
 								style={ styles.listItem(pathname === "/schedule") }
 								containerElement={ <Link to="/schedule" /> }
 								leftIcon={<ScheduleIcon />}
@@ -105,6 +122,14 @@ class SideBarContainer extends Component {
 						]}
 					/>
 				</List>
+				<div style={ styles.github }>
+					<div style={ styles.githubTextContainer }>
+						<span>Found an issue?</span>
+						<a target="_blank" href="https://github.com/theRoughCode/watsmymajorbeta/issues">
+							<GithubIcon style={ styles.githubIcon} />
+						</a>
+					</div>
+				</div>
 			</Drawer>
 		);
 	}
@@ -115,4 +140,4 @@ const mapStateToProps = ({ isLoggedIn, user }) => {
   return { isLoggedIn, name, profileURL };
 };
 
-export default withRouter(connect(mapStateToProps, null)(SideBarContainer));
+export default withRouter(connect(mapStateToProps)(SideBarContainer));

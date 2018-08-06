@@ -14,12 +14,14 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit:'10mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit:'10mb' }));
 
-// Force use of HTTPS
-app.use((req, res, next) => {
-  if (req.header('x-forwarded-proto') !== 'https') {
-    res.redirect(`https://${req.header('host')}${req.url}`);
-  } else next();
-});
+// Force use of HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else next();
+  });
+}
 
 // Allow use of cookies
 app.use(cookieParser());

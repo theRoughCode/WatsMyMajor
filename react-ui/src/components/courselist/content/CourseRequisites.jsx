@@ -27,6 +27,10 @@ const styles = {
 		flexDirection: 'column',
 		height: '100px'
 	},
+	reqs: (isSelected) => ({
+		color: (isSelected) ? 'green' : 'inherit',
+		textDecoration: 'none',
+	}),
 };
 
 class CourseRequisites extends Component {
@@ -36,7 +40,6 @@ class CourseRequisites extends Component {
 		coreqs: PropTypes.array.isRequired,
 		prereqs: PropTypes.object.isRequired,
 		postreqs: PropTypes.array.isRequired,
-		selectCourse: PropTypes.func.isRequired,
 		myCourses: PropTypes.object.isRequired
 	};
 
@@ -70,19 +73,13 @@ class CourseRequisites extends Component {
 
 		const { myCourses } = this.props;
 		const { subject, catalogNumber } = course;
-		let style = {};
-
-		if (hasTakenCourse(subject, catalogNumber, myCourses)) {
-			style = {
-				color: 'green'
-			};
-		}
+		const hasTaken = hasTakenCourse(subject, catalogNumber, myCourses);
 
 		return (
 			<a
 				key={ index }
-				onClick={ () => this.props.selectCourse(subject, catalogNumber) }
-				style={ style }
+				href={ `/courses/${subject}/${catalogNumber}` }
+				style={ styles.reqs(hasTaken) }
 			>
 				{ `${subject} ${catalogNumber}` }
 				{ hasTakenCourse(subject, catalogNumber, myCourses) ? ' ✔' : '' }

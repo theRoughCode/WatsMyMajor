@@ -1,35 +1,51 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Drawer from 'material-ui/Drawer';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
+import ArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import CourseInfo from './sidebar/CourseInfo';
 import CourseProf from './sidebar/CourseProf';
 import '../../stylesheets/CourseSideBar.css';
 
-// TODO: Implement as Drawer
-
 const styles =  {
-	sidebar: (isVisible) => ({
+	container: {
+	  display: 'flex',
+	  flexDirection: 'column',
+	},
+	arrowButton: {
+		width: '100%',
+	},
+	arrowLabel: {
+		margin: 'auto 10px',
+	},
+	arrow: {
+		float: 'left',
+		width: 30,
+		height: 30,
+	},
+	sidebar: {
 		height: 'auto',
-		width: 270,
-		margin: 15,
-		marginLeft: 0,
+		width: '100%',
 		display: 'inline-block',
-		opacity: (isVisible) ? 1 : 0
-	})
+	}
 };
 
-const retrieveProfInfo = (instructor) => {
-	return fetch(`/server/prof/${instructor}`, {
-		headers: {
-			'x-secret': process.env.REACT_APP_SERVER_SECRET
-		}
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`status ${response.status}`);
-		}
+async function retrieveProfInfo(instructor) {
+	try {
+		const response = await fetch(`/server/prof/${instructor}`, {
+			headers: {
+				'x-secret': process.env.REACT_APP_SERVER_SECRET
+			}
+		});
 
-		return response.json();
-	});
+		if (!response.ok) return { err: `status ${response.status}`, prof: null };
+
+		const prof = await response.json();
+		return { err:  null, prof };
+	} catch (err) {
+		return { err, prof: null };
+	}
 };
 
 
@@ -43,7 +59,8 @@ export default class CourseSideBarContainer extends Component {
 		reservedCap: PropTypes.string.isRequired,
 		classNumber: PropTypes.string.isRequired,
 		lastUpdated: PropTypes.string.isRequired,
-		isVisible: PropTypes.bool.isRequired
+		open: PropTypes.bool.isRequired,
+		onClose: PropTypes.func.isRequired,
 	};
 
 	constructor(props) {
@@ -59,7 +76,6 @@ export default class CourseSideBarContainer extends Component {
 			reservedCap,
 			classNumber,
 			lastUpdated,
-			isVisible
 		} = props;
 
 		this.state = {
@@ -67,7 +83,6 @@ export default class CourseSideBarContainer extends Component {
 			catalogNumber,
 			classNumber,
 			instructor,
-			isVisible,
 			info: {
 				attending,
 				enrollmentCap,
@@ -80,19 +95,17 @@ export default class CourseSideBarContainer extends Component {
 		};
 	}
 
-	componentDidMount() {
-		if (this.state.instructor) {
-			retrieveProfInfo(this.state.instructor)
-			.then(prof => {
-				this.setState({ fetchingRMP: false });
-				if (!prof.error) this.setState({ prof });
-				else throw prof.error;
-			})
-			.catch(error => {
-				console.error(`ERROR: ${error}`);
-				this.setState({ prof: null });
-			});
+	async componentDidMount() {
+		if (!this.state.instructor) return;
+
+		const { err, prof } = await retrieveProfInfo(this.state.instructor);
+		this.setState({ fetchingRMP: false });
+		if (err) {
+			console.error(`ERROR: ${err}`);
+			this.setState({ prof: null });
+			return;
 		}
+		this.setState({ prof });
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -104,14 +117,12 @@ export default class CourseSideBarContainer extends Component {
 			reservedCap,
 			classNumber,
 			lastUpdated,
-			isVisible
 		} = nextProps;
 
 		if (classNumber !== this.props.classNumber) {
 			this.setState({
 				classNumber,
 				instructor,
-				isVisible,
 				info: {
 					attending,
 					enrollmentCap,
@@ -145,28 +156,33 @@ export default class CourseSideBarContainer extends Component {
 			info,
 			prof,
 			fetchingRMP,
-			isVisible
 		} = this.state;
 		const id = (instructor) ? 'slide' : '';
 
 		return (
-			<div className="course-side-bar">
+			<Drawer open={ this.props.open } openSecondary style={ styles.container }>
+				<RaisedButton
+					label={ <ArrowIcon style={ styles.arrow } /> }
+					labelStyle={ styles.arrowLabel }
+					style={ styles.arrowButton }
+					onClick={ this.props.onClose }
+				/>
 				<CourseInfo
-					style={styles.sidebar(isVisible)}
-					id={id}
-					subject={subject}
-					catalogNumber={catalogNumber}
-					instructor={instructor}
-					{...info}
+					style={ styles.sidebar }
+					id={ id }
+					subject={ subject }
+					catalogNumber={ catalogNumber }
+					instructor={ instructor }
+					{ ...info }
 				/>
 				<CourseProf
-					style={styles.sidebar(instructor)}
-					id={id}
-					instructor={instructor}
-					loading={fetchingRMP}
-					{...prof}
+					style={ styles.sidebar }
+					id={ id }
+					instructor={ instructor }
+					loading={ fetchingRMP }
+					{ ...prof }
 				/>
-			</div>
+			</Drawer>
 		);
 	}
 
