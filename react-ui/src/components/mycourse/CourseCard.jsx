@@ -4,6 +4,34 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 
+const space = 8;
+const styles = {
+	container: (highlightBackground) => ({
+		background: (highlightBackground) ? '#bde580' : 'inherit',
+	}),
+};
+
+const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: 'none',
+  padding: space * 2,
+  margin: `0 0 ${space}px 0`,
+	border: (isDragging || isPrereq)
+		? '1px solid #4f4f4f'
+		: '1px solid #bcbcbc',
+	borderRadius: '5px',
+
+  // change background colour if dragging
+  background: isDragging
+		? '#8be58b'
+		: isPrereq
+			? '#9ef442'
+			: '#f2f2f2',
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});
+
 const isInPrereqs = (subject, catalogNumber, prereqs) => {
 	for (var i = 0; i < prereqs.length; i++) {
 		if (subject === prereqs[i].subject && catalogNumber === prereqs[i].catalogNumber) {
@@ -18,7 +46,7 @@ const CourseCard = ({
 	courseCardPrereqs,
 	provided,
 	snapshot,
-	getItemStyle,
+	highlightBackground,
 	history
 }) => {
 	const { subject, catalogNumber } = course;
@@ -30,6 +58,7 @@ const CourseCard = ({
 		<Paper
 			zDepth={1}
 			onClick={ () => history.push(`/courses/${subject}/${catalogNumber}`) }
+			style={ styles.container(highlightBackground) }
 		>
 			<div
 				ref={provided.innerRef}
@@ -39,6 +68,7 @@ const CourseCard = ({
 					snapshot.isDragging,
 					isPrereq,
 					provided.draggableProps.style,
+					highlightBackground,
 				)}
 			>
 				{`${subject} ${catalogNumber}`}
@@ -49,6 +79,7 @@ const CourseCard = ({
 
 CourseCard.propTypes = {
 	course: PropTypes.object.isRequired,
+	highlightBackground: PropTypes.bool.isRequired,
 
 	// Redux
 	courseCardPrereqs: PropTypes.array.isRequired,
@@ -56,8 +87,6 @@ CourseCard.propTypes = {
 	// DnD
 	provided: PropTypes.object.isRequired,
 	snapshot: PropTypes.object.isRequired,
-
-	getItemStyle: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ courseCardPrereqs }) => ({ courseCardPrereqs });

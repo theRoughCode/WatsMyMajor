@@ -55,15 +55,6 @@ const styles = {
 		width:  stylesConst.width,
 		height: stylesConst.height
 	},
-	dragArea: (isDraggingOver, isCart) => ({
-		padding: space,
-		width: stylesConst.width - space * 2,
-		minHeight: stylesConst.minHeight,
-		maxHeight: isCart ? 400 : 'none',
-		height: stylesConst.height,
-		background: isDraggingOver ? '#bde580' : 'inherit',
-		overflow: isCart ? 'auto' : 'none',
-	}),
 	addCourseCard: {
 		padding: space,
 		margin: `0 0 ${space}px 0`,
@@ -80,26 +71,14 @@ const styles = {
 	}
 };
 
-
-const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: 'none',
-  padding: space * 2,
-  margin: `0 0 ${space}px 0`,
-	border: (isDragging || isPrereq)
-		? '1px solid #4f4f4f'
-		: '1px solid #bcbcbc',
-	borderRadius: '5px',
-
-  // change background colour if dragging
-  background: isDragging
-		? '#8be58b'
-		: isPrereq
-			? '#9ef442'
-			: '#f2f2f2',
-
-  // styles we need to apply on draggables
-  ...draggableStyle,
+const getListStyle = (isDraggingOver, isCart) => ({
+	padding: space,
+	width: stylesConst.width - space * 2,
+	minHeight: stylesConst.minHeight,
+	maxHeight: isCart ? 400 : 'none',
+	height: stylesConst.height,
+	background: isDraggingOver ? '#bde580' : 'inherit',
+	overflow: isCart ? 'auto' : 'none',
 });
 
 const AddCourseCard = ({ onClick }) => (
@@ -110,7 +89,7 @@ const AddCourseCard = ({ onClick }) => (
 	</FlatButton>
 );
 
-const renderCourses = (showAdd, courseList, onClick) => {
+const renderCourses = (showAdd, courseList, onClick, highlightBackground) => {
 	const courses = courseList.map((course, index) => {
 		const key = `${course.subject}/${course.catalogNumber}/${index}`;
 		return (
@@ -125,7 +104,7 @@ const renderCourses = (showAdd, courseList, onClick) => {
 						course={course}
 						provided={provided}
 						snapshot={snapshot}
-						getItemStyle={getItemStyle}
+						highlightBackground={highlightBackground}
 					/>
 				)}
 			</Draggable>
@@ -323,9 +302,9 @@ export default class TermBoard extends Component {
 							{(provided, snapshot) => (
 								<div
 									ref={provided.innerRef}
-									style={styles.dragArea(snapshot.isDraggingOver, isCart)}
+									style={getListStyle(snapshot.isDraggingOver, isCart)}
 								>
-									{ renderCourses(!isCart && !snapshot.isDraggingOver, courses, this.openAddDialog) }
+									{ renderCourses(!isCart && !snapshot.isDraggingOver, courses, this.openAddDialog, snapshot.isDraggingOver) }
 									{ provided.placeholder }
 								</div>
 							)}
