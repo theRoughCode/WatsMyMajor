@@ -61,6 +61,7 @@ class SideBarContainer extends Component {
 		return (
 			<Drawer open={ open } style={ styles.drawer }>
 				<MenuItem
+					className="avatar-menu"
 					style={ styles.avatarMenuItem }
 					onClick={ () => history.push('/settings') }
 				>

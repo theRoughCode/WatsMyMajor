@@ -61,6 +61,10 @@ html, body, #root, .App {
   background-color: rgb(43, 54, 67) !important;
 }
 
+.avatar-menu:hover {
+	background-color: rgb(74, 87, 104) !important;
+}
+
 .avatar-wrapper {
   display: flex;
   flex-direction: column;

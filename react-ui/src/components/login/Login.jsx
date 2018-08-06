@@ -232,6 +232,7 @@ class Login extends Component {
               appId={process.env.REACT_APP_FACEBOOK_APP_ID}
               scope="user_friends"
               callback={this.onFacebookLogin}
+              onFailure={err => console.log(err)}
               render={ renderProps => (
                 <RaisedButton
                   label="Continue with Facebook"
@@ -241,7 +242,7 @@ class Login extends Component {
                   labelStyle={ styles.fbText }
                   backgroundColor="#3b5998"
                   icon={ <FacebookIcon style={ styles.fbIcon } /> }
-                  />
+                />
               ) }
               />
           </div>
