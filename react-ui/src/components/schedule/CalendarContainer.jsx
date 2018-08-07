@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Calendar, Event } from './calendar';
 import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
@@ -15,6 +15,7 @@ import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
 import RandomColour from 'randomcolor';
+import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
@@ -65,11 +66,7 @@ const styles = {
 	}
 };
 
-function addTime(date, hours, minutes) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes == null ? 0 : minutes);
-}
-
-function parseCourses(courses) {
+const parseCourses = (courses) => {
 	const classesArr = [];
 
 	courses.map(({ subject, catalogNumber, classes }) => {
@@ -89,11 +86,16 @@ function parseCourses(courses) {
 				endDate
 			} = arr[1];
 
-			const startDateMoment = moment(startDate, "DD/MM/YYYY");
-			const endDateMoment = moment(endDate, "DD/MM/YYYY");
-			const startTimeMoment = moment(startTime, "hh:mmA");
-			const endTimeMoment = moment(endTime, "hh:mmA");
-
+			const startDateMoment = moment({
+				year: startDate.year,
+				month: startDate.month - 1,  // months are zero indexed
+				date: startDate.day
+			});
+			const endDateMoment = moment({
+				year: endDate.year,
+				month: endDate.month - 1,
+				date: endDate.day
+			});
 			let date = startDateMoment;
 			while (date.isSameOrBefore(endDateMoment)) {
 				days.map(dayStr => {
@@ -107,15 +109,12 @@ function parseCourses(courses) {
 						default: day = 6;
 					}
 
-					const startOfWeekMoment = date.startOf('week');
-					const startDay = startOfWeekMoment.day();
-					const startDate = startOfWeekMoment.date();
-
 					// ensure valid date
+					const startOfWeekMoment = date.startOf('week');
 					const currDayMoment = startOfWeekMoment.add(day, 'days');
 					if (currDayMoment.isSameOrAfter(startDateMoment) || currDayMoment.add(day, 'days').isSameOrBefore(endDateMoment)) {
-						const start = new Date(date.year(), date.month(), currDayMoment.date(), startTimeMoment.hour(), startTimeMoment.minute());
-						const end = new Date(date.year(), date.month(), currDayMoment.date(), endTimeMoment.hour(), endTimeMoment.minute());
+						const start = new Date(date.year(), date.month(), currDayMoment.date(), startTime.hour, startTime.min);
+						const end = new Date(date.year(), date.month(), currDayMoment.date(), endTime.hour, endTime.min);
 
 						classesArr.push({
 							subject,
@@ -231,6 +230,10 @@ class CalendarContainer extends Component {
 		this.refs.dp.openDialog();
 	}
 
+	onClassClick(subject, catalogNumber) {
+		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+	}
+
   render() {
 		const renderedView = (
 			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -308,7 +311,7 @@ class CalendarContainer extends Component {
                 key={ index }
                 background={ classElem.colour }
                 title={ `${classElem.subject} ${classElem.catalogNumber}` }
-								onClick={ () => {} }
+								onClick={ this.onClassClick.bind(this, classElem.subject, classElem.catalogNumber) }
 								{ ...classElem }
               />
             ))
@@ -332,4 +335,4 @@ class CalendarContainer extends Component {
   }
 }
 
-export default CalendarContainer;
+export default withRouter(CalendarContainer);
