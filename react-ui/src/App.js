@@ -18,7 +18,7 @@ import Settings from './components/settings/SettingsContainer';
 import Majors from './components/majors/MajorsContainer';
 import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
-import MyScheduleView from './components/schedule/MySchedule';
+import MyScheduleView from './components/schedule/MyScheduleContainer';
 import CourseListView from './components/courselist/CourseListContainer';
 import LoadingView from './components/tools/LoadingView';
 import {

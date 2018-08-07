@@ -3,11 +3,13 @@ const parseSchedule = require('../models/parsers/scheduleParser');
 const parseCourses = require('../models/parsers/courseParser');
 
 ParseRouter.post('/schedule', function(req, res) {
-	parseSchedule(req.body.text, json => res.json(json));
+	const schedule = parseSchedule(req.body.text);
+	res.json(schedule);
 });
 
 ParseRouter.post('/courses', function(req, res) {
-	parseCourses(req.body.text, json => res.json(json));
+	const courses = parseCourses(req.body.text);
+	res.json(courses);
 });
 
 module.exports = ParseRouter;

@@ -3,13 +3,14 @@ const { setCourseListPrereqs, setCoursesPrereqs } = require('../models/utils');
 const users = require('../models/database/users');
 const images = require('../models/database/images');
 const facebookUsers = require('../models/database/facebookUsers');
+const parseSchedule = require('../models/parsers/scheduleParser');
 
 // Get user
 UsersRouter.get('/:username', async function(req, res) {
 	const username = req.params.username;
 	if (req.user !== username) return res.sendStatus(401);
 
-	const { err, user } = await users.getUser(username);
+	const { user, err } = await users.getUser(username);
 	if (err) {
 		console.log(err);
 		res.status(400).send(err);
@@ -54,7 +55,7 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 	}
 
 	// Return user object
-	({ err, user } = await users.getUser(username));
+	({ user, err } = await users.getUser(username));
 	if (err) {
 		console.log(err);
 		return	res.status(400).send(err);
@@ -103,7 +104,7 @@ UsersRouter.post('/edit/settings/:username', async function(req, res) {
 		}
 
 		// Return updated user
-		({ users, err } = await users.getUser(username));
+		({ user, err } = await users.getUser(username));
 		if (err) {
 			console.log(err);
 			return res.status(400).send(err);
@@ -184,11 +185,50 @@ UsersRouter.post('/set/schedule/:username', async function(req, res) {
   const username = req.params.username;
 	if (req.user !== username) return res.sendStatus(401);
 
-  const err = await users.setSchedule(username, req.body.schedule);
-	if (err) {
+	const { schedule } = req.body;
+	if (!schedule) return res.status(400).send('Missing fields.');
+
+	try {
+		err = await users.setSchedule(username, schedule);
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+		res.status(200).send(`Schedule for User ${username} updated successfully.`);
+	} catch (err) {
 		console.log(err);
 		res.status(400).send(err);
-	} else res.status(200).send(`Schedule for User ${username} updated successfully.`);
+	}
+});
+
+
+UsersRouter.post('/add/schedule/:username', async function(req, res) {
+  const username = req.params.username;
+	if (req.user !== username) return res.sendStatus(401);
+
+	const { text } = req.body;
+	if (!text) return res.status(400).send('Missing fields.');
+
+	// Parse schedule
+	const { term, courses } = parseSchedule(text);
+
+	try {
+		let { user, err } = await users.getUser(username);
+		const schedule = user.schedule || {};
+		schedule[term] = courses;
+		// Upload schedule
+		err = await users.setSchedule(username, schedule);
+		if (err) {
+			console.log(err);
+			return res.status(400).send(err);
+		}
+
+		user.schedule = schedule;
+		res.status(200).json(user);
+	} catch (err) {
+		console.log(err);
+		res.status(400).send(err);
+	}
 });
 
 // Set courseList
@@ -234,7 +274,7 @@ UsersRouter.post('/upload/profile/:username', async function(req, res) {
 			}
 
 			// Return user object
-			({ err, user } = await users.getUser(username));
+			({ user, err } = await users.getUser(username));
 			if (err) {
 				console.log(err);
 				return	res.status(400).send(err);
@@ -263,7 +303,7 @@ UsersRouter.post('/upload/profile/:username', async function(req, res) {
 		}
 
 		// Return user object
-		({ err, user } = await users.getUser(username));
+		({ user, err } = await users.getUser(username));
 		if (err) {
 			console.log(err);
 			return res.status(400).send(err);

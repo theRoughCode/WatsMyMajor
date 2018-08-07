@@ -7,6 +7,7 @@ import { virtualize } from 'react-swipeable-views-utils';
 import DayView from './DayView';
 import MultipleDaysView from './MultipleDaysView';
 import { addDays } from './dateUtils';
+import { objectEquals } from '../../../utils/arrays';
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
 
@@ -50,7 +51,8 @@ class Calendar extends Component {
 		return getTimeOrDefault(nextProps.date) !== getTimeOrDefault(this.props.date)
 			|| nextProps.mode !== this.props.mode
 			|| nextState.scrollPosition !== this.state.scrollPosition
-			|| nextState.isSwiping !== this.state.isSwipingt;
+			|| nextState.isSwiping !== this.state.isSwiping
+			|| !objectEquals(nextProps.children, this.props.children);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -126,7 +128,8 @@ class Calendar extends Component {
 				overscanSlideBefore={ 1 }
 				slideRenderer={ this.slideRenderer }
 				onChangeIndex={ this.onChangeIndex }
-				onSwitching={ this.onSwitching }/>
+				onSwitching={ this.onSwitching }
+			/>
 		)
 	}
 }

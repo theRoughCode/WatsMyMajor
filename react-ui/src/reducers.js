@@ -9,6 +9,10 @@ import {
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
 	UPDATE_USER_COURSES_PREREQS,
+	UPDATE_USER_SCHEDULE,
+	UPDATE_USER_SCHEDULE_FAILURE,
+	CLEAR_USER_SCHEDULE,
+	CLEAR_USER_SCHEDULE_FAILURE,
 	SET_CART,
 	SET_CART_PREREQS,
 	HIGHLIGHT_PREREQS,
@@ -134,6 +138,7 @@ function getMyCourses(courseList) {
 	}
 	return courseMap;
 }
+
 // List of courses in My Courses
 function myCourses(state = {}, action) {
 	switch (action.type) {
@@ -141,7 +146,7 @@ function myCourses(state = {}, action) {
 			if (action.user == null) return {};
 			return getMyCourses(action.user.courseList);
 		case LOGIN_USER:
-			if (action.payload == null) return [];
+			if (action.payload == null) return {};
 			return getMyCourses(action.payload.courseList) || state;
 		case LOGOUT_USER:
 			return {};
@@ -149,6 +154,31 @@ function myCourses(state = {}, action) {
 			return getMyCourses(action.meta.courseList);
 		case UPDATE_USER_COURSES_PREREQS:
 			return getMyCourses(action.payload) || state;
+		default:
+			return state;
+	}
+}
+
+function mySchedule(state = {}, action) {
+	switch (action.type) {
+		case SET_USER:
+			if (action.user == null) return {};
+			return action.user.schedule || {};
+		case LOGIN_USER:
+			if (action.payload == null) return {};
+			return action.payload.schedule || state;
+		case LOGOUT_USER:
+			return {};
+		case UPDATE_USER_SCHEDULE:
+			return action.payload.schedule || state;
+		case UPDATE_USER_SCHEDULE_FAILURE:
+			alert('Failed to update schedule. Please contact an administrator.');
+			return state;
+		case CLEAR_USER_SCHEDULE:
+			return {};
+		case CLEAR_USER_SCHEDULE_FAILURE:
+			alert('Failed to clear schedule. Please contact an administrator.');
+			return state;
 		default:
 			return state;
 	}
@@ -250,6 +280,7 @@ const reducers = combineReducers({
 	snack,
 	courseList,
 	myCourses,
+	mySchedule,
 	cart,
 	user,
 	isLoggedIn,

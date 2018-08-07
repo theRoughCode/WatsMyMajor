@@ -123,7 +123,16 @@ async function updateUserSettings(username, user, callback) {
         courseList: [
           term,
           courses
-        ]
+        ],
+        schedule: {
+          term: [
+            {
+              subject,
+              catalogNumber,
+              classes: {}
+            }
+          ]
+        }
       }
     }
 */
@@ -242,9 +251,8 @@ async function setCart(username, cart) {
 }
 
 async function setSchedule(username, schedule) {
-  const { term, courses } = schedule;
   try {
-    await setField(username, `schedule/${term}`, courses);
+    await setField(username, 'schedule', schedule);
     return null;
   } catch (err) {
     return err;

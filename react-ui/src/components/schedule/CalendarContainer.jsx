@@ -1,24 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import { withRouter } from 'react-router-dom';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import DatePicker from 'material-ui/DatePicker';
+import RaisedButton from 'material-ui/RaisedButton';
 import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import DateIcon from 'material-ui/svg-icons/editor/insert-invitation';
 import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
+import PublishIcon from 'material-ui/svg-icons/editor/publish';
+import ClearIcon from 'material-ui/svg-icons/content/clear';
 import RandomColour from 'randomcolor';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
-import LoadingView from '../tools/LoadingView';
-import ErrorView from '../tools/ErrorView';
+import { objectEquals } from '../../utils/arrays';
 
 const color1 = '#049BE5';
 const color2 = '#33B679';
@@ -63,6 +64,10 @@ const styles = {
 		height: 'auto',
 		minWidth: 0,
 		lineHeight: 0
+	},
+	button: {
+		margin: 'auto 10px',
+		marginTop: 5,
 	}
 };
 
@@ -139,14 +144,24 @@ const parseCourses = (courses) => {
 	return classesArr;
 }
 
-class CalendarContainer extends Component {
+const parseSchedule = (schedule) => {
+	const classes = [];
 
+	const terms = Object.keys(schedule);
+	terms.forEach(term => {
+		const courses = schedule[term];
+		const parsedCourses = parseCourses(courses);
+		classes.push(...parsedCourses);
+	});
+	return classes;
+};
+
+export default class CalendarContainer extends Component {
 	static propTypes = {
-		text: PropTypes.string
-	};
-
-	static defaultProps = {
-		text: ''
+		onClassClick: PropTypes.func.isRequired,
+		onClearSchedule: PropTypes.func.isRequired,
+		onImportTerm: PropTypes.func.isRequired,
+		schedule: PropTypes.object.isRequired
 	};
 
   constructor(props) {
@@ -157,12 +172,9 @@ class CalendarContainer extends Component {
     this.state = {
       date: date,
       mode: '3days',
-      classes: [],
-			loading: true,
-			error: ''
+      classes: parseSchedule(props.schedule),
     };
 
-		this.getSchedule = this.getSchedule.bind(this);
 		this.setDate = this.setDate.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.getIndex = this.getIndex.bind(this);
@@ -171,33 +183,15 @@ class CalendarContainer extends Component {
 		this.openDatePicker = this.openDatePicker.bind(this);
   }
 
-	componentDidMount() {
-	  this.getSchedule();
-	}
-
-	getSchedule() {
-		return fetch('/server/parse/schedule', {
-			method: 'POST',
-			body: JSON.stringify({
-				text: this.props.text
-			}),
-			headers: {
-	      'content-type': 'application/json',
-				'x-secret': process.env.REACT_APP_SERVER_SECRET
-	    }
-		}).then(response => {
-			if (!response.ok) {
-				throw new Error(`status ${response.status}`);
-			}
-			return response.json();
-		}).then(({ term, courses }) => this.setState({
-			loading: false,
-			classes: parseCourses(courses)
-		})).catch(err => this.setState({ loading: false, error: err.message }));
+	componentWillReceiveProps(nextProps) {
+	  if (!objectEquals(nextProps.schedule, this.props.schedule)) {
+			const classes = parseSchedule(nextProps.schedule);
+			this.setState({ classes });
+		}
 	}
 
   setDate(date) {
-    this.setState({ date: date });
+    this.setState({ date });
   }
 
 	onChangeIndex(index) {
@@ -219,7 +213,7 @@ class CalendarContainer extends Component {
 	}
 
 	getIndex() {
-		return Math.round(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
+		return Math.floor(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
 	}
 
   toggleMenu() {
@@ -230,12 +224,8 @@ class CalendarContainer extends Component {
 		this.refs.dp.openDialog();
 	}
 
-	onClassClick(subject, catalogNumber) {
-		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-	}
-
   render() {
-		const renderedView = (
+		return (
 			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Drawer
           docked={ false }
@@ -289,6 +279,26 @@ class CalendarContainer extends Component {
 							</FlatButton>
 						</div>
 					}
+					iconElementRight= {
+						<div>
+							<RaisedButton
+								label="Import Term"
+								labelPosition="before"
+								primary={true}
+								onClick={ this.props.onImportTerm }
+								icon={ <PublishIcon /> }
+								style={ styles.button }
+							/>
+							<RaisedButton
+								label="Clear Schedule"
+								labelPosition="before"
+								backgroundColor="#ff5454"
+								onClick={ this.props.onClearSchedule }
+								icon={ <ClearIcon /> }
+								style={ styles.button }
+							/>
+						</div>
+					}
         />
 				<DatePicker
 					ref="dp"
@@ -307,32 +317,17 @@ class CalendarContainer extends Component {
           {
             this.state.classes
               .map((classElem, index) => (
-              <Event
-                key={ index }
-                background={ classElem.colour }
-                title={ `${classElem.subject} ${classElem.catalogNumber}` }
-								onClick={ this.onClassClick.bind(this, classElem.subject, classElem.catalogNumber) }
-								{ ...classElem }
-              />
-            ))
+	              <Event
+	                key={ index }
+	                background={ classElem.colour }
+	                title={ `${classElem.subject} ${classElem.catalogNumber}` }
+									onClick={ () => this.props.onClassClick(classElem.subject, classElem.catalogNumber) }
+									{ ...classElem }
+	              />
+	            ))
           }
         </Calendar>
       </div>
 		)
-
-		if (this.state.loading) {
-			return <LoadingView />;
-		} else if (this.state.error) {
-			return (
-				<ErrorView
-					msgHeader={"Oops!"}
-					msgBody={ this.state.error }
-				/>
-			);
-		} else {
-			return renderedView;
-		}
   }
 }
-
-export default withRouter(CalendarContainer);

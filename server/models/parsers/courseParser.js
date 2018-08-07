@@ -34,7 +34,7 @@ function parseText(text, callback) {
   const term = textArr[0];
   textArr = read(textArr, 'Section', 0, 1);
   const courses = parseCourses(textArr);
-  callback({ term, courses });
+  return { term, courses };
 }
 
 

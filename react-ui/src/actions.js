@@ -14,6 +14,10 @@ export const REMOVE_EXPANDED_COURSE = 'REMOVE_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
+export const UPDATE_USER_SCHEDULE = 'UPDATE_USER_SCHEDULE';
+export const UPDATE_USER_SCHEDULE_FAILURE = 'UPDATE_USER_SCHEDULE_FAILURE';
+export const CLEAR_USER_SCHEDULE = 'CLEAR_USER_SCHEDULE';
+export const CLEAR_USER_SCHEDULE_FAILURE = 'CLEAR_USER_SCHEDULE_FAILURE';
 export const SET_CART = 'SET_CART';
 export const SET_CART_PREREQS = 'SET_CART_PREREQS';
 export const HIGHLIGHT_PREREQS = 'HIGHLIGHT_PREREQS';
@@ -106,7 +110,7 @@ export const createSnack = (
 // Updates course list.  Use this when adding new courses.
 export const updateUserCourses = (username, courseList) => ({
 	[RSAA]: {
-		endpoint: `/server/users/set/courselist/${username}`,
+		endpoint: `/server/users/add/courselist/${username}`,
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -138,6 +142,42 @@ export const reorderUserCourses = (username, courseList) => ({
 			{ type: UPDATE_USER_COURSES, meta: { courseList } },
 			'',
 			''
+		]
+	}
+});
+
+export const addToSchedule = (username, text) => ({
+	[RSAA]: {
+		endpoint: `/server/users/add/schedule/${username}`,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+		},
+		body: JSON.stringify({ text }),
+		types: [
+			'',
+			{ type: UPDATE_USER_SCHEDULE },
+			{ type: UPDATE_USER_SCHEDULE_FAILURE },
+		]
+	}
+});
+
+export const clearSchedule = (username) => ({
+	[RSAA]: {
+		endpoint: `/server/users/set/schedule/${username}`,
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+		},
+		body: JSON.stringify({ schedule: {} }),
+		types: [
+			'',
+			{ type: CLEAR_USER_SCHEDULE },
+			{ type: CLEAR_USER_SCHEDULE_FAILURE },
 		]
 	}
 });

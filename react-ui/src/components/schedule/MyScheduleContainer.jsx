@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
 import CalendarContainer from './CalendarContainer';
 import ParserInstructions from '../tools/ParserInstructions';
+import { addToSchedule } from '../../actions';
 
 const stepContents = [
   {
@@ -18,7 +22,13 @@ const stepContents = [
   },
 ];
 
-export default class Schedule extends Component {
+class ScheduleContainer extends Component {
+  static propTypes = {
+		username: PropTypes.string.isRequired,
+		schedule: PropTypes.object.isRequired,
+		onUploadSchedule: PropTypes.func.isRequired,
+	};
+
   state = {
     text: '',
     submitted: false,
@@ -28,12 +38,19 @@ export default class Schedule extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    const { username, onUploadSchedule } = this.props;
+    onUploadSchedule(username, this.state.text);
     this.setState({ submitted: true });
   }
 
+  onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+
   render() {
-    return (this.state.submitted)
-      ? <CalendarContainer text={this.state.text} />
+    return (Object.keys(this.props.schedule).length > 0)
+      ? <CalendarContainer
+          schedule={ this.props.schedule }
+          onClassClick={ this.onClassClick }
+        />
       : (
           <div style={{ marginTop: 50 }}>
             <ParserInstructions
@@ -50,3 +67,14 @@ export default class Schedule extends Component {
         )
   }
 }
+
+const mapStateToProps = ({ user, mySchedule }) => ({
+	username: user.username,
+	schedule: mySchedule,
+});
+
+const mapDispatchToProps = dispatch => ({
+	onUploadSchedule: (username, text) => dispatch(addToSchedule(username, text)),
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ScheduleContainer));

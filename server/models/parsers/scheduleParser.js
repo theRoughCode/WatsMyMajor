@@ -136,6 +136,7 @@ function parseCourses(textArr) {
     const classes = {};
     for (let i = 0; i < classArr.length; i += 7) {
       const component = parseComponent(classArr.slice(i, i + 7));
+      if (component == null) continue;
       // Try to parse date format if hasn't been determined yet
       // We need this because Quest is bad and formats dates in different formats
       // for different students.
@@ -152,10 +153,10 @@ function parseCourses(textArr) {
   return courses.map(course => formatDates(course, dateFormat));
 }
 
-function parseText(text, callback) {
+function parseText(text) {
   // We might get instructors separated by commas on different lines. We want
   // to detect any commas followed by a new line and combine them.
-  text = text.replace(/,\s*(\r|\n|\r\n)\s*/, ',');
+  text = text.replace(/,\s*(\r|\n|\r\n)\s*/g, ',');
   let textArr = text.split(/\n/g);
   textArr = read(textArr, '| University of Waterloo');
 
@@ -164,10 +165,7 @@ function parseText(text, callback) {
 
   const courses = parseCourses(textArr);
 
-  callback({
-    term,
-    courses
-  });
+  return { term, courses };
 }
 
 module.exports = parseText;

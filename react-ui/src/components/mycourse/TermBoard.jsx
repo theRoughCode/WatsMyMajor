@@ -332,7 +332,7 @@ export default class TermBoard extends Component {
 						onRequestClose={this.closeImportDialog}
 						contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
 					>
-						{ <Parser onChange={this.onChangeImportText} /> }
+						<Parser onChange={this.onChangeImportText} />
 					</Dialog>
 					<Dialog
 						title="Add Course"
