@@ -70,15 +70,6 @@ async function fetchList() {
   return await response.json();
 }
 
-// Returns true if major is a major in the provided list
-const isMajor = (major, list) => {
-  if (!major) return false;
-  list.forEach(({ key }) => {
-    if (key === major) return true
-  });
-  return false;
-}
-
 class MajorsContainer extends Component {
   static propTypes: {
     myCourses: PropTypes.object.isRequired,

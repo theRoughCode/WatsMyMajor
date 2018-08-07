@@ -75,7 +75,7 @@ class App extends Component {
 			snackAutoHideDuration: 2000,
 			snackOpen: false,
 			snack,
-      isLoggedIn: false,
+      isLoggedIn,
       loading: true,
     };
 

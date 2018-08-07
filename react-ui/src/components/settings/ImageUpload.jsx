@@ -198,7 +198,7 @@ export default class ImageUpload extends Component {
           {
             (this.state.file !== '') && (
               <div style={ styles.previewContainer }>
-                <img src={ this.state.file } style={ styles.preview } />
+                <img src={ this.state.file } style={ styles.preview } alt="preview" />
               </div>
             )
           }

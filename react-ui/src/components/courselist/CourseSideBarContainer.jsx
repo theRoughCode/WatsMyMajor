@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
-import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import ArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
 import CourseInfo from './sidebar/CourseInfo';

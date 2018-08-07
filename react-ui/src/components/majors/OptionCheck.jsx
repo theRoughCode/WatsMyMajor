@@ -77,7 +77,7 @@ export default class OptionCheck extends Component {
   }
 
   render() {
-    const { options, onCheck } = this.props;
+    const { options } = this.props;
     const formattedOptions = options.map((option) => {
       switch (option.type) {
         case "sum":

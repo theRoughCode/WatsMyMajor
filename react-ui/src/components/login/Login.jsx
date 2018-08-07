@@ -166,7 +166,7 @@ class Login extends Component {
   }
 
   async onFacebookLogin(response) {
-    const { accessToken, id } = response;
+    const { accessToken } = response;
 
     try {
       const response = await fetch('/server/auth/facebook', {

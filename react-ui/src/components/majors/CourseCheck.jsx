@@ -57,7 +57,7 @@ export default class CourseCheck extends Component {
   }
 
   render() {
-    const { subject, catalogNumber, myCourses } = this.props;
+    const { subject, catalogNumber } = this.props;
     return (
       <Checkbox
         label={ `${subject} ${catalogNumber}` }

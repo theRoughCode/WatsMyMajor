@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 import CalendarContainer from './CalendarContainer';
 import ParserInstructions from '../tools/ParserInstructions';
-import { addToSchedule } from '../../actions';
+import { addToSchedule, clearSchedule } from '../../actions';
+import { objectEquals } from '../../utils/arrays';
 
 const stepContents = [
   {
@@ -26,13 +29,25 @@ class ScheduleContainer extends Component {
   static propTypes = {
 		username: PropTypes.string.isRequired,
 		schedule: PropTypes.object.isRequired,
-		onUploadSchedule: PropTypes.func.isRequired,
+    onUploadSchedule: PropTypes.func.isRequired,
+		onClearSchedule: PropTypes.func.isRequired,
 	};
 
   state = {
     text: '',
+    schedule: this.props.schedule,
     submitted: false,
+    importDialogOpen: false,
   };
+
+  componentWillReceiveProps = (nextProps) => {
+    if (!objectEquals(nextProps.schedule, this.props.schedule)) {
+      this.setState({ schedule: nextProps.schedule });
+    }
+  }
+
+  onOpenDialog = () => this.setState({ importDialogOpen: true });
+  onCloseDialog = () => this.setState({ importDialogOpen: false });
 
   onChange = (text) => this.setState({ text });
 
@@ -40,17 +55,49 @@ class ScheduleContainer extends Component {
     e.preventDefault();
     const { username, onUploadSchedule } = this.props;
     onUploadSchedule(username, this.state.text);
-    this.setState({ submitted: true });
+    this.setState({ submitted: true, importDialogOpen: false });
   }
 
   onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
 
   render() {
+    const importDialogActions = [
+      <FlatButton
+        label="Cancel"
+        primary={ true }
+        onClick={ this.onCloseDialog }
+      />,
+      <FlatButton
+        label="Submit"
+        primary={ true }
+        onClick={ this.onSubmit }
+      />,
+    ];
+
     return (Object.keys(this.props.schedule).length > 0)
-      ? <CalendarContainer
-          schedule={ this.props.schedule }
-          onClassClick={ this.onClassClick }
-        />
+      ? (
+        <div style={{ height: '100%' }}>
+          <CalendarContainer
+            schedule={ this.state.schedule }
+            onClassClick={ this.onClassClick }
+            onClearSchedule={ this.props.onClearSchedule.bind(null, this.props.username) }
+            onImportTerm={ this.onOpenDialog }
+          />
+          <Dialog
+            title="Import Schedule"
+            actions={ importDialogActions }
+            modal={ false }
+            open={ this.state.importDialogOpen }
+            onRequestClose={ this.closeImportDialog }
+            contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
+          >
+            <ParserInstructions
+              onChange={ this.onChange }
+              stepContents={ stepContents }
+            />
+          </Dialog>
+        </div>
+      )
       : (
           <div style={{ marginTop: 50 }}>
             <ParserInstructions
@@ -75,6 +122,7 @@ const mapStateToProps = ({ user, mySchedule }) => ({
 
 const mapDispatchToProps = dispatch => ({
 	onUploadSchedule: (username, text) => dispatch(addToSchedule(username, text)),
+  onClearSchedule: (username) => dispatch(clearSchedule(username)),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ScheduleContainer));

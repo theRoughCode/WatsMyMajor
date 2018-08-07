@@ -41,13 +41,13 @@ export default class LinkFacebook extends Component {
   async onFBLink(response) {
     const { id, picture } = response;
     const hasPicture = Boolean(picture && picture.data && picture.data.url);
-    this.props.onLink(this.props.username, response.id, hasPicture);
+    this.props.onLink(this.props.username, id, hasPicture);
   }
 
   onFBUnlink = () => this.props.onUnlink(this.props.username);
 
   render() {
-    const { username, isLinked, onLink, onUnlink } = this.props;
+    const { isLinked } = this.props;
 
     const facebookButton = (isLinked)
       ? (
