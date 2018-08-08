@@ -14,18 +14,17 @@ const styles = {
 const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: 'none',
-  padding: space * 2,
+  padding: space,
   margin: `0 0 ${space}px 0`,
 	border: (isDragging || isPrereq)
 		? '1px solid #4f4f4f'
 		: '1px solid #bcbcbc',
-	borderRadius: '5px',
 
   // change background colour if dragging
   background: isDragging
 		? '#8be58b'
 		: isPrereq
-			? '#9ef442'
+			? '#ffcf3f'
 			: '#f2f2f2',
 
   // styles we need to apply on draggables

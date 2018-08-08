@@ -30,7 +30,6 @@ const styles = {
 	},
 	header: (isDragging) => ({
 		padding: '5px 0',
-		marginBottom: 10,
 		backgroundColor: isDragging ? 'rgb(82, 110, 150)' : 'rgb(54, 65, 80)',
 		color: 'white',
 		fontSize: 18,
@@ -57,7 +56,6 @@ const styles = {
 	},
 	addCourseCard: {
 		padding: space,
-		margin: `0 0 ${space}px 0`,
 		border: '1px dashed #bcbcbc',
 		borderRadius: '5px',
 		cursor: 'pointer',

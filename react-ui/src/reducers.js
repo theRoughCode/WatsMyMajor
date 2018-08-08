@@ -119,6 +119,14 @@ function courseList(state = [], action) {
 }
 
 // Helper function for myCourses
+// formats courseList into myCourses format of:
+/*
+	{
+		subject: {
+			catalogNumber: [prereqs]
+		}
+	}
+*/
 function getMyCourses(courseList) {
 	if (!courseList) return {};
 

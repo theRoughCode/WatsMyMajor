@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import TermBoard from './TermBoard';
+import { DragDropContext } from 'react-beautiful-dnd';
 import MyCourseSideBar from './MyCourseSideBar';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import TermRow from './TermRow';
+import { DragTypes } from '../../constants/DragTypes';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse } from '../../utils/courses';
 import {
@@ -15,25 +16,23 @@ import {
 	highlightPrereqs,
 	createSnack
 } from '../../actions';
-import { DragTypes } from '../../constants/DragTypes';
 
+const NUM_PER_ROW = 3;
 const styles = {
 	viewContainer: {
 		width: '100%',
-		height: '90%',
 	  display: 'flex',
 	  paddingTop: 20,
 	},
 	boardContainer: {
 		width: '70%',
-	  height: '90%',
 	  padding: '30px 60px',
 		display: 'flex',
 	},
-	board: {
-		width: '100%',
+	termRowContainer: {
 		display: 'flex',
-		overflow: 'auto',
+		flexDirection: 'column',
+		width: '100%',
 	},
 	emptyContainer: {
 		width: '90%',
@@ -104,13 +103,17 @@ class CourseBoardContainer extends Component {
 		this.onDragEnd = this.onDragEnd.bind(this);
 		this.onDragTerm = this.onDragTerm.bind(this);
 		this.onDragCourse = this.onDragCourse.bind(this);
+		this.move = this.move.bind(this);
+		this.loadCourses = this.loadCourses.bind(this);
+		this.clearCart = this.clearCart.bind(this);
+		this.reorderTerm = this.reorderTerm.bind(this);
 		this.getBoard = this.getBoard.bind(this);
 		this.updateBoard = this.updateBoard.bind(this);
-		this.reorderTerm = this.reorderTerm.bind(this);
-		this.move = this.move.bind(this);
-		this.renderTerms = this.renderTerms.bind(this);
-		this.clearCart = this.clearCart.bind(this);
+		this.renameBoard = this.renameBoard.bind(this);
 		this.addBoard = this.addBoard.bind(this);
+		this.clearBoard = this.clearBoard.bind(this);
+		this.deleteBoard = this.deleteBoard.bind(this);
+		this.renderBoard = this.renderBoard.bind(this);
 		this.updateCourseHandler = updateCourseHandler;
 		this.reorderCourseHandler = reorderCourseHandler;
 		this.reorderCartHandler = reorderCartHandler;
@@ -140,9 +143,15 @@ class CourseBoardContainer extends Component {
 		if (splitId.length < 3) return;
 		const [ subject, catalogNumber ] = splitId;
 		let prereqs = [];
-		if (this.props.myCourses.hasOwnProperty(subject)
-				&& this.props.myCourses[subject].hasOwnProperty(catalogNumber)) {
-			prereqs = this.props.myCourses[subject][catalogNumber];
+		switch (start.source.droppableId) {
+			case "Cart":
+				prereqs = this.state.cart[start.source.index].prereqs || [];
+				break;
+			default:
+				if (this.props.myCourses.hasOwnProperty(subject)
+						&& this.props.myCourses[subject].hasOwnProperty(catalogNumber)) {
+					prereqs = this.props.myCourses[subject][catalogNumber];
+				}
 		}
 		if (prereqs.length === 0) return;
 		this.props.highlightPrereqsHandler(prereqs);
@@ -166,9 +175,16 @@ class CourseBoardContainer extends Component {
 		}
 	}
 
+	// Called when a term is being dragged
 	onDragTerm(source, destination) {
-		const fromIndex = source.index;
-		const toIndex = destination.index;
+		const fromRowNum = Number(source.droppableId.split('/')[1]);
+		const toRowNum = Number(destination.droppableId.split('/')[1]);
+		const fromIndex = source.index + fromRowNum * NUM_PER_ROW;
+		// Offset by 1 when moving from a lower number to higher because the indices
+		// have not been reshuffled yet to account for the blank space in the lower row.
+		const offsetNum = (fromRowNum < toRowNum) ? 1 : 0;
+		const toIndex = destination.index + toRowNum * NUM_PER_ROW - offsetNum;
+
 		if (fromIndex === toIndex) return;
 		const { username, courseList } = this.state;
 		const [removed] = courseList.splice(fromIndex, 1);
@@ -177,6 +193,7 @@ class CourseBoardContainer extends Component {
 		this.reorderCourseHandler(username, courseList);
 	}
 
+	// Called when a course is being dragged
 	onDragCourse(source, destination) {
 		if (source.droppableId === destination.droppableId) {
 			this.reorderTerm(source.droppableId, source.index, destination.index);
@@ -222,7 +239,7 @@ class CourseBoardContainer extends Component {
 		this.updateBoard(id, board);
 	}
 
-	// Move an item between lists
+	// Move an item between terms
 	move(source, dest) {
 		const sourceBoard = this.getBoard(source.droppableId);
 		const destBoard = this.getBoard(dest.droppableId);
@@ -284,74 +301,58 @@ class CourseBoardContainer extends Component {
 		this.reorderCourseHandler(username, courseList);
 	}
 
-	renderTerms(courseList) {
-		return courseList.map(({ term, courses }, index) => (
-			<Draggable
-				draggableId={ `term-${index}` }
-				type={ DragTypes.COLUMN }
-				index={ index }
-				key={ index }
-			>
-				{(provided, snapshot) => (
-					<TermBoard
-						index={ index.toString() }
-						boardHeader={ term }
-						courses={ courses }
-						provided={ provided }
-						snapshot={ snapshot }
-						onClearBoard={ this.clearBoard.bind(this, index) }
-						onRenameBoard={ this.renameBoard.bind(this, index) }
-						onDeleteBoard={ this.deleteBoard.bind(this, index) }
-						onUpdateCourses={ this.loadCourses.bind(this, index) }
-					/>
-				)}
-			</Draggable>
-		));
-	};
-
-	render() {
+	renderBoard() {
 		const { courseList } = this.state;
-		const mainBoard = (courseList.length === 0)
-			?  (
-					<div style={ styles.emptyContainer }>
-						<div style={ styles.emptyInnerDiv }>
-							<img src="images/empty_board.png" alt="Empty Board" style={ styles.emptyImage } />
-							<div style={ styles.emptyTextDiv }>
-								<span style={ styles.emptyTextTitle }>
-									Oops, looks like there's nothing here yet.
-								</span><br />
-								<span style={ styles.emptyTextSubtitle }>
-									Add a term or add courses to your cart!
-								</span>
-							</div>
+		const numTerms = courseList.length;
+
+		// Empty board
+		if (numTerms === 0) {
+			return (
+				<div style={ styles.emptyContainer }>
+					<div style={ styles.emptyInnerDiv }>
+						<img src="images/empty_board.png" alt="Empty Board" style={ styles.emptyImage } />
+						<div style={ styles.emptyTextDiv }>
+							<span style={ styles.emptyTextTitle }>
+								Oops, looks like there's nothing here yet.
+							</span><br />
+							<span style={ styles.emptyTextSubtitle }>
+								Add a term or add courses to your cart!
+							</span>
 						</div>
 					</div>
-				)
-			: (
-					<Droppable
-						droppableId="board"
-						type={ DragTypes.COLUMN }
-						direction="horizontal"
-						ignoreContainerClipping={true}
-					>
-						{(provided, snapshot) => (
-							<div
-								ref={ provided.innerRef }
-								{...provided.droppableProps}
-								style={ styles.board }
-							>
-								{ this.renderTerms(courseList) }
-								{ provided.placeholder }
-							</div>
-						)}
-					</Droppable>
-				);
+				</div>
+			);
+		}
 
+		const numRows = Math.ceil(numTerms / 3);
+		return (
+			<div style={ styles.termRowContainer }>
+				{
+					Array(numRows).fill().map((_, i) => {
+						const courses = courseList.slice(i * NUM_PER_ROW, (i + 1) * NUM_PER_ROW);
+						return (
+							<TermRow
+								key={ i }
+								rowNumber={ i }
+								courseList={ courses }
+								onClearBoard={ this.clearBoard }
+								onRenameBoard={ this.renameBoard }
+								onDeleteBoard={ this.deleteBoard }
+								onUpdateCourses={ this.loadCourses }
+							/>
+						)
+					})
+				}
+			</div>
+		);
+	}
+
+	render() {
 		return (
 			<DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
 				<div style={ styles.viewContainer }>
 					<div style={ styles.boardContainer }>
-						{ mainBoard }
+						{ this.renderBoard() }
 					</div>
 					<MyCourseSideBar
 						cartCourses={ this.state.cart }
