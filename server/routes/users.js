@@ -7,7 +7,7 @@ const parseSchedule = require('../models/parsers/scheduleParser');
 
 // Get user
 UsersRouter.get('/:username', async function(req, res) {
-	const username = req.params.username;
+	const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const { user, err } = await users.getUser(username);
@@ -19,7 +19,7 @@ UsersRouter.get('/:username', async function(req, res) {
 
 // Link facebook id to user
 UsersRouter.post('/link/facebook/:username', async function(req, res) {
-	const username = req.params.username;
+	const username = req.params.username.toLowerCase();
 	const { facebookID, hasFBPic } = req.body;
 	if (req.user !== username) return res.sendStatus(401);
 
@@ -65,7 +65,7 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 
 // Unlink facebook id to user
 UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
-	const username = req.params.username;
+	const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	try {
@@ -90,7 +90,7 @@ UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
 
 // Update user settings
 UsersRouter.post('/edit/settings/:username', async function(req, res) {
-	const username = req.params.username;
+	const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	// Convert req.body to object
@@ -119,7 +119,7 @@ UsersRouter.post('/edit/settings/:username', async function(req, res) {
 // Set user
 // Body: { user }
 UsersRouter.post('/set/user/:username', async function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const user = {
@@ -142,7 +142,7 @@ UsersRouter.post('/set/user/:username', async function(req, res) {
 // Update user
 // Body: { user }
 UsersRouter.post('/edit/:username', function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
   users.updateUser(username, req.body, err => {
@@ -156,7 +156,7 @@ UsersRouter.post('/edit/:username', function(req, res) {
 // Set cart
 // Body: { cart }
 UsersRouter.post('/set/cart/:username', function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	setCoursesPrereqs(req.body.cart, async function(cart) {
@@ -169,7 +169,7 @@ UsersRouter.post('/set/cart/:username', function(req, res) {
 });
 
 UsersRouter.post('/reorder/cart/:username', async function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const err = await users.setCart(username, req.body.cart);
@@ -182,7 +182,7 @@ UsersRouter.post('/reorder/cart/:username', async function(req, res) {
 // Set schedule
 // Body: { schedule }
 UsersRouter.post('/set/schedule/:username', async function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const { schedule } = req.body;
@@ -203,7 +203,7 @@ UsersRouter.post('/set/schedule/:username', async function(req, res) {
 
 
 UsersRouter.post('/add/schedule/:username', async function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const { text } = req.body;
@@ -234,7 +234,7 @@ UsersRouter.post('/add/schedule/:username', async function(req, res) {
 // Set courseList
 // Body: { courseList }
 UsersRouter.post('/set/courselist/:username', function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	setCourseListPrereqs(req.body.courseList, async function(courseList) {
@@ -247,7 +247,7 @@ UsersRouter.post('/set/courselist/:username', function(req, res) {
 });
 
 UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const err = await users.setCourseList(username, req.body.courseList);
@@ -259,7 +259,7 @@ UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
 
 const easterURL = images.getEasterURL();
 UsersRouter.post('/upload/profile/:username', async function(req, res) {
-	const username = req.params.username;
+	const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
 	const { base64Str, contentType, easterRaph } = req.body;

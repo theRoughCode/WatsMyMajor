@@ -12,7 +12,7 @@ const getToken = (username) => {
 
 // Register user
 AuthRouter.post('/register', async function(req, res) {
-	const username = req.body.username;
+	const username = req.body.username.toLowerCase();
 	const name = req.body.name;
 	const email = req.body.email;
 	const password = req.body.password;
@@ -32,7 +32,7 @@ AuthRouter.post('/register', async function(req, res) {
 
 // Login user
 AuthRouter.post('/login', function(req, res) {
-	const username = req.body.username;
+	const username = req.body.username.toLowerCase();
 	const password = req.body.password;
 
 	passport.authenticate('login', { session: false }, (err, user, info) => {
