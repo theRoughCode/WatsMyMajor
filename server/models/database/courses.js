@@ -75,8 +75,8 @@ async function getCoursesForSearch() {
  ****************************/
 
 // Extractors for fuzzy searching
-const simpleExtractor = ({ subject, catalogNumber }) => subject + catalogNumber;
-const titleExtractor = ({ subject, catalogNumber, title }) => subject + catalogNumber + title;
+const simpleExtractor = ({ subject, catalogNumber }) => subject + ' ' + catalogNumber;
+const titleExtractor = ({ subject, catalogNumber, title }) => subject + ' ' + catalogNumber + ' - ' + title;
 
 // Searches courses with query and a specified number of results to return
 async function searchCourses(query, limit) {

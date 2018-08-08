@@ -35,6 +35,8 @@ const TermRow = ({
       >
         {
           courseList.map(({ term, courses }, index) => {
+						// Accounts for row number
+						const offsetIndex = index + rowNumber * NUM_PER_ROW;
             return (
               <Draggable
                 draggableId={ `term/${rowNumber}/${index}` }
@@ -44,15 +46,15 @@ const TermRow = ({
               >
                 {(provided, snapshot) => (
                   <TermBoard
-                    index={ String(index + rowNumber * NUM_PER_ROW) }
+                    index={ String(offsetIndex) }
                     boardHeader={ term }
                     courses={ courses }
                     provided={ provided }
                     snapshot={ snapshot }
-                    onClearBoard={ () => onClearBoard(index) }
-                    onRenameBoard={ () => onRenameBoard(index) }
-                    onDeleteBoard={ () => onDeleteBoard(index) }
-                    onUpdateCourses={ () => onUpdateCourses(index) }
+                    onClearBoard={ () => onClearBoard(offsetIndex) }
+                    onRenameBoard={ (rename) => onRenameBoard(offsetIndex, rename) }
+                    onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
+                    onUpdateCourses={ (courses) => onUpdateCourses(offsetIndex, courses) }
                   />
                 )}
               </Draggable>

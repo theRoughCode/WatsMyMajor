@@ -145,6 +145,7 @@ export default class TermBoard extends Component {
 		addDialogOpen: false,
 		settingsOpen: false,
 		rename: '',
+		renameError: '',
 		importText: ''
 	};
 
@@ -154,15 +155,19 @@ export default class TermBoard extends Component {
 	openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
 	openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
-	closeRenameDialog = () => this.setState({ rename: '', renameDialogOpen: false });
+	closeRenameDialog = () => this.setState({ rename: '', renameError: '', renameDialogOpen: false });
 	closeImportDialog = () => this.setState({ rename: '', importDialogOpen: false });
 	closeAddDialog = () => this.setState({ rename: '', addDialogOpen: false });
 
-	onChangeRenameText = (e, text) => this.setState({ rename: text });
+	onChangeRenameText = (e, text) => this.setState({ rename: text, renameError: '' });
 	onChangeImportText = (text) => this.setState({ importText: text });
 
 	onRename = () => {
 		const { rename } = this.state;
+		if (rename.length === 0) {
+			this.setState({ renameError: 'Field cannot be left blank' });
+			return;
+		}
 		this.props.onRenameBoard(rename);
 		this.closeRenameDialog();
 	}
@@ -319,6 +324,7 @@ export default class TermBoard extends Component {
 						<TextField
 							hintText="e.g. Fall 2018"
 							floatingLabelText="New Board Name"
+							errorText={this.state.renameError}
 							onChange={this.onChangeRenameText}
 						/>
 					</Dialog>

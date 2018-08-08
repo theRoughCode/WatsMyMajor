@@ -110,7 +110,7 @@ export const createSnack = (
 // Updates course list.  Use this when adding new courses.
 export const updateUserCourses = (username, courseList) => ({
 	[RSAA]: {
-		endpoint: `/server/users/add/courselist/${username}`,
+		endpoint: `/server/users/set/courselist/${username}`,
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

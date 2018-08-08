@@ -82,17 +82,22 @@ export default class MyCourseSideBar extends Component {
 
 	state = {
 		dialogOpen: false,
-		text: ''
+		text: '',
+		errorText: '',
 	};
 
 	openDialog = () => this.setState({ dialogOpen: true });
 
-	closeDialog = () => this.setState({ text: '', dialogOpen: false });
+	closeDialog = () => this.setState({ text: '', errorText: '', dialogOpen: false });
 
-	onChangeText = (e, text) => this.setState({ text });
+	onChangeText = (e, text) => this.setState({ text, errorText: '' });
 
 	onSubmit = () => {
 		const { text } = this.state;
+		if (text.length === 0) {
+			this.setState({ errorText: 'Field cannot be left blank' });
+			return;
+		}
 		this.props.onAddBoard(text);
 		this.closeDialog();
 	}
@@ -139,6 +144,7 @@ export default class MyCourseSideBar extends Component {
 					<TextField
 						hintText="e.g. Fall 2018"
 						floatingLabelText="New Board Name"
+						errorText={this.state.errorText}
 						onChange={this.onChangeText}
 					/>
         </Dialog>

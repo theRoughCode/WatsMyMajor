@@ -3,21 +3,26 @@ import PropTypes from 'prop-types';
 import SearchBar from 'material-ui-search-bar';
 
 async function fetchQuery(query, maxNumberOfResults) {
-  const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}`, {
-    headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
+  try {
+    const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET
+      }
+    });
+    if (response.status !== 200) {
+      console.log('Looks like there was a problem. Status Code: ' +
+        response.status);
+      return [];
     }
-  });
-  if (response.status !== 200) {
-    console.log('Looks like there was a problem. Status Code: ' +
-      response.status);
+    const resultsArr = await response.json();
+    return resultsArr.map(result => {
+      const { subject, catalogNumber, title } = result;
+      return `${subject} ${catalogNumber} - ${title}`;
+    });
+  } catch(err) {
+    console.log(err);
     return [];
   }
-  const resultsArr = await response.json();
-  return resultsArr.map(result => {
-    const { subject, catalogNumber, title } = result;
-    return `${subject} ${catalogNumber} - ${title}`;
-  });
 }
 
 class AppSearchBar extends Component {
@@ -72,8 +77,9 @@ class AppSearchBar extends Component {
 	async searchCourse(query) {
     if (!query) return;
 
-    const [result] = await fetchQuery(query, 1);
-		const strArr = result.split(' ');
+    const result = await fetchQuery(query, 1);
+    if (result.length === 0) return;
+		const strArr = result[0].split(' ');
 		if (strArr.length < 2) return;
 
     const subject = strArr[0];
