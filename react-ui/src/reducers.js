@@ -4,8 +4,6 @@ import {
 	SET_USER,
 	LOGIN_USER,
 	LOGOUT_USER,
-	SET_EXPANDED_COURSE,
-	REMOVE_EXPANDED_COURSE,
 	CREATE_SNACK,
 	UPDATE_USER_COURSES,
 	UPDATE_USER_COURSES_PREREQS,
@@ -24,47 +22,6 @@ import {
 	UNLINK_FACEBOOK,
 	UNLINK_FACEBOOK_FAILURE,
 } from './actions';
-
-const defaultExpandedCourse = {
-	instructor: '',
-	attending: '',
-	enrollmentCap: '',
-	reserved: '',
-	reservedCap: '',
-	classNumber: '',
-	lastUpdated: '',
-	index: -1,
-};
-function expandedCourse(state=defaultExpandedCourse, action) {
-	switch(action.type) {
-		case SET_EXPANDED_COURSE:
-			let {
-				instructor,
-				attending,
-				enrollmentCap,
-				reserved,
-				reservedCap,
-				classNumber,
-				lastUpdated,
-				index
-			} = action;
-
-			return {
-				instructor,
-				attending,
-				enrollmentCap,
-				reserved,
-				reservedCap,
-				classNumber,
-				lastUpdated,
-				selectedClassIndex: index
-			};
-		case REMOVE_EXPANDED_COURSE:
-			return defaultExpandedCourse;
-		default:
-			return state;
-	}
-}
 
 function sideBarOpen(state = true, action) {
 	switch (action.type) {
@@ -283,7 +240,6 @@ function courseCardPrereqs(state = [], action) {
 }
 
 const reducers = combineReducers({
-	expandedCourse,
 	sideBarOpen,
 	snack,
 	courseList,

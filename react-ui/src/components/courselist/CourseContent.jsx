@@ -12,61 +12,65 @@ const styles = {
 	}
 }
 
-const CourseContent = (props) => {
+const CourseContent = ({
+	subject,
+	catalogNumber,
+	selectedClassIndex,
+	expandClass,
+	taken,
+	inCart,
+	eligible,
+	addToCartHandler,
+	removeFromCartHandler,
+	course
+}) => {
 	const {
-		subject,
-		catalogNumber,
-		selectedClassIndex,
-		expandCourse,
 		title,
+		description,
 		rating,
 		url,
 		termsOffered,
-		description,
+		crosslistings,
 		antireqs,
-    coreqs,
+		coreqs,
 		prereqs,
 		postreqs,
 		term,
 		classes,
-		taken,
-		inCart,
-		eligible,
-		addToCartHandler,
-		removeFromCartHandler,
-	} = props;
+	} = course;
 
 	return (
 		<div style={ styles.courseContent }>
 			<CourseHeader
-				subject={subject}
-				catalogNumber={catalogNumber}
-				title={title}
-				rating={rating}
-				url={url}
-				termsOffered={termsOffered}
-				addToCartHandler={addToCartHandler}
-				removeFromCartHandler={removeFromCartHandler}
-				taken={taken}
-				inCart={inCart}
-				eligible={eligible}
+				subject={ subject }
+				catalogNumber={ catalogNumber }
+				title={ title }
+				rating={ rating }
+				url={ url }
+				termsOffered={ termsOffered }
+				addToCartHandler={ addToCartHandler }
+				removeFromCartHandler={ removeFromCartHandler }
+				taken={ taken }
+				inCart={ inCart }
+				eligible={ eligible }
 			/>
 			<CourseDescription
-				subject={subject}
-				catalogNumber={catalogNumber}
-				description={description}
-        antireqs={antireqs}
-				coreqs={coreqs}
-				prereqs={prereqs}
-				postreqs={postreqs}
+				subject={ subject }
+				catalogNumber={ catalogNumber }
+				description={ description }
+				crosslistings={ crosslistings }
+        antireqs={ antireqs }
+				coreqs={ coreqs }
+				prereqs={ prereqs }
+				postreqs={ postreqs }
 			/>
 			{
 				classes.length > 0 && (
 					<CourseClassList
-						expandCourse={expandCourse}
-						selectedClassIndex={selectedClassIndex}
-						term={term}
-						classes={classes}
+						expandClass={ expandClass }
+						selectedClassIndex={ selectedClassIndex }
+						term={ term }
+						classes={ classes }
 					/>
 				)
 			}
@@ -77,19 +81,9 @@ const CourseContent = (props) => {
 CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
+	course: PropTypes.object.isRequired,
 	selectedClassIndex: PropTypes.number.isRequired,
-	expandCourse: PropTypes.func.isRequired,
-	title: PropTypes.string.isRequired,
-	description: PropTypes.string.isRequired,
-	rating: PropTypes.number.isRequired,
-	url: PropTypes.string.isRequired,
-	termsOffered: PropTypes.array.isRequired,
-	antireqs: PropTypes.array.isRequired,
-  coreqs: PropTypes.array.isRequired,
-	prereqs: PropTypes.object.isRequired,
-	postreqs: PropTypes.array.isRequired,
-	term: PropTypes.string.isRequired,
-	classes: PropTypes.array.isRequired,
+	expandClass: PropTypes.func.isRequired,
 	taken: PropTypes.bool.isRequired,
 	inCart: PropTypes.bool.isRequired,
 	eligible: PropTypes.bool.isRequired,

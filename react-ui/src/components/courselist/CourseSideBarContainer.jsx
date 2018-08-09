@@ -27,6 +27,7 @@ const styles =  {
 		height: 'auto',
 		width: '100%',
 		display: 'inline-block',
+		marginBottom: 10,
 	}
 };
 
@@ -49,137 +50,95 @@ async function retrieveProfInfo(instructor) {
 
 
 export default class CourseSideBarContainer extends Component {
-
 	static propTypes = {
-		instructor: PropTypes.string.isRequired,
-		attending: PropTypes.string.isRequired,
-		enrollmentCap: PropTypes.string.isRequired,
-		reserved: PropTypes.string.isRequired,
-		reservedCap: PropTypes.string.isRequired,
-		classNumber: PropTypes.string.isRequired,
-		lastUpdated: PropTypes.string.isRequired,
+		subject: PropTypes.string.isRequired,
+		catalogNumber: PropTypes.string.isRequired,
+		classInfo: PropTypes.object.isRequired,
 		open: PropTypes.bool.isRequired,
 		onClose: PropTypes.func.isRequired,
 	};
 
-	constructor(props) {
-		super(props);
-
-		const {
-			subject,
-			catalogNumber,
-			instructor,
-			attending,
-			enrollmentCap,
-			reserved,
-			reservedCap,
-			classNumber,
-			lastUpdated,
-		} = props;
-
-		this.state = {
-			subject,
-			catalogNumber,
-			classNumber,
-			instructor,
-			info: {
-				attending,
-				enrollmentCap,
-				reserved,
-				reservedCap,
-				lastUpdated
-			},
-			prof: null,
-			fetchingRMP: false
-		};
-	}
+	state = {
+		prof: {},
+		fetchingRMP: false
+	};
 
 	async componentDidMount() {
-		if (!this.state.instructor) return;
+		const { instructor } = this.props.classInfo;
+		this.updateProfInfo(instructor);
+	}
 
-		const { err, prof } = await retrieveProfInfo(this.state.instructor);
+	componentWillReceiveProps(nextProps) {
+		const { instructor } = nextProps.classInfo;
+
+		if (instructor !== this.props.instructor) {
+			this.setState({ fetchingRMP: true });
+			this.updateProfInfo(instructor);
+		}
+	}
+
+	async updateProfInfo(instructor) {
+		if (!instructor) return this.setState({ fetchingRMP: false, prof: {} });;
+
+		const { err, prof } = await retrieveProfInfo(instructor);
 		this.setState({ fetchingRMP: false });
 		if (err) {
 			console.error(`ERROR: ${err}`);
-			this.setState({ prof: null });
+			this.setState({ prof: {} });
 			return;
 		}
 		this.setState({ prof });
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const {
-			instructor,
-			attending,
-			enrollmentCap,
-			reserved,
-			reservedCap,
-			classNumber,
-			lastUpdated,
-		} = nextProps;
-
-		if (classNumber !== this.props.classNumber) {
-			this.setState({
-				classNumber,
-				instructor,
-				info: {
-					attending,
-					enrollmentCap,
-					reserved,
-					reservedCap,
-					lastUpdated
-				}
-			});
-
-			if (instructor && instructor !== this.props.instructor) {
-				this.setState({ fetchingRMP: true });
-				retrieveProfInfo(instructor)
-				.then(prof => {
-					this.setState({ fetchingRMP: false });
-					if (!prof.error) this.setState({ prof });
-					else throw prof.error;
-				})
-				.catch(error => {
-					console.error(`ERROR: ${error}`);
-					this.setState({ prof: null });
-				});
-			}
-		}
-	}
-
 	render() {
+		const  { subject, catalogNumber, classInfo, open, onClose } = this.props;
+		const { prof, fetchingRMP } = this.state;
 		const {
-			subject,
-			catalogNumber,
+			units,
+			note,
+			enrollmentCap,
+			enrollmentTotal,
+		  waitingCap,
+		  waitingTotal,
+			reserveCap,
+			reserveTotal,
+			reserveGroup,
 			instructor,
-			info,
-			prof,
-			fetchingRMP,
-		} = this.state;
-		const id = (instructor) ? 'slide' : '';
+			lastUpdated,
+		} = classInfo;
+		const info = {
+			units,
+			note,
+			enrollmentCap,
+			attending: enrollmentTotal,
+		  waitingCap,
+		  waiting: waitingTotal,
+			reserveCap,
+			reserved: reserveTotal,
+			reserveGroup,
+			lastUpdated,
+		};
 
 		return (
-			<Drawer open={ this.props.open } openSecondary style={ styles.container }>
+			<Drawer open={ open } openSecondary style={ styles.container }>
 				<RaisedButton
 					label={ <ArrowIcon style={ styles.arrow } /> }
 					labelStyle={ styles.arrowLabel }
 					style={ styles.arrowButton }
-					onClick={ this.props.onClose }
+					onClick={ onClose }
 				/>
 				<CourseInfo
-					style={ styles.sidebar }
-					id={ id }
 					subject={ subject }
 					catalogNumber={ catalogNumber }
 					instructor={ instructor }
-					{ ...info }
+					info={ info }
+					style={ styles.sidebar }
 				/>
 				<CourseProf
-					style={ styles.sidebar }
-					id={ id }
 					instructor={ instructor }
 					loading={ fetchingRMP }
-					{ ...prof }
+					prof={ prof }
+					style={ styles.sidebar }
 				/>
 			</Drawer>
 		);

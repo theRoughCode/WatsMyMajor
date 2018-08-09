@@ -2,27 +2,59 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import CourseContent from './CourseContent';
 import CourseSideBar from './CourseSideBarContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
+import { createSnack, addToCart, removeFromCart } from '../../actions';
 import '../../stylesheets/CourseView.css';
-import {
-	setExpandedCourse,
-	createSnack,
-	addToCart,
-	removeFromCart,
-	removeExpandedCourse
-} from '../../actions';
 
 const styles = {
 	courseView: {
 		width: '100%',
 	  display: 'flex',
 	}
+};
+
+const defaultCourse = {
+	title: '',
+	description: '',
+	rating: 0,
+	url: '',
+	termsOffered: [],
+	crosslistings: '',
+	antireqs: [],
+	coreqs: [],
+	prereqs: {},
+	postreqs: [],
+	term: '',
+	classes: []
+};
+
+const defaultClassInfo = {
+	units: 0,
+	note: '',
+	classNumber: 0,
+	section: '',
+	campus: '',
+	enrollmentCap: 0,
+	enrollmentTotal: 0,
+	waitingCap: 0,
+	waitingTotal: 0,
+	reserveCap: 0,
+	reserveTotal: 0,
+	reserveGroup: '',
+	startTime: '',
+	endTime: '',
+	weekdays: [],
+	isTBA: false,
+	isCancelled: false,
+	isClosed: false,
+	instructor: '',
+	location: '',
+	lastUpdated: ''
 };
 
 const getCourseData = (subject, catalogNumber) => {
@@ -42,32 +74,12 @@ const getCourseData = (subject, catalogNumber) => {
 class CourseListContainer extends Component {
 
 	static propTypes = {
-		username: PropTypes.string.isRequired,
+		myCourses: PropTypes.object.isRequired,
 		cart: PropTypes.array.isRequired,
-		instructor: PropTypes.string,
-		attending: PropTypes.string,
-		enrollmentCap: PropTypes.string,
-		reserved: PropTypes.string,
-		reservedCap: PropTypes.string,
-		classNumber: PropTypes.string,
-		lastUpdated: PropTypes.string,
-		selectedClassIndex: PropTypes.number,
-		expandCourseHandler: PropTypes.func.isRequired,
-		removeExpandedCourseHandler: PropTypes.func.isRequired,
+		username: PropTypes.string.isRequired,
 		addToCartHandler: PropTypes.func.isRequired,
 		removeFromCartHandler: PropTypes.func.isRequired
 	};
-
-	static defaultProps = {
-		instructor: '',
-		attending: '',
-		enrollmentCap: '',
-		reserved: '',
-		reservedCap: '',
-		classNumber: '',
-		lastUpdated: '',
-		selectedClassIndex: -1
-	}
 
 	constructor(props) {
 		super(props);
@@ -83,32 +95,12 @@ class CourseListContainer extends Component {
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
-			selectedClassIndex: props.selectedClassIndex,
-			course: {
-				title: '',
-				rating: 0,
-				url: '',
-				termsOffered: [],
-				description: '',
-				antireqs: [],
-				coreqs: [],
-				prereqs: {},
-				postreqs: [],
-				term: '',
-				classes: []
-			},
-			classInfo: {
-				instructor: props.instructor,
-				attending: props.attending,
-				enrollmentCap: props.enrollmentCap,
-				reserved: props.reserved,
-				reservedCap: props.reservedCap,
-				classNumber: props.classNumber,
-				lastUpdated: props.lastUpdated
-			},
+			selectedClassIndex: -1,
+			course: defaultCourse,
+			classInfo: defaultClassInfo,
 		}
 
-		this.onExpandCourse = this.onExpandCourse.bind(this);
+		this.onExpandClass = this.onExpandClass.bind(this);
 		this.closeSideBar = this.closeSideBar.bind(this);
 		this.updatePageInfo = this.updatePageInfo.bind(this);
 		this.addCourseToCart = this.addCourseToCart.bind(this);
@@ -127,12 +119,11 @@ class CourseListContainer extends Component {
 		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
 		const updatedCourseList = !objectEquals(nextProps.myCourses, this.props.myCourses);
 		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
-		const isNewClass = (this.props.classNumber !== nextProps.classNumber);
 
-		if (isNewClass || isNewCourse || updatedCart || updatedCourseList) {
-			if (isNewCourse) {
-				this.props.removeExpandedCourseHandler();
-			}
+		if (isNewCourse || updatedCart || updatedCourseList) {
+			// Don't want class info from previous class
+			if (isNewCourse) this.closeSideBar();
+
 			// User selected new course
 			if (isNewCourse || updatedCourseList) {
 				const { myCourses } = nextProps;
@@ -146,40 +137,15 @@ class CourseListContainer extends Component {
 				const inCart = isInCart(nextSubject, nextCatNum, cart);
 				this.setState({ inCart });
 			}
-
-			// User selected new class
-			if (isNewClass) {
-				const {
-					instructor,
-					attending,
-					enrollmentCap,
-					reserved,
-					reservedCap,
-					classNumber,
-					lastUpdated,
-					selectedClassIndex,
-				} = nextProps;
-
-				const classInfo = {
-					instructor,
-					attending,
-					enrollmentCap,
-					reserved,
-					reservedCap,
-					classNumber,
-					lastUpdated,
-				};
-
-				this.setState({ classInfo, selectedClassIndex });
-			}
 		}
 	}
 
-	updatePageInfo(subject, catalogNumber) {
+	async updatePageInfo(subject, catalogNumber) {
 		if (!subject || !catalogNumber) return;
-		// fetch course data
-		getCourseData(subject, catalogNumber)
-		.then(json => {
+
+		try {
+			// fetch course data
+			const json = await getCourseData(subject, catalogNumber);
 			let {
 				title,
 				description,
@@ -195,7 +161,7 @@ class CourseListContainer extends Component {
 			} = json;
 
 			// Update page title
-			document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`
+			document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`;
 
 			const course = {
 				title,
@@ -203,6 +169,7 @@ class CourseListContainer extends Component {
 				rating: 2.1,
 				url,
 				termsOffered: terms,
+				crosslistings,
 				antireqs,
 				coreqs,
 				prereqs,
@@ -214,10 +181,10 @@ class CourseListContainer extends Component {
 			const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
 
 			this.setState({ loading: false, course, subject, catalogNumber, eligible });
-		}).catch(error => {
+		} catch(error) {
 			console.error(`ERROR: ${error}`);
 			this.setState({ loading: false, error, subject, catalogNumber });
-		});
+		};
 	};
 
 	addCourseToCart(subject, catalogNumber) {
@@ -231,41 +198,44 @@ class CourseListContainer extends Component {
 		removeFromCartHandler(username, cart, subject, catalogNumber);
 	}
 
-	onExpandCourse(courseObj, index) {
-		if (this.state.selectedClassIndex === index) {
+	onExpandClass(classInfo, selectedClassIndex) {
+		if (this.state.selectedClassIndex === selectedClassIndex) {
 			this.closeSideBar();
 			return;
 		}
-		this.props.expandCourseHandler(courseObj, index);
-		this.setState({ sideBarOpen: true });
+
+		this.setState({ sideBarOpen: true, classInfo, selectedClassIndex });
 	}
 
 	closeSideBar() {
-		this.props.removeExpandedCourseHandler();
-		this.setState({ sideBarOpen: false });
+		this.setState({
+			sideBarOpen: false,
+			classInfo: defaultClassInfo,
+			selectedClassIndex: -1,
+		});
 	}
 
 	render() {
 		const renderedView = (
 			<div style={ styles.courseView }>
 				<CourseContent
-					selectedClassIndex={this.state.selectedClassIndex}
-					expandCourse={this.onExpandCourse}
-					subject={this.state.subject}
-					catalogNumber={this.state.catalogNumber}
-					taken={this.state.taken}
-					inCart={this.state.inCart}
-					eligible={this.state.eligible}
-					addToCartHandler={this.addCourseToCart}
-					removeFromCartHandler={this.removeCourseFromCart}
-					{...this.state.course}
+					subject={ this.state.subject }
+					catalogNumber={ this.state.catalogNumber }
+					course={ this.state.course }
+					selectedClassIndex={ this.state.selectedClassIndex }
+					expandClass={ this.onExpandClass }
+					taken={ this.state.taken }
+					inCart={ this.state.inCart }
+					eligible={ this.state.eligible }
+					addToCartHandler={ this.addCourseToCart }
+					removeFromCartHandler={ this.removeCourseFromCart }
 				/>
 				<CourseSideBar
-					{...this.state.classInfo}
-					subject={this.state.subject}
-					catalogNumber={this.state.catalogNumber}
-					open={this.state.sideBarOpen}
-					onClose={this.closeSideBar}
+					subject={ this.state.subject }
+					catalogNumber={ this.state.catalogNumber }
+					classInfo={ this.state.classInfo }
+					open={ this.state.sideBarOpen }
+					onClose={ this.closeSideBar }
 				/>
 			</div>
 		);
@@ -286,39 +256,14 @@ class CourseListContainer extends Component {
 
 }
 
-const mapStateToProps = ({ expandedCourse, myCourses, cart, user }) => {
-	const {
-		instructor,
-		attending,
-		enrollmentCap,
-		reserved,
-		reservedCap,
-		classNumber,
-		lastUpdated,
-		selectedClassIndex
-	} = expandedCourse;
-
-	return {
-		instructor,
-		attending,
-		enrollmentCap,
-		reserved,
-		reservedCap,
-		classNumber,
-		lastUpdated,
-		selectedClassIndex,
-		myCourses,
-		cart,
-		username: user.username
-	};
-};
+const mapStateToProps = ({ myCourses, cart, user }) => ({
+	myCourses,
+	cart,
+	username: user.username
+});
 
 const mapDispatchToProps = dispatch => {
 	return {
-		expandCourseHandler: (courseObj, index) => {
-			dispatch(setExpandedCourse(courseObj, index));
-		},
-		removeExpandedCourseHandler: () => dispatch(removeExpandedCourse()),
 		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken) => {
 			if (hasTaken) {
 				const msg = `${subject} ${catalogNumber} is already in your courses.`;

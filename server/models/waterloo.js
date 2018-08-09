@@ -73,27 +73,38 @@ function getCourseInfo(subject, cat_num, callback) {
 
 			const { building, room } = location;
 
+			const reserveObj = reserves[0];
+			let reserve_capacity = 0;
+			let reserve_total = 0;
+			let reserve_group = '';
+			if (reserveObj != null) {
+				reserve_capacity = reserveObj.enrollment_capacity;
+				reserve_total = reserveObj.enrollment_total;
+				reserve_group = reserveObj.reserve_group;
+			}
+
 			return {
 				units,
-				note,
-				class_number,
+				note: note || '',
+				classNumber: class_number,
 				section,
 				campus,
-				enrollment_capacity,
-				enrollment_total,
-				waiting_capacity,
-				waiting_total,
-				reserve_capacity: reserves.enrollment_capacity,
-				reserve_total: reserves.enrollment_total,
-				start_time,
-				end_time,
+				enrollmentCap: enrollment_capacity,
+				enrollmentTotal: enrollment_total,
+				waitingCap: waiting_capacity,
+				waitingTotal: waiting_total,
+				reserveCap: reserve_capacity,
+				reserveTotal: reserve_total,
+				reserveGroup: reserve_group,
+				startTime: start_time,
+				endTime: end_time,
 				weekdays: parseWeekdays(weekdays),
-				is_tba,
-				is_cancelled,
-				is_closed,
+				isTBA: is_tba,
+				isCancelled: is_cancelled,
+				isClosed: is_closed,
 				instructor: getInstructor(instructors[0]),
 				location: (building || room) ? `${building} ${room}` : 'TBA',
-				last_updated: lastUpdated.toLocaleDateString("en-US", options)
+				lastUpdated: lastUpdated.toLocaleDateString("en-US", options)
 			};
 		});
 

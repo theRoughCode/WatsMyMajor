@@ -9,8 +9,6 @@ export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_USER = 'SET_USER';
 export const LOGIN_USER = 'LOGIN_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
-export const SET_EXPANDED_COURSE = 'SET_EXPANDED_COURSE';
-export const REMOVE_EXPANDED_COURSE = 'REMOVE_EXPANDED_COURSE';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
@@ -64,32 +62,6 @@ export const logoutUser = () => {
 	deleteCookie('watsmymajor_jwt');
 	return { type: LOGOUT_USER };
 };
-
-export const setExpandedCourse = (courseObj, index) => {
-	const {
-		instructor,
-		enrollment_total,
-		enrollment_capacity,
-		waiting_total,
-		waiting_capacity,
-		class_number,
-		last_updated
-	} = courseObj;
-
-	return {
-		type: SET_EXPANDED_COURSE,
-		index,
-		instructor,
-		attending: String(enrollment_total),
-		enrollmentCap: String(enrollment_capacity),
-		reserved: String(waiting_total),
-		reservedCap: String(waiting_capacity),
-		classNumber: String(class_number),
-		lastUpdated: last_updated
-	};
-}
-
-export const removeExpandedCourse = () => ({ type: REMOVE_EXPANDED_COURSE });
 
 export const createSnack = (
 	msg,

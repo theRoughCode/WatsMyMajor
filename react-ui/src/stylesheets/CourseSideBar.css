@@ -1,47 +1,12 @@
-.course-info-header {
-  padding: 10px 20px;
-  text-align: left;
-}
-
-.course-info-header > span {
-  margin-left: 0;
-  font-size: 30px;
-  font-weight: 400;
-}
-
-.course-info-header #last-updated {
-	font-size: 12px;
-	margin-left: 2px;
-}
-
-.course-info-details,
 .course-info-share,
 .course-prof-share {
-  text-align: left;
-  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none !important;
+  color: #757575 !important;
 }
-
-.course-info-details {
-  padding: 10px 20px;
-}
-
-.course-info-details-info {
-  display: flex;
-  margin: 10px 0;
-}
-
-.course-info-share, .course-prof-share {
-  padding: 10px 20px;
-}
-
-.course-info-share > a,
-.course-prof-share > a {
-  text-decoration: none;
-  color: #757575;
-}
-.course-info-share > a:hover,
-.course-prof-share > a:hover {
-  text-decoration: underline;
+.course-info-share:hover,
+.course-prof-share:hover {
+  text-decoration: underline !important;
 }
 
 .course-prof-header {

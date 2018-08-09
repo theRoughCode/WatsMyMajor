@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+const moment = require('moment');
 
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
     margin: 'auto',
-    paddingBottom: 3
+    paddingBottom: 3,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'none',
   },
   title: {
     fontWeight: 500,
@@ -49,14 +53,17 @@ export default class Event extends Component {
       instructor
     } = this.props;
 
+    const startTime = moment(start).format('h:mmA');
+    const endTime = moment(end).format('h:mmA');
+
     return (
       <div
         onClick={ onClick }
         style={ style }
       >
         <div style={ styles.container }>
-          <span style={ styles.title }>{ `${title} - ${type}` }</span>
-          <span style={ styles.text }>{ `${classNum}  |  Sec ${section}` }</span>
+          <span style={ styles.title }>{ `${title} - ${type} ${section}` }</span>
+          <span style={ styles.text }>{ `${startTime} - ${endTime}` }</span>
           <span style={ styles.text }>{ instructor }</span>
           <span style={ styles.text }>{ location }</span>
         </div>

@@ -39,6 +39,11 @@ const styles = {
 	loading: {
 		margin: 'auto',
 		padding: 20
+	},
+	shareContainer: {
+		textAlign: 'left',
+		fontSize: 15,
+		padding: '10px 20px',
 	}
 };
 
@@ -99,73 +104,66 @@ const Rating = ({ difficulty, tags }) => {
 };
 
 const Share = ({ icon, text, link='#' }) => (
-	<div className="course-prof-share">
-		{icon}
-		<a href={link} target='_blank'>{text}</a>
+	<div style={ styles.shareContainer }>
+		{ icon }
+		<a className="course-prof-share" href={ link } target='_blank'>{ text }</a>
 	</div>
 );
 
 
-const CourseProf = (props) => {
+const CourseProf = ({
+	instructor,
+	loading,
+	prof,
+	style
+}) => {
   const {
-		style,
-    instructor,
-		loading,
-    rating,
+		rating,
     difficulty,
     tags,
     rmpURL,
 		profAvatarURL
-  } = props;
+  } = prof;
 
 	const loadingView = (
-		<Paper style={style} zDepth={1}>
+		<Paper style={ style } zDepth={ 1 }>
 			<div className="loading">
 				<CircularProgress
-					size={40}
-					thickness={5}
-					style={styles.loading}
+					size={ 40 }
+					thickness={ 5 }
+					style={ styles.loading }
 					/>
 			</div>
 		</Paper>
 	);
 
 	const renderedView = (
-		<Paper style={style} zDepth={1}>
+		<Paper style={ style } zDepth={ 1 }>
 			<ProfHeader
-				name={instructor}
-				stars={rating}
-				image={profAvatarURL}
+				name={ instructor }
+				stars={ rating }
+				image={ profAvatarURL }
 				/>
-			<Divider style={styles.divider} />
+			<Divider style={ styles.divider } />
 			<Rating
-				difficulty={difficulty}
-				tags={tags}
+				difficulty={ difficulty }
+				tags={ tags }
 				/>
-			<Divider style={styles.divider} />
+			<Divider style={ styles.divider } />
 			<Share
-				icon={<FontAwesome
-	        name='facebook'
-					style={styles.icon}
-	      />}
-				text={'Share on Facebook'}
+				icon={ <FontAwesome name='facebook' style={ styles.icon } /> }
+				text={ 'Share on Facebook' }
 				/>
-			<Divider style={styles.divider} />
+			<Divider style={ styles.divider } />
 			<Share
-				icon={<FontAwesome
-	        name='twitter'
-					style={styles.icon}
-	      />}
-				text={'Share on Twitter'}
+				icon={ <FontAwesome name='twitter' style={ styles.icon } /> }
+				text={ 'Share on Twitter' }
 				/>
-			<Divider style={styles.divider} />
+			<Divider style={ styles.divider } />
 			<Share
-				icon={<FontAwesome
-	        name='globe'
-					style={styles.icon}
-	      />}
-				text={'See on RateMyProf.com'}
-        link={rmpURL}
+				icon={ <FontAwesome name='globe' style={ styles.icon } /> }
+				text={ 'See on RateMyProf.com' }
+        link={ rmpURL }
 				/>
 		</Paper>
 	)
@@ -176,22 +174,10 @@ const CourseProf = (props) => {
 };
 
 CourseProf.propTypes = {
-	style: PropTypes.object.isRequired,
   instructor: PropTypes.string.isRequired,
 	loading: PropTypes.bool.isRequired,
-  rating: PropTypes.number,
-  difficulty: PropTypes.number,
-  tags: PropTypes.array,
-  rmpURL: PropTypes.string,
-	profAvatarURL: PropTypes.string
-}
-
-CourseProf.defaultProps = {
-	rating: 0,
-	difficulty: 0,
-	tags: [],
-	rmpURL: '',
-	profAvatarURL: ''
+	prof: PropTypes.object.isRequired,
+	style: PropTypes.object.isRequired,
 }
 
 export default CourseProf;

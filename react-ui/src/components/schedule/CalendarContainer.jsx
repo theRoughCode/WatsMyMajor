@@ -4,7 +4,6 @@ import moment from 'moment';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
-import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import DatePicker from 'material-ui/DatePicker';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -20,10 +19,6 @@ import RandomColour from 'randomcolor';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 import { objectEquals } from '../../utils/arrays';
-
-const color1 = '#049BE5';
-const color2 = '#33B679';
-const color3 = '#E67B73';
 
 const referenceDate = new Date(2017, 1, 1);
 
@@ -74,9 +69,9 @@ const styles = {
 const parseCourses = (courses) => {
 	const classesArr = [];
 
-	courses.map(({ subject, catalogNumber, classes }) => {
+	courses.forEach(({ subject, catalogNumber, classes }) => {
 		const colour = RandomColour({ luminosity: 'dark' });
-		Object.entries(classes).map(arr => {
+		Object.entries(classes).forEach(arr => {
 			const type = arr[0];
 
 			const {
@@ -103,7 +98,7 @@ const parseCourses = (courses) => {
 			});
 			let date = startDateMoment;
 			while (date.isSameOrBefore(endDateMoment)) {
-				days.map(dayStr => {
+				days.forEach(dayStr => {
 					let day = 0;
 					switch (dayStr) {
 						case 'M': day = 1; break;
