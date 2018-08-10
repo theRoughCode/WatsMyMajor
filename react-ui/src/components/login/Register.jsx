@@ -122,9 +122,10 @@ class Register extends Component {
       confirmPasswordError: validateConfirmPassword(password, confirmPassword),
       keyError: validateBetaKey(key),
     };
+
     for (let key in errors) {
       if (errors[key].length > 0) {
-        this.setState({ errors });
+        this.setState(errors);
         return;
       }
     }
