@@ -87,14 +87,19 @@ async function searchCourses(query, limit) {
 		// If query length is <= 5, only search by subject and catalogNumber.
 		// Else include title in search as well.
 		const extract = (query.length <= 5) ? simpleExtractor : titleExtractor;
-		const matches = fuzzy.filter(query, coursesForSearch, { extract }).slice(0, limit);
+		const result = fuzzy.filter(query, coursesForSearch, { extract })
+			.slice(0, limit)
+			.map(({ original }) => original);
 
 		// If using simple extractor and not enough to populate results, use title extractor.
-		if (query.length <= 5 && matches.length < limit) {
-			const matches2 = fuzzy.filter(query, coursesForSearch, { extract: titleExtractor }).slice(0, limit - matches.length);
-			matches.push(...matches2);
+		if (query.length <= 5 && result.length < limit) {
+			const result2 = fuzzy
+				.filter(query, coursesForSearch, { extract: titleExtractor })
+				.filter(({ original }) => !result.includes(original))
+				.slice(0, limit - result.length)
+				.map(({ original }) => original);
+			result.push(...result2);
 		}
-		const result = matches.map(({ original }) => original);
 		return { err: null, result };
 	} catch (err) {
 		console.log(err);

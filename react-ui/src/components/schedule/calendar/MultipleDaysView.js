@@ -5,23 +5,81 @@ import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
 
 const height = 2500;
-const firstColumnWidth = '40px';
+const firstColumnWidth = '60px';
 const headerHeight = '60px';
+const bigBorder = 'solid 2px #bababa';
+
+const styles = {
+  container: {
+    height: '100%',
+    width: '100%',
+    position: 'relative',
+    overflowX: 'hidden'
+  },
+  dayHeader: (count, i) => ({
+    position: 'absolute',
+    left: `${(100 / count) * i}%`,
+    width: `${100 / count}%`,
+    height: headerHeight,
+    borderLeft: 'solid 1px #e2e2e2',
+    borderBottom: bigBorder,
+    padding: '5px',
+    boxSizing: 'border-box'
+  }),
+  dayEvent: (count, i) => ({
+    position: 'absolute',
+    height: '100%',
+    left: `${(100 / count) * i}%`,
+    width: `${100 / count}%`,
+    borderLeft: 'solid 1px #e2e2e2'
+  }),
+  firstColumn: {
+    height: headerHeight,
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    width: firstColumnWidth,
+    borderBottom: bigBorder,
+    boxSizing: 'border-box'
+  },
+  headerContainer: {
+    height: headerHeight,
+    position: 'absolute',
+    right: 19,
+    left: firstColumnWidth,
+    top: '0'
+  },
+  bodyContainer: (isScrollDisable) => ({
+    height: `calc(100% - ${headerHeight})`,
+    position: 'absolute',
+    left: '0',
+    right: '0',
+    top: headerHeight,
+    bottom: '0',
+    overflowY: isScrollDisable ? 'hidden' : 'auto',
+    overflowX: 'hidden'
+  }),
+  hoursContainer: {
+    height,
+    position: 'absolute',
+    left: '0',
+    top: '0',
+    borderTop: '1px solid #e2e2e2'
+  },
+  daysContainer: {
+    height,
+    position: 'absolute',
+    right: '0',
+    left: firstColumnWidth,
+    top: '0'
+  }
+}
 
 const renderDaysHeader = (dates) => {
   return dates.map((date,i) => (
     <DayHeader
       key={i}
-      style={{
-        position: 'absolute',
-        left: `${(100 / dates.length) * i}%`,
-        width: `${100 / dates.length}%`,
-        height: headerHeight,
-        borderLeft: 'solid 1px #F3F3F3',
-        borderBottom: 'solid 1px #F3F3F3',
-        padding: '5px',
-        boxSizing: 'border-box'
-      }}
+      style={styles.dayHeader(dates.length, i)}
       date={date}/>
   ));
 }
@@ -30,13 +88,8 @@ const renderDays = (dates, children) => {
   return dates.map((date,i) => (
     <div
       key={i}
-      style={{
-        position: 'absolute',
-        height: '100%',
-        left: `${(100 / dates.length) * i}%`,
-        width: `${100 / dates.length}%`,
-        borderLeft: 'solid 1px #F3F3F3'
-      }}>
+      style={styles.dayEvent(dates.length, i)}
+    >
       {
         renderDayEvents({
           events: children,
@@ -54,18 +107,9 @@ const MultipleDaysView = ({
   isScrollDisable,
   children
 }) => (
-  <div style={{ height: '100%', width: '100%', position: 'relative', overflow: 'hidden' }}>
-    <div style={{
-      height: headerHeight,
-      position: 'absolute',
-      left: '0',
-      top: '0',
-      width: firstColumnWidth,
-      borderBottom: 'solid 1px #F3F3F3',
-      boxSizing: 'border-box'
-    }}>
-    </div>
-    <div style={{ height: headerHeight, position: 'absolute', right: '0', left: firstColumnWidth, top: '0' }}>
+  <div style={styles.container}>
+    <div style={styles.firstColumn}></div>
+    <div style={styles.headerContainer}>
       {
         renderDaysHeader(dates)
       }
@@ -78,22 +122,13 @@ const MultipleDaysView = ({
         }
       }}
       onTouchStart={(e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop),100)}
-      style={{
-        height: `calc(100% - ${headerHeight})`,
-        position: 'absolute',
-        left: '0',
-        right: '0',
-        top: headerHeight,
-        bottom: '0',
-        overflowY: isScrollDisable ? 'hidden' : 'auto',
-        overflowX: 'hidden'
-      }}>
-      <div style={{ height: height + 'px', position: 'absolute', left: '0', top: '0', borderTop: '1px solid #F3F3F3' }}>
+      style={styles.bodyContainer(isScrollDisable)}>
+      <div style={styles.hoursContainer}>
         {
           verticalHours()
         }
       </div>
-      <div style={{ height: height + 'px', position: 'absolute', right: '0', left: firstColumnWidth, top: '0' }}>
+      <div style={styles.daysContainer}>
         {
           renderDays(dates, children)
         }

@@ -90,7 +90,7 @@ function getHourDividerStyle(hour) {
 		right: '0px',
 		left: '0px',
 		position: 'absolute',
-		borderBottomColor: '#F3F3F3',
+		borderBottomColor: '#e2e2e2',
 		borderBottomWidth: '1px',
 		borderBottomStyle: 'solid',
 		boxSizing: 'border-box'

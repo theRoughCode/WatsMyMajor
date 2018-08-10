@@ -91,7 +91,9 @@ function parseComponent(arr) {
   const dayArr = arr[3].split(' ');
   const days = (!dayArr[0].length || dayArr[0] === 'TBA') ? [] : dayArr[0].split(/(?=[A-Z])/);
   const startTime = moment(dayArr[1], "hh:mmA");
+  if (!startTime.isValid()) return null;  // Don't need to parse if cannot get time
   const endTime = moment(dayArr[3], "hh:mmA");
+  if (!endTime.isValid()) return null;
   const location = (arr[4] === 'TBA') ? '' : arr[4].replace(/\s+/, ' ');
   const instructor = arr[5].replace(/,/g, ', ');
   const dateArr = arr[6].split(' ');

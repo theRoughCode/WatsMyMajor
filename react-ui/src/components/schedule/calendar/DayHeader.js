@@ -21,7 +21,7 @@ const dayFormatter = new Intl.DateTimeFormat(window.navigator.language, { day: '
 
 const DayHeader = ({ style, date }) => {
   return (
-    <div style={Object.assign(style, { color: getHeaderColor(date)})}>
+    <div style={Object.assign({}, style, { color: getHeaderColor(date)})}>
       <div style={{ fontSize: '22px' }}>
         {
           dayFormatter.format(date)

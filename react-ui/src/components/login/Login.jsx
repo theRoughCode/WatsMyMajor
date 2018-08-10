@@ -179,7 +179,7 @@ class Login extends Component {
   		});
       if (!response.ok) {
         const err = await response.text();
-        alert('This Facebook account has not been linked yet. Please log in to link your Facebook account.');
+        alert('This Facebook account has not been linked yet. Please log in to your WatsMyMajor account (or create one) to link your Facebook account.');
         console.error(err);
       } else {
         const { username, user } = await response.json();

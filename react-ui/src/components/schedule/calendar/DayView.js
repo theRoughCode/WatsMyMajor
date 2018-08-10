@@ -5,6 +5,34 @@ import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
 
 const height = 2000;
+const styles = {
+  container: {
+    height: '100%',
+    width: '100%',
+    position: 'relative',
+    overflowY: 'hidden'
+  },
+  dayHeader: {
+		position: 'absolute',
+		top: '0px',
+		left: '0px',
+		width: 30,
+		padding: '10px 0 10px 15px',
+		background: 'white',
+		boxShadow: '0 14px 28px rgba(255,255,255,0.60), 0 10px 10px rgba(255,255,255,0.80)'
+	},
+  hoursContainer: (isScrollDisable) => ({
+		height: '100%',
+		position: 'relative',
+		overflowY: isScrollDisable ? 'hidden' : 'auto'
+	}),
+  daysContainer: {
+		height,
+		position: 'absolute',
+		right: '15px',
+		left: '50px'
+	}
+}
 
 const DayView = ({
 	scrollViewer,
@@ -14,7 +42,7 @@ const DayView = ({
 	children,
 	isScrollDisable
 }) => (
-	<div style={{ height: '100%', width: '100%', position: 'relative', overflowY: 'hidden' }}>
+	<div style={styles.container}>
 		<div
 			ref={elem => {
 				if(elem != null) {
@@ -23,7 +51,7 @@ const DayView = ({
 				}
 			}}
 			onTouchStart={(e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop),100)}
-			style={{ height: '100%', position: 'relative', overflowY: isScrollDisable ? 'hidden' : 'auto' }}>
+			style={styles.hoursContainer(isScrollDisable)}>
 			<div style={{ position: 'absolute', height: height + 'px'}}>
 				{
 					verticalHours()
@@ -31,7 +59,7 @@ const DayView = ({
 			</div>
 			<div
 				key="eventsContainer"
-				style={{ height: height + 'px', position: 'absolute', right: '15px', left: '50px' }}>
+				style={styles.daysContainer}>
 				{
 					renderDayEvents({
 						events: children,
@@ -41,15 +69,9 @@ const DayView = ({
 			</div>
 		</div>
 		<DayHeader
-			style={{
-				position: 'absolute',
-				top: '0px',
-				left: '0px',
-				padding: '10px 0 10px 15px',
-				background: 'white',
-				boxShadow: '0 14px 28px rgba(255,255,255,0.60), 0 10px 10px rgba(255,255,255,0.80)'
-			}}
-			date={date}/>
+			style={styles.dayHeader}
+			date={date}
+		/>
 	</div>
 );
 
