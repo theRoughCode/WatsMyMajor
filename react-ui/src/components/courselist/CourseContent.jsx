@@ -1,15 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import RaisedButton from 'material-ui/RaisedButton';
 import CourseHeader from './content/CourseHeader';
 import CourseDescription from './content/CourseDescription';
 import CourseClassList from './content/CourseClassList';
+import CourseRequisites from './content/CourseRequisites';
 
 const styles = {
 	courseContent: {
 		height: '100%',
 	  display: 'flex',
 		flexWrap: 'wrap',
-	}
+	  padding: '20px 40px',
+	},
+	bodyContainer: {
+		display: 'flex',
+		marginTop: 25,
+	},
+	rightContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		marginRight: 20,
+	},
+	leftContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		margin: 20,
+	},
+	treeButton: {
+		width: '100%'
+	},
 }
 
 const CourseContent = ({
@@ -54,26 +75,44 @@ const CourseContent = ({
 				inCart={ inCart }
 				eligible={ eligible }
 			/>
-			<CourseDescription
-				subject={ subject }
-				catalogNumber={ catalogNumber }
-				description={ description }
-				crosslistings={ crosslistings }
-        antireqs={ antireqs }
-				coreqs={ coreqs }
-				prereqs={ prereqs }
-				postreqs={ postreqs }
-			/>
-			{
-				classes.length > 0 && (
-					<CourseClassList
-						expandClass={ expandClass }
-						selectedClassIndex={ selectedClassIndex }
-						term={ term }
-						classes={ classes }
+		<div style={ styles.bodyContainer }>
+				<div style={ styles.rightContainer }>
+					<CourseDescription
+						subject={ subject }
+						catalogNumber={ catalogNumber }
+						description={ description }
+						crosslistings={ crosslistings }
+						antireqs={ antireqs }
+						coreqs={ coreqs }
+						prereqs={ prereqs }
+						postreqs={ postreqs }
 					/>
-				)
-			}
+					{
+						classes.length > 0 && (
+							<CourseClassList
+								expandClass={ expandClass }
+								selectedClassIndex={ selectedClassIndex }
+								term={ term }
+								classes={ classes }
+								/>
+						)
+					}
+				</div>
+				<div style={ styles.leftContainer }>
+					<Link to={ `/tree/prereqs/${subject}/${catalogNumber}` }>
+						<RaisedButton
+							label="View Requisites Tree"
+							style={ styles.treeButton }
+						/>
+					</Link>
+					<CourseRequisites
+						antireqs={ antireqs }
+						coreqs={ coreqs }
+						prereqs={ prereqs }
+						postreqs={ postreqs }
+					/>
+				</div>
+			</div>
 		</div>
 	);
 };

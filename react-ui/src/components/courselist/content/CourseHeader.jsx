@@ -7,14 +7,46 @@ import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
 import CheckIcon from 'material-ui/svg-icons/action/check-circle';
 
 const styles = {
+	container: {
+		borderBottom: '1px solid #dbdbdb',
+	  textAlign: 'left',
+	  width: '100%',
+	  display: 'flex',
+	  justifyContent: 'flex-end',
+		paddingBottom: 10,
+	},
+	leftContainer: {
+		display: 'flex',
+	  flexDirection: 'column',
+		width: '70%',
+	},
+	courseCodeContainer: {
+		display: 'flex',
+	},
+	courseCode: {
+		fontSize: 40,
+	  fontWeight: 400,
+	  margin: 'auto 0',
+	  whiteSpace: 'nowrap',
+	},
+	stars: {
+		// margin: 'auto',
+	  // marginRight: 20,
+	  color: '#5c5f63',
+		margin: 'auto 20px',
+	},
+	rightContainer: {
+		display: 'flex',
+	  flexDirection: 'column',
+		width: '30%',
+		paddingTop: 10,
+	},
+	terms: {
+		margin: '0 auto',
+	},
 	button: {
 		margin: '10px auto',
 		fontSize: 13,
-	},
-	stars: {
-		starRatedColor: '#ffcc00',
-		starDimension: '25px',
-		starSpacing: '1px'
 	},
 	taken: {
 		display: 'flex',
@@ -61,31 +93,33 @@ const CourseHeader = ({
 		}
 
 	return (
-		<div className="course-header">
-			<div className="course-header-left">
-				<div className="course-code">
-					<h1>{subject} {catalogNumber}</h1>
+		<div style={ styles.container }>
+			<div style={ styles.leftContainer }>
+				<div className="course-code" style={ styles.courseCodeContainer }>
+					<h1 style={ styles.courseCode }>{subject} {catalogNumber}</h1>
 					<StarRatings
 						rating={rating}
 						isSelectable={false}
 						isAggregateRating={true}
 						numOfStars={5}
-						{...styles.stars}
+						starRatedColor="#ffcc00"
+						starDimension="25px"
+						starSpacing="1px"
 					/>
 				</div>
-				<a href={url} className="title">{title}</a>
+				<a href={ url } className="course-header-title">{ title }</a>
 				{
 					takeStatus && (
-						<div style={styles.taken}>
+						<div style={ styles.taken} >
 							<CheckIcon style={{ marginRight: 5 }} />
 							<span>{ takeStatus }</span>
 						</div>
 					)
 				}
 			</div>
-			<div className="course-header-right">
+			<div style={ styles.rightContainer }>
 				{termsOffered.length > 0 && (
-					<span>Offered in: {termsOffered.join(', ')}</span>
+					<span style={ styles.terms }>Offered in: {termsOffered.join(', ')}</span>
 				)}
 				{ cartButton }
 			</div>

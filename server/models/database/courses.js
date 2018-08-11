@@ -67,6 +67,24 @@ async function getCoursesForSearch() {
 	}
 }
 
+// Returns { err, title }
+// async function getCourseTitle(subject, catalogNumber) {
+// 	try {
+// 		const snapshot = await coursesRef
+// 			.child(subject)
+// 			.child(catalogNumber)
+// 			.once('value');
+// 		const title = snapshot.val();
+// 		return { err: null, title };
+// 	} catch (err) {
+// 		return { err, title: null };
+// 	}
+// }
+
+function getCourseTitle() {
+	console.log('hi')
+}
+
 
 /****************************
  *													*
@@ -77,6 +95,14 @@ async function getCoursesForSearch() {
 // Extractors for fuzzy searching
 const simpleExtractor = ({ subject, catalogNumber }) => subject + ' ' + catalogNumber;
 const titleExtractor = ({ subject, catalogNumber, title }) => subject + ' ' + catalogNumber + ' - ' + title;
+
+// Returns true if array contains course
+const containsCourse = ({ subject, catalogNumber }, arr) => {
+	for (let i = 0; i < arr.length; i++) {
+		if (arr[i].subject === subject && arr[i].catalogNumber === catalogNumber) return true;
+	}
+	return false;
+}
 
 // Searches courses with query and a specified number of results to return
 async function searchCourses(query, limit) {
@@ -95,7 +121,7 @@ async function searchCourses(query, limit) {
 		if (query.length <= 5 && result.length < limit) {
 			const result2 = fuzzy
 				.filter(query, coursesForSearch, { extract: titleExtractor })
-				.filter(({ original }) => !result.includes(original))
+				.filter(({ original }) => !containsCourse(original, result))
 				.slice(0, limit - result.length)
 				.map(({ original }) => original);
 			result.push(...result2);
@@ -109,5 +135,6 @@ async function searchCourses(query, limit) {
 
 module.exports = {
   updateCourseList,
-  searchCourses
+  searchCourses,
+	getCourseTitle,
 };

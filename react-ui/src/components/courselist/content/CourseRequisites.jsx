@@ -9,6 +9,12 @@ import Prereqs from './Prereqs';
 
 
 const styles = {
+	container: {
+		margin: 'auto',
+		marginTop: 20,
+	  width: 300,
+		height: '90%',
+	},
 	tabHeader: {
 		backgroundColor: 'rgb(54, 65, 80)'
 	},
@@ -25,11 +31,14 @@ const styles = {
 		padding: 10,
 		display: 'flex',
 		flexDirection: 'column',
-		height: '100px'
 	},
 	reqs: (isSelected) => ({
 		color: (isSelected) ? 'green' : 'inherit',
 		textDecoration: 'none',
+		padding: 1,
+	  paddingLeft: 10,
+	  textAlign: 'left',
+	  cursor: 'pointer',
 	}),
 };
 
@@ -78,6 +87,7 @@ class CourseRequisites extends Component {
 		return (
 			<a
 				key={ index }
+				className="reqs-link"
 				href={ `/courses/${subject}/${catalogNumber}` }
 				style={ styles.reqs(hasTaken) }
 			>
@@ -122,7 +132,7 @@ class CourseRequisites extends Component {
 		const reqs = [ prereqs, antireqs, coreqs, postreqs ];
 
 		return (
-			<div className="course-requisites">
+			<div style={ styles.container }>
 				<Paper zDepth={1}>
 					<Tabs
 						onChange={this.handleChange}
@@ -140,12 +150,11 @@ class CourseRequisites extends Component {
 										label={title}
 										value={index}
 										style={styles.headline}
-										/>
+									/>
 								))
 						}
 					</Tabs>
 					<SwipeableViews
-						className="reqs-link"
 						index={this.state.slideIndex}
 						onChangeIndex={this.handleChange}
 					>

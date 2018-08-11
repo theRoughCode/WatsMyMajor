@@ -11,19 +11,30 @@ import ClassRow from './ClassRow';
 
 
 const styles = {
+	container: {
+	  marginTop: 40,
+	  display: 'inline-block',
+	  flexDirection: 'column',
+		paddingLeft: 10,
+	},
+	header: {
+		fontSize: 30,
+	  textAlign: 'left',
+	  marginBottom: 15,
+	},
 	paper: {
-		display: 'inline-block',
-		width: 'auto'
+		display: 'table',
+		width: '100%',
 	},
 	table: {
-		display: 'inline-block',
 		height: 'auto',
-		width: 'auto',
+		width: '100%',
 		tableLayout: 'auto'
 	},
 	tableHeader: {
 		fontSize: '15px',
 		fontWeight: '500',
+		textAlign: 'center',
 		backgroundColor: 'rgb(54, 65, 80)',
 		color: 'white'
 	},
@@ -50,8 +61,8 @@ const CourseClassList = (props) => {
 	} = props;
 
 	return (
-		<div className="course-class-list">
-			<div className="course-class-list-header">
+		<div style={ styles.container }>
+			<div style={ styles.header }>
 				<span>{ termStr(term) }</span>
 			</div>
 			<Paper zDepth={ 1 } style={ styles.paper }>

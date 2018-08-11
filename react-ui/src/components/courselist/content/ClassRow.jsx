@@ -42,14 +42,15 @@ const ClassRow = ({
       hoverable={ !selected }
       onClick={ onClickHandler }
       selected={ selected }
-      style={ styles.tableRow(isGreyed) }>
-      <TableRowColumn>{ section + tbaText }</TableRowColumn>
-      <TableRowColumn>{ classNumber }</TableRowColumn>
-      <TableRowColumn>{ campus }</TableRowColumn>
-      <TableRowColumn>{ enrollmentTotal }/{ enrollmentCap }</TableRowColumn>
-      <TableRowColumn><b>{ weekdays.join(', ') }</b> { time }</TableRowColumn>
-      <TableRowColumn>{ location }</TableRowColumn>
-      <TableRowColumn>{ instructor }</TableRowColumn>
+      style={ styles.tableRow(isGreyed) }
+    >
+      <TableRowColumn style={{ textAlign: 'center' }}>{ section + tbaText }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}>{ classNumber }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}>{ campus }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}>{ enrollmentTotal }/{ enrollmentCap }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}><b>{ weekdays.join(', ') }</b> { time }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}>{ location }</TableRowColumn>
+      <TableRowColumn style={{ textAlign: 'center' }}>{ instructor }</TableRowColumn>
     </TableRow>
   );
 };

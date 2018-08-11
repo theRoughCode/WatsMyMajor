@@ -83,131 +83,21 @@
 }
 
 /* Course Content*/
-.course-header {
-  border-bottom: 1px solid #dbdbdb;
-  text-align: left;
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding-left: 10px;
-  padding-top: 20px;
-  padding-bottom: 10px;
-  margin-left: 40px;
-  margin-right: 40px;
-  margin-bottom: 25px;
-}
-
-.course-header-left, .course-header-right {
-  display: flex;
-  flex-direction: column;
-}
-
-.course-header-left {
-  width: 70%;
-}
-
-.course-header-right {
-  padding-top: 10px;
-  width: 30%;
-}
-
-.course-header-right span {
-  margin: 0 auto;
-}
-
-.course-code {
-  display: flex;
-}
-
-.course-code > h1 {
-  font-size: 40px;
-  font-weight: 400;
-  margin: auto 0;
-  white-space: nowrap;
-}
 
 .course-code > .star-ratings {
   margin: auto 20px;
 }
 
-.course-code > span {
-  margin: auto;
-  margin-right: 20px;
-  color: #5c5f63;
-}
-
-.course-header .title {
+.course-header-title {
   font-size: 20px;
   text-decoration: none;
-  color: black;
+  color: black !important;
 }
 
-.course-header .title:hover {
-  color: #f60;
+.course-header-title:hover {
+  color: #f60 !important;
 }
-
-.course-description {
-  padding: 0 10px;
-  margin: 0 40px;
-  display: flex;
-}
-
-.course-requisites {
-  margin: auto;
-  margin-right: 0;
-  width: 300px;
-}
-
-.course-requisites span {
-  margin: 4px auto;
-}
-
-.prereqs {
-  text-align: left;
-  margin-left: 30px;
-  margin-top: 5px;
-}
-
-.prereqs-choose span {
-  margin-left: 0;
-  text-align: left;
-}
-
-.prereqs-reqs {
-  margin: 5px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  border-left-style: solid;
-  border-left-color: rgba(116, 122, 132, 0.5);
-}
-
-.reqs-link a {
-  padding: 1px;
-  padding-left: 30px;
-  text-align: left;
-  cursor: pointer;
-  color: black;
-}
-.reqs-link a:hover {
-  color: #4286f4;
+.reqs-link:hover {
+  color: #4286f4 !important;
   background-color: #f3f3f3;
-}
-
-.course-class-list {
-  margin: 20px auto;
-  margin-top: 40px;
-  display: inline-block;
-  flex-direction: column;
-}
-
-.course-class-list-header {
-  font-size: 30px;
-  text-align: left;
-  margin-left: 10px;
-  margin-bottom: 15px;
-}
-
-.course-class-list-table td {
-	text-align: center !important;
 }
