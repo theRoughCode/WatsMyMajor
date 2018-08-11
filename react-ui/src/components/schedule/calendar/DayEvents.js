@@ -2,7 +2,12 @@ import React from 'react';
 import { addDays } from './dateUtils';
 import { every } from './utils';
 
-const msInDay = 1000 * 60 * 60 * 24;
+// Num milliseconds in a day from 8AM to 12AM
+const totalMsInDay = 1000 * 60 * 60 * 24;
+// Num milliseconds in a day from 8AM to 12AM
+const msInDay = 1000 * 60 * 60 * 16;
+// number of milliseconds from 12AM to 8AM
+const offset = 7 * 60 * 60 * 1000;
 
 function getEventsBetweenDates(events, start, end) {
 	return events
@@ -54,15 +59,15 @@ function getEventItemY(event: EventElement, date: Date) {
 		return 0;
 	}
 
-	return ((event.props.start.getTime() - date.getTime()) / msInDay);
+	return ((event.props.start.getTime() - date.getTime() - offset) / msInDay);
 }
 
 function getEventItemHeight(event: EventElement, date: Date) {
-	var maxedDate = event.props.end.getTime() > (date.getTime() + msInDay) ?
+	const maxedDate = event.props.end.getTime() > (date.getTime() + totalMsInDay) ?
 		date.getTime() + msInDay :
 		event.props.end.getTime();
 
-	var minDate = event.props.start < date ? date.getTime() : event.props.start.getTime();
+	const minDate = event.props.start < date ? date.getTime() + offset : event.props.start.getTime();
 	return (maxedDate - minDate) / msInDay;
 }
 
@@ -85,8 +90,8 @@ function toPercent(i) {
 
 function getHourDividerStyle(hour) {
 	return {
-		height: (100 / 24) + '%',
-		top: (hour * (100 / 24)) + '%',
+		height: (100 / 16) + '%',
+		top: (hour * (100 / 16)) + '%',
 		right: '0px',
 		left: '0px',
 		position: 'absolute',
@@ -98,8 +103,8 @@ function getHourDividerStyle(hour) {
 }
 
 function renderHoursDividers(date: Date) {
-  var dividers = [];
-  for(var i = 0; i < 24; i++) {
+  const dividers = [];
+  for(let i = 0; i < 16; i++) {
     dividers.push(
       <div
         key={i + 'divider'}
@@ -123,14 +128,14 @@ function renderEventsItems(events, date) {
 function getDayViewItemStyle(item: DayViewItem) {
   return {
     height: `calc(${toPercent(item.height)} - 3px)`,
-    width: `calc(${toPercent(item.width)} - 5px)`,
+    width: `calc(${toPercent(item.width)} - 4px)`,
     top: toPercent(item.y),
     left: toPercent(item.x),
     position: 'absolute',
     boxSizing: 'border-box',
     minHeight: '10px',
 		//Styling
-		padding: '0 2.5px',
+		margin: '0 2.5px',
 		cursor: 'pointer',
 		borderRadius: '2px',
 		fontSize: '12px',

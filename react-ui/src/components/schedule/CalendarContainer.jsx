@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import Drawer from 'material-ui/Drawer';
+import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import DatePicker from 'material-ui/DatePicker';
 import RaisedButton from 'material-ui/RaisedButton';
-import MenuIcon from 'material-ui/svg-icons/navigation/menu';
+import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
+import DownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import DateIcon from 'material-ui/svg-icons/editor/insert-invitation';
 import LeftIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import RightIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
@@ -33,11 +34,19 @@ const styles = {
 		marginTop: 2,
 		marginRight: 20
 	},
-	toggleMenu: {
-		borderRadius: 35,
-		minWidth: 35,
-		height: 35,
-		lineHeight: 0
+	viewButton: {
+		minWidth: 40,
+		display: 'inline-block',
+    verticalAlign: 'top',
+		marginTop: 11,
+		marginLeft: 10
+	},
+	viewLabel: {
+		paddingRight: 0,
+	},
+	downIcon: {
+		verticalAlign: 'top',
+		marginTop: 5,
 	},
 	dateIcon: {
 		borderRadius: 40,
@@ -168,13 +177,17 @@ export default class CalendarContainer extends Component {
       date: date,
       mode: '3days',
       classes: parseSchedule(props.schedule),
+			isOpen: false,
+			anchorEl: null,
+			view: '3 Days',
     };
 
 		this.setDate = this.setDate.bind(this);
 		this.getDate = this.getDate.bind(this);
 		this.getIndex = this.getIndex.bind(this);
 		this.changeMode = this.changeMode.bind(this);
-		this.toggleMenu = this.toggleMenu.bind(this);
+		this.openMenu = this.openMenu.bind(this);
+		this.closeMenu = this.closeMenu.bind(this);
 		this.openDatePicker = this.openDatePicker.bind(this);
   }
 
@@ -200,7 +213,18 @@ export default class CalendarContainer extends Component {
 	}
 
   changeMode(mode) {
-    this.setState({ mode: mode, isOpen: false});
+		let view = '3 Days';
+		switch (mode) {
+			case 'day':
+				view = 'Day';
+				break;
+			case 'week':
+				view = 'Week';
+				break;
+			default:
+				view = '3 Days';
+		}
+    this.setState({ mode: mode, isOpen: false, view });
   }
 
 	getDate() {
@@ -211,9 +235,14 @@ export default class CalendarContainer extends Component {
 		return Math.floor(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
 	}
 
-  toggleMenu() {
-    this.setState({ isOpen: !this.state.isOpen });
+  openMenu(ev) {
+		ev.preventDefault();
+    this.setState({ isOpen: !this.state.isOpen, anchorEl: ev.currentTarget });
   }
+
+	closeMenu() {
+		this.setState({ isOpen: false });
+	}
 
 	openDatePicker() {
 		this.refs.dp.openDialog();
@@ -222,14 +251,6 @@ export default class CalendarContainer extends Component {
   render() {
 		return (
 			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Drawer
-          docked={ false }
-          open={ this.state.isOpen }
-          onRequestChange={ this.toggleMenu }>
-          <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
-          <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
-          <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
-        </Drawer>
         <AppBar
           style={{ background: 'white', position: 'relative' }}
           titleStyle={{
@@ -242,11 +263,28 @@ export default class CalendarContainer extends Component {
           iconElementLeft={
 						<div>
 							<FlatButton
-								style={ styles.toggleMenu }
-								onClick={ this.toggleMenu }
-							>
-								<MenuIcon color='black' />
-							</FlatButton>
+			          onClick={ this.openMenu }
+			          label={ this.state.view }
+								labelPosition="before"
+								labelStyle={ styles.viewLabel }
+								backgroundColor="rgba(0,0,0,0.04)"
+								icon={ <DownIcon style={ styles.downIcon } /> }
+								style={ styles.viewButton }
+			        />
+			        <Popover
+			          open={ this.state.isOpen }
+			          anchorEl={ this.state.anchorEl }
+			          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+			          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+			          onRequestClose={ this.closeMenu }
+			          animation={ PopoverAnimationVertical }
+			        >
+			          <Menu>
+									<MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
+									<MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
+									<MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
+			          </Menu>
+			        </Popover>
 							<FlatButton
 								style={ styles.dateIcon }
 								onClick={ this.openDatePicker }

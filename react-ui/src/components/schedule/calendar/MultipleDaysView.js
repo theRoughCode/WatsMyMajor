@@ -4,7 +4,7 @@ import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
 import DayHeader from './DayHeader';
 
-const height = 2500;
+const height = 1800;
 const firstColumnWidth = '60px';
 const headerHeight = '60px';
 const bigBorder = 'solid 2px #bababa';

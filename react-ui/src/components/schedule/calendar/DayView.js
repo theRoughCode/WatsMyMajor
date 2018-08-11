@@ -63,7 +63,7 @@ const DayView = ({
 				{
 					renderDayEvents({
 						events: children,
-						date: date
+						date
 					})
 				}
 			</div>
