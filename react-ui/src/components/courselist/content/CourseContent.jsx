@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
-import CourseHeader from './content/CourseHeader';
-import CourseDescription from './content/CourseDescription';
-import CourseClassList from './content/CourseClassList';
-import CourseRequisites from './content/CourseRequisites';
+import CourseHeader from './CourseHeader';
+import CourseDescription from './CourseDescription';
+import CourseClassList from './CourseClassList';
+import CourseRequisites from './CourseRequisites';
 
 const styles = {
 	courseContent: {
@@ -17,9 +17,11 @@ const styles = {
 	bodyContainer: {
 		display: 'flex',
 		marginTop: 25,
+		width: '100%',
 	},
 	rightContainer: {
 		display: 'flex',
+		flex: 1,
 		flexDirection: 'column',
 		marginRight: 20,
 	},
@@ -27,6 +29,7 @@ const styles = {
 		display: 'flex',
 		flexDirection: 'column',
 		margin: 20,
+		marginTop: 0,
 	},
 	treeButton: {
 		width: '100%'
@@ -99,7 +102,7 @@ const CourseContent = ({
 					}
 				</div>
 				<div style={ styles.leftContainer }>
-					<Link to={ `/tree/prereqs/${subject}/${catalogNumber}` }>
+					<Link to={ `/courses/${subject}/${catalogNumber}/tree/prereqs` }>
 						<RaisedButton
 							label="View Requisites Tree"
 							style={ styles.treeButton }

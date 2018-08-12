@@ -16,10 +16,9 @@ import Login from './components/login/Login';
 import Register from './components/login/Register';
 import Settings from './components/settings/SettingsContainer';
 import Majors from './components/majors/MajorsContainer';
-import PrereqsTree from './components/tree/PrerequisitesTreeContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MyScheduleContainer';
-import CourseListView from './components/courselist/CourseListContainer';
+import CourseView from './components/courselist/CourseViewContainer';
 import LoadingView from './components/tools/LoadingView';
 import {
   toggleSideBar,
@@ -193,8 +192,7 @@ class App extends Component {
   					<Route exact path='/majors/:majorKey?' render={ this.addRedirect(Majors) } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
-            <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseListView) } />
-  					<Route path='/tree/prereqs/:subject/:catalogNumber' render={ this.addRedirect(PrereqsTree) } />
+            <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseView) } />
   				</Switch>
   			</div>
 				<Snackbar

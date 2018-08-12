@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import CourseContent from './CourseContent';
-import CourseSideBar from './CourseSideBarContainer';
+import { Route, withRouter } from 'react-router-dom';
+import CourseContent from './content/CourseContent';
+import CourseSideBar from './sidebar/CourseSideBarContainer';
+import PrereqsTree from './tree/PrerequisitesTreeContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
@@ -71,14 +72,15 @@ const getCourseData = (subject, catalogNumber) => {
 	});
 };
 
-class CourseListContainer extends Component {
+class CourseViewContainer extends Component {
 
 	static propTypes = {
 		myCourses: PropTypes.object.isRequired,
 		cart: PropTypes.array.isRequired,
 		username: PropTypes.string.isRequired,
 		addToCartHandler: PropTypes.func.isRequired,
-		removeFromCartHandler: PropTypes.func.isRequired
+		removeFromCartHandler: PropTypes.func.isRequired,
+		match: PropTypes.object.isRequired,
 	};
 
 	constructor(props) {
@@ -117,15 +119,15 @@ class CourseListContainer extends Component {
 		const nextSubject = nextProps.match.params.subject;
 		const nextCatNum = nextProps.match.params.catalogNumber;
 		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
-		const updatedCourseList = !objectEquals(nextProps.myCourses, this.props.myCourses);
+		const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
 		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
 
-		if (isNewCourse || updatedCart || updatedCourseList) {
+		if (isNewCourse || updatedCart || updatedUserCourses) {
 			// Don't want class info from previous class
 			if (isNewCourse) this.closeSideBar();
 
 			// User selected new course
-			if (isNewCourse || updatedCourseList) {
+			if (isNewCourse || updatedUserCourses) {
 				const { myCourses } = nextProps;
 				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
 				this.setState({ loading: true, taken });
@@ -216,42 +218,70 @@ class CourseListContainer extends Component {
 	}
 
 	render() {
-		const renderedView = (
+		const {
+			subject,
+			catalogNumber,
+			course,
+			selectedClassIndex,
+			taken,
+			inCart,
+			eligible,
+			classInfo,
+			sideBarOpen,
+			loading,
+			error
+		} = this.state;
+
+		const renderedCourseView = (
 			<div style={ styles.courseView }>
 				<CourseContent
-					subject={ this.state.subject }
-					catalogNumber={ this.state.catalogNumber }
-					course={ this.state.course }
-					selectedClassIndex={ this.state.selectedClassIndex }
+					subject={ subject }
+					catalogNumber={ catalogNumber }
+					course={ course }
+					selectedClassIndex={ selectedClassIndex }
 					expandClass={ this.onExpandClass }
-					taken={ this.state.taken }
-					inCart={ this.state.inCart }
-					eligible={ this.state.eligible }
+					taken={ taken }
+					inCart={ inCart }
+					eligible={ eligible }
 					addToCartHandler={ this.addCourseToCart }
 					removeFromCartHandler={ this.removeCourseFromCart }
 				/>
 				<CourseSideBar
-					subject={ this.state.subject }
-					catalogNumber={ this.state.catalogNumber }
-					classInfo={ this.state.classInfo }
-					open={ this.state.sideBarOpen }
+					subject={ subject }
+					catalogNumber={ catalogNumber }
+					classInfo={ classInfo }
+					open={ sideBarOpen }
 					onClose={ this.closeSideBar }
 				/>
 			</div>
 		);
 
-		if (this.state.loading) {
-			return <LoadingView />;
-		} else if (this.state.error) {
-			return (
-				<ErrorView
-					msgHeader={"Oops!"}
-					msgBody={`${this.state.subject} ${this.state.catalogNumber} is not a valid course!`}
-				/>
-			);
-		} else {
-			return renderedView;
-		}
+		const courseView = (loading)
+			? <LoadingView />
+			: (error)
+				? (
+					<ErrorView
+						msgHeader={"Oops!"}
+						msgBody={`${subject} ${catalogNumber} is not a valid course!`}
+					/>
+				)
+				: renderedCourseView;
+
+		const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;
+
+		return (
+      <div style={{ width: '100%', height: '100%' }}>
+        <Route
+          path={ `${this.props.match.path}` }
+          exact
+          render={ () => courseView }
+        />
+        <Route
+          path={ `${this.props.match.path}/tree/prereqs` }
+          render={ () => prereqsTree }
+        />
+      </div>
+    );
 	}
 
 }
@@ -288,4 +318,4 @@ const mapDispatchToProps = dispatch => {
 	};
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseListContainer));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseViewContainer));

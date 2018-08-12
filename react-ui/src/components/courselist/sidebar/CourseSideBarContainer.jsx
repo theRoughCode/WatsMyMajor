@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import ArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
-import CourseInfo from './sidebar/CourseInfo';
-import CourseProf from './sidebar/CourseProf';
-import '../../stylesheets/CourseSideBar.css';
+import CourseInfo from './CourseInfo';
+import CourseProf from './CourseProf';
+import '../../../stylesheets/CourseSideBar.css';
 
 const styles =  {
 	container: {

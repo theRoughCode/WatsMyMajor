@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { Link } from 'react-router-dom';
+import FlatButton from 'material-ui/FlatButton';
 import Toggle from 'material-ui/Toggle';
+import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import Tree from './PrerequisitesTree';
-import { hasTakenCourse } from '../../utils/courses';
-import { objectEquals } from '../../utils/arrays';
-import '../../stylesheets/Tree.css';
+import { hasTakenCourse } from '../../../utils/courses';
+import { objectEquals } from '../../../utils/arrays';
+import '../../../stylesheets/Tree.css';
 
 // Depth of tree to leave open.
 const INITIAL_DEPTH = 2;
@@ -25,10 +28,20 @@ const styles = {
     textAlign: 'left',
     display: 'flex',
   },
+  backLabel: {
+    fontSize: 13,
+    fontWeight: 400,
+    color: 'white',
+  },
+  backIcon: {
+    width: 18,
+    height: 18,
+  },
   title: {
     fontSize: 25,
     color: 'white',
     flex: 1,
+    marginLeft: 20,
   },
   toggle: {
     width: 200,
@@ -76,7 +89,8 @@ const setTakenClass = (node) => {
 class PrerequisitesTreeContainer extends Component {
 
   static propTypes = {
-    match: PropTypes.object.isRequired,
+    subject: PropTypes.string.isRequired,
+    catalogNumber: PropTypes.string.isRequired,
     myCourses: PropTypes.object.isRequired,
   };
 
@@ -93,9 +107,9 @@ class PrerequisitesTreeContainer extends Component {
   }
 
   componentWillMount() {
-    const { subject, catalogNumber } = this.props.match.params;
+    const { subject, catalogNumber, myCourses } = this.props;
     getTree(subject, catalogNumber, data => {
-      const tree = this.parseNodes(data, this.props.myCourses);
+      const tree = this.parseNodes(data, myCourses);
       if (tree != null) {
         this.closeAtDepth(tree, INITIAL_DEPTH);
         this.setState({ data, tree });
@@ -345,27 +359,35 @@ class PrerequisitesTreeContainer extends Component {
 
   render() {
     const { tree, canBeSimplified } = this.state;
+    const { subject, catalogNumber } = this.props;
     if (tree == null) return null;
 
     return (
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <span style={styles.title}>Prerequisites Tree</span>
+      <div style={ styles.container }>
+        <div style={ styles.header }>
+          <Link to={ `/courses/${subject}/${catalogNumber}` }>
+            <FlatButton
+              label={ `Back to ${subject} ${catalogNumber}` }
+              labelStyle={ styles.backLabel }
+              icon={ <BackIcon style={ styles.backIcon } color="white" /> }
+            />
+          </Link>
+          <span style={ styles.title }>Prerequisites Tree</span>
           {
             canBeSimplified && (
               <Toggle
                 label="Simplified View"
-                style={styles.toggle}
-                labelStyle={styles.toggleLabel}
+                style={ styles.toggle }
+                labelStyle={ styles.toggleLabel }
                 labelPosition="right"
-                onToggle={this.toggleSimplifiedView}
+                onToggle={ this.toggleSimplifiedView }
               />
             )
           }
         </div>
         { tree && (
-          <div style={styles.treeContainer}>
-            <Tree data={tree} />
+          <div style={ styles.treeContainer }>
+            <Tree data={ tree } />
           </div>
         ) }
       </div>
