@@ -32,7 +32,7 @@ const styles = {
 	termRowContainer: {
 		display: 'flex',
 		flexDirection: 'column',
-		width: '100%',
+		margin: 'auto',
 	},
 	emptyContainer: {
 		width: '90%',
