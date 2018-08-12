@@ -5,7 +5,7 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 const styles = {
   tableRow: (isGreyed) => ({
 		cursor: 'pointer',
-    backgroundColor: (isGreyed) ? '#ededed' : 'inherit',
+    backgroundColor: (isGreyed) ? '#e5e5e5' : 'inherit',
 	}),
 };
 
@@ -33,7 +33,7 @@ const ClassRow = ({
     ? `${startTime} - ${endTime}`
     : 'N/A';
 
-  const isGreyed = isTBA || isCancelled || isClosed || enrollmentCap === enrollmentTotal;
+  const isGreyed = isTBA || isCancelled || isClosed || enrollmentCap <= enrollmentTotal;
   const tbaText = (isTBA) ? ' (TBA)' : '';
 
   return (
