@@ -144,9 +144,10 @@ class App extends Component {
 	}
 
 	handleActionClick() {
+    const { handleActionClick, undoMsg } = this.state.snack;
 		this.setState({ snackOpen: false });
-		this.state.snack.handleActionClick();
-		this.props.onUndoSnack(this.state.snack.undoMsg);
+		handleActionClick();
+		if (undoMsg) this.props.onUndoSnack(undoMsg);
 	}
 
   // Redirects to Login if not logged in

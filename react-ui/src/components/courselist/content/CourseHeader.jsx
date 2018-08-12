@@ -30,8 +30,6 @@ const styles = {
 	  whiteSpace: 'nowrap',
 	},
 	stars: {
-		// margin: 'auto',
-	  // marginRight: 20,
 	  color: '#5c5f63',
 		margin: 'auto 20px',
 	},

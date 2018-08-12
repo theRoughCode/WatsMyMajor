@@ -104,6 +104,7 @@ class CourseViewContainer extends Component {
 		this.onExpandClass = this.onExpandClass.bind(this);
 		this.closeSideBar = this.closeSideBar.bind(this);
 		this.updatePageInfo = this.updatePageInfo.bind(this);
+		this.viewCart = this.viewCart.bind(this);
 		this.addCourseToCart = this.addCourseToCart.bind(this);
 		this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
 	}
@@ -188,10 +189,14 @@ class CourseViewContainer extends Component {
 		};
 	};
 
+	viewCart() {
+		this.props.history.push('/my-courses');
+	}
+
 	addCourseToCart(subject, catalogNumber) {
 		const { addToCartHandler, username, cart } = this.props;
 		const { taken } = this.state;
-		addToCartHandler(username, cart, subject, catalogNumber, taken);
+		addToCartHandler(username, cart, subject, catalogNumber, taken, this.viewCart);
 	}
 
 	removeCourseFromCart(subject, catalogNumber) {
@@ -282,24 +287,22 @@ const mapStateToProps = ({ myCourses, cart, user }) => ({
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken) => {
+		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken, viewCartHandler) => {
 			if (hasTaken) {
 				const msg = `${subject} ${catalogNumber} is already in your courses.`;
 				dispatch(createSnack(msg));
 			} else {
 				const msg = `${subject} ${catalogNumber} has been added to your cart.`;
-				const actionMsg = 'undo';
-				const undoMsg = `${subject} ${catalogNumber} has been removed from your cart.`;
-				const handleActionClick = () => dispatch(removeFromCart(subject, catalogNumber));
+				const actionMsg = 'View Cart';
 				dispatch(addToCart(subject, catalogNumber, username, cart));
-				dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
+				dispatch(createSnack(msg, actionMsg, null, viewCartHandler));
 			}
 		},
 		removeFromCartHandler: (username, cart, subject, catalogNumber) => {
 			const msg = `${subject} ${catalogNumber} has been removed from your cart.`;
 			const actionMsg = 'undo';
 			const undoMsg = `${subject} ${catalogNumber} has been re-added to your cart.`;
-			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber));
+			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber, username, cart));
 			dispatch(removeFromCart(subject, catalogNumber, username, cart));
 			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
 		}
