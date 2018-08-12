@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route, withRouter } from 'react-router-dom';
 import CourseContent from './content/CourseContent';
-import CourseSideBar from './sidebar/CourseSideBarContainer';
+import ClassDetails from './classes/ClassDetailsContainer';
 import PrereqsTree from './tree/PrerequisitesTreeContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
@@ -97,7 +97,6 @@ class CourseViewContainer extends Component {
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
-			selectedClassIndex: -1,
 			course: defaultCourse,
 			classInfo: defaultClassInfo,
 		}
@@ -200,21 +199,12 @@ class CourseViewContainer extends Component {
 		removeFromCartHandler(username, cart, subject, catalogNumber);
 	}
 
-	onExpandClass(classInfo, selectedClassIndex) {
-		if (this.state.selectedClassIndex === selectedClassIndex) {
-			this.closeSideBar();
-			return;
-		}
-
-		this.setState({ sideBarOpen: true, classInfo, selectedClassIndex });
+	onExpandClass(classInfo) {
+		this.setState({ sideBarOpen: true, classInfo });
 	}
 
 	closeSideBar() {
-		this.setState({
-			sideBarOpen: false,
-			classInfo: defaultClassInfo,
-			selectedClassIndex: -1,
-		});
+		this.setState({ sideBarOpen: false, classInfo: defaultClassInfo });
 	}
 
 	render() {
@@ -222,7 +212,6 @@ class CourseViewContainer extends Component {
 			subject,
 			catalogNumber,
 			course,
-			selectedClassIndex,
 			taken,
 			inCart,
 			eligible,
@@ -238,7 +227,6 @@ class CourseViewContainer extends Component {
 					subject={ subject }
 					catalogNumber={ catalogNumber }
 					course={ course }
-					selectedClassIndex={ selectedClassIndex }
 					expandClass={ this.onExpandClass }
 					taken={ taken }
 					inCart={ inCart }
@@ -246,7 +234,7 @@ class CourseViewContainer extends Component {
 					addToCartHandler={ this.addCourseToCart }
 					removeFromCartHandler={ this.removeCourseFromCart }
 				/>
-				<CourseSideBar
+				<ClassDetails
 					subject={ subject }
 					catalogNumber={ catalogNumber }
 					classInfo={ classInfo }

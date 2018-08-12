@@ -39,7 +39,6 @@ const styles = {
 const CourseContent = ({
 	subject,
 	catalogNumber,
-	selectedClassIndex,
 	expandClass,
 	taken,
 	inCart,
@@ -94,10 +93,9 @@ const CourseContent = ({
 						classes.length > 0 && (
 							<CourseClassList
 								expandClass={ expandClass }
-								selectedClassIndex={ selectedClassIndex }
 								term={ term }
 								classes={ classes }
-								/>
+							/>
 						)
 					}
 				</div>
@@ -124,7 +122,6 @@ CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
 	course: PropTypes.object.isRequired,
-	selectedClassIndex: PropTypes.number.isRequired,
 	expandClass: PropTypes.func.isRequired,
 	taken: PropTypes.bool.isRequired,
 	inCart: PropTypes.bool.isRequired,

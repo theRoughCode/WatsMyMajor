@@ -11,7 +11,6 @@ const styles = {
 
 const ClassRow = ({
   classData,
-  selected,
   onClickHandler,
 }) => {
   const {
@@ -39,9 +38,8 @@ const ClassRow = ({
 
   return (
     <TableRow
-      hoverable={ !selected }
+      hoverable
       onClick={ onClickHandler }
-      selected={ selected }
       style={ styles.tableRow(isGreyed) }
     >
       <TableRowColumn style={{ textAlign: 'center' }}>{ section + tbaText }</TableRowColumn>
@@ -57,7 +55,6 @@ const ClassRow = ({
 
 ClassRow.propTypes = {
   classData: PropTypes.object.isRequired,
-  selected: PropTypes.bool.isRequired,
   onClickHandler: PropTypes.func.isRequired
 };
 

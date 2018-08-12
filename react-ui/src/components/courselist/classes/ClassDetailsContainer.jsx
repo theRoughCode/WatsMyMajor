@@ -1,34 +1,46 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Drawer from 'material-ui/Drawer';
-import RaisedButton from 'material-ui/RaisedButton';
-import ArrowIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
-import CourseInfo from './CourseInfo';
-import CourseProf from './CourseProf';
-import '../../../stylesheets/CourseSideBar.css';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import ClassInfo from './ClassInfo';
+import ClassProf from './ClassProf';
+import '../../../stylesheets/ClassDetails.css';
 
 const styles =  {
+	header: {
+		padding: '10px 20px',
+	  textAlign: 'left',
+		display: 'flex',
+		flexDirection: 'column',
+	},
+	headerText: {
+		marginLeft: 0,
+	  fontSize: 30,
+	  fontWeight: 400,
+	},
+	lastUpdated: {
+		fontSize: 12,
+		marginLeft: 2,
+	},
+	dialog: {
+		width: 'fit-content',
+		maxWidth: 'none',
+	},
 	container: {
 	  display: 'flex',
-	  flexDirection: 'column',
+		flexDirection: 'column',
+		paddingBottom: 0,
 	},
-	arrowButton: {
-		width: '100%',
+	body: {
+		display: 'flex',
 	},
-	arrowLabel: {
-		margin: 'auto 10px',
+	note: {
+		fontSize: 13,
+		marginTop: 30,
 	},
-	arrow: {
-		float: 'left',
-		width: 30,
-		height: 30,
+	actions: {
+		paddingTop: 0,
 	},
-	sidebar: {
-		height: 'auto',
-		width: '100%',
-		display: 'inline-block',
-		marginBottom: 10,
-	}
 };
 
 async function retrieveProfInfo(instructor) {
@@ -49,7 +61,7 @@ async function retrieveProfInfo(instructor) {
 };
 
 
-export default class CourseSideBarContainer extends Component {
+export default class ClassDetailsContainer extends Component {
 	static propTypes = {
 		subject: PropTypes.string.isRequired,
 		catalogNumber: PropTypes.string.isRequired,
@@ -106,41 +118,52 @@ export default class CourseSideBarContainer extends Component {
 			instructor,
 			lastUpdated,
 		} = classInfo;
-		const info = {
-			units,
-			note,
-			enrollmentCap,
-			attending: enrollmentTotal,
-		  waitingCap,
-		  waiting: waitingTotal,
-			reserveCap,
-			reserved: reserveTotal,
-			reserveGroup,
-			lastUpdated,
-		};
+
+		const actions = [
+      <FlatButton
+        label="Close"
+        onClick={ onClose }
+      />
+    ];
 
 		return (
-			<Drawer open={ open } openSecondary style={ styles.container }>
-				<RaisedButton
-					label={ <ArrowIcon style={ styles.arrow } /> }
-					labelStyle={ styles.arrowLabel }
-					style={ styles.arrowButton }
-					onClick={ onClose }
-				/>
-				<CourseInfo
-					subject={ subject }
-					catalogNumber={ catalogNumber }
-					instructor={ instructor }
-					info={ info }
-					style={ styles.sidebar }
-				/>
-				<CourseProf
-					instructor={ instructor }
-					loading={ fetchingRMP }
-					prof={ prof }
-					style={ styles.sidebar }
-				/>
-			</Drawer>
+			<Dialog
+				title={
+					<div style={ styles.header }>
+						<span style={ styles.headerText }>Class Information</span>
+						<span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+					</div>
+				}
+				open={ open }
+				actions={ actions }
+				onRequestClose={ onClose }
+				contentStyle={ styles.dialog }
+				bodyStyle={ styles.container }
+				actionsContainerStyle={ styles.actions }
+			>
+				<div style={ styles.body }>
+					<ClassInfo
+						units={ units }
+						attending={ enrollmentTotal }
+						enrollmentCap={ enrollmentCap }
+						waiting={ waitingTotal }
+						waitingCap={ waitingCap }
+						reserved={ reserveTotal }
+						reserveCap={ reserveCap }
+						reserveGroup={ reserveGroup }
+					/>
+				<ClassProf
+						instructor={ instructor }
+						loading={ fetchingRMP }
+						prof={ prof }
+					/>
+				</div>
+				{
+					(note.length > 0) && (
+						<i style={ styles.note }>{ `Note: ${note}` }</i>
+					)
+				}
+		</Dialog>
 		);
 	}
 

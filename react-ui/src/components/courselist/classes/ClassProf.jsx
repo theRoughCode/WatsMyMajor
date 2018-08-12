@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
-import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import Divider from 'material-ui/Divider';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -10,6 +8,11 @@ import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
 
 const styles = {
+	container: {
+		display: 'inline-block',
+		paddingLeft: 20,
+		borderLeft: '2px solid #eeeeee',
+	},
 	stars: {
 		starRatedColor: '#ffcc00',
 		starDimension: '15px',
@@ -20,7 +23,7 @@ const styles = {
 		backgroundColor: 'inherit'
 	},
 	progress: {
-		width: '50%',
+		width: 170,
 		height: '100%',
 		margin: 'auto',
 		marginLeft: '10px'
@@ -40,31 +43,49 @@ const styles = {
 		margin: 'auto',
 		padding: 20
 	},
+	prof: {
+		display: 'flex',
+	  flexDirection: 'column',
+	  textAlign: 'left',
+	  margin: 'auto',
+	  marginLeft: 10,
+		fontSize: 20,
+	},
+	ratingContainer: {
+		display: 'flex',
+	  flexDirection: 'column',
+	},
+	ratingDifficulty: {
+		display: 'flex',
+	  flexWrap: 'wrap',
+	  height: 'auto',
+	  padding: 20,
+	},
+	ratingTags: {
+		display: 'flex',
+	  flexWrap: 'wrap',
+	  height: 'auto',
+	  padding: 20,
+	},
 	shareContainer: {
 		textAlign: 'left',
 		fontSize: 15,
 		padding: '10px 20px',
+		paddingBottom: 0,
 	}
 };
 
 
 const ProfHeader = ({ name, stars, image }) => (
-	<div className="course-prof-header">
-		<Avatar
-			className="avatar-icon"
-			src={image}
-			size={50}
+	<div style={ styles.prof }>
+		{ name }
+		<StarRatings
+				rating={stars}
+				isSelectable={false}
+				isAggregateRating={true}
+				numOfStars={5}
+				{...styles.stars}
 			/>
-		<div className="course-prof-header-name">
-			{name}
-			<StarRatings
-					rating={stars}
-					isSelectable={false}
-					isAggregateRating={true}
-					numOfStars={5}
-					{...styles.stars}
-				/>
-		</div>
 	</div>
 );
 
@@ -77,8 +98,8 @@ const Rating = ({ difficulty, tags }) => {
 												? '#ffb20c'
 												: '#b4d235';
 	return (
-		<div className="course-prof-rating">
-			<div className="course-prof-rating-difficulty">
+		<div style={ styles.ratingContainer }>
+			<div style={ styles.ratingDifficulty }>
 				<span>Difficulty:</span>
 				<Line
 					style={styles.progress}
@@ -88,14 +109,14 @@ const Rating = ({ difficulty, tags }) => {
 					percent={`${percentage}`}
 					/>
 			</div>
-			<div className="course-prof-rating-tags">
+			<div style={ styles.ratingTags }>
 				{tags.map((tag, index) => (
 					<Chip
-	          style={styles.chip}
-						labelStyle={styles.chipLabel}
-            key={index}
+	          style={ styles.chip }
+						labelStyle={ styles.chipLabel }
+            key={ index }
 	        >
-	          {tag}
+	          { tag }
 	        </Chip>
 				))}
 			</div>
@@ -103,19 +124,11 @@ const Rating = ({ difficulty, tags }) => {
 	);
 };
 
-const Share = ({ icon, text, link='#' }) => (
-	<div style={ styles.shareContainer }>
-		{ icon }
-		<a className="course-prof-share" href={ link } target='_blank'>{ text }</a>
-	</div>
-);
 
-
-const CourseProf = ({
+const ClassProf = ({
 	instructor,
 	loading,
-	prof,
-	style
+	prof
 }) => {
   const {
 		rating,
@@ -126,46 +139,33 @@ const CourseProf = ({
   } = prof;
 
 	const loadingView = (
-		<Paper style={ style } zDepth={ 1 }>
-			<div className="loading">
-				<CircularProgress
-					size={ 40 }
-					thickness={ 5 }
-					style={ styles.loading }
-					/>
-			</div>
-		</Paper>
+		<div style={ styles.loading } className="loading">
+			<CircularProgress
+				size={ 40 }
+				thickness={ 5 }
+				style={ styles.loading }
+			/>
+		</div>
 	);
 
 	const renderedView = (
-		<Paper style={ style } zDepth={ 1 }>
+		<div style={ styles.container }>
 			<ProfHeader
 				name={ instructor }
 				stars={ rating }
 				image={ profAvatarURL }
-				/>
+			/>
 			<Divider style={ styles.divider } />
 			<Rating
 				difficulty={ difficulty }
 				tags={ tags }
 				/>
 			<Divider style={ styles.divider } />
-			<Share
-				icon={ <FontAwesome name='facebook' style={ styles.icon } /> }
-				text={ 'Share on Facebook' }
-				/>
-			<Divider style={ styles.divider } />
-			<Share
-				icon={ <FontAwesome name='twitter' style={ styles.icon } /> }
-				text={ 'Share on Twitter' }
-				/>
-			<Divider style={ styles.divider } />
-			<Share
-				icon={ <FontAwesome name='globe' style={ styles.icon } /> }
-				text={ 'See on RateMyProf.com' }
-        link={ rmpURL }
-				/>
-		</Paper>
+			<div style={ styles.shareContainer }>
+				<FontAwesome name='globe' style={ styles.icon } />
+				<a className="course-prof-share" href={ rmpURL } target='_blank'>See on RateMyProf.com</a>
+			</div>
+		</div>
 	)
 
 	if (loading) return loadingView;
@@ -173,11 +173,10 @@ const CourseProf = ({
 	else return renderedView;
 };
 
-CourseProf.propTypes = {
+ClassProf.propTypes = {
   instructor: PropTypes.string.isRequired,
 	loading: PropTypes.bool.isRequired,
 	prof: PropTypes.object.isRequired,
-	style: PropTypes.object.isRequired,
-}
+};
 
-export default CourseProf;
+export default ClassProf;
