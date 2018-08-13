@@ -1,14 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import TermBoard from './TermBoard';
 import Paper from 'material-ui/Paper';
 import FontIcon from 'material-ui/FontIcon';
-import Button from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import Dialog from 'material-ui/Dialog';
-import TextField from 'material-ui/TextField';
-import AddIcon from 'material-ui/svg-icons/content/add';
 import { Droppable } from 'react-beautiful-dnd';
+import TermBoard from './TermBoard';
 import { DragTypes } from '../../constants/DragTypes';
 
 const width = 200;
@@ -18,13 +13,10 @@ const styles = {
 		position: 'fixed',
 		right: 0,
 		marginRight: 0,
+		paddingTop: 30,
 		width: '22%',
 		display: 'flex',
 		flexDirection: 'column',
-	},
-	addButton: {
-		width,
-		margin: '10px auto'
 	},
 	trashContainer: {
 		width,
@@ -72,83 +64,21 @@ const Trash = () => (
 	</Paper>
 );
 
-export default class MyCourseSideBar extends Component {
+const MyCourseSideBar = ({ cartCourses, onClearCart }) => (
+	<div style={ styles.container }>
+		<Trash />
+		<TermBoard
+			boardHeader={ 'Cart' }
+			courses={ cartCourses }
+			isCart={ true }
+			onClearBoard={ onClearCart }
+		/>
+	</div>
+);
 
-	static propTypes = {
-		cartCourses: PropTypes.array.isRequired,
-		onClearCart: PropTypes.func.isRequired,
-		onAddBoard: PropTypes.func.isRequired,
-	};
+MyCourseSideBar.propTypes = {
+	cartCourses: PropTypes.array.isRequired,
+	onClearCart: PropTypes.func.isRequired,
+};
 
-	state = {
-		dialogOpen: false,
-		text: '',
-		errorText: '',
-	};
-
-	openDialog = () => this.setState({ dialogOpen: true });
-
-	closeDialog = () => this.setState({ text: '', errorText: '', dialogOpen: false });
-
-	onChangeText = (e, text) => this.setState({ text, errorText: '' });
-
-	onSubmit = () => {
-		const { text } = this.state;
-		if (text.length === 0) {
-			this.setState({ errorText: 'Field cannot be left blank' });
-			return;
-		}
-		this.props.onAddBoard(text);
-		this.closeDialog();
-	}
-
-	render() {
-		const { cartCourses, onClearCart } = this.props;
-		const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onClick={this.closeDialog}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        onClick={this.onSubmit}
-      />,
-    ];
-
-		return (
-			<div style={styles.container}>
-				<Button
-					onClick={this.openDialog}
-					label="Add Term"
-					backgroundColor="#a4c639"
-					style={styles.addButton}
-					icon={<AddIcon />}
-				/>
-				<Trash />
-				<TermBoard
-					boardHeader={'Cart'}
-					courses={cartCourses}
-					isCart={true}
-					onClearBoard={onClearCart}
-				/>
-				<Dialog
-          title="Add Term"
-          actions={actions}
-          modal={false}
-          open={this.state.dialogOpen}
-          onRequestClose={this.closeDialog}
-					contentStyle={{ width: 400 }}
-        >
-					<TextField
-						hintText="e.g. Fall 2018"
-						floatingLabelText="New Board Name"
-						errorText={this.state.errorText}
-						onChange={this.onChangeText}
-					/>
-        </Dialog>
-			</div>
-		);
-	}
-}
+export default MyCourseSideBar;

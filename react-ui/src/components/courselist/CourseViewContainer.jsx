@@ -240,8 +240,6 @@ class CourseViewContainer extends Component {
 					removeFromCartHandler={ this.removeCourseFromCart }
 				/>
 				<ClassDetails
-					subject={ subject }
-					catalogNumber={ catalogNumber }
 					classInfo={ classInfo }
 					open={ sideBarOpen }
 					onClose={ this.closeSideBar }

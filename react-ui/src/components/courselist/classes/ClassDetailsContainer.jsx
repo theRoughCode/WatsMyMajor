@@ -63,8 +63,6 @@ async function retrieveProfInfo(instructor) {
 
 export default class ClassDetailsContainer extends Component {
 	static propTypes = {
-		subject: PropTypes.string.isRequired,
-		catalogNumber: PropTypes.string.isRequired,
 		classInfo: PropTypes.object.isRequired,
 		open: PropTypes.bool.isRequired,
 		onClose: PropTypes.func.isRequired,
@@ -103,7 +101,7 @@ export default class ClassDetailsContainer extends Component {
 	}
 
 	render() {
-		const  { subject, catalogNumber, classInfo, open, onClose } = this.props;
+		const  { classInfo, open, onClose } = this.props;
 		const { prof, fetchingRMP } = this.state;
 		const {
 			units,

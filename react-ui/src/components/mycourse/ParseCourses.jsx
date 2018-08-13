@@ -18,7 +18,7 @@ const ParseCourses = ({ onChange }) => {
     },
     {
       button: 'Select all and copy text',
-      text: <p>Select all, and copy EVERYTHING!!</p>
+      text: <p>Select all, copy, and paste it below.</p>
     },
   ];
 

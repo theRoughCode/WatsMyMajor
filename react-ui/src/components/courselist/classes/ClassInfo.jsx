@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from 'material-ui/Paper';
-import PersonIcon from 'material-ui/svg-icons/social/person';
 import UnitsIcon from 'material-ui/svg-icons/communication/import-contacts';
 import EnrolledIcon from 'material-ui/svg-icons/action/account-circle';
 import WaitingIcon from 'material-ui/svg-icons/social/people';

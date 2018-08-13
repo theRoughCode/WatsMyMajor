@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { DragDropContext } from 'react-beautiful-dnd';
 import MyCourseSideBar from './MyCourseSideBar';
+import MyCourseAppBar from './MyCourseAppBar';
 import TermRow from './TermRow';
 import { DragTypes } from '../../constants/DragTypes';
 import { arrayOfObjectEquals } from '../../utils/arrays';
@@ -21,11 +22,13 @@ const NUM_PER_ROW = 3;
 const styles = {
 	viewContainer: {
 		width: '100%',
+		height: '100%',
 	  display: 'flex',
-	  paddingTop: 20,
+		overflowX: 'hidden',
 	},
 	boardContainer: {
 		width: '70%',
+		height: 'fit-content',
 	  padding: '30px 60px',
 		display: 'flex',
 	},
@@ -38,6 +41,7 @@ const styles = {
 		width: '90%',
 		height: '90%',
 		margin: 'auto',
+		padding: '70px 0px',
 		border: '2px dashed #888e99',
 		borderRadius: 20,
 		display: 'flex',
@@ -105,6 +109,8 @@ class CourseBoardContainer extends Component {
 		this.onDragCourse = this.onDragCourse.bind(this);
 		this.move = this.move.bind(this);
 		this.loadCourses = this.loadCourses.bind(this);
+		this.clearCourses = this.clearCourses.bind(this);
+		this.importTerms = this.importTerms.bind(this);
 		this.clearCart = this.clearCart.bind(this);
 		this.reorderTerm = this.reorderTerm.bind(this);
 		this.getBoard = this.getBoard.bind(this);
@@ -280,11 +286,13 @@ class CourseBoardContainer extends Component {
 		let courses = courseList[id].courses || [];
 
 		// Dedup courses
-		newCourses = newCourses.filter(({ subject, catalogNumber}) => {
+		let hasDuplicate = false;
+		newCourses = newCourses.filter(({ subject, catalogNumber }) => {
 			const hasTaken = hasTakenCourse(subject, catalogNumber, this.props.myCourses);
-			if (hasTaken) this.props.sendDuplicateCourseSnack(subject, catalogNumber);
+			if (hasTaken) hasDuplicate = true;
 			return !hasTaken;
 		});
+		if (hasDuplicate) this.props.sendDuplicateCourseSnack();
 		if (newCourses.length === 0) return;
 
 		courses = courses.concat(newCourses);
@@ -292,6 +300,47 @@ class CourseBoardContainer extends Component {
 
 		this.setState({ courseList });
 		this.updateCourseHandler(username, courseList);
+	}
+
+	clearCourses() {
+		this.setState({ courseList: [] });
+		this.updateCourseHandler(this.state.username, []);
+	}
+
+	importTerms(terms) {
+		const { username, courseList } = this.state;
+
+		// Dedup courses
+		let duplicateCourse = false;
+		terms = terms.map(term => {
+			term.courses = term.courses.filter(({ subject, catalogNumber }) => {
+				const hasTaken = hasTakenCourse(subject, catalogNumber, this.props.myCourses);
+				if (hasTaken) duplicateCourse = true;
+				return !hasTaken;
+			});
+			return term;
+		});
+		if (duplicateCourse) this.props.sendDuplicateCourseSnack();
+
+		if (courseList.length > 0) {
+			// Merge courses in same term
+			courseList.forEach((termItem) => {
+				const { term, courses } = termItem;
+				let isDuplicate = false;
+				for (let i = 0; i < terms.length; i++) {
+					if (term === terms[i].term) {
+						if (courses != null) terms[i].courses.push(...courses);
+						isDuplicate = true;
+						break;
+					}
+				}
+				// Add course if is not in imported terms
+				if (!isDuplicate) terms.push(termItem);
+			});
+		}
+
+		this.setState({ courseList: terms });
+		this.updateCourseHandler(username, terms);
 	}
 
 	deleteBoard(id) {
@@ -349,18 +398,27 @@ class CourseBoardContainer extends Component {
 
 	render() {
 		return (
-			<DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
-				<div style={ styles.viewContainer }>
-					<div style={ styles.boardContainer }>
-						{ this.renderBoard() }
+			<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+				<MyCourseAppBar
+					onAddBoard={ this.addBoard }
+					onImport={ this.importTerms }
+					onClear={ this.clearCourses }
+					showClearButton={ this.state.courseList.length > 0 }
+				/>
+				<DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd}>
+					<div style={ styles.viewContainer }>
+						<div style={ styles.boardContainer }>
+							{ this.renderBoard() }
+						</div>
+						<MyCourseSideBar
+							cartCourses={ this.state.cart }
+							onClearCart={ this.clearCart }
+							onAddBoard={ this.addBoard }
+							onImport={ this.importTerms }
+						/>
 					</div>
-					<MyCourseSideBar
-						cartCourses={ this.state.cart }
-						onClearCart={ this.clearCart }
-						onAddBoard={ this.addBoard }
-					/>
-				</div>
-			</DragDropContext>
+				</DragDropContext>
+			</div>
 		);
 	}
 }
@@ -388,9 +446,8 @@ const mapDispatchToProps = dispatch => {
 			if (prereqs == null || prereqs.length === 0) return;
 			dispatch(highlightPrereqs(prereqs));
 		},
-		sendDuplicateCourseSnack: (subject, catalogNumber) => {
-			const msg = `${subject} ${catalogNumber} was removed as it was a duplicate.`;
-			dispatch(createSnack(msg))
+		sendDuplicateCourseSnack: () => {
+			dispatch(createSnack('Duplicate courses were removed.'))
 		}
 	};
 };
