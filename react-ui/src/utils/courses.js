@@ -8,7 +8,7 @@ export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
 
 // Check if course is in cart
 export const isInCart = (subject, catalogNumber, arr) => {
-	for (var i = 0; i < arr.length; i++) {
+	for (let i = 0; i < arr.length; i++) {
 		if (subject === arr[i].subject && catalogNumber === arr[i].catalogNumber) {
 			return true;
 		}

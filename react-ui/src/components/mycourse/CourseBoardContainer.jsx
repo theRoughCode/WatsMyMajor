@@ -8,7 +8,7 @@ import MyCourseAppBar from './MyCourseAppBar';
 import TermRow from './TermRow';
 import { DragTypes } from '../../constants/DragTypes';
 import { arrayOfObjectEquals } from '../../utils/arrays';
-import { hasTakenCourse } from '../../utils/courses';
+import { hasTakenCourse, isInCart } from '../../utils/courses';
 import {
 	reorderUserCourses,
 	updateUserCourses,
@@ -285,12 +285,14 @@ class CourseBoardContainer extends Component {
 		const { username, courseList } = this.state;
 		let courses = courseList[id].courses || [];
 
-		// Dedup courses
+		// Dedup courses: remove courses that are duplicates from new courses
 		let hasDuplicate = false;
 		newCourses = newCourses.filter(({ subject, catalogNumber }) => {
-			const hasTaken = hasTakenCourse(subject, catalogNumber, this.props.myCourses);
-			if (hasTaken) hasDuplicate = true;
-			return !hasTaken;
+			const isDuplicate =
+				hasTakenCourse(subject, catalogNumber, this.props.myCourses) ||
+				isInCart(subject, catalogNumber, this.state.cart);
+			if (isDuplicate) hasDuplicate = true;
+			return !isDuplicate;
 		});
 		if (hasDuplicate) this.props.sendDuplicateCourseSnack();
 		if (newCourses.length === 0) return;
@@ -310,13 +312,15 @@ class CourseBoardContainer extends Component {
 	importTerms(terms) {
 		const { username, courseList } = this.state;
 
-		// Dedup courses
+		// Dedup courses: remove courses that are duplicates in imported terms
 		let duplicateCourse = false;
 		terms = terms.map(term => {
 			term.courses = term.courses.filter(({ subject, catalogNumber }) => {
-				const hasTaken = hasTakenCourse(subject, catalogNumber, this.props.myCourses);
-				if (hasTaken) duplicateCourse = true;
-				return !hasTaken;
+				const isDuplicate =
+					hasTakenCourse(subject, catalogNumber, this.props.myCourses) ||
+					isInCart(subject, catalogNumber, this.state.cart);
+				if (isDuplicate) duplicateCourse = true;
+				return !isDuplicate;
 			});
 			return term;
 		});
