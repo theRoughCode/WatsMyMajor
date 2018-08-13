@@ -122,11 +122,9 @@ export default class LevelCheck extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { subject, from, to, excluding, myCourses } = nextProps;
-    if (subject !== this.props.subject
-      || from !== this.props.from
-      || to !== this.props.to) {
-      this.checkTaken(subject, from, to, excluding, this.state.children, myCourses);
+    const { subject, level, excluding, myCourses } = nextProps;
+    if (subject !== this.props.subject || level !== this.props.level) {
+      this.checkTaken(subject, level, excluding, this.state.children, myCourses);
     }
   }
 
@@ -152,11 +150,12 @@ export default class LevelCheck extends Component {
     // Toggle main checkbox
     if (index === -1) {
       this.setState({ isChecked });
+      if (this.state.children.length > 0) this.props.onCheck(null, isChecked);
     } else {
       const { children } = this.state;
       children[index].checked = isChecked;
       this.setState({ children });
-      this.props.onCheck(ev, isChecked);
+      this.props.onCheck(null, isChecked);
     }
   }
 
