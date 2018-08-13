@@ -34,7 +34,7 @@ const TermRow = ({
         style={ styles.board }
       >
         {
-          courseList.map(({ term, courses }, index) => {
+          courseList.map(({ term, level, courses }, index) => {
 						// Accounts for row number
 						const offsetIndex = index + rowNumber * NUM_PER_ROW;
             return (
@@ -47,12 +47,13 @@ const TermRow = ({
                 {(provided, snapshot) => (
                   <TermBoard
                     index={ String(offsetIndex) }
-                    boardHeader={ term }
+                    term={ term }
+										level={ level }
                     courses={ courses }
                     provided={ provided }
                     snapshot={ snapshot }
                     onClearBoard={ () => onClearBoard(offsetIndex) }
-                    onRenameBoard={ (rename) => onRenameBoard(offsetIndex, rename) }
+                    onRenameBoard={ (rename, relevel) => onRenameBoard(offsetIndex, rename, relevel) }
                     onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
                     onUpdateCourses={ (courses) => onUpdateCourses(offsetIndex, courses) }
                   />

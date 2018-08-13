@@ -6,6 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import Dialog from 'material-ui/Dialog';
+import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import AddIcon from 'material-ui/svg-icons/content/add';
@@ -43,7 +44,13 @@ const styles = {
 		alignItems: 'center',
 	},
 	boardTitle: {
-		flex: 2
+		flex: 2,
+		display: 'flex',
+		flexDirection: 'column',
+	},
+	level: {
+		fontSize: 14,
+		marginTop: 3,
 	},
 	editIcon: {
 		color: 'white',
@@ -55,7 +62,6 @@ const styles = {
 		height: stylesConst.height
 	},
 	addCourseCard: {
-		padding: space,
 		border: '1px dashed #bcbcbc',
 		borderRadius: '5px',
 		cursor: 'pointer',
@@ -117,7 +123,8 @@ export default class TermBoard extends Component {
 
 	static propTypes = {
 		index: PropTypes.string,
-		boardHeader: PropTypes.string,
+		term: PropTypes.string,
+		level: PropTypes.string,
 		courses: PropTypes.array,
 		provided: PropTypes.object,
 		snapshot: PropTypes.object,
@@ -130,7 +137,8 @@ export default class TermBoard extends Component {
 
 	static defaultProps = {
 		index: '',
-		boardHeader: '',
+		term: '',
+		level: '',
 		courses: [],
 		provided: {},
 		snapshot: {},
@@ -144,7 +152,8 @@ export default class TermBoard extends Component {
 		importDialogOpen: false,
 		addDialogOpen: false,
 		settingsOpen: false,
-		rename: '',
+		relevel: '1A',
+		rename: this.props.term,
 		renameError: '',
 		importText: ''
 	};
@@ -155,20 +164,21 @@ export default class TermBoard extends Component {
 	openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
 	openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
-	closeRenameDialog = () => this.setState({ rename: '', renameError: '', renameDialogOpen: false });
-	closeImportDialog = () => this.setState({ rename: '', importDialogOpen: false });
-	closeAddDialog = () => this.setState({ rename: '', addDialogOpen: false });
+	closeRenameDialog = () => this.setState({ rename: this.props.term, renameError: '', renameDialogOpen: false });
+	closeImportDialog = () => this.setState({ importDialogOpen: false });
+	closeAddDialog = () => this.setState({ addDialogOpen: false });
 
-	onChangeRenameText = (e, text) => this.setState({ rename: text, renameError: '' });
-	onChangeImportText = (text) => this.setState({ importText: text });
+	onChangeRenameText = (e, rename) => this.setState({ rename, renameError: '' });
+	onChangeRelevel = (ev, index, relevel) => this.setState({ relevel });
+	onChangeImportText = (importText) => this.setState({ importText });
 
 	onRename = () => {
-		const { rename } = this.state;
+		const { rename, relevel } = this.state;
 		if (rename.length === 0) {
 			this.setState({ renameError: 'Field cannot be left blank' });
 			return;
 		}
-		this.props.onRenameBoard(rename);
+		this.props.onRenameBoard(rename, relevel);
 		this.closeRenameDialog();
 	}
 
@@ -209,7 +219,7 @@ export default class TermBoard extends Component {
 	}
 
 	render() {
-		const { index, boardHeader, courses, isCart } = this.props;
+		const { index, term, level, courses, isCart } = this.props;
 		const droppableId = (isCart) ? 'Cart' : index;
 
 		const renameDialogActions = [
@@ -270,7 +280,10 @@ export default class TermBoard extends Component {
 						<div style={styles.box}>
 						</div>
 						<div style={{...styles.box, ...styles.boardTitle}}>
-							<span>{boardHeader}</span>
+							<span>{term}</span>
+							{ (level.length > 0) && (
+								<span style={ styles.level }>{level}</span>
+							) }
 						</div>
 						<div style={styles.box}>
 							<IconMenu
@@ -315,18 +328,34 @@ export default class TermBoard extends Component {
 					</div>
 					<Dialog
 						title="Rename Board"
-						actions={renameDialogActions}
-						modal={false}
-						open={this.state.renameDialogOpen}
-						onRequestClose={this.closeRenameDialog}
+						actions={ renameDialogActions }
+						modal={ false }
+						open={ this.state.renameDialogOpen }
+						onRequestClose={ this.closeRenameDialog }
 						contentStyle={{ width: 400 }}
 					>
 						<TextField
 							hintText="e.g. Fall 2018"
 							floatingLabelText="New Board Name"
-							errorText={this.state.renameError}
-							onChange={this.onChangeRenameText}
+							value={ this.state.rename }
+							errorText={ this.state.renameError }
+							onChange={ this.onChangeRenameText }
 						/>
+						<SelectField
+							floatingLabelText="Term Level"
+							value={ this.state.relevel }
+							onChange={ this.onChangeRelevel }
+						>
+							<MenuItem value="1A" primaryText="1A" />
+							<MenuItem value="1B" primaryText="1B" />
+							<MenuItem value="2A" primaryText="2A" />
+							<MenuItem value="2B" primaryText="2B" />
+							<MenuItem value="3A" primaryText="3A" />
+							<MenuItem value="3B" primaryText="3B" />
+							<MenuItem value="4A" primaryText="4A" />
+							<MenuItem value="4B" primaryText="4B" />
+							<MenuItem value="5A+" primaryText="5A+" />
+						</SelectField>
 					</Dialog>
 					<Dialog
 						title="Import Courses"

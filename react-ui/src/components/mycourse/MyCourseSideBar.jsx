@@ -68,7 +68,7 @@ const MyCourseSideBar = ({ cartCourses, onClearCart }) => (
 	<div style={ styles.container }>
 		<Trash />
 		<TermBoard
-			boardHeader={ 'Cart' }
+			term="Cart"
 			courses={ cartCourses }
 			isCart={ true }
 			onClearBoard={ onClearCart }

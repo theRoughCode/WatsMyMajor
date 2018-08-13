@@ -174,8 +174,8 @@ function setCoursesPrereqs(courses, callback) {
 // to be used as a course card.
 function setCourseListPrereqs(courseList, callback) {
 	async.map(courseList, (termCourses, outerCallback) => {
-		let { term, courses } = termCourses;
-		setCoursesPrereqs(courses, courses => outerCallback(null, { term, courses }));
+		const { courses } = termCourses;
+		setCoursesPrereqs(courses, courses => outerCallback(null, termCourses));
 	}, (_, termCourses) => callback(termCourses));
 }
 

@@ -255,9 +255,10 @@ class CourseBoardContainer extends Component {
 		this.updateBoard(dest.droppableId, destBoard);
 	}
 
-	renameBoard(id, name) {
+	renameBoard(id, name, level) {
 		const { username, courseList } = this.state;
 		courseList[id].term = name;
+		courseList[id].level = level;
 		this.setState({ courseList });
 		this.reorderCourseHandler(username, courseList);
 	}
@@ -274,9 +275,9 @@ class CourseBoardContainer extends Component {
 		this.reorderCartHandler(this.state.username, []);
 	}
 
-	addBoard(name) {
+	addBoard(term, level) {
 		const { username, courseList } = this.state;
-		courseList.push({ term: name, courses: [] });
+		courseList.push({ term, level, courses: [] });
 		this.setState({ courseList });
 		this.reorderCourseHandler(username, courseList);
 	}
@@ -417,8 +418,6 @@ class CourseBoardContainer extends Component {
 						<MyCourseSideBar
 							cartCourses={ this.state.cart }
 							onClearCart={ this.clearCart }
-							onAddBoard={ this.addBoard }
-							onImport={ this.importTerms }
 						/>
 					</div>
 				</DragDropContext>
