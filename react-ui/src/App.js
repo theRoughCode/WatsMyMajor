@@ -11,7 +11,7 @@ import Snackbar from 'material-ui/Snackbar';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import PrivacyPolicy from './components/privacy/PrivacyPolicy';
-import Dashboard from './components/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
 import Settings from './components/settings/SettingsContainer';
