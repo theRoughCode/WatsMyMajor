@@ -3,11 +3,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
+import {
+	yellow,
+	lightGreen,
+	whiteGrey,
+} from '../../constants/Colours';
 
 const space = 8;
 const styles = {
 	container: (highlightBackground) => ({
-		background: (highlightBackground) ? '#bde580' : 'inherit',
+		background: (highlightBackground) ? lightGreen : 'inherit',
 	}),
 };
 
@@ -24,8 +29,8 @@ const getItemStyle = (isDragging, isPrereq, draggableStyle) => ({
   background: isDragging
 		? '#8be58b'
 		: isPrereq
-			? '#ffcf3f'
-			: '#f2f2f2',
+			? yellow
+			: whiteGrey,
 
   // styles we need to apply on draggables
   ...draggableStyle,

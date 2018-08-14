@@ -4,13 +4,12 @@ import { withRouter } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
-
+import { mediumBlue } from '../constants/Colours';
 
 const styles = {
 	container: {
-		backgroundColor: 'rgb(43, 54, 67)',
+		backgroundColor: mediumBlue,
 		textAlign: 'left',
-		color: '#E0F7FA',
 		position: 'fixed',
 	},
 	logoutButton: {

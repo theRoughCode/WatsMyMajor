@@ -6,6 +6,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
+import { lightGreen2, yellow, red } from '../../../constants/Colours';
 
 const styles = {
 	container: {
@@ -14,7 +15,7 @@ const styles = {
 		borderLeft: '2px solid #eeeeee',
 	},
 	stars: {
-		starRatedColor: '#ffcc00',
+		starRatedColor: yellow,
 		starDimension: '15px',
 		starSpacing: '1px'
 	},
@@ -93,10 +94,10 @@ const ProfHeader = ({ name, stars, image }) => (
 const Rating = ({ difficulty, tags }) => {
 	const percentage = (Number(difficulty) / 5.0) * 100;
 	const barColour = (percentage > 66)
-											? '#ff1111'
+											? red
 											: (percentage > 33)
-												? '#ffb20c'
-												: '#b4d235';
+												? yellow
+												: lightGreen2;
 	return (
 		<div style={ styles.ratingContainer }>
 			<div style={ styles.ratingDifficulty }>

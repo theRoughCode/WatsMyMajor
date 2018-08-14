@@ -4,16 +4,15 @@ import CircularProgress from 'material-ui/CircularProgress';
 
 const styles = {
 	margin: 'auto',
-	padding: '200px 0'
+	padding: '200px 0',
+	animation: 'App-logo-spin infinite 1.5s ease',
+	width: 80,
+	height: 80,
 };
 
-const LoadingView = (props) => (
+const LoadingView = () => (
 	<div className="loading course-view">
-		<CircularProgress
-			size={80}
-			thickness={5}
-			style={styles}
-		/>
+		<img src={ `${process.env.PUBLIC_URL}/images/logo.png` } style={ styles } alt="logo" />
 	</div>
 );
 

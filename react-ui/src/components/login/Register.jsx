@@ -14,6 +14,7 @@ import {
   validateConfirmPassword,
   validateBetaKey,
 } from '../../utils/validation';
+import { green, grey } from '../../constants/Colours';
 
 const styles = {
   viewContainer: {
@@ -39,7 +40,7 @@ const styles = {
   },
   subtitle: {
     fontSize: 17,
-    color: '#888e99',
+    color: grey,
     marginTop: 10,
   },
   formContainer: {
@@ -65,7 +66,7 @@ const styles = {
   privacy: {
     marginTop: 10,
     fontSize: 14,
-    color: '#888e99',
+    color: grey,
   },
   footer: {
     marginTop: 40,
@@ -229,7 +230,7 @@ class Register extends Component {
               /><br />
               <RaisedButton
                 label="Sign up"
-                backgroundColor="#3ec16b"
+                backgroundColor={ green }
                 style={styles.registerButton}
                 labelStyle={styles.registerText}
                 onClick={this.onRegister}

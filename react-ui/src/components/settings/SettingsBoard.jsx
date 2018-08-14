@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import SaveIcon from 'material-ui/svg-icons/content/save';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
+import { red } from '../../constants/Colours';
 
 const styles = {
   boardContainer: {
@@ -112,7 +113,7 @@ export default class SettingsBoard extends Component {
             <RaisedButton
               label="Cancel"
               labelPosition="before"
-              backgroundColor="#e84a4a"
+              backgroundColor={ red }
               icon={ <CancelIcon style={ styles.buttonIcon } /> }
               style={{ marginLeft: 10 }}
               onClick={ this.onCancel }

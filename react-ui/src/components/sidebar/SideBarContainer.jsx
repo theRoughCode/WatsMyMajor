@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom';
 import Drawer from 'material-ui/Drawer';
+import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import { List, ListItem } from 'material-ui/List';
 import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
@@ -12,6 +13,12 @@ import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
 import GithubIcon from '../tools/GithubIcon';
+import {
+	darkBlue,
+	lightGrey,
+	green,
+	white
+} from '../../constants/Colours';
 
 const styles = {
 	drawer: {
@@ -20,30 +27,36 @@ const styles = {
 		textAlign: 'left',
 		display: 'flex',
 		flexDirection: 'column',
+		backgroundColor: darkBlue,
 	},
 	avatarMenuItem: {
 		marginTop: '60px',
 		paddingTop: '20px',
 		paddingBottom: '5px',
-		backgroundColor: 'rgb(54, 65, 80)'
+		backgroundColor: darkBlue,
 	},
-	listItem: (isSelected) => {
-		if (isSelected) return { backgroundColor: 'rgba(0, 0, 0, 0.1)' };
-		else return {};
+	divider: {
+		width: '80%',
+		height: 1.5,
+		margin: 'auto',
+		marginLeft: 'auto',
 	},
-	label: {
-		marginLeft: -12,
-	},
+	listItem: (isSelected) => ({
+		backgroundColor: (isSelected) ? green : 'inherit',
+		color: (isSelected) ? white : lightGrey,
+	}),
 	github: {
 		marginBottom: 20,
 		display: 'flex',
 	},
 	githubTextContainer: {
 		margin: 'auto',
+		color: white,
 	},
 	githubIcon: {
 		marginLeft: 10,
 		verticalAlign: 'text-bottom',
+		color: white,
 	}
 }
 
@@ -84,42 +97,31 @@ class SideBarContainer extends Component {
 				>
 					{ isLoggedIn && <Avatar name={ name } profileURL={ profileURL } /> }
 				</MenuItem>
+				<Divider style={ styles.divider } />
 				<List style={{ flex: 1 }}>
 					<ListItem
-						primaryText={ <span style={ styles.label }>Dashboard</span> }
-						leftIcon={<DashboardIcon />}
+						primaryText={ <span>Dashboard</span> }
+						leftIcon={<DashboardIcon color={ white } />}
 						style={ styles.listItem(pathname === "/") }
 						containerElement={ <Link to="/" /> }
 					/>
 					<ListItem
-						primaryText={ <span style={ styles.label }>View Majors</span> }
-						leftIcon={<SchoolIcon />}
-						style={ styles.listItem(pathname === "/majors") }
+						primaryText={ <span>View Majors</span> }
+						leftIcon={<SchoolIcon color={ white } />}
+						style={ styles.listItem(pathname.startsWith("/majors")) }
 						containerElement={ <Link to="/majors" /> }
 					/>
 					<ListItem
-						primaryText={ <span style={ styles.label }>Courses</span> }
-						leftIcon={<FolderIcon />}
-						initiallyOpen={false}
-						primaryTogglesNestedList={true}
-						nestedItems={[
-							<ListItem
-								className="sidebar-courses"
-								key={1}
-								primaryText={ <span style={ styles.label }>My Courses</span> }
-								style={ styles.listItem(pathname === "/my-courses") }
-								containerElement={ <Link to="/my-courses" /> }
-								leftIcon={<MyCoursesIcon />}
-							/>,
-							<ListItem
-								className="sidebar-courses"
-								key={2}
-								primaryText={ <span style={ styles.label }>My Schedule</span> }
-								style={ styles.listItem(pathname === "/schedule") }
-								containerElement={ <Link to="/schedule" /> }
-								leftIcon={<ScheduleIcon />}
-							/>,
-						]}
+						primaryText={ <span>My Courses</span> }
+						leftIcon={<MyCoursesIcon color={ white } />}
+						style={ styles.listItem(pathname === "/my-courses") }
+						containerElement={ <Link to="/my-courses" /> }
+					/>
+					<ListItem
+						primaryText={ <span>My Schedule</span> }
+						leftIcon={<ScheduleIcon color={ white } />}
+						style={ styles.listItem(pathname === "/schedule") }
+						containerElement={ <Link to="/schedule" /> }
 					/>
 				</List>
 				<div style={ styles.github }>

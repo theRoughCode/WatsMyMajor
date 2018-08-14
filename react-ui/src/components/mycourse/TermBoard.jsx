@@ -15,6 +15,11 @@ import Parser from './ParseCourses';
 import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
+import {
+	darkBlue,
+	darkBlueHighlight,
+	lightGreen
+} from '../../constants/Colours';
 
 const space = 8;
 const stylesConst = {
@@ -31,7 +36,7 @@ const styles = {
 	},
 	header: (isDragging) => ({
 		padding: '5px 0',
-		backgroundColor: isDragging ? 'rgb(82, 110, 150)' : 'rgb(54, 65, 80)',
+		backgroundColor: isDragging ? darkBlueHighlight : darkBlue,
 		color: 'white',
 		fontSize: 18,
 		boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
@@ -81,7 +86,7 @@ const getListStyle = (isDraggingOver, isCart) => ({
 	minHeight: stylesConst.minHeight,
 	maxHeight: isCart ? 400 : 'none',
 	height: stylesConst.height,
-	background: isDraggingOver ? '#bde580' : 'inherit',
+	background: isDraggingOver ? lightGreen : 'inherit',
 	overflow: isCart ? 'auto' : 'none',
 });
 

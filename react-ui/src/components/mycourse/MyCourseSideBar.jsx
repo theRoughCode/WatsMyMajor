@@ -5,6 +5,7 @@ import FontIcon from 'material-ui/FontIcon';
 import { Droppable } from 'react-beautiful-dnd';
 import TermBoard from './TermBoard';
 import { DragTypes } from '../../constants/DragTypes';
+import { red } from '../../constants/Colours';
 
 const width = 200;
 
@@ -30,7 +31,7 @@ const styles = {
 		display: 'flex',
 		margin: 'auto',
 		border: (isDraggingOver) ? '2px dashed black' : 'none',
-		background: (isDraggingOver) ? '#ff6666' : 'inherit'
+		background: (isDraggingOver) ? red : 'inherit'
 	}),
 	trashIcon: {
 		margin: 'auto',

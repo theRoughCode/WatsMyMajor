@@ -90,14 +90,15 @@
 
 .course-header-title {
   font-size: 20px;
+  width: fit-content;
   text-decoration: none;
   color: black !important;
 }
 
 .course-header-title:hover {
-  color: #f60 !important;
+  color: #75CAEF !important;
 }
 .reqs-link:hover {
-  color: #4286f4 !important;
+  color: #75CAEF !important;
   background-color: #f3f3f3;
 }

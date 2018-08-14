@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse } from '../../utils/courses';
+import { green2 } from '../../constants/Colours';
 
 const styles = {
   iconStyle: {
@@ -10,7 +11,7 @@ const styles = {
   },
   labelStyle: (taken) => ({
     width: '100%',
-    color: (taken) ? '#107f0c' : 'inherit'
+    color: (taken) ? green2 : 'inherit'
   }),
   checkbox: {
     marginTop: 10,

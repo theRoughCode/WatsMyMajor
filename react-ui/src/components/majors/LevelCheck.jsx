@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
 import Checkbox from 'material-ui/Checkbox';
+import { green2 } from '../../constants/Colours';
 
 const styles = {
   iconStyle: {
     left: 0,
   },
-  labelStyle: {
+  labelStyle: (taken) => ({
     width: '100%',
-    color: 'inherit'
-  },
+    color: (taken) ? green2 : 'inherit',
+  }),
   checkbox: {
     marginTop: 10,
     width: 'auto',
@@ -116,7 +117,7 @@ export default class LevelCheck extends Component {
   componentDidMount() {
     const { subject, level, excluding, myCourses, choose } = this.props;
     const children = Array.from(Array(choose).keys()).map(() =>
-      ({ subject: '', catalogNumber: '', checked: false}));
+      ({ subject: '', catalogNumber: '', checked: false, taken: false }));
     this.setState({ children });
     this.checkTaken(subject, level, excluding, children, myCourses);
   }
@@ -140,7 +141,7 @@ export default class LevelCheck extends Component {
       takenCourses = takenCourses.slice(0, this.props.choose);
       this.props.onCheck(null, true, takenCourses.length);
       takenCourses.forEach(({ subject, catalogNumber }, index) => {
-        children[index] = { subject, catalogNumber, checked: true };
+        children[index] = { subject, catalogNumber, checked: true, taken: true };
       });
       this.setState({ children });
     }
@@ -169,7 +170,7 @@ export default class LevelCheck extends Component {
           label={ `Any ${levelStr}${subject} course${excludingStr}` }
           checked={ this.state.isChecked }
           onCheck={ this.onCheck.bind(this, -1) }
-          labelStyle={ styles.labelStyle }
+          labelStyle={ styles.labelStyle(this.state.taken) }
           iconStyle={ styles.iconStyle }
           style={ styles.checkbox }
           disabled={ choose > 1 || this.state.taken }
@@ -177,15 +178,16 @@ export default class LevelCheck extends Component {
         { (choose > 1) && (
           <div style={ styles.indentedChecks }>
             {
-              this.state.children.map(({ subject, catalogNumber, checked }, index) => {
+              this.state.children.map(({ subject, catalogNumber, checked, taken }, index) => {
                 const label = (subject.length > 0) ? `${subject} ${catalogNumber}` : '';
                 return (
                   <Checkbox
                     key={ index }
                     label={ label }
                     checked={ checked }
+                    disabled={ taken }
                     onCheck={ this.onCheck.bind(this, index) }
-                    labelStyle={ styles.labelStyle }
+                    labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }
                   />

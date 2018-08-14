@@ -10,6 +10,11 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import ImportIcon from 'material-ui/svg-icons/action/backup';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Parser from './ParseTranscript';
+import {
+	skyBlue,
+  red,
+	lightGreen2,
+} from '../../constants/Colours';
 
 const styles = {
   container: {
@@ -157,14 +162,14 @@ export default class MyCourseAppBar extends Component {
           <RaisedButton
             onClick={ this.openAddTermDialog }
             label="Add Term"
-            backgroundColor="#a4c639"
+            backgroundColor={ lightGreen2 }
             style={ styles.button }
             icon={ <AddIcon /> }
           />
           <RaisedButton
             onClick={ this.openImportDialog }
             label="Import Courses"
-            backgroundColor="#75caef"
+            backgroundColor={ skyBlue }
             style={ styles.button }
             icon={ <ImportIcon /> }
           />
@@ -173,7 +178,7 @@ export default class MyCourseAppBar extends Component {
               <RaisedButton
                 onClick={ this.openClearDialog }
                 label="Clear Board"
-                backgroundColor="#ff5454"
+                backgroundColor={ red }
                 style={ styles.button }
                 icon={ <ClearIcon /> }
               />

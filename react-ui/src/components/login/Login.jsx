@@ -8,6 +8,7 @@ import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
 import { setUser } from '../../actions';
+import { white, green, grey } from '../../constants/Colours';
 
 const styles = {
   viewContainer: {
@@ -33,7 +34,7 @@ const styles = {
   },
   subtitle: {
     fontSize: 17,
-    color: '#888e99',
+    color: grey,
     marginTop: 10,
   },
   formContainer: {
@@ -54,7 +55,7 @@ const styles = {
     marginTop: 20,
   },
   loginText: {
-    color: 'white',
+    color: white,
   },
   fbContainer: {
     display: 'inline-flex',
@@ -218,7 +219,7 @@ class Login extends Component {
               /><br />
               <RaisedButton
                 label="Sign in"
-                backgroundColor="#3ec16b"
+                backgroundColor={ green }
                 style={styles.loginButton}
                 labelStyle={styles.loginText}
                 onClick={this.onLogin}

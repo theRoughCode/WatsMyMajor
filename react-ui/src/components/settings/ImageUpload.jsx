@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AvatarIcon from 'material-ui/svg-icons/action/account-circle';
 import { getCookie } from '../../utils/cookies';
+import { lightGreen2, red } from '../../constants/Colours';
 
 const maxFileSize = 5242880; // %MB
 
@@ -49,7 +50,7 @@ const styles = {
     height: 16,
     fontSize: 13,
     marginTop: 3,
-    color: '#ea4d4d',
+    color: red,
   },
   previewContainer: {
     marginTop: 20,
@@ -182,7 +183,7 @@ export default class ImageUpload extends Component {
             <RaisedButton
               label="Choose an Image"
               labelPosition="before"
-              backgroundColor="#a4c639"
+              backgroundColor={ lightGreen2 }
               containerElement="label"
             >
               <input

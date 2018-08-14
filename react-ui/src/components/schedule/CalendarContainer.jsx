@@ -20,6 +20,7 @@ import RandomColour from 'randomcolor';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 import { objectEquals } from '../../utils/arrays';
+import { red } from '../../constants/Colours';
 
 const referenceDate = new Date(2017, 1, 1);
 
@@ -317,7 +318,7 @@ export default class CalendarContainer extends Component {
 							<RaisedButton
 								label="Import Term"
 								labelPosition="before"
-								primary={true}
+								primary
 								onClick={ this.props.onImportTerm }
 								icon={ <PublishIcon /> }
 								style={ styles.button }
@@ -325,7 +326,7 @@ export default class CalendarContainer extends Component {
 							<RaisedButton
 								label="Clear Schedule"
 								labelPosition="before"
-								backgroundColor="#ff5454"
+								backgroundColor={ red }
 								onClick={ this.props.onClearSchedule }
 								icon={ <ClearIcon /> }
 								style={ styles.button }

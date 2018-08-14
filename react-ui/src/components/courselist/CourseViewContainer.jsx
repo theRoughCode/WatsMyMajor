@@ -93,7 +93,7 @@ class CourseViewContainer extends Component {
 			catalogNumber,
 			loading: true,
 			error: false,
-			sideBarOpen: false,
+			classModalOpen: false,
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
@@ -102,7 +102,7 @@ class CourseViewContainer extends Component {
 		}
 
 		this.onExpandClass = this.onExpandClass.bind(this);
-		this.closeSideBar = this.closeSideBar.bind(this);
+		this.closeClassModal = this.closeClassModal.bind(this);
 		this.updatePageInfo = this.updatePageInfo.bind(this);
 		this.viewCart = this.viewCart.bind(this);
 		this.addCourseToCart = this.addCourseToCart.bind(this);
@@ -124,7 +124,7 @@ class CourseViewContainer extends Component {
 
 		if (isNewCourse || updatedCart || updatedUserCourses) {
 			// Don't want class info from previous class
-			if (isNewCourse) this.closeSideBar();
+			if (isNewCourse) this.closeClassModal();
 
 			// User selected new course
 			if (isNewCourse || updatedUserCourses) {
@@ -205,11 +205,11 @@ class CourseViewContainer extends Component {
 	}
 
 	onExpandClass(classInfo) {
-		this.setState({ sideBarOpen: true, classInfo });
+		this.setState({ classModalOpen: true, classInfo });
 	}
 
-	closeSideBar() {
-		this.setState({ sideBarOpen: false, classInfo: defaultClassInfo });
+	closeClassModal() {
+		this.setState({ classModalOpen: false, classInfo: defaultClassInfo });
 	}
 
 	render() {
@@ -221,7 +221,7 @@ class CourseViewContainer extends Component {
 			inCart,
 			eligible,
 			classInfo,
-			sideBarOpen,
+			classModalOpen,
 			loading,
 			error
 		} = this.state;
@@ -241,8 +241,8 @@ class CourseViewContainer extends Component {
 				/>
 				<ClassDetails
 					classInfo={ classInfo }
-					open={ sideBarOpen }
-					onClose={ this.closeSideBar }
+					open={ classModalOpen }
+					onClose={ this.closeClassModal }
 				/>
 			</div>
 		);

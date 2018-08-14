@@ -16,6 +16,10 @@ html, body, #root, .App {
 	color: #356abf;
 }
 
+.App a:hover {
+	color: #75CAEF;
+}
+
 .loading, .error-wrapper {
 	width: auto;
 	height: 100%;
@@ -51,9 +55,4 @@ html, body, #root, .App {
 .avatar-name {
   color: white;
   margin: auto;
-}
-
-.sidebar-courses a {
-	color: rgba(0, 0, 0, 0.87);
-	text-decoration: none !important;
 }

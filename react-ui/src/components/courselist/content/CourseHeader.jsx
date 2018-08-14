@@ -5,6 +5,7 @@ import StarRatings from 'react-star-ratings';
 import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
 import CheckIcon from 'material-ui/svg-icons/action/check-circle';
+import { lightGreen2, green, yellow, red } from '../../../constants/Colours';
 
 const styles = {
 	container: {
@@ -50,7 +51,7 @@ const styles = {
 		display: 'flex',
 		alignItems: 'center',
 		margin: '5px 0',
-		color: '#2e9619'
+		color: green,
 	}
 };
 
@@ -71,14 +72,14 @@ const CourseHeader = ({
 		? <RaisedButton
 				onClick={() => removeFromCartHandler(subject, catalogNumber)}
 				label="Remove From Cart"
-				backgroundColor="#ef4f59"
+				backgroundColor={ red }
 				style={styles.button}
 				icon={<RemoveCartIcon />}
 			/>
 		: <RaisedButton
 				onClick={() => addToCartHandler(subject, catalogNumber)}
 				label="Add To Cart"
-				backgroundColor="#a4c639"
+				backgroundColor={ lightGreen2 }
 				style={styles.button}
 				icon={<CartIcon />}
 			/>;
@@ -100,7 +101,7 @@ const CourseHeader = ({
 						isSelectable={false}
 						isAggregateRating={true}
 						numOfStars={5}
-						starRatedColor="#ffcc00"
+						starRatedColor={ yellow }
 						starDimension="25px"
 						starSpacing="1px"
 					/>

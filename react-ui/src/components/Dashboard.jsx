@@ -1,19 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Paper from 'material-ui/Paper';
 import BrowseCourse from './browse/BrowseCourseContainer';
+import { white } from '../constants/Colours';
 
 const styles = {
 	header: {
-		backgroundColor: '#cce1ff',
-		height: 150,
-		padding: 20,
+		backgroundColor: white,
+		paddingLeft: 20,
 		color: 'black',
-	},
-	logo: {
-		animation: 'App-logo-spin infinite 20s linear',
-		width: 80,
-		height: 80,
+		display: 'flex',
 	},
 	headerText: {
 		fontSize: 25,
@@ -27,10 +24,9 @@ const styles = {
 
 const Dashboard = ({ name }) => (
 	<div>
-		<div style={ styles.header }>
-			<img src="images/logo.png" style={ styles.logo } alt="logo" />
+		<Paper style={ styles.header }>
 			<h2 style={ styles.headerText }>Welcome to WatsMyMajor, { name }!</h2>
-		</div>
+		</Paper>
 		<p style={ styles.introText }>
 			{"Congrats, you are one of our beta access users!"}<br />
 			{"If you find a bug, you can let me know or submit an issue "}

@@ -6,7 +6,7 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import { hasTakenCourse } from '../../../utils/courses';
 import Prereqs from './Prereqs';
-
+import { lightGreen2, green, yellow, darkBlue } from '../../../constants/Colours';
 
 const styles = {
 	container: {
@@ -16,10 +16,10 @@ const styles = {
 		height: '90%',
 	},
 	tabHeader: {
-		backgroundColor: 'rgb(54, 65, 80)'
+		backgroundColor: darkBlue,
 	},
 	bar: {
-		backgroundColor: '#ffcc00'
+		backgroundColor: yellow,
 	},
 	headline: {
 		fontSize: 13,
@@ -33,7 +33,7 @@ const styles = {
 		flexDirection: 'column',
 	},
 	reqs: (isSelected) => ({
-		color: (isSelected) ? 'green' : 'inherit',
+		color: (isSelected) ? green : 'inherit',
 		textDecoration: 'none',
 		padding: 1,
 	  paddingLeft: 10,

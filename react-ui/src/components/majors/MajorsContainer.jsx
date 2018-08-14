@@ -5,8 +5,14 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import ChooseBoard from './ChooseBoard';
 import SelectScreen from './SelectScreen';
+import MajorsAppBar from './MajorsAppBar';
 
 const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
   header: {
     display: 'flex',
     paddingLeft: 30,
@@ -16,10 +22,13 @@ const styles = {
     marginRight: 50,
     textAlign: 'left',
   },
-  container: {
-    display: 'flex',
+  body: {
+    width: 'calc(100% - 15px)',
+		height: '100%',
+	  display: 'flex',
     flexWrap: 'wrap',
-    paddingLeft: 70
+		overflowX: 'hidden',
+    paddingLeft: 15,
   },
 };
 
@@ -120,7 +129,7 @@ class MajorsContainer extends Component {
   }
 
   render() {
-    const { majorsList, key } = this.state;
+    const { majorsList, name, key, url } = this.state;
 
     if (key.length === 0) {
       return (
@@ -132,24 +141,15 @@ class MajorsContainer extends Component {
       );
     } else {
       return (
-        <div>
-          <div style={ styles.header }>
-            <SelectField
-              floatingLabelText="Choose a major"
-              onChange={ this.handleChange.bind(this) }
-              style={ styles.select }
-              value={ key }
-              autoWidth
-            >
-              {
-                majorsList.map(({ key, name }, index) => (
-                  <MenuItem key={ index } value={ key } primaryText={ name } />
-                ))
-              }
-            </SelectField>
-            <h1><a href={ this.state.url } target="_blank">{ this.state.name }</a></h1>
-          </div>
-          <div style={ styles.container }>
+        <div style={ styles.container }>
+          <MajorsAppBar
+            majorName={ name }
+            majorKey={ key }
+            url={ url }
+            majorsList={ majorsList }
+            onChange={ this.handleChange.bind(this) }
+          />
+          <div style={ styles.body }>
             { this.state.reqs.map((req, index) => renderReqNode(req, index, this.props.myCourses)) }
           </div>
         </div>
