@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
-import RandomColour from 'randomcolor';
 import { VictoryPie, VictoryTheme, VictoryLabel } from 'victory';
 
 const colours = [
@@ -14,10 +13,6 @@ const colours = [
 
 const formatMyCourses = (data) => {
   const subjects = Object.keys(data);
-  const colours = RandomColour({
-    luminosity: 'bright',
-    count: subjects.length,
-  })
   return subjects.map((subject, i) => ({
     subject,
     count: Object.keys(data[subject]).length,
@@ -52,6 +47,7 @@ export default class UserCoursesGraph extends Component {
         />
         <VictoryPie
           data={ courses }
+          labelRadius={ 130 }
           theme={ VictoryTheme.material }
           x="subject"
           y="count"
