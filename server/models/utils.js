@@ -1,5 +1,8 @@
 const { getPrereqs } = require('./database/requisites');
-const async = require('async');
+
+/*
+	PROVIDES UTILITY FUNCTIONS FOR OTHER MODULES
+*/
 
 // Separate subject, catalog number, and title from course string
 function parseCourse(courseStr) {
@@ -148,35 +151,31 @@ function flattenPrereqs(prereqs) {
 	return [];
 }
 
-function setCoursesPrereqs(courses, callback) {
-	async.map(courses, (course, innerCallback) => {
-		const { subject, catalogNumber } = course;
-		if (course.prereqs != null) {
-			innerCallback(null, course);
+// Set prereqs for input courses
+async function setCoursesPrereqs(courses) {
+	return await Promise.all(courses.map(async function(course) {
+		let { subject, catalogNumber, prereqs } = course;
+		if (prereqs != null) return course;
+
+		const { err, reqs } = await getPrereqs(subject, catalogNumber);
+		if (err) {
+			console.error(err);
+			return course;
 		} else {
-			getPrereqs(subject, catalogNumber, (err, prereqs) => {
-				if (err) {
-					console.error(err);
-					innerCallback(null, course);
-				} else {
-					prereqs = flattenPrereqs(prereqs);
-					innerCallback(null, { subject, catalogNumber, prereqs });
-				}
-			});
+			prereqs = flattenPrereqs(reqs);
+			return { subject, catalogNumber, prereqs };
 		}
-	}, (_, courses) => {
-		callback(courses);
-	});
+	}));
 }
 
 // Used when updating user's courselist/cart
 // We want to flatten the prereqs of each course and attach them to the course
 // to be used as a course card.
-function setCourseListPrereqs(courseList, callback) {
-	async.map(courseList, (termCourses, outerCallback) => {
-		const { courses } = termCourses;
-		setCoursesPrereqs(courses, courses => outerCallback(null, termCourses));
-	}, (_, termCourses) => callback(termCourses));
+async function setCourseListPrereqs(courseList) {
+	return await Promise.all(courseList.map(async function({ term, courses }) {
+		courses = await setCoursesPrereqs(courses);
+		return { term, courses };
+	}));
 }
 
 

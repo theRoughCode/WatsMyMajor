@@ -1,8 +1,10 @@
 const watApi = require('uwaterloo-api');
-const fs = require('fs');
-const async = require('async');
-const database = require('./data');
 const utils = require('./utils');
+
+/*
+	This file is used to interact with the UW API and is mainly used for
+	populating Firebase.
+*/
 
 // Enable hiding of API Key
 require('dotenv').config();
@@ -29,97 +31,103 @@ function parseWeekdays(weekdays) {
 		.filter(d => d != null);
 }
 
-function getCourseInfo(subject, cat_num, callback) {
-	uwclient.get(`/terms/${TERM}/${subject}/${cat_num}/schedule.json`, function(err, res) {
-		if(err) return callback(null);
-		if (res.data.length === 0) return callback(null);
-
-		const classes = res.data.map(course => {
-			const {
-				units,
-				note,
-				class_number,
-				section,
-				campus,
-				enrollment_capacity,
-				enrollment_total,
-				waiting_capacity,
-				waiting_total,
-				reserves,
-				classes,
-				last_updated
-			} = course;
-
-			var lastUpdated = new Date(last_updated);
-			var options = {
-			    year: "numeric", month: "short",
-			    day: "numeric", hour: "2-digit", minute: "2-digit"
-			};
-
-			const {
-				date,
-				location,
-				instructors
-			} = classes[0];
-
-			const {
-				start_time,
-				end_time,
-				weekdays,
-				is_tba,
-				is_cancelled,
-				is_closed
-			} = date;
-
-			const { building, room } = location;
-
-			const reserveObj = reserves[0];
-			let reserve_capacity = 0;
-			let reserve_total = 0;
-			let reserve_group = '';
-			if (reserveObj != null) {
-				reserve_capacity = reserveObj.enrollment_capacity;
-				reserve_total = reserveObj.enrollment_total;
-				reserve_group = reserveObj.reserve_group;
+// Retrieves specific information on classes
+// TODO: Move to firebase
+function getCourseClasses(subject, catalogNumber) {
+	return new Promise((resolve, reject) => {
+		uwclient.get(`/terms/${TERM}/${subject}/${catalogNumber}/schedule.json`, function(err, res) {
+			if (err || res.data.length === 0) {
+				if (err) console.log(err);
+				return resolve(null);
 			}
 
-			return {
-				units,
-				note: note || '',
-				classNumber: class_number,
-				section,
-				campus,
-				enrollmentCap: enrollment_capacity,
-				enrollmentTotal: enrollment_total,
-				waitingCap: waiting_capacity,
-				waitingTotal: waiting_total,
-				reserveCap: reserve_capacity,
-				reserveTotal: reserve_total,
-				reserveGroup: reserve_group,
-				startTime: start_time,
-				endTime: end_time,
-				weekdays: parseWeekdays(weekdays),
-				isTBA: is_tba,
-				isCancelled: is_cancelled,
-				isClosed: is_closed,
-				instructor: getInstructor(instructors[0]),
-				location: (building || room) ? `${building} ${room}` : 'TBA',
-				lastUpdated: lastUpdated.toLocaleDateString("en-US", options)
-			};
-		});
+			const classes = res.data.map(course => {
+				const {
+					units,
+					note,
+					class_number,
+					section,
+					campus,
+					enrollment_capacity,
+					enrollment_total,
+					waiting_capacity,
+					waiting_total,
+					reserves,
+					classes,
+					last_updated
+				} = course;
 
-		const data = {
-			term: TERM,
-			classes
-		}
-		return callback(data);
+				const lastUpdated = new Date(last_updated);
+				const options = {
+				    year: "numeric", month: "short",
+				    day: "numeric", hour: "2-digit", minute: "2-digit"
+				};
+
+				const {
+					date,
+					location,
+					instructors
+				} = classes[0];
+
+				const {
+					start_time,
+					end_time,
+					weekdays,
+					is_tba,
+					is_cancelled,
+					is_closed
+				} = date;
+
+				const { building, room } = location;
+
+				const reserveObj = reserves[0];
+				let reserve_capacity = 0;
+				let reserve_total = 0;
+				let reserve_group = '';
+				if (reserveObj != null) {
+					reserve_capacity = reserveObj.enrollment_capacity;
+					reserve_total = reserveObj.enrollment_total;
+					reserve_group = reserveObj.reserve_group;
+				}
+
+				return {
+					units,
+					note: note || '',
+					classNumber: class_number,
+					section,
+					campus,
+					enrollmentCap: enrollment_capacity,
+					enrollmentTotal: enrollment_total,
+					waitingCap: waiting_capacity,
+					waitingTotal: waiting_total,
+					reserveCap: reserve_capacity,
+					reserveTotal: reserve_total,
+					reserveGroup: reserve_group,
+					startTime: start_time,
+					endTime: end_time,
+					weekdays: parseWeekdays(weekdays),
+					isTBA: is_tba,
+					isCancelled: is_cancelled,
+					isClosed: is_closed,
+					instructor: getInstructor(instructors[0]),
+					location: (building || room) ? `${building} ${room}` : 'TBA',
+					lastUpdated: lastUpdated.toLocaleDateString("en-US", options)
+				};
+			});
+
+			resolve({
+				term: TERM,
+				classes
+			});
+		});
 	});
 }
 
 // Gets prerequisites from UW-API
 // { prereqString, prereqs }
-function getPrereqs(subject, course_number, callback) {
-	uwclient.get(`/courses/${subject}/${course_number}/prerequisites.json`, function(err, res){
+// TODO: Need to scrape.  UW API sucks
+function getPrereqs(subject, catalogNumber, callback) {
+	uwclient.get(`/courses/${subject}/${catalogNumber}/prerequisites.json`, function(err, res){
 		if (err) {
 			console.error(err);
 			return callback(err, null);
@@ -157,15 +165,55 @@ function getCourseDescription(subject, catalogNumber, callback) {
 	});
 }
 
+// Gets course information from UW API
+// returns { err, info }
+function getCourseInformation(subject, catalogNumber) {
+	return new Promise((resolve, reject) => {
+		uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function(err, res) {
+			if (err) {
+				console.error(err);
+				return resolve({ err, info: null });
+			}
+			if (!Object.keys(res.data).length) 	return resolve({ err: 'No course found.', info: null });
+			const {
+				title,
+				units,
+				description,
+				crosslistings,
+				terms_offered,
+				notes,
+				url,
+				// offerings,
+				// needs_department_consent,
+				// needs_instructor_consent,
+				// extra,
+				// calendar_year,
+				// academic_level,
+			} = res.data;
+
+			const info = {
+				title,
+				units,
+				description,
+				crosslistings,
+				terms: terms_offered,
+				notes,
+				url,
+			};
+			resolve({ err: null, info });
+		});
+	});
+}
+
 //  Gets requisites from UW-API
 // returns object with prereqs, coreqs, and antireqs
-function getReqs(subject, course_number, callback) {
-	getPrereqs(subject, course_number, (err, prereqData) => {
+function getReqs(subject, catalogNumber, callback) {
+	getPrereqs(subject, catalogNumber, (err, prereqData) => {
 		if(err) return callback(err, null);
 
 		let { prereqString, prereqs } = prereqData;
 
-		uwclient.get(`/courses/${subject}/${course_number}.json`, (err, res) => {
+		uwclient.get(`/courses/${subject}/${catalogNumber}.json`, (err, res) => {
 			if (err) {
 				console.error(err);
 				return callback(err, null);
@@ -180,7 +228,8 @@ function getReqs(subject, course_number, callback) {
 
 			if (coreqs) {
 				// Edge case of "Oneof"
-				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + course_number))
+				if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + catalogNumber))
+					coreqs = coreqs.replace('Coreq:', '');
 					coreqs = utils.unpick(coreqs);
 
 				if (coreqs.hasOwnProperty('choose')) {
@@ -237,7 +286,7 @@ function getReqs(subject, course_number, callback) {
 				crosslistings,
 				terms,
 				subject,
-				catalogNumber: course_number,
+				catalogNumber,
 				url: res.data.url
 			}
 			callback(null, data);
@@ -246,144 +295,17 @@ function getReqs(subject, course_number, callback) {
 }
 
 // Gets courses from UW-API
-function getCourses (callback) {
+function getCourses(callback) {
 	uwclient.get('/courses.json', function (err, res) {
 		if (err) return callback(err, null);
 		else return callback(null, res.data);
 	})
 }
-
-
-// --------------------- DATA FROM JSON ----------------------------
-
-function getDataReqs(subject, cat_num, callback) {
-	database.getJSON(database.DATA, (err, json) => {
-		if(err) return callback(null);
-		callback(json[subject][cat_num]);
-	});
-}
-
-// returns [{courses that requires this as prereq}, {courses that requires
-//    this as coreq}]
-function getParentReqs(subject, cat_num, callback) {
-	database.getJSON(database.DATA, (err, json) => {
-		if(err) return callback(null);
-
-		const course = subject + cat_num;
-		const filtered = [[], []];
-		const keys = Object.keys(json);
-		var keysLeft = keys.length;
-
-		if (keysLeft === 0) return callback(null);
-		keys.forEach(subject => {
-			database.filter(json[subject], [
-				val => {
-					if(!val.prereqs) return false;
-
-					var prereqs = val.prereqs;
-
-					if (Array.isArray(val.prereqs)){
-						var chooseOne = (!isNaN(prereqs[0]) || typeof prereqs[0] === 'number');  // true if choose one
-						prereqs.forEach((elem, index) => {
-							// choose 1
-							if (Array.isArray(elem)) {
-								prereqs[index] = elem.join();
-								// if course is among choose 1
-								if(prereqs[index].includes(course)){
-									val.prereqs["optional"] = true;
-									return true;
-								}
-							} else if(elem === course) {  // Mandatory prereq
-								if(chooseOne) {
-									const regStr = eval(`/${elem.slice(0, -2)}[0-9]${elem.slice(-1)}/i`);
-
-									// > -1 if advanced course is available
-									var alt_index = prereqs.indexOf(regStr);
-									prereqs.forEach(req => {
-										if(req !== elem && regStr.test(req)) {
-											val.prereqs["alternate"] = prereqs[index + 1];
-											val.prereqs["optional"] = false;
-										}
-									});
-									if (!val.prereqs["alternate"]) val.prereqs["optional"] = true;
-								}
-								return true;
-							}
-						});
-						prereqs = prereqs.join();
-					}
-					if(val.prereqs['optional']) return true;
-
-					if(prereqs.includes(course)) {
-						val.prereqs["optional"] = false;
-						return true;
-					} else return false;
-				},
-				val => {
-					if(!val.coreqs) return false;
-
-					var coreqs = val.coreqs;
-					if (Array.isArray(val.coreqs)){
-						coreqs.forEach((elem, index) => {
-							// choose 1
-							if (Array.isArray(elem)) {
-								coreqs[index] = elem.join();
-								// if course is among choose 1
-								if(coreqs[index].includes(course)){
-									val.coreqs["optional"] = true;
-									return true;
-								}
-							}
-							if(typeof elem === 'string' && elem.includes(course)) {  // Mandatory coreq
-								// optional if only course is specified
-								val.coreqs["optional"] = (elem.includes('or'));
-								return true;
-							}
-						});
-						coreqs = coreqs.join();
-					}
-					if(val.coreqs['optional']) return true;
-
-					if(coreqs.includes(course)) {
-						val.coreqs["optional"] = false;
-						return true;
-					} else return false;
-			}], sub_list => {
-				// has this course as prereq
-				if(sub_list[0]) {
-					const courses = Object.keys(sub_list[0]);
-					courses.forEach(key => {
-						filtered[0].push({
-							subject,
-							catalogNumber: key,
-							optional: sub_list[0][key]['prereqs']['optional'],
-							alternate: sub_list[0][key]['prereqs']['alternate'] || null
-						});
-					});
-				}
-				// has this course as coreq
-				if(sub_list[1]) {
-					const courses = Object.keys(sub_list[1]);
-					courses.forEach(key => {
-						filtered[1].push({
-							subject,
-							catalogNumber: key,
-							optional: sub_list[1][key]['coreqs']['optional']
-						});
-					});
-				}
-			})
-			if (--keysLeft === 0) return callback(filtered);
-		});
-	});
-}
-
 // Exports
 module.exports = {
-	getCourseInfo,
+	getCourseClasses,
+	getCourseInformation,
 	getCourseDescription,
-	getCourses,
 	getReqs,
-	getDataReqs,
-	getParentReqs
+	getCourses,
 }

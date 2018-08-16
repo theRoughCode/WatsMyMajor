@@ -59,7 +59,7 @@ const defaultClassInfo = {
 };
 
 const getCourseData = (subject, catalogNumber) => {
-	return fetch(`/server/wat/${subject}/${catalogNumber}`, {
+	return fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
 		headers: {
 			'x-secret': process.env.REACT_APP_SERVER_SECRET
 		}
@@ -70,6 +70,17 @@ const getCourseData = (subject, catalogNumber) => {
 		}
 		return response.json();
 	});
+};
+
+// Formats postreqs obj into arr
+const formatPostreqs = (postreqs) => {
+	const formatted = [];
+	for (let subject in postreqs) {
+		for (let catalogNumber in postreqs[subject]) {
+			formatted.push({ subject, catalogNumber });
+		}
+	}
+	return formatted;
 };
 
 class CourseViewContainer extends Component {
@@ -149,16 +160,17 @@ class CourseViewContainer extends Component {
 			// fetch course data
 			const json = await getCourseData(subject, catalogNumber);
 			let {
-				title,
 				description,
-				prereqs,
-				antireqs,
-				coreqs,
 				crosslistings,
-				terms,
+				notes,
+				termsOffered,
+				title,
+				units,
 				url,
-				parPrereq,
-				parCoreq,
+				prereqs,
+				coreqs,
+				antireqs,
+				postreqs,
 				classList
 			} = json;
 
@@ -170,12 +182,12 @@ class CourseViewContainer extends Component {
 				description,
 				rating: 2.1,
 				url,
-				termsOffered: terms,
+				termsOffered,
 				crosslistings,
 				antireqs,
 				coreqs,
 				prereqs,
-				postreqs: parPrereq,
+				postreqs: formatPostreqs(postreqs),
 				term: (classList) ? classList.term : '',
 				classes: (classList) ? classList.classes : []
 			};

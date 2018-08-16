@@ -1,150 +1,158 @@
+const asyncjs = require('async');
 const waterloo = require('./waterloo');
-const async = require('async');
-const data = require('./data');
+const courses = require('./database/courses');
+const requisites = require('./database/requisites');
 
-const COURSE_LIST = data.COURSE_LIST;
-const DATA = data.DATA;
+// Updates course list
+async function updateCourseInformation(subject, catalogNumber) {
+	const { err, info } = await waterloo.getCourseInformation(subject, catalogNumber);
+	if (err) return err;
 
-/*
-  UPDATE JSON FILES
-*/
-
-// updates course_list.json.  Returns 1 if unsuccessful
-function updateCourseList (res, callback) {
-  const courses = [];
-  res.forEach(course => {
-    const subject = course.subject;
-    const catalog_number = course.catalog_number;
-    courses.push({
-      'subject': subject,
-      'catalog_number': catalog_number
-    });
-  });
-  // sort courses alphanumerically
-  courses.sort((a, b) =>
-  (a.subject < b.subject || ((a.subject == b.subject) && a.catalog_number < b.catalog_number)) ? -1 : 1);
-
-  const json = JSON.stringify(courses);
-  data.write(COURSE_LIST, json, err => {
-    if (err) {
-      console.error(err);
-      callback(1, null);
-    }
-    callback(0, json);
-  });
+	try {
+		console.log(`\nUpdating: ${subject} ${catalogNumber}`);
+		await courses.setCourseInfo(subject, catalogNumber, info);
+		return null;
+	} catch (err) {
+		console.log(err);
+		return err;
+	}
 }
 
-// reset data file of objects
-function resetData (res, callback) {
-  var sorted_courses = [];
-  res.forEach(course => {
-    const subject = course.subject;
-    const catalog_number = course.catalog_number;
+function updateAllCourses() {
+	const failedList = [];
+	return new Promise((resolve, reject) => {
+		waterloo.getCourses(function(err, data) {
+			if (err) return resolve({ err, failedList: null });
 
-    const index = indexInArray (subject, sorted_courses);
-    if (index == -1) sorted_courses.push([subject, [catalog_number]]);
-    else sorted_courses[index][1].push(catalog_number);
-  });
-
-  // sort courses alphanumerically
-  sorted_courses.sort((a,b) => (a[0] < b[0]) ? -1 : 1);
-  sorted_courses.forEach(course => course[1].sort((a,b) => (a < b) ? -1 : 1));
-
-  // Convert array to object
-  sorted_courses = sorted_courses.reduce((a,b) => {
-    const obj = {};
-    b[1].forEach(cat_num => {
-      obj[cat_num] = {
-        "prereqs": [],
-        "coreqs": [],
-        "antireqs": []
-      };
-    });
-    a[b[0]] = obj;
-    return a;
-  }, {});
-
-  var sorted_json = JSON.stringify(sorted_courses);
-
-  data.write(DATA, sorted_json, 'utf8', err => {
-    if(err) {
-      console.error(err);
-      return callback(1, null);
-    }
-    console.log(sorted_json);
-    callback(0, sorted_json);
-  });
+			asyncjs.forEachOfLimit(data, 10, (courseData, index, callback) => {
+				const { subject, catalog_number } = courseData;
+				updateCourseInformation(subject, catalog_number)
+					.then(() => callback())
+					.catch(err => {
+						failedList.push({ subject, catalogNumber, err });
+						callback();
+					});
+			}, err => {
+				console.log(err);
+				if (err) resolve({ err, failedList });
+				else resolve();
+			});
+		});
+	});
 }
 
-// fill out data set with requisites
-function fillEntries (callback) {
-  data.getJSON(COURSE_LIST, (err, course_list) => {
-    if (err) {
-      console.error(err);
-      return callback(err, null);
-    }
-    data.getJSON(DATA, (err, datum) => {
-      async.eachLimit(course_list, 100, function (course, callback1) {
-        const subject = course.subject;
-        const catalog_number = course.catalog_number;
-        waterloo.getReqs(subject, catalog_number, (err, res) => {
-          if(err) return callback1();
-          datum[subject][catalog_number]["prereqs"] = res.prereqs;
-          datum[subject][catalog_number]["coreqs"] = res.coreqs;
-          datum[subject][catalog_number]["antireqs"] = res.antireqs;
-          console.log(subject + catalog_number + ", res: { prereqs: " + res.prereqs + ", coreqs: " + res.coreqs + ", antireqs: " + res.antireqs + "}");
-          callback1();
-        });
-      }, function (err) {
-        const data_json = JSON.stringify(datum);
-        data.writeToFile(DATA, data_json, err => {
-          if (err) {
-            console.error(err);
-            return callback(err, null);
-          }
-          console.log(DATA + " filled.");
-          callback(null, data_json);
-        });
-      })
-    });
-  });
-}
+// Store post reqs in database
+// TODO: Update to conform with above schema
+async function storePostreqs(choose, prereqs, postreq, prereq) {
+ 	// Nested Requisite
+ 	if (prereq.hasOwnProperty('choose')) {
+ 		choose = prereq.choose;
+ 		prereqs = prereq.reqs;
 
-// Update a specific course
-function fillEntry(subject, cat_num, callback) {
-  data.getJSON(DATA, (err, datum) => {
-    waterloo.getReqs(subject, cat_num, (err, res) => {
-      if(err) return callback(err, null);
-      datum[subject][cat_num]["prereqs"] = res.prereqs;
-      datum[subject][cat_num]["coreqs"] = res.coreqs;
-      datum[subject][cat_num]["antireqs"] = res.antireqs;
-      console.log(subject + cat_num + ", res: { prereqs: " + res.prereqs + ", coreqs: " + res.coreqs + ", antireqs: " + res.antireqs + "}");
-      const data_json = JSON.stringify(datum);
-      data.writeToFile(DATA, data_json, err => {
-        if (err) {
-          console.error(err);
-          return callback(err, null);
+    await Promise.all(prereqs.map(async (prereq) => {
+      await storePostreqs(choose, prereqs, postreq, prereq);
+    }));
+ 	} else {
+ 		const { subject, catalogNumber } = prereq;
+ 		const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
+
+    await requisites.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
+ 	}
+ }
+
+// Updates requisites
+function updateCourseRequisite(subject, catalogNumber) {
+  return new Promise((resolve, reject) => {
+    waterloo.getReqs(subject, catalogNumber, async function(err, reqs) {
+  		if (err) return resolve(err);
+  		else {
+  			console.log(`\nUpdating: ${subject} ${catalogNumber}`);
+
+  			let { prereqs, coreqs, antireqs } = reqs;
+
+  			// No requisities
+  			if (prereqs.length + coreqs.length + antireqs.length === 0)
+  				return resolve();
+
+        try {
+          // Store prereqs in database
+          await requisites.setPrereqs(subject, catalogNumber, prereqs);
+
+          // Store coreqs in database
+          await requisites.setCoreqs(subject, catalogNumber, coreqs);
+
+          // Store antireqs in database
+          await requisites.setAntireqs(subject, catalogNumber, antireqs);
+        } catch (err) {
+          return resolve(err);
         }
-        console.log(subject + cat_num + " updated.");
-        callback(null, datum);
+
+
+  			// Store parent requisites in database
+  			if (!prereqs.length && !Object.keys(prereqs).length) return resolve();
+
+  			const choose = prereqs.choose;
+  			prereqs = prereqs.reqs;
+
+        const postreq = { subject, catalogNumber };
+        await Promise.all(prereqs.map(async (prereq) => {
+          await storePostreqs(choose, prereqs, postreq, prereq);
+        }));
+
+        resolve();
+  		}
+  	});
+  });
+}
+
+// Get courses from courseList and calls `updateCourseRequisite`
+async function updateRequisites() {
+  try {
+    const reqsSnapshot = await requisites.getRequisitesSnapshot();
+    const failedList = [];
+    const reqs = reqsSnapshot.val();
+    const subjects = Object.keys(reqs);
+
+    return new Promise((resolve, reject) => {
+      asyncjs.forEachOfLimit(reqs, 10, (courses, subject, subjectCallback) => {
+        asyncjs.forEachOfLimit(courses, 10, (_, catalogNumber, catNumCallback) => {
+          // Get course reqs
+          updateCourseRequisite(subject, catalogNumber)
+            .then(err => {
+              if (err) {
+                console.log(`${subject} ${catalogNumber}: ${err}`);
+              }
+              catNumCallback();
+            })
+            .catch(err => {
+              console.log(`${subject} ${catalogNumber}: ${err}`);
+              failedList.push({ subject, catalogNumber, err });
+              catNumCallback();
+            });
+        }, err => {
+          if (err) subjectCallback(err);
+          else subjectCallback(null);
+        });
+      }, err => {
+        if (err) {
+          console.log('\n\n\n\n', err);
+          resolve({ err, failedList: null });
+        } else {
+          console.log('Done updating course requisites! :D');
+          console.log(`There were a total of ${failedList.length} errors.`);
+          resolve({ err: null, failedList });
+        }
       });
     });
-  });
-}
-
-// checks if subject is in arr.  Returns -1 if false
-function indexInArray (subject, arr) {
-  for (var i = 0; i < arr.length; i++){
-    if (arr[i][0] == subject) return i;
+  } catch (err) {
+    console.log(err);
+    return { err, failedList: null };
   }
-  return -1;
 }
 
 module.exports = {
-  COURSE_LIST,
-  DATA,
-  updateCourseList,
-  resetData,
-  fillEntries,
-  fillEntry
-}
+  updateCourseInformation,
+	updateAllCourses,
+  updateCourseRequisite,
+  updateRequisites,
+};

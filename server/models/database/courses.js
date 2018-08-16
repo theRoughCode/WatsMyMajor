@@ -20,21 +20,12 @@ const coursesForSearch = [];
  *													*
  ****************************/
 
-// Updates course list
-function updateCourseList(callback) {
-	waterloo.getCourses((err, data) => {
-		if (err) return callback(err);
-		const dataObj = data.reduce((acc, courseData) => {
-			const { subject, catalog_number, title } = courseData;
-			if (!acc.hasOwnProperty(subject)) acc[subject] = {};
-			acc[subject][catalog_number] = title;
-			return acc;
-		}, {});
+function setCourses(courses) {
+	return coursesRef.set(courses);
+}
 
-		coursesRef.set(dataObj)
-			.then(() => callback(null))
-			.catch(err => callback(err));
-	});
+function setCourseInfo(subject, catalogNumber, info) {
+	return coursesRef.child(`${subject}/${catalogNumber}`).set(info);
 }
 
 
@@ -56,7 +47,7 @@ async function getCoursesForSearch() {
 		subjects.forEach(subject => {
 			const catalogNumbers = Object.keys(courses[subject]);
 			catalogNumbers.forEach(catalogNumber => {
-				const title = courses[subject][catalogNumber];
+				const { title } = courses[subject][catalogNumber];
 				coursesForSearch.push({ subject, catalogNumber, title });
 			});
 		});
@@ -67,22 +58,19 @@ async function getCoursesForSearch() {
 	}
 }
 
-// Returns { err, title }
-// async function getCourseTitle(subject, catalogNumber) {
-// 	try {
-// 		const snapshot = await coursesRef
-// 			.child(subject)
-// 			.child(catalogNumber)
-// 			.once('value');
-// 		const title = snapshot.val();
-// 		return { err: null, title };
-// 	} catch (err) {
-// 		return { err, title: null };
-// 	}
-// }
-
-function getCourseTitle() {
-	console.log('hi')
+// Returns course information
+// { err, course }
+async function getCourse(subject, catalogNumber) {
+	try {
+		const snapshot = await coursesRef
+	 		.child(`${subject}/${catalogNumber}`)
+	 		.once('value');
+		const course = await snapshot.val();
+		return { err: null, course };
+	} catch (err) {
+		console.log(err);
+		return { err: err.message, course: null };
+	}
 }
 
 
@@ -113,18 +101,21 @@ async function searchCourses(query, limit) {
 		// If query length is <= 5, only search by subject and catalogNumber.
 		// Else include title in search as well.
 		const extract = (query.length <= 5) ? simpleExtractor : titleExtractor;
-		const result = fuzzy.filter(query, coursesForSearch, { extract })
-			.slice(0, limit)
-			.map(({ original }) => original);
-
+		const result = [];
+		let fuzzyResults = fuzzy.filter(query, courses, { extract });
+		for (let i = 0; i < fuzzyResults.length; i++) {
+			if (result.length >= limit) break;
+			const course = fuzzyResults[i].original;
+			if (!containsCourse(course, result)) result.push(course);
+		}
 		// If using simple extractor and not enough to populate results, use title extractor.
 		if (query.length <= 5 && result.length < limit) {
-			const result2 = fuzzy
-				.filter(query, coursesForSearch, { extract: titleExtractor })
-				.filter(({ original }) => !containsCourse(original, result))
-				.slice(0, limit - result.length)
-				.map(({ original }) => original);
-			result.push(...result2);
+			fuzzyResults = fuzzy.filter(query, courses, { extract: titleExtractor });
+			for (let i = 0; i < fuzzyResults.length; i++) {
+				if (result.length >= limit) break;
+				const course = fuzzyResults[i].original;
+				if (!containsCourse(course, result)) result.push(course);
+			}
 		}
 		return { err: null, result };
 	} catch (err) {
@@ -134,7 +125,8 @@ async function searchCourses(query, limit) {
 }
 
 module.exports = {
-  updateCourseList,
+  setCourses,
+	setCourseInfo,
   searchCourses,
-	getCourseTitle,
+	getCourse,
 };

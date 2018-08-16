@@ -11,7 +11,6 @@ function removeMiddleName(name) {
 function getProfInfo(name, callback) {
 	const baseURL = 'http://www.ratemyprofessors.com';
 	const parsedName = removeMiddleName(name);
-	console.log(parsedName)
 	const url = `${baseURL}/search.jsp?queryBy=teacherName&country=canada&stateselect=ON&queryoption=HEADER&query=${parsedName}&facetSearch=true`;
 
 	request(url, function(error, response, html){

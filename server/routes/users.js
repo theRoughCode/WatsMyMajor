@@ -155,17 +155,16 @@ UsersRouter.post('/edit/:username', function(req, res) {
 
 // Set cart
 // Body: { cart }
-UsersRouter.post('/set/cart/:username', function(req, res) {
+UsersRouter.post('/set/cart/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
-	setCoursesPrereqs(req.body.cart, async function(cart) {
-		const err = await users.setCart(username, cart);
-		if (err) {
-			console.log(err);
-			res.status(400).send(err);
-		} else res.json(cart);
-	});
+	const cart = await setCoursesPrereqs(req.body.cart);
+	const err = await users.setCart(username, cart);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.json(cart);
 });
 
 UsersRouter.post('/reorder/cart/:username', async function(req, res) {
@@ -233,17 +232,17 @@ UsersRouter.post('/add/schedule/:username', async function(req, res) {
 
 // Set courseList
 // Body: { courseList }
-UsersRouter.post('/set/courselist/:username', function(req, res) {
+UsersRouter.post('/set/courselist/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
 	if (req.user !== username) return res.sendStatus(401);
 
-	setCourseListPrereqs(req.body.courseList, async function(courseList) {
-		const err = await users.setCourseList(username, courseList);
-		if (err) {
-			console.log(err);
-			res.status(400).send(err);
-		} else res.json(courseList);
-	});
+	const courseList = await setCourseListPrereqs(req.body.courseList);
+	// console.log(courseList)
+	const err = await users.setCourseList(username, courseList);
+	if (err) {
+		console.log(err);
+		res.status(400).send(err);
+	} else res.json(courseList);
 });
 
 UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
