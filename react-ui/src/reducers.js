@@ -1,4 +1,5 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
+import { toast } from 'react-toastify';
 import {
 	TOGGLE_SIDEBAR,
 	SET_USER,
@@ -137,12 +138,12 @@ function mySchedule(state = {}, action) {
 		case UPDATE_USER_SCHEDULE:
 			return action.payload.schedule || state;
 		case UPDATE_USER_SCHEDULE_FAILURE:
-			alert('Failed to update schedule. Please contact an administrator.');
+			toast.error('Failed to update schedule. Please contact an administrator.');
 			return state;
 		case CLEAR_USER_SCHEDULE:
 			return {};
 		case CLEAR_USER_SCHEDULE_FAILURE:
-			alert('Failed to clear schedule. Please contact an administrator.');
+			toast.error('Failed to clear schedule. Please contact an administrator.');
 			return state;
 		default:
 			return state;
@@ -192,10 +193,10 @@ function user(state = defaultUser, action) {
 			const { code } = action.payload.response;
 			switch (code) {
 				case ERROR_WRONG_PASSWORD:
-					alert('Incorrect password.');
+					toast.error('Incorrect password.', { autoClose: 2000 });
 					break;
 				default:
-					alert('Failed to update settings.  Please contact an administrator.');
+					toast.error('Failed to update settings.  Please contact an administrator.');
 			}
 			return state;
 		case LINK_FACEBOOK:
@@ -205,10 +206,10 @@ function user(state = defaultUser, action) {
 			user.username = action.meta.username;
 			return user;
 		case LINK_FACEBOOK_FAILURE:
-			alert('Failed to link Facebook.  Please contact an administrator.');
+			toast.error('Failed to link Facebook.  Please contact an administrator.');
 			return state;
 		case UNLINK_FACEBOOK_FAILURE:
-			alert('Failed to unlink Facebook.  Please contact an administrator.');
+			toast.error('Failed to unlink Facebook.  Please contact an administrator.');
 			return state;
 		default:
 			return state;

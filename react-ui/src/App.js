@@ -7,6 +7,7 @@ import {
   Redirect,
 	withRouter
 } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import Snackbar from 'material-ui/Snackbar';
 import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
@@ -27,6 +28,7 @@ import {
   logoutUser,
 } from './actions';
 import './stylesheets/App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 let styles = {
 	marginLeft: 0,
@@ -196,6 +198,7 @@ class App extends Component {
             <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseView) } />
   				</Switch>
   			</div>
+        <ToastContainer />
 				<Snackbar
 					open={this.state.snackOpen}
 					message={this.state.snack.msg}

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -205,7 +206,7 @@ export default class TermBoard extends Component {
 			this.setState({ importing: false });
 			const { courses } = termCourses;
 			this.props.onUpdateCourses(courses);
-		}).catch(err => alert(`Failed to parse your courses. Error: ${err.message}`));
+		}).catch(err => toast.error(`Failed to parse your courses. Error: ${err.message}`));
 	}
 
 	onSearchResult = (subject, catalogNumber) => {

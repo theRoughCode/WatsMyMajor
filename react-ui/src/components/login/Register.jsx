@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -157,10 +158,10 @@ class Register extends Component {
             this.setState({ usernameError: 'Username already exists' });
             return;
           case ERROR_SERVER_ERROR:
-            alert('Failed to create account. Please contact an administrator.');
+            toast.error('Failed to create account. Please contact an administrator.');
             return;
           default:
-            alert('Failed to create account. Please contact an administrator.');
+            toast.error('Failed to create account. Please contact an administrator.');
             return;
         }
       } else {
@@ -169,7 +170,7 @@ class Register extends Component {
         this.props.history.push("/");
       }
     } catch (err) {
-      alert('Failed to create account. Please contact an administrator.');
+      toast.error('Failed to create account. Please contact an administrator.');
       console.error(err);
     }
   }

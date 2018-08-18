@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -149,10 +150,10 @@ class Login extends Component {
             this.setState({ passwordError: 'Wrong password' });
             return;
           case ERROR_SERVER_ERROR:
-            alert('Failed to create account. Please contact an administrator.');
+            toast.error('Failed to create account. Please contact an administrator.');
             return;
           default:
-            alert('Failed to create account. Please contact an administrator.');
+            toast.error('Failed to create account. Please contact an administrator.');
             return;
         }
       } else {
@@ -161,7 +162,7 @@ class Login extends Component {
         this.props.history.push("/");
       }
     } catch (err) {
-      alert('Failed to create account. Please contact an administrator.');
+      toast.error('Failed to create account. Please contact an administrator.');
       console.error(err);
     }
   }
@@ -180,7 +181,7 @@ class Login extends Component {
   		});
       if (!response.ok) {
         const err = await response.text();
-        alert('This Facebook account has not been linked yet. Please log in to your WatsMyMajor account (or create one) to link your Facebook account.');
+        toast.warn('This Facebook account has not been linked yet. Please log in to your WatsMyMajor account (or create one) to link your Facebook account.');
         console.error(err);
       } else {
         const { username, user } = await response.json();
@@ -188,7 +189,7 @@ class Login extends Component {
         this.props.history.push("/");
       }
     } catch (err) {
-      alert('Login failed. Please contact an administrator.');
+      toast.error('Login failed. Please contact an administrator.');
       console.error(err);
     }
   }

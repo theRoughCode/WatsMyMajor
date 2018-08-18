@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
@@ -132,7 +133,7 @@ export default class ImageUpload extends Component {
 
 
       if (!response.ok) {
-        alert('Failed to upload image.  Please contact an administrator.');
+        toast.error('Failed to upload image.  Please contact an administrator.');
         this.setState({ loading: false });
         return;
       }
@@ -141,6 +142,7 @@ export default class ImageUpload extends Component {
       this.props.onChangeImage(this.props.username, user);
       this.setState({ loading: false });
       this.closeDialog();
+      toast.success('Image upload success!');
     } catch(err) {
       console.error(err);
       this.setState({ loading: false });

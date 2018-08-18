@@ -47,7 +47,7 @@ export default class PopularCourseGraph extends Component {
   render() {
     const { popular } = this.state;
     if (popular.length === 0) return null;
-    
+
     return (
       <Paper style={{ width: 400, height: 'fit-content', margin: 'auto' }} depth={ 1 }>
         <VictoryChart domainPadding={ 30 } >

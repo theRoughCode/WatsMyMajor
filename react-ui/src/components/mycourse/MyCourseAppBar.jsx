@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
@@ -106,7 +107,7 @@ export default class MyCourseAppBar extends Component {
 		}).catch(err => {
 			this.closeImportDialog();
 			console.log(err);
-			alert(`Failed to parse your courses. Error: ${err.message}`);
+			toast.error(`Failed to parse your courses. Error: ${err.message}`);
 		});
 	}
 
