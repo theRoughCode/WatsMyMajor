@@ -60,7 +60,7 @@ async function getCoursesForSearch() {
 
 // Returns course information
 // { err, course }
-async function getCourse(subject, catalogNumber) {
+async function getCourseInfo(subject, catalogNumber) {
 	try {
 		const snapshot = await coursesRef
 	 		.child(`${subject}/${catalogNumber}`)
@@ -128,5 +128,5 @@ module.exports = {
   setCourses,
 	setCourseInfo,
   searchCourses,
-	getCourse,
+	getCourseInfo,
 };

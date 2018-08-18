@@ -18,7 +18,7 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
 	const catalogNumber = req.params.catalogNumber;
 
 	// Get course information
-	let { err, course } = await courses.getCourse(subject.toUpperCase(), catalogNumber);
+	let { err, course } = await courses.getCourseInfo(subject.toUpperCase(), catalogNumber);
 	if (err) return res.status(400).send(err);
 	const {
 		description,

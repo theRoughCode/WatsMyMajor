@@ -2,8 +2,16 @@ const asyncjs = require('async');
 const waterloo = require('./waterloo');
 const courses = require('./database/courses');
 const requisites = require('./database/requisites');
+const stats = require('../models/database/stats');
+const users = require('../models/database/users');
 
-// Updates course list
+/****************************
+ *													*
+ *			C O U R S E S 			*
+ *													*
+ ****************************/
+
+// Updates individual course information
 async function updateCourseInformation(subject, catalogNumber) {
 	const { err, info } = await waterloo.getCourseInformation(subject, catalogNumber);
 	if (err) return err;
@@ -18,6 +26,7 @@ async function updateCourseInformation(subject, catalogNumber) {
 	}
 }
 
+// Updates all course information
 function updateAllCourses() {
 	const failedList = [];
 	return new Promise((resolve, reject) => {
@@ -41,26 +50,7 @@ function updateAllCourses() {
 	});
 }
 
-// Store post reqs in database
-// TODO: Update to conform with above schema
-async function storePostreqs(choose, prereqs, postreq, prereq) {
- 	// Nested Requisite
- 	if (prereq.hasOwnProperty('choose')) {
- 		choose = prereq.choose;
- 		prereqs = prereq.reqs;
-
-    await Promise.all(prereqs.map(async (prereq) => {
-      await storePostreqs(choose, prereqs, postreq, prereq);
-    }));
- 	} else {
- 		const { subject, catalogNumber } = prereq;
- 		const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
-
-    await requisites.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
- 	}
- }
-
-// Updates requisites
+// Updates individial course requisite
 function updateCourseRequisite(subject, catalogNumber) {
   return new Promise((resolve, reject) => {
     waterloo.getReqs(subject, catalogNumber, async function(err, reqs) {
@@ -105,8 +95,8 @@ function updateCourseRequisite(subject, catalogNumber) {
   });
 }
 
-// Get courses from courseList and calls `updateCourseRequisite`
-async function updateRequisites() {
+// Get courses from courseList and updates all course requisites
+async function updateAllRequisites() {
   try {
     const reqsSnapshot = await requisites.getRequisitesSnapshot();
     const failedList = [];
@@ -150,9 +140,55 @@ async function updateRequisites() {
   }
 }
 
+// Updates database with count of all users courses
+async function updatePopularCourses() {
+  console.log('Running nightly cron job for updating popular courses...')
+  let { err, courseCount } = await users.getAllUserCourses();
+	if (err) {
+		console.log(err);
+		return { err, courseCount: null };
+	}
+
+	// Assignment without declaration
+	({ err } = await stats.updateMostPopular(courseCount));
+	if (err) {
+		console.log(err);
+    return { err, courseCount: null };
+	} else return { err: null, courseCount };
+}
+
+
+/****************************
+ *													*
+ *			H E L P E R S 			*
+ *													*
+ ****************************/
+
+// Helper function for update Course Requisites
+// Store post reqs in database
+// TODO: Rethink schema to be similar to coreqs/antireqs: [{ subject, catalogNumber }]
+async function storePostreqs(choose, prereqs, postreq, prereq) {
+	// Nested Requisite
+	if (prereq.hasOwnProperty('choose')) {
+		choose = prereq.choose;
+		prereqs = prereq.reqs;
+
+   await Promise.all(prereqs.map(async (prereq) => {
+     await storePostreqs(choose, prereqs, postreq, prereq);
+   }));
+	} else {
+		const { subject, catalogNumber } = prereq;
+		const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
+
+   await requisites.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
+	}
+}
+
+
 module.exports = {
   updateCourseInformation,
 	updateAllCourses,
   updateCourseRequisite,
-  updateRequisites,
+  updateAllRequisites,
+	updatePopularCourses,
 };

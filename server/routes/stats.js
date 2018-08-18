@@ -1,25 +1,13 @@
 const StatsRouter = require('express').Router();
-const waterloo = require('../models/waterloo');
-const users = require('../models/database/users');
+const courses = require('../models/database/courses');
 const stats = require('../models/database/stats');
+const scheduler = require('../helpers/scheduler');
 
 // Updates count of all users' courses
 StatsRouter.get('/update/popular', async function(req, res) {
-	let { err, courseCount } = await users.getAllUserCourses();
-	if (err) {
-		console.log(err);
-		res.status(404).send(err.message);
-		return;
-	}
-
-	// Assignment without declaration
-	({ err } = await stats.updateMostPopular(courseCount));
-	if (err) {
-		console.log(err);
-		res.status(404).send(err.message);
-	} else {
-		res.json(courseCount);
-	}
+	const { err, courseCount } = await scheduler.updatePopularCourses();
+	if (err) return res.status(404).send(err.message);
+	res.json(courseCount);
 });
 
 // Retrieves the top "limit" courses from the database
@@ -38,28 +26,24 @@ StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
   } else res.json(results);
 });
 
-function getCourseInfo(subject, catalogNumber) {
-  return new Promise((resolve) =>
-    waterloo.getCourseDescription(subject, catalogNumber, (err, info) => {
-      if (err) {
-        console.error(err);
-        resolve({ subject, catalogNumber });
-      } else resolve(info);
-    }));
-}
-
 // Gets top 3 most popular courses from database and returns information
 StatsRouter.get('/courses/popular', async function(req, res) {
-  const { err, results } = await stats.getMostPopular(3);
+  let { err, results } = await stats.getMostPopular(3);
   if (err) {
     console.log(err);
     res.status(404).send(err.message);
   } else {
-    const courses = await Promise.all(Object.keys(results).map(courseStr => {
+    const popularCourses = await Promise.all(Object.keys(results).map(async (courseStr) => {
       const [subject, catalogNumber] = courseStr.split("-");
-      return getCourseInfo(subject, catalogNumber);
+			({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
+			if (err) {
+		    console.log(err);
+		    res.status(404).send(err.message);
+		  }
+			const { title, description } = course;
+			return { subject, catalogNumber, title, description };
     }));
-    res.json(courses);
+    res.json(popularCourses);
   }
 })
 

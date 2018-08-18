@@ -23,7 +23,7 @@ UpdateRouter.get('/courses/:subject/:catalogNumber', async function(req, res) {
 UpdateRouter.get('/requisite/all', async function(req, res) {
 	req.setTimeout(0); // disables timeout
 	res.set('Content-Type', 'application/json');
-	const { err, failedList } = await update.updateRequisites();
+	const { err, failedList } = await update.updateAllRequisites();
 	if (err) res.json({ success: false, err });
 	else res.json({ success: true, failedList });
 });
