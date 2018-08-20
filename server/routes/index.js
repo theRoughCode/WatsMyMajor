@@ -16,6 +16,7 @@ router.use(function(req, res, next) {
 router.get('/', (req, res) => res.send('By Raphael Koh'));
 router.use('/auth', require('./auth'));
 router.use('/courses', require('./courses'));
+router.use('/email', require('./email'));
 router.use('/majors', require('./majors'));
 router.use('/parse', require('./parse'));
 router.use('/prof', require('./prof'));

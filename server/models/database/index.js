@@ -14,6 +14,7 @@ admin.initializeApp({
 const classesRef = admin.database().ref('/classes/');
 const courseListRef = admin.database().ref('/courseList/');
 const coursesRef = admin.database().ref('/courses/');
+const emailsRef = admin.database().ref('/emails/');
 const facebookUsersRef = admin.database().ref('/facebookUsers/');
 const majorsRef = admin.database().ref('/majors/');
 const reqsRef = admin.database().ref('/reqs/');
@@ -25,6 +26,7 @@ module.exports = {
   classesRef,
   courseListRef,
 	coursesRef,
+  emailsRef,
   facebookUsersRef,
   majorsRef,
   reqsRef,

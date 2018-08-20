@@ -151,11 +151,15 @@ class Register extends Component {
       if (!response.ok) {
         const { code } = await response.json();
         const ERROR_USERNAME_EXISTS = 100;
+        const ERROR_EMAIL_EXISTS = 200;
         const ERROR_SERVER_ERROR = 400;
 
         switch (code) {
           case ERROR_USERNAME_EXISTS:
             this.setState({ usernameError: 'Username already exists' });
+            return;
+          case ERROR_EMAIL_EXISTS:
+            this.setState({ emailError: 'Email already exists' });
             return;
           case ERROR_SERVER_ERROR:
             toast.error('Failed to create account. Please contact an administrator.');

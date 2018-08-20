@@ -1,10 +1,12 @@
 const async = require('async');
 const bcrypt = require('bcrypt');
 const { usersRef } = require('./index');
+const emails = require('./emails');
 
 const ERROR_USERNAME_EXISTS = 100;
 const ERROR_USERNAME_NOT_FOUND = 101;
 const ERROR_WRONG_PASSWORD = 105;
+const ERROR_EMAIL_EXISTS = 200;
 const ERROR_SERVER_ERROR = 400;
 
 /****************************
@@ -20,17 +22,22 @@ const BYPASS = process.env.AUTH_BYPASS;
 async function createUser(username, email, name, password, callback) {
   const isDuplicate = await userExists(username);
 
-  if (isDuplicate) {
-    return {
-      err: { code: ERROR_USERNAME_EXISTS, message: 'Username already exists' },
-      user: null,
-    };
-  }
+  if (isDuplicate) return {
+    err: { code: ERROR_USERNAME_EXISTS, message: 'Username already exists' },
+    user: null,
+  };
+
+  const emailExists = await emails.emailExists(email);
+  if (emailExists) return {
+    err: { code: ERROR_EMAIL_EXISTS, message: 'Email already exists' },
+    user: null,
+  };
 
   try {
     const hash = await bcrypt.hash(password, saltRounds);
     const user = { name, password: hash, email };
     await setUser(username, user);
+    await emails.setEmail(username, email);
     return { err: null, user };
   } catch (err) {
     return {
