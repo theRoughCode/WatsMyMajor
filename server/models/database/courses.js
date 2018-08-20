@@ -1,4 +1,3 @@
-const async = require('async');
 const fuzzy = require('fuzzy');
 const { coursesRef } = require('./index');
 const waterloo = require('../waterloo');

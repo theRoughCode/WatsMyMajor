@@ -1,9 +1,34 @@
 const asyncjs = require('async');
 const waterloo = require('./waterloo');
+const classScraper = require('./scrapers/classes');
+const classes = require('./database/classes');
+const courseList = require('./database/courseList');
 const courses = require('./database/courses');
 const requisites = require('./database/requisites');
-const stats = require('../models/database/stats');
-const users = require('../models/database/users');
+const stats = require('./database/stats');
+const users = require('./database/users');
+
+/****************************
+ *													*
+ *		C O U R S E L I S T 	*
+ *													*
+ ****************************/
+
+// Updates list of courses.
+// This maintains the source of truth for the list of courses
+// that the other tables rely on.
+function updateCourseList() {
+	return new Promise((resolve, reject) => {
+		waterloo.getCourses(async function(err, data) {
+			if (err) return resolve(err);
+
+			await Promise.all(data.map(async ({ subject, catalog_number }) => {
+				await courseList.setCourse(subject, catalog_number);
+			}));
+			resolve(null);
+		});
+	});
+}
 
 /****************************
  *													*
@@ -49,6 +74,12 @@ function updateAllCourses() {
 		});
 	});
 }
+
+/****************************
+ *													*
+ *		R E Q U I S I T E S 	*
+ *													*
+ ****************************/
 
 // Updates individial course requisite
 function updateCourseRequisite(subject, catalogNumber) {
@@ -140,9 +171,14 @@ async function updateAllRequisites() {
   }
 }
 
+/****************************
+ *													*
+ *			P O P U L A R 			*
+ *													*
+ ****************************/
+
 // Updates database with count of all users courses
 async function updatePopularCourses() {
-  console.log('Running nightly cron job for updating popular courses...')
   let { err, courseCount } = await users.getAllUserCourses();
 	if (err) {
 		console.log(err);
@@ -155,6 +191,68 @@ async function updatePopularCourses() {
 		console.log(err);
     return { err, courseCount: null };
 	} else return { err: null, courseCount };
+}
+
+/****************************
+ *													*
+ *			C L A S S E S				*
+ *													*
+ ****************************/
+
+// Update classes for individial course
+async function updateClass(subject, catalogNumber, term) {
+	const { err, classInfo } = await classScraper.getClassInfo(subject, catalogNumber, term);
+	if (err) return err;
+
+	try {
+		await classes.setClasses(subject, catalogNumber, term, classInfo);
+		return null;
+	} catch (err) {
+		console.log(err);
+		return err;
+	}
+}
+
+// Update classes for all courses
+// Returns { err, failedList }
+function updateAllClasses(term) {
+	const failedList = [];
+	try {
+		return new Promise(async (resolve, reject) => {
+			const courses = await courseList.getCourseList();
+			asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
+				updateClass(subject, catalogNumber, term)
+					.then(callback)
+					.catch(err => {
+						console.log(`${subject} ${catalogNumber}: ${err}`);
+						failedList.push({ subject, catalogNumber, err });
+						callback(err);
+					});
+			}, err => {
+				console.log(err);
+				if (err) resolve({ err, failedList });
+				else resolve({ err: null, failedList });
+			});
+		});
+	} catch (err) {
+		console.log(err);
+		return { err, failedList: null };
+	}
+}
+
+// Update classes for latest term
+async function updateLatestClasses() {
+	return new Promise((resolve, reject) => {
+		waterloo.getTerms(async function({ nextTerm }) {
+			try {
+				await updateAllClasses(nextTerm);
+				resolve(null);
+			} catch (err) {
+				console.log(err);
+				resolve(err);
+			}
+		});
+	});
 }
 
 
@@ -186,9 +284,13 @@ async function storePostreqs(choose, prereqs, postreq, prereq) {
 
 
 module.exports = {
+	updateCourseList,
   updateCourseInformation,
 	updateAllCourses,
   updateCourseRequisite,
   updateAllRequisites,
 	updatePopularCourses,
+	updateClass,
+	updateAllClasses,
+	updateLatestClasses,
 };

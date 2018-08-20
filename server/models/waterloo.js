@@ -31,6 +31,20 @@ function parseWeekdays(weekdays) {
 		.filter(d => d != null);
 }
 
+// Retrieves terms
+// Returns { currentTerm, previousTerm, nextTerm }
+function getTerms(callback) {
+	uwclient.get('/terms/list.json', function(err, res) {
+		if(err) return callback({ currentTerm: null, previousTerm: null, nextTerm: null });
+		const { current_term, previous_term, next_term } = res.data;
+		return callback({
+			currentTerm: current_term,
+			previousTerm: previous_term,
+			nextTerm: next_term
+		});
+	});
+}
+
 // Retrieves specific information on classes
 // TODO: Move to firebase
 function getCourseClasses(subject, catalogNumber) {
@@ -183,12 +197,12 @@ function getCourseInformation(subject, catalogNumber) {
 				terms_offered,
 				notes,
 				url,
+				academic_level,
 				// offerings,
 				// needs_department_consent,
 				// needs_instructor_consent,
 				// extra,
 				// calendar_year,
-				// academic_level,
 			} = res.data;
 
 			const info = {
@@ -199,6 +213,7 @@ function getCourseInformation(subject, catalogNumber) {
 				terms: terms_offered,
 				notes,
 				url,
+				academicLevel: academic_level,
 			};
 			resolve({ err: null, info });
 		});
@@ -301,8 +316,10 @@ function getCourses(callback) {
 		else return callback(null, res.data);
 	})
 }
+
 // Exports
 module.exports = {
+	getTerms,
 	getCourseClasses,
 	getCourseInformation,
 	getCourseDescription,

@@ -11,6 +11,8 @@ admin.initializeApp({
   storageBucket: "watsmymajor.appspot.com"
 });
 
+const classesRef = admin.database().ref('/classes/');
+const courseListRef = admin.database().ref('/courseList/');
 const coursesRef = admin.database().ref('/courses/');
 const facebookUsersRef = admin.database().ref('/facebookUsers/');
 const majorsRef = admin.database().ref('/majors/');
@@ -20,6 +22,8 @@ const usersRef = admin.database().ref('/users/');
 const profilePicBucket = admin.storage().bucket();
 
 module.exports = {
+  classesRef,
+  courseListRef,
 	coursesRef,
   facebookUsersRef,
   majorsRef,

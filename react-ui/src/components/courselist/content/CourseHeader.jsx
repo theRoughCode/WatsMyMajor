@@ -61,7 +61,7 @@ const CourseHeader = ({
 	title,
 	rating,
 	url,
-	termsOffered,
+	terms,
 	addToCartHandler,
 	removeFromCartHandler,
 	taken,
@@ -117,8 +117,8 @@ const CourseHeader = ({
 				}
 			</div>
 			<div style={ styles.rightContainer }>
-				{termsOffered.length > 0 && (
-					<span style={ styles.terms }>Offered in: {termsOffered.join(', ')}</span>
+				{terms.length > 0 && (
+					<span style={ styles.terms }>Offered in: {terms.join(', ')}</span>
 				)}
 				{ cartButton }
 			</div>
@@ -131,7 +131,7 @@ CourseHeader.propTypes = {
 	catalogNumber: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	rating: PropTypes.number.isRequired,
-	termsOffered: PropTypes.array.isRequired,
+	terms: PropTypes.array.isRequired,
 	addToCartHandler: PropTypes.func.isRequired,
 	removeFromCartHandler: PropTypes.func.isRequired,
 	taken: PropTypes.bool.isRequired,

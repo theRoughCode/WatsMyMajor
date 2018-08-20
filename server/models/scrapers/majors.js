@@ -1,19 +1,10 @@
 const cheerio = require('cheerio');
-const request = require('request');
-
-async function getHTML(url) {
-  return new Promise((resolve, reject) => {
-    request.get(url, function (err, _, html) {
-      if (err) reject(err);
-      else resolve(html);
-    });
-  });
-}
+const utils = require('./utils');
 
 async function parseMajor(url) {
   const reqs = [];
   try {
-    const html = await getHTML(url);
+    const html = await utils.getHTML(url);
     const $ = cheerio.load(html);
 
     $('.MainContent > blockquote').each((i, elem) => {

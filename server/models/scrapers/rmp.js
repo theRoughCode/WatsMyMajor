@@ -1,5 +1,5 @@
-const request = require('request');
 const cheerio = require('cheerio');
+const utils = require('./utils');
 
 function removeMiddleName(name) {
 	const names = name.split(" ");
@@ -8,44 +8,58 @@ function removeMiddleName(name) {
 	return `${names[0]} ${names[names.length - 1]}`;
 }
 
-function getProfInfo(name, callback) {
+async function getProfInfo(name, callback) {
 	const baseURL = 'http://www.ratemyprofessors.com';
 	const parsedName = removeMiddleName(name);
 	const url = `${baseURL}/search.jsp?queryBy=teacherName&country=canada&stateselect=ON&queryoption=HEADER&query=${parsedName}&facetSearch=true`;
+	let $ = null;
 
-	request(url, function(error, response, html){
-		if(!error){
-			let $ = cheerio.load(html);
+	// Get list of profs
+	try {
+		const html = await utils.getHTML(url);
+		$ = cheerio.load(html);
+	} catch (err) {
+		console.log(err);
+		return { err, prof: null };
+	}
 
-			const hasResults = /\d/.test($('.result-count').text());
+	const hasResults = /\d/.test($('.result-count').text());
+	if (!hasResults) return { err: 'No results found.' };
 
-			if (!hasResults) return callback({ error: 'No results' });
+	// Get prof URL
+	const profURL = $('.listings').children().first().find('a').attr('href');
+	const rmpURL = baseURL + profURL;
 
-			const profURL = $('.listings').children().first().find('a').attr('href');
-			const rmpURL = baseURL + profURL;
-			request(rmpURL, function(error, response, html) {
-				$ = cheerio.load(html);
-				const rating = Number($('.quality .grade').text());
-				const difficulty = Number($('.difficulty .grade').text().replace(/\s/g, ''));
-				const maxNumberOfTags = 3;  // Determines max no. of tags
-				const tags = $('.tag-box-choosetags')
-					.slice(0, maxNumberOfTags)
-					.text()
-					.replace(/\([0-9]*\)/g, ',')
-					.slice(0, -1)
-					.split(',')
-					.map(tag => tag.trim());
+	try {
+		const html = await utils.getHTML(rmpURL);
+		$ = cheerio.load(html);
+	} catch (err) {
+		console.log(err);
+		return { err, prof: null };
+	}
 
-				callback({
-					rating,
-					difficulty,
-					tags,
-					rmpURL,
-					profAvatarURL: 'images/firas_mansour.jpg'
-				});
-			});
-		}
-	});
+	const rating = Number($('.quality .grade').text());
+	const difficulty = Number($('.difficulty .grade').text().replace(/\s/g, ''));
+	const maxNumberOfTags = 3;  // Determines max no. of tags
+	const tags = $('.tag-box-choosetags')
+		.slice(0, maxNumberOfTags)
+		.text()
+		.replace(/\([0-9]*\)/g, ',')
+		.slice(0, -1)
+		.split(',')
+		.map(tag => tag.trim());
+
+	// TODO: Remove prof avatar url
+	return {
+		err: null,
+		prof: {
+			rating,
+			difficulty,
+			tags,
+			rmpURL,
+			profAvatarURL: 'images/firas_mansour.jpg',
+		},
+	};
 }
 
 

@@ -41,60 +41,65 @@ const styles = {
 	},
 };
 
-// TODO: Make this more dynamic
 const termStr = (term) => {
-	switch(term) {
-		case '1179': return 'Fall 2017';
-		case '1181': return 'Winter 2018';
-		case '1185': return 'Spring 2018';
-		case '1189': return 'Fall 2018';
-		default: return '';
+	const termRegex = /1([1-2][0-9])(1|5|9)/;
+	const [ year, month ] = term.match(termRegex).slice(1);
+	let season = '';
+	switch (month) {
+		case '1':
+			season = 'Winter';
+			break;
+		case '5':
+			season = 'Spring';
+			break;
+		case '9':
+			season = 'Fall';
+			break;
+		default:
+			season = '';
 	}
+	return `${season} 20${year}`;
 };
 
 
-const CourseClassList = (props) => {
-	const {
-		expandClass,
-		term,
-		classes,
-	} = props;
-
-	return (
-		<div style={ styles.container }>
-			<div style={ styles.header }>
-				<span>{ termStr(term) }</span>
-			</div>
-			<Paper zDepth={ 1 } style={ styles.paper }>
-				<Table
-					className="course-class-list-table"
-					style={ styles.table }
-					headerStyle={{ height: 0 }}
-					>
-					<TableBody displayRowCheckbox={false}>
-						<TableRow>
-							<TableRowColumn style={ styles.tableHeader }>Section</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Class</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Campus</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Enrolled</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Time</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Location</TableRowColumn>
-							<TableRowColumn style={ styles.tableHeader }>Instructor</TableRowColumn>
-						</TableRow>
-						{
-							classes.map((classData, index) => (
-								<ClassRow
-									key={ index }
-									classData={ classData }
-									onClickHandler={ () => expandClass(classData) } />
-							))
-						}
-					</TableBody>
-				</Table>
-			</Paper>
+const CourseClassList = ({
+	expandClass,
+	term,
+	classes,
+}) => (
+	<div style={ styles.container }>
+		<div style={ styles.header }>
+			<span>{ termStr(term) }</span>
 		</div>
-	);
-};
+		<Paper zDepth={ 1 } style={ styles.paper }>
+			<Table
+				className="course-class-list-table"
+				style={ styles.table }
+				headerStyle={{ height: 0 }}
+			>
+				<TableBody displayRowCheckbox={false}>
+					<TableRow>
+						<TableRowColumn style={ styles.tableHeader }>Section</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Class</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Campus</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Enrolled</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Time</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Location</TableRowColumn>
+						<TableRowColumn style={ styles.tableHeader }>Instructor</TableRowColumn>
+					</TableRow>
+					{
+						classes.map((classData, index) => (
+							<ClassRow
+								key={ index }
+								classData={ classData }
+								onClickHandler={ () => expandClass(classData) } />
+						))
+					}
+				</TableBody>
+			</Table>
+		</Paper>
+	</div>
+);
 
 CourseClassList.propTypes = {
 	expandClass: PropTypes.func.isRequired,

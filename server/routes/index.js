@@ -20,9 +20,11 @@ router.use('/majors', require('./majors'));
 router.use('/parse', require('./parse'));
 router.use('/prof', require('./prof'));
 router.use('/reqs', require('./reqs'));
+router.use('/scrape', require('./scrape'));
 router.use('/stats', require('./stats'));
 router.use('/tree', require('./tree'));
 router.use('/update', require('./update'));
+router.use('/wat', require('./wat'));
 router.use('/users', passport.authenticate('jwt', { session: false }), require('./users'));
 router.all('*', (req, res) => res.sendStatus(404));
 

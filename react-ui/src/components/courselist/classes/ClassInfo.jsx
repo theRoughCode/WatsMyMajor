@@ -4,6 +4,7 @@ import UnitsIcon from 'material-ui/svg-icons/communication/import-contacts';
 import EnrolledIcon from 'material-ui/svg-icons/action/account-circle';
 import WaitingIcon from 'material-ui/svg-icons/social/people';
 import BlockIcon from 'material-ui/svg-icons/content/block';
+import TopicIcon from 'material-ui/svg-icons/av/web';
 
 const styles = {
 	icon: {
@@ -32,6 +33,7 @@ const Info = ({ icon, info }) => (
 
 const ClassInfo = ({
 	units,
+	topic,
 	attending,
 	enrollmentCap,
 	waiting,
@@ -45,6 +47,14 @@ const ClassInfo = ({
 			icon={ <UnitsIcon style={ styles.icon } /> }
 			info={ `Units: ${units}` }
 		/>
+		{
+			(topic.length > 0) && (
+				<Info
+					icon={ <TopicIcon style={ styles.icon } /> }
+					info={ `Topic: ${topic}` }
+				/>
+			)
+		}
 		<Info
 			icon={ <EnrolledIcon style={ styles.icon } /> }
 			info={ `Attending: ${attending}` }
@@ -69,15 +79,20 @@ const ClassInfo = ({
 			icon={ <div style={ styles.icon }></div> }
 			info={ `Reserved cap: ${reserveCap}` }
 		/>
-		<Info
-			icon={ <div style={ styles.icon }></div> }
-			info={ `Reserve group: ${reserveGroup}` }
-		/>
+		{
+			(reserveGroup.length > 0) && (
+				<Info
+					icon={ <div style={ styles.icon }></div> }
+					info={ `Reserve group: ${reserveGroup}` }
+				/>
+			)
+		}
 	</div>
 );
 
 ClassInfo.propTypes = {
 	units: PropTypes.number.isRequired,
+	topic: PropTypes.string.isRequired,
 	attending: PropTypes.number.isRequired,
   enrollmentCap: PropTypes.number.isRequired,
 	waiting: PropTypes.number.isRequired,

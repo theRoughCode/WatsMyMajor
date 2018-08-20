@@ -69,6 +69,7 @@ export default class ClassDetailsContainer extends Component {
 	};
 
 	state = {
+		instructor: '',
 		prof: {},
 		fetchingRMP: false
 	};
@@ -79,10 +80,12 @@ export default class ClassDetailsContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { instructor } = nextProps.classInfo;
+		const { classes } = nextProps.classInfo;
+		if (classes == null || classes.length === 0) return;
 
-		if (instructor !== this.props.instructor) {
-			this.setState({ fetchingRMP: true });
+		const { instructor } = classes[0];
+		if (instructor !== this.state.instructor) {
+			this.setState({ fetchingRMP: true, instructor });
 			this.updateProfInfo(instructor);
 		}
 	}
@@ -102,9 +105,10 @@ export default class ClassDetailsContainer extends Component {
 
 	render() {
 		const  { classInfo, open, onClose } = this.props;
-		const { prof, fetchingRMP } = this.state;
+		const { instructor, prof, fetchingRMP } = this.state;
 		const {
 			units,
+			topic,
 			note,
 			enrollmentCap,
 			enrollmentTotal,
@@ -113,7 +117,6 @@ export default class ClassDetailsContainer extends Component {
 			reserveCap,
 			reserveTotal,
 			reserveGroup,
-			instructor,
 			lastUpdated,
 		} = classInfo;
 
@@ -142,6 +145,7 @@ export default class ClassDetailsContainer extends Component {
 				<div style={ styles.body }>
 					<ClassInfo
 						units={ units }
+						topic={ topic }
 						attending={ enrollmentTotal }
 						enrollmentCap={ enrollmentCap }
 						waiting={ waitingTotal }

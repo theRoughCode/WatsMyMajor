@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route, withRouter } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import CourseContent from './content/CourseContent';
 import ClassDetails from './classes/ClassDetailsContainer';
 import PrereqsTree from './tree/PrerequisitesTreeContainer';
@@ -31,11 +32,11 @@ const defaultCourse = {
 	prereqs: {},
 	postreqs: [],
 	term: '',
-	classes: []
 };
 
 const defaultClassInfo = {
 	units: 0,
+	topic: '',
 	note: '',
 	classNumber: 0,
 	section: '',
@@ -47,29 +48,35 @@ const defaultClassInfo = {
 	reserveCap: 0,
 	reserveTotal: 0,
 	reserveGroup: '',
-	startTime: '',
-	endTime: '',
-	weekdays: [],
+	classes: [],
 	isTBA: false,
 	isCancelled: false,
 	isClosed: false,
-	instructor: '',
-	location: '',
 	lastUpdated: ''
 };
 
-const getCourseData = (subject, catalogNumber) => {
-	return fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
+const getCourseData = async (subject, catalogNumber) => {
+	const response = await fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
 		headers: {
 			'x-secret': process.env.REACT_APP_SERVER_SECRET
 		}
-	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`status ${response.status}`);
-		}
-		return response.json();
 	});
+	if (!response.ok) {
+		throw new Error(`status ${response.status}`);
+	}
+	return await response.json();
+};
+
+const getCourseClasses = async (subject, catalogNumber, term) => {
+	const response = await fetch(`/server/courses/classes/${term}/${subject}/${catalogNumber}`, {
+		headers: {
+			'x-secret': process.env.REACT_APP_SERVER_SECRET
+		}
+	});
+	if (!response.ok) {
+		throw new Error(`status ${response.status}`);
+	}
+	return await response.json();
 };
 
 // Formats postreqs obj into arr
@@ -102,13 +109,16 @@ class CourseViewContainer extends Component {
 		this.state = {
 			subject,
 			catalogNumber,
-			loading: true,
+			term: '1189',
+			courseLoading: true,
+			classLoading: true,
 			error: false,
 			classModalOpen: false,
 			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
 			inCart: isInCart(subject, catalogNumber, props.cart),
 			eligible: false,
 			course: defaultCourse,
+			classes: [],
 			classInfo: defaultClassInfo,
 		}
 
@@ -138,14 +148,23 @@ class CourseViewContainer extends Component {
 			if (isNewCourse) this.closeClassModal();
 
 			// User selected new course
-			if (isNewCourse || updatedUserCourses) {
-				const { myCourses } = nextProps;
+			if (isNewCourse) {
+				const { myCourses, cart } = nextProps;
 				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
-				this.setState({ loading: true, taken });
+				const inCart = isInCart(nextSubject, nextCatNum, cart);
+				this.setState({ courseLoading: true, classLoading: true, taken, inCart });
 				this.updatePageInfo(nextSubject, nextCatNum);
 			}
 
-			if (isNewCourse || updatedCart) {
+			// User courses are updated
+			if (updatedUserCourses) {
+				const { myCourses } = nextProps;
+				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+				this.setState({ taken });
+			}
+
+			// User's cart is updated
+			if (updatedCart) {
 				const { cart } = nextProps;
 				const inCart = isInCart(nextSubject, nextCatNum, cart);
 				this.setState({ inCart });
@@ -154,16 +173,28 @@ class CourseViewContainer extends Component {
 	}
 
 	async updatePageInfo(subject, catalogNumber) {
-		if (!subject || !catalogNumber) return;
+		this.setState({ subject, catalogNumber });
+		if (!subject || !catalogNumber) {
+			this.setState({
+				courseLoading: false,
+				classLoading: false,
+				error: 'Invalid course name',
+			});
+			return;
+		}
 
+		this.fetchCourseData(subject, catalogNumber);
+		this.fetchClasses(subject, catalogNumber);
+	};
+
+	async fetchCourseData(subject, catalogNumber) {
 		try {
-			// fetch course data
 			const json = await getCourseData(subject, catalogNumber);
 			let {
 				description,
 				crosslistings,
 				notes,
-				termsOffered,
+				terms,
 				title,
 				units,
 				url,
@@ -171,7 +202,6 @@ class CourseViewContainer extends Component {
 				coreqs,
 				antireqs,
 				postreqs,
-				classList
 			} = json;
 
 			// Update page title
@@ -182,24 +212,33 @@ class CourseViewContainer extends Component {
 				description,
 				rating: 2.1,
 				url,
-				termsOffered,
+				terms,
 				crosslistings,
 				antireqs,
 				coreqs,
 				prereqs,
 				postreqs: formatPostreqs(postreqs),
-				term: (classList) ? classList.term : '',
-				classes: (classList) ? classList.classes : []
 			};
 
 			const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
 
-			this.setState({ loading: false, course, subject, catalogNumber, eligible });
+			this.setState({ courseLoading: false, course, eligible });
 		} catch(error) {
 			console.error(`ERROR: ${error}`);
-			this.setState({ loading: false, error, subject, catalogNumber });
+			this.setState({ courseLoading: false, error });
 		};
-	};
+	}
+
+	async fetchClasses(subject, catalogNumber) {
+		try {
+			const classes = await getCourseClasses(subject, catalogNumber, this.state.term);
+			this.setState({ classLoading: false, classes });
+		} catch (error) {
+			console.error(`ERROR: ${error}`);
+			this.setState({ classLoading: false });
+			toast.error('Failed to load classes.');
+		}
+	}
 
 	viewCart() {
 		this.props.history.push('/my-courses');
@@ -229,12 +268,14 @@ class CourseViewContainer extends Component {
 			subject,
 			catalogNumber,
 			course,
+			term,
+			classes,
 			taken,
 			inCart,
 			eligible,
 			classInfo,
 			classModalOpen,
-			loading,
+			courseLoading,
 			error
 		} = this.state;
 
@@ -244,6 +285,8 @@ class CourseViewContainer extends Component {
 					subject={ subject }
 					catalogNumber={ catalogNumber }
 					course={ course }
+					term={ term }
+					classes={ classes }
 					expandClass={ this.onExpandClass }
 					taken={ taken }
 					inCart={ inCart }
@@ -259,7 +302,7 @@ class CourseViewContainer extends Component {
 			</div>
 		);
 
-		const courseView = (loading)
+		const courseView = (courseLoading)
 			? <LoadingView />
 			: (error)
 				? (

@@ -39,27 +39,27 @@ const styles = {
 const CourseContent = ({
 	subject,
 	catalogNumber,
+	course,
+	term,
+	classes,
 	expandClass,
 	taken,
 	inCart,
 	eligible,
 	addToCartHandler,
 	removeFromCartHandler,
-	course
 }) => {
 	const {
 		title,
 		description,
 		rating,
 		url,
-		termsOffered,
+		terms,
 		crosslistings,
 		antireqs,
 		coreqs,
 		prereqs,
 		postreqs,
-		term,
-		classes,
 	} = course;
 
 	return (
@@ -70,7 +70,7 @@ const CourseContent = ({
 				title={ title }
 				rating={ rating }
 				url={ url }
-				termsOffered={ termsOffered }
+				terms={ terms }
 				addToCartHandler={ addToCartHandler }
 				removeFromCartHandler={ removeFromCartHandler }
 				taken={ taken }
@@ -122,6 +122,8 @@ CourseContent.propTypes = {
 	subject: PropTypes.string.isRequired,
 	catalogNumber: PropTypes.string.isRequired,
 	course: PropTypes.object.isRequired,
+	term: PropTypes.string.isRequired,
+	classes: PropTypes.array.isRequired,
 	expandClass: PropTypes.func.isRequired,
 	taken: PropTypes.bool.isRequired,
 	inCart: PropTypes.bool.isRequired,
