@@ -36,6 +36,7 @@ export default class UserCoursesGraph extends Component {
 
   render() {
     const { courses } = this.state;
+    if (courses.length === 0) return null;
     return (
       <Paper style={{ height: 400, height: 'fit-content', margin: 'auto' }} depth={ 1 }>
         <VictoryLabel

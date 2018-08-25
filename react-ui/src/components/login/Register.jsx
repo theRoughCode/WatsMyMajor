@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import { setUser } from '../../actions';
+import EmailSent from './EmailSent';
 import {
   validateUsername,
   validateName,
@@ -75,28 +74,18 @@ const styles = {
   }
 };
 
-class Register extends Component {
+export default class Register extends Component {
 
-  static propTypes = {
-    onSetUser: PropTypes.func.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      usernameError: '',
-      nameError: '',
-      emailError: '',
-      passwordError: '',
-      keyError: '',
-    }
-
-    this.removeErrors = this.removeErrors.bind(this);
-    this.onRegister = this.onRegister.bind(this);
+  state = {
+    registered: false,
+    usernameError: '',
+    nameError: '',
+    emailError: '',
+    passwordError: '',
+    keyError: '',
   }
 
-  removeErrors() {
+  removeErrors = () => {
     this.setState({
       usernameError: '',
       nameError: '',
@@ -107,7 +96,7 @@ class Register extends Component {
     });
   }
 
-  async onRegister(ev) {
+  onRegister = async (ev) => {
     ev.preventDefault();
     const username = this.refs.username.getValue();
     const name = this.refs.name.getValue();
@@ -170,8 +159,7 @@ class Register extends Component {
         }
       } else {
         const user = await response.json();
-        this.props.onSetUser(username, user);
-        this.props.history.push("/");
+        this.setState({ registered: true });
       }
     } catch (err) {
       toast.error('Failed to create account. Please contact an administrator.');
@@ -180,6 +168,7 @@ class Register extends Component {
   }
 
   render() {
+    if (this.state.registered) return <EmailSent />;
     return  (
       <div style={styles.viewContainer}>
         <div style={styles.container}>
@@ -254,11 +243,3 @@ class Register extends Component {
     );
   }
 }
-
-const mapDispatchToProps = dispatch => ({
-  onSetUser: (username, user) => {
-    dispatch(setUser(username, user));
-  }
-});
-
-export default connect(null, mapDispatchToProps)(Register);

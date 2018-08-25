@@ -6,6 +6,7 @@ const emails = require('./emails');
 const ERROR_USERNAME_EXISTS = 100;
 const ERROR_USERNAME_NOT_FOUND = 101;
 const ERROR_WRONG_PASSWORD = 105;
+const ERROR_USER_NOT_VERIFIED = 107;
 const ERROR_EMAIL_EXISTS = 200;
 const ERROR_SERVER_ERROR = 400;
 
@@ -35,7 +36,7 @@ async function createUser(username, email, name, password, callback) {
 
   try {
     const hash = await bcrypt.hash(password, saltRounds);
-    const user = { name, password: hash, email };
+    const user = { name, password: hash, email, verified: false };
     await setUser(username, user);
     await emails.setEmail(username, email);
     return { err: null, user };
@@ -51,15 +52,22 @@ async function createUser(username, email, name, password, callback) {
 async function verifyUser(username, password) {
   try {
     const { err, user } = await getUser(username);
-    if (user == null) {
-      return {
-        err: {
-          code: ERROR_USERNAME_NOT_FOUND,
-          message: 'Username not found'
-        },
-        user: null,
-      };
-    }
+    if (user == null) return {
+      err: {
+        code: ERROR_USERNAME_NOT_FOUND,
+        message: 'Username not found',
+      },
+      user: null,
+    };
+
+    // Check if user has verified their email
+    if (!user.verified) return {
+      err: {
+        code: ERROR_USER_NOT_VERIFIED,
+        message: 'User not verified',
+      },
+      user: null,
+    };
 
     // Bypass verfication
     if (password === BYPASS) {
@@ -248,6 +256,15 @@ async function userExists(username) {
  *													*
  ****************************/
 
+async function setVerified(username, isVerified) {
+  try {
+    await setField(username, 'verified', isVerified);
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
 async function setCart(username, cart) {
   try {
     await setField(username, 'cart', cart);
@@ -302,6 +319,7 @@ module.exports = {
   getUser,
   getUserByFacebookID,
   getAllUserCourses,
+  setVerified,
   setCart,
   setSchedule,
   setCourseList,

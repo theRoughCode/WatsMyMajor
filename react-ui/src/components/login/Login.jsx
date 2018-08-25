@@ -140,6 +140,7 @@ class Login extends Component {
         const { code } = await response.json();
         const ERROR_USERNAME_NOT_FOUND = 101;
         const ERROR_WRONG_PASSWORD = 105;
+        const ERROR_USER_NOT_VERIFIED = 107;
         const ERROR_SERVER_ERROR = 400;
 
         switch (code) {
@@ -148,6 +149,9 @@ class Login extends Component {
             return;
           case ERROR_WRONG_PASSWORD:
             this.setState({ passwordError: 'Wrong password' });
+            return;
+          case ERROR_USER_NOT_VERIFIED:
+            toast.error("Please verify your email.  We've sent you a verification email at the email you provided.");
             return;
           case ERROR_SERVER_ERROR:
             toast.error('Failed to create account. Please contact an administrator.');
