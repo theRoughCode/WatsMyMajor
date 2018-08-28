@@ -8,6 +8,7 @@ import ClassDetails from './classes/ClassDetailsContainer';
 import PrereqsTree from './tree/PrerequisitesTreeContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
+import { fireLoginPrompt } from '../tools/LoginPrompt';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
 import { createSnack, addToCart, removeFromCart } from '../../actions';
@@ -96,6 +97,7 @@ class CourseViewContainer extends Component {
 		myCourses: PropTypes.object.isRequired,
 		cart: PropTypes.array.isRequired,
 		username: PropTypes.string.isRequired,
+		isLoggedIn: PropTypes.bool.isRequired,
 		addToCartHandler: PropTypes.func.isRequired,
 		removeFromCartHandler: PropTypes.func.isRequired,
 		match: PropTypes.object.isRequired,
@@ -231,7 +233,7 @@ class CourseViewContainer extends Component {
 
 	async fetchClasses(subject, catalogNumber) {
 		try {
-			const classes = await getCourseClasses(subject, catalogNumber, this.state.term);
+			const classes = await getCourseClasses(subject, catalogNumber, this.state.term) || [];
 			this.setState({ classLoading: false, classes });
 		} catch (error) {
 			console.error(`ERROR: ${error}`);
@@ -245,9 +247,10 @@ class CourseViewContainer extends Component {
 	}
 
 	addCourseToCart(subject, catalogNumber) {
-		const { addToCartHandler, username, cart } = this.props;
+		const { addToCartHandler, username, isLoggedIn, cart, history, location } = this.props;
 		const { taken } = this.state;
-		addToCartHandler(username, cart, subject, catalogNumber, taken, this.viewCart);
+		if (!isLoggedIn) fireLoginPrompt(history, location.pathname);
+		else addToCartHandler(username, cart, subject, catalogNumber, taken, this.viewCart);
 	}
 
 	removeCourseFromCart(subject, catalogNumber) {
@@ -332,10 +335,11 @@ class CourseViewContainer extends Component {
 
 }
 
-const mapStateToProps = ({ myCourses, cart, user }) => ({
+const mapStateToProps = ({ myCourses, cart, user, isLoggedIn }) => ({
 	myCourses,
 	cart,
-	username: user.username
+	username: user.username,
+	isLoggedIn,
 });
 
 const mapDispatchToProps = dispatch => {

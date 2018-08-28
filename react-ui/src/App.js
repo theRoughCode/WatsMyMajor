@@ -194,10 +194,10 @@ class App extends Component {
             <Route exact path='/login' render={ this.addUndirect(Login) } />
             <Route exact path='/verify-email' component={ VerifyEmail } />
             <Route exact path='/settings' render={ this.addRedirect(Settings) } />
-  					<Route exact path='/majors/:majorKey?' render={ this.addRedirect(Majors) } />
+  					<Route exact path='/majors/:majorKey?' component={ Majors } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
-            <Route path='/courses/:subject/:catalogNumber' render={ this.addRedirect(CourseView) } />
+            <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
   				</Switch>
   			</div>
         <ToastContainer />

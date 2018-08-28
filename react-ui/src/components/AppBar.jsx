@@ -12,11 +12,11 @@ const styles = {
 		textAlign: 'left',
 		position: 'fixed',
 	},
-	logoutButton: {
+	buttonStyle: {
 		marginTop: 11,
 		marginLeft: 20
 	},
-	logoutLabel: {
+	buttonLabel: {
 		color: 'white'
 	},
 	searchBar: {
@@ -36,8 +36,30 @@ class AppBar extends Component {
 		this.props.history.push(`/courses/${subject}/${catalogNumber}`);
 	}
 
+	onLogin = () => {
+		this.props.history.push('/login', { from: this.props.location.pathname });
+	}
+
+	onLogout = () => {
+		this.props.history.push('/login');
+		this.props.onLogout();
+	}
+
 	render() {
-		const { toggleSideBar, onLogout, isLoggedIn } = this.props;
+		const { toggleSideBar, isLoggedIn } = this.props;
+		const button = (isLoggedIn)
+			? <FlatButton
+					label="Logout"
+					onClick={ this.onLogout }
+					labelStyle={ styles.buttonLabel }
+					style={ styles.buttonStyle }
+				/>
+			: <FlatButton
+					label="Login"
+					onClick={ this.onLogin }
+					labelStyle={ styles.buttonLabel }
+					style={ styles.buttonStyle }
+				/>;
 		return (
 			<Bar
 				style={ styles.container }
@@ -45,14 +67,7 @@ class AppBar extends Component {
 				title="WatsMyMajor"
 			>
 				<SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
-				{ isLoggedIn && (
-					<FlatButton
-						label="Logout"
-						onClick={ onLogout }
-						labelStyle={ styles.logoutLabel }
-						style={ styles.logoutButton }
-					/>
-				) }
+				{ button }
 			</Bar>
 		);
 	}

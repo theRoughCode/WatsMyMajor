@@ -27,7 +27,7 @@ async function sendMail(to, subject, html) {
 async function sendVerificationEmail(email, username) {
   const token = jwt.sign({ username }, JWT_SECRET);
   const subject = 'Verify Your Email!';
-  const url = `http://localhost:3000/verify-email?token=${token}`;
+  const url = `https://watsmymajorbeta.herokuapp.com/verify-email?token=${token}`;
   const html = `
     <style type="text/css" rel="stylesheet" media="all">
       .button {

@@ -6,6 +6,7 @@ import MenuItem from 'material-ui/MenuItem';
 import ChooseBoard from './ChooseBoard';
 import SelectScreen from './SelectScreen';
 import MajorsAppBar from './MajorsAppBar';
+import { fireLoginPrompt } from '../tools/LoginPrompt';
 
 const styles = {
   container: {
@@ -82,6 +83,7 @@ async function fetchList() {
 class MajorsContainer extends Component {
   static propTypes: {
     myCourses: PropTypes.object.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
   };
 
   state = {
@@ -130,6 +132,10 @@ class MajorsContainer extends Component {
 
   render() {
     const { majorsList, name, key, url } = this.state;
+    const { isLoggedIn, history, location } = this.props;
+
+    // Notify non-loggedin users that they should login first.
+    if (!isLoggedIn) fireLoginPrompt(history, location.pathname, 'Log in to save your selections!');
 
     if (key.length === 0) {
       return (
@@ -158,6 +164,6 @@ class MajorsContainer extends Component {
   }
 }
 
-const mapStateToProps = ({ myCourses }) => ({ myCourses });
+const mapStateToProps = ({ myCourses, isLoggedIn }) => ({ myCourses, isLoggedIn });
 
 export default connect(mapStateToProps)(MajorsContainer);

@@ -162,8 +162,11 @@ class Login extends Component {
         }
       } else {
         const user = await response.json();
+        const to = this.props.location.state
+          ? this.props.location.state.from || '/'
+          : '/';
+        this.props.history.push(to);
         this.props.onSetUser(username, user);
-        this.props.history.push("/");
       }
     } catch (err) {
       toast.error('Failed to create account. Please contact an administrator.');
@@ -189,8 +192,11 @@ class Login extends Component {
         console.error(err);
       } else {
         const { username, user } = await response.json();
+        const to = this.props.location.state
+          ? this.props.location.state.from || '/'
+          : '/';
+        this.props.history.push(to);
         this.props.onSetUser(username, user);
-        this.props.history.push("/");
       }
     } catch (err) {
       toast.error('Login failed. Please contact an administrator.');

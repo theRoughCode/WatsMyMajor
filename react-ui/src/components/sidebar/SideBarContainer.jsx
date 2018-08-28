@@ -13,6 +13,7 @@ import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
 import GithubIcon from '../tools/GithubIcon';
+import { fireLoginPrompt } from '../tools/LoginPrompt';
 import {
 	darkBlue,
 	lightGrey,
@@ -84,6 +85,12 @@ class SideBarContainer extends Component {
 		});
 	}
 
+	onNavClick = (to) => {
+		const { isLoggedIn, history } = this.props;
+		if (isLoggedIn) this.props.history.push(to);
+		else fireLoginPrompt(history, to);
+	}
+
 	render() {
 		const { name, profileURL, isLoggedIn, open, history } = this.props;
 		const { pathname } = this.state;
@@ -94,6 +101,7 @@ class SideBarContainer extends Component {
 					className="avatar-menu"
 					style={ styles.avatarMenuItem }
 					onClick={ () => history.push('/settings') }
+					disabled={ !isLoggedIn }
 				>
 					{ isLoggedIn && <Avatar name={ name } profileURL={ profileURL } /> }
 				</MenuItem>
@@ -103,7 +111,7 @@ class SideBarContainer extends Component {
 						primaryText={ <span>Dashboard</span> }
 						leftIcon={<DashboardIcon color={ white } />}
 						style={ styles.listItem(pathname === "/") }
-						containerElement={ <Link to="/" /> }
+						onClick={ this.onNavClick.bind(this, '/') }
 					/>
 					<ListItem
 						primaryText={ <span>View Majors</span> }
@@ -115,13 +123,13 @@ class SideBarContainer extends Component {
 						primaryText={ <span>My Courses</span> }
 						leftIcon={<MyCoursesIcon color={ white } />}
 						style={ styles.listItem(pathname === "/my-courses") }
-						containerElement={ <Link to="/my-courses" /> }
+						onClick={ this.onNavClick.bind(this, '/my-courses') }
 					/>
 					<ListItem
 						primaryText={ <span>My Schedule</span> }
 						leftIcon={<ScheduleIcon color={ white } />}
 						style={ styles.listItem(pathname === "/schedule") }
-						containerElement={ <Link to="/schedule" /> }
+						onClick={ this.onNavClick.bind(this, '/schedule') }
 					/>
 				</List>
 				<div style={ styles.github }>
