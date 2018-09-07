@@ -2,21 +2,40 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import WatchIcon from 'material-ui/svg-icons/action/visibility';
+import UnwatchIcon from 'material-ui/svg-icons/action/visibility-off';
 import ClassInfo from './ClassInfo';
 import ClassProf from './ClassProf';
+import { objectEquals } from '../../../utils/arrays';
 import '../../../stylesheets/ClassDetails.css';
+import { darkRed, green3 } from '../../../constants/Colours';
 
 const styles =  {
-	header: {
+	titleContainer: {
 		padding: '10px 20px',
+		display: 'flex',
+	},
+	header: {
 	  textAlign: 'left',
 		display: 'flex',
 		flexDirection: 'column',
+		flex: 1,
 	},
 	headerText: {
 		marginLeft: 0,
 	  fontSize: 30,
 	  fontWeight: 400,
+	},
+	watchContainer: {
+		display: 'flex',
+		flexDirection: 'column',
+		marginLeft: 20,
+	},
+	watchText: {
+		fontSize: 13,
+		margin: '0px auto',
+		color: darkRed,
 	},
 	lastUpdated: {
 		fontSize: 12,
@@ -60,18 +79,27 @@ async function retrieveProfInfo(instructor) {
 	}
 };
 
+function isWatching(watchlist, term, classNumber) {
+	if (!classNumber) return false;
+	if (!watchlist.hasOwnProperty(term)) return false;
+	return watchlist.hasOwnProperty(classNumber);
+}
 
 export default class ClassDetailsContainer extends Component {
 	static propTypes = {
 		classInfo: PropTypes.object.isRequired,
+		watchlist: PropTypes.object.isRequired,
 		open: PropTypes.bool.isRequired,
 		onClose: PropTypes.func.isRequired,
+		onWatch: PropTypes.func.isRequired,
+		onUnwatch: PropTypes.func.isRequired,
 	};
 
 	state = {
 		instructor: '',
 		prof: {},
-		fetchingRMP: false
+		fetchingRMP: false,
+		watching: isWatching(this.props.watchlist, this.props.classInfo.classNumber),
 	};
 
 	async componentDidMount() {
@@ -87,6 +115,11 @@ export default class ClassDetailsContainer extends Component {
 		if (instructor !== this.state.instructor) {
 			this.setState({ fetchingRMP: true, instructor });
 			this.updateProfInfo(instructor);
+		}
+
+		if (!objectEquals(nextProps.watchlist, this.props.watchlist)) {
+			const watching = isWatching(this.nextProps.watchlist, this.props.classInfo.classNumber);
+			this.setState({ watching });
 		}
 	}
 
@@ -104,9 +137,10 @@ export default class ClassDetailsContainer extends Component {
 	}
 
 	render() {
-		const  { classInfo, open, onClose } = this.props;
+		const  { classInfo, watchlist, open, onClose, onWatch, onUnwatch } = this.props;
 		const { instructor, prof, fetchingRMP } = this.state;
 		const {
+			classNumber,
 			units,
 			topic,
 			note,
@@ -127,12 +161,44 @@ export default class ClassDetailsContainer extends Component {
       />
     ];
 
+		let watchButton = null;
+
+		if (watchlist.hasOwnProperty(classNumber)) {
+			watchButton = (
+				<div style={ styles.watchContainer }>
+					<RaisedButton
+						label="Unwatch Class"
+						labelPosition="before"
+						secondary
+						icon={ <UnwatchIcon /> }
+						onClick={ () => onUnwatch(classNumber) }
+					/>
+				</div>
+			);
+		} else if (enrollmentCap > 0 && enrollmentTotal >= enrollmentCap) {
+			watchButton = (
+				<div style={ styles.watchContainer }>
+					<RaisedButton
+						label="Watch Class"
+						labelPosition="before"
+						primary
+						icon={ <WatchIcon /> }
+						onClick={ () => onWatch(classNumber) }
+					/>
+					<span style={ styles.watchText }>This class is full!</span>
+				</div>
+			);
+		}
+
 		return (
 			<Dialog
 				title={
-					<div style={ styles.header }>
-						<span style={ styles.headerText }>Class Information</span>
-						<span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+					<div style={ styles.titleContainer }>
+						<div style={ styles.header }>
+							<span style={ styles.headerText }>Class Information</span>
+							<span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+						</div>
+						{ watchButton }
 					</div>
 				}
 				open={ open }

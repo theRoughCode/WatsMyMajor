@@ -1,4 +1,3 @@
-const async = require('async');
 const bcrypt = require('bcrypt');
 const { usersRef } = require('./index');
 const emails = require('./emails');
@@ -292,6 +291,24 @@ async function setCourseList(username, courseList) {
   }
 }
 
+async function addToWatchlist(username, term, classNum) {
+  try {
+    await setField(username, `watchlist/${term}/${classNum}`, true);
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
+async function removeFromWatchlist(username, term, classNum) {
+  try {
+    await setField(username, `watchlist/${term}/${classNum}`, null);
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
 async function setFacebookID(username, facebookID) {
   try {
     await setField(username, 'facebookID', facebookID);
@@ -323,6 +340,8 @@ module.exports = {
   setCart,
   setSchedule,
   setCourseList,
+  addToWatchlist,
+  removeFromWatchlist,
   setFacebookID,
   setProfilePicture,
 };

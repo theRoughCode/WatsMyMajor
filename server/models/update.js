@@ -1,4 +1,5 @@
 const asyncjs = require('async');
+const email = require('./email');
 const waterloo = require('./waterloo');
 const classScraper = require('./scrapers/classes');
 const classes = require('./database/classes');
@@ -7,6 +8,7 @@ const courses = require('./database/courses');
 const requisites = require('./database/requisites');
 const stats = require('./database/stats');
 const users = require('./database/users');
+const watchlist = require('./database/watchlist');
 
 /****************************
  *													*
@@ -206,7 +208,15 @@ async function updateClass(subject, catalogNumber, term) {
 
 	try {
 		await classes.setClasses(subject, catalogNumber, term, classInfo);
-		return null;
+		asyncjs.forEachOf(classInfo, (info, _, callback) => {
+			info.subject = subject;
+			info.catalogNumber = catalogNumber;
+			updateWatchlist(term, info);
+		}, err => {
+			console.log(err);
+			if (err) return err;
+			else return null;
+		});
 	} catch (err) {
 		console.log(err);
 		return err;
@@ -229,8 +239,10 @@ function updateAllClasses(term) {
 						callback(err);
 					});
 			}, err => {
-				console.log(err);
-				if (err) resolve({ err, failedList });
+				if (err) {
+					console.log(err);
+					resolve({ err, failedList });
+				}
 				else resolve({ err: null, failedList });
 			});
 		});
@@ -243,9 +255,9 @@ function updateAllClasses(term) {
 // Update classes for latest term
 async function updateLatestClasses() {
 	return new Promise((resolve, reject) => {
-		waterloo.getTerms(async function({ nextTerm }) {
+		waterloo.getTerms(async function({ currentTerm }) {
 			try {
-				await updateAllClasses(nextTerm);
+				await updateAllClasses(currentTerm);
 				resolve(null);
 			} catch (err) {
 				console.log(err);
@@ -280,6 +292,46 @@ async function storePostreqs(choose, prereqs, postreq, prereq) {
 
    await requisites.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
 	}
+}
+
+// Helper function for updateClass
+// Updates watchlist enrollment numbers and notifies watchers if necessary
+async function updateWatchlist(term, classInfo) {
+	const {
+		classNumber,
+		subject,
+		catalogNumber,
+		enrollmentCap,
+		enrollmentTotal,
+	} = classInfo;
+
+	let { enrollment, err } = await watchlist.getEnrollment(term, classNumber);
+	if (err) return err;
+
+	// If no change, return
+	if (enrollment != null &&
+			enrollmentCap === enrollment.enrollmentCap &&
+			enrollmentTotal === enrollment.enrollmentTotal
+	) {
+		console.log(`Skipping class ${classNumber}...`);
+		return;
+	}
+
+	// Else, update enrollment results
+	await watchlist.setEnrollment(term, classNumber, { enrollmentCap, enrollmentTotal });
+	console.log(`Updated enrollment for class ${classNumber} and term ${term}.`);
+
+	// Nothing to compare to
+	if (enrollment == null) return;
+
+	({ watchers, err } = await watchlist.getWatchers(term, classNumber));
+	if (err) return err;
+	if (watchers == null || watchers.length === 0) return;
+
+	// Notify watchers if there are spaces
+	const openings = enrollmentCap - enrollmentTotal;
+	if (openings > 0) email.sendClassUpdateEmail(term, classNumber, subject.toUpperCase(), catalogNumber, openings, 'theroughcode');
+	return;
 }
 
 

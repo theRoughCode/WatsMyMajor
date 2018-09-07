@@ -26,6 +26,7 @@ router.use('/stats', require('./stats'));
 router.use('/tree', require('./tree'));
 router.use('/update', require('./update'));
 router.use('/wat', require('./wat'));
+router.use('/watchlist', require('./watchlist'));
 router.use('/users', passport.authenticate('jwt', { session: false }), require('./users'));
 router.all('*', (req, res) => res.sendStatus(404));
 

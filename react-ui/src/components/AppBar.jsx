@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
-import { mediumBlue } from '../constants/Colours';
+import { green3 } from '../constants/Colours';
 
 const styles = {
 	container: {
-		backgroundColor: mediumBlue,
+		backgroundColor: green3,
 		textAlign: 'left',
 		position: 'fixed',
 	},

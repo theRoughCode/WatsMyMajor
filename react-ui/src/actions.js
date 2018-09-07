@@ -18,6 +18,10 @@ export const CLEAR_USER_SCHEDULE = 'CLEAR_USER_SCHEDULE';
 export const CLEAR_USER_SCHEDULE_FAILURE = 'CLEAR_USER_SCHEDULE_FAILURE';
 export const SET_CART = 'SET_CART';
 export const SET_CART_PREREQS = 'SET_CART_PREREQS';
+export const WATCH_CLASS = 'WATCH_CLASS';
+export const UNWATCH_CLASS = 'UNWATCH_CLASS';
+export const WATCH_CLASS_FAILURE = 'WATCH_CLASS_FAILURE';
+export const UNWATCH_CLASS_FAILURE = 'UNWATCH_CLASS_FAILURE';
 export const HIGHLIGHT_PREREQS = 'HIGHLIGHT_PREREQS';
 export const UNHIGHLIGHT_PREREQS = 'UNHIGHLIGHT_PREREQS';
 export const EDIT_SETTINGS = 'EDIT_SETTINGS';
@@ -206,6 +210,42 @@ export const reorderCart = (username, cart) => ({
 		},
 		body: JSON.stringify({ cart }),
 		types: [{ type: SET_CART, 	meta: { cart } }, '', '']
+	}
+});
+
+export const watchClass = (username, term, classNum) => ({
+	[RSAA]: {
+		endpoint: `/server/watchlist/watchers/add/${term}/${classNum}/${username}`,
+		method: 'GET',
+		headers: {
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+		},
+		types: [
+			{
+				type: WATCH_CLASS,
+				meta: { term, classNum },
+			},
+			'',
+			{ type: WATCH_CLASS_FAILURE },
+		]
+	}
+});
+
+export const unwatchClass = (username, term, classNum) => ({
+	[RSAA]: {
+		endpoint: `/server/watchlist/watchers/remove/${term}/${classNum}/${username}`,
+		method: 'GET',
+		headers: {
+			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+		},
+		types: [
+			{
+				type: UNWATCH_CLASS,
+				meta: { term, classNum },
+			},
+			'',
+			{ type: UNWATCH_CLASS_FAILURE },
+		]
 	}
 });
 

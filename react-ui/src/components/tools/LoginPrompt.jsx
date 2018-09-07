@@ -2,10 +2,22 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FlatButton from 'material-ui/FlatButton';
 import { toast } from "react-toastify";
+import ArrowIcon from 'material-ui/svg-icons/content/forward';
+import { skyBlue } from '../../constants/Colours';
 import "react-toastify/dist/ReactToastify.css";
 
 let active = false;
 let toastId = null;
+
+const styles = {
+  buttonStyle: {
+    color: 'white',
+  },
+  iconStyle: {
+    width: 18,
+    height: 18,
+  },
+};
 
 const LoginPrompt = ({ history, pathname, text }) => {
   function handleClick() {
@@ -17,7 +29,14 @@ const LoginPrompt = ({ history, pathname, text }) => {
     <div>
       <span>
         { text }
-        <FlatButton label="Log In" onClick={ handleClick } />
+        <FlatButton
+          label="Log In"
+          labelPosition="before"
+          style={ styles.buttonStyle }
+          onClick={ handleClick }
+          hoverColor='#ea6d60'
+          icon={ <ArrowIcon style={ styles.iconStyle } /> }
+        />
       </span>
     </div>
   );
@@ -42,7 +61,7 @@ export const fireLoginPrompt = (history, pathname, text) => {
     return;
   }
   active = true;
-  toastId = toast.info(<LoginPrompt history={ history } pathname={ pathname } text={ text } />, {
+  toastId = toast.error(<LoginPrompt history={ history } pathname={ pathname } text={ text } />, {
     onClose: () => active = false,
   });
 };

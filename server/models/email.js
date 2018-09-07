@@ -73,9 +73,33 @@ function verifyEmailToken(token) {
   }
 }
 
+// Send update email to user about a class opening
+async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numSeats, username) {
+  const { user, err } = await users.getUser(username);
+  if (err) {
+    console.log(err);
+    return err;
+  }
+
+  const  { name, email } = user;
+
+  const html = `
+    <h2>Hey ${name}, there has been an opening for class ${classNum}!</h2>
+    <h3>There are ${numSeats} seats left.</h3>
+    <p>
+      Click <a href="https://quest.pecs.uwaterloo.ca/psc/MS/ACADEMIC/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_SWAP.GBL?Page=SSR_SSENRL_SWAP&Action=A">here</a> to navigate to your shopping cart.
+    </p>
+  `;
+
+  console.log(`Sending class update email to ${username}`);
+
+  return await sendMail(email, `Open spot in ${subject} ${catalogNumber}!`, html);
+}
+
 
 module.exports = {
   sendMail,
   sendVerificationEmail,
   verifyEmailToken,
+  sendClassUpdateEmail,
 };

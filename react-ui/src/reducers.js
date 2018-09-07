@@ -14,6 +14,10 @@ import {
 	CLEAR_USER_SCHEDULE_FAILURE,
 	SET_CART,
 	SET_CART_PREREQS,
+	WATCH_CLASS,
+	UNWATCH_CLASS,
+	WATCH_CLASS_FAILURE,
+	UNWATCH_CLASS_FAILURE,
 	HIGHLIGHT_PREREQS,
 	UNHIGHLIGHT_PREREQS,
 	EDIT_SETTINGS,
@@ -161,9 +165,36 @@ function cart(state = [], action) {
 		case LOGOUT_USER:
 			return [];
 		case SET_CART:
-			return action.meta.cart;
+			return action.meta.cart || state;
 		case SET_CART_PREREQS:
 			return action.payload || state;
+		default:
+			return state;
+	}
+}
+
+
+function watchlist(state = {}, action) {
+	switch (action.type) {
+		case SET_USER:
+			if (action.user == null) return {};
+			return action.user.watchlist || state;
+		case LOGIN_USER:
+			if (action.payload == null) return {};
+			return action.payload.watchlist || state;
+		case LOGOUT_USER:
+			return {};
+		case WATCH_CLASS:
+			let watchlist = Object.assign({}, state);
+			if (!watchlist.hasOwnProperty(action.meta.term)) watchlist[action.meta.term] = {};
+			watchlist[action.meta.term][action.meta.classNum] = true;
+			return watchlist;
+		case UNWATCH_CLASS:
+			watchlist = Object.assign({}, state);
+			if (!watchlist.hasOwnProperty(action.meta.term)) return state;
+			if (!watchlist[action.meta.term].hasOwnProperty(action.meta.classNum)) return state;
+			delete watchlist[action.meta.term][action.meta.classNum];
+			return watchlist;
 		default:
 			return state;
 	}
@@ -247,6 +278,7 @@ const reducers = combineReducers({
 	myCourses,
 	mySchedule,
 	cart,
+	watchlist,
 	user,
 	isLoggedIn,
 	courseCardPrereqs,

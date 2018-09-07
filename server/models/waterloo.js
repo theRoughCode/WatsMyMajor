@@ -33,6 +33,7 @@ function parseWeekdays(weekdays) {
 
 // Retrieves terms
 // Returns { currentTerm, previousTerm, nextTerm }
+// TODO: Remove hard coded term with this
 function getTerms(callback) {
 	uwclient.get('/terms/list.json', function(err, res) {
 		if(err) return callback({ currentTerm: null, previousTerm: null, nextTerm: null });

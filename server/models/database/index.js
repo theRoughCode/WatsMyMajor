@@ -20,6 +20,7 @@ const majorsRef = admin.database().ref('/majors/');
 const reqsRef = admin.database().ref('/reqs/');
 const statsRef = admin.database().ref('/stats/');
 const usersRef = admin.database().ref('/users/');
+const watchlistRef = admin.database().ref('/watchlist/');
 const profilePicBucket = admin.storage().bucket();
 
 module.exports = {
@@ -32,5 +33,6 @@ module.exports = {
   reqsRef,
   statsRef,
   usersRef,
+  watchlistRef,
   profilePicBucket,
 };

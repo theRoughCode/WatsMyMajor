@@ -11,7 +11,13 @@ import ErrorView from '../tools/ErrorView';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
-import { createSnack, addToCart, removeFromCart } from '../../actions';
+import {
+	createSnack,
+	addToCart,
+	removeFromCart,
+	watchClass,
+	unwatchClass,
+} from '../../actions';
 import '../../stylesheets/CourseView.css';
 
 const styles = {
@@ -96,10 +102,13 @@ class CourseViewContainer extends Component {
 	static propTypes = {
 		myCourses: PropTypes.object.isRequired,
 		cart: PropTypes.array.isRequired,
+		watchlist: PropTypes.object.isRequired,
 		username: PropTypes.string.isRequired,
 		isLoggedIn: PropTypes.bool.isRequired,
 		addToCartHandler: PropTypes.func.isRequired,
 		removeFromCartHandler: PropTypes.func.isRequired,
+		watchClassHandler: PropTypes.func.isRequired,
+		unwatchClassHandler: PropTypes.func.isRequired,
 		match: PropTypes.object.isRequired,
 	};
 
@@ -122,6 +131,7 @@ class CourseViewContainer extends Component {
 			course: defaultCourse,
 			classes: [],
 			classInfo: defaultClassInfo,
+			watchlist: {},
 		}
 
 		this.onExpandClass = this.onExpandClass.bind(this);
@@ -130,11 +140,14 @@ class CourseViewContainer extends Component {
 		this.viewCart = this.viewCart.bind(this);
 		this.addCourseToCart = this.addCourseToCart.bind(this);
 		this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
+		this.onWatchClass = this.onWatchClass.bind(this);
+		this.onUnwatchClass = this.onUnwatchClass.bind(this);
 	}
 
 	componentDidMount() {
 		const { subject, catalogNumber } = this.state;
 		this.updatePageInfo(subject, catalogNumber);
+		this.updateWatchlist();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -143,35 +156,43 @@ class CourseViewContainer extends Component {
 		const nextCatNum = nextProps.match.params.catalogNumber;
 		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
 		const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
+		const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
 		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
 
-		if (isNewCourse || updatedCart || updatedUserCourses) {
-			// Don't want class info from previous class
-			if (isNewCourse) this.closeClassModal();
+		// Don't want class info from previous class
+		if (isNewCourse) this.closeClassModal();
 
-			// User selected new course
-			if (isNewCourse) {
-				const { myCourses, cart } = nextProps;
-				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
-				const inCart = isInCart(nextSubject, nextCatNum, cart);
-				this.setState({ courseLoading: true, classLoading: true, taken, inCart });
-				this.updatePageInfo(nextSubject, nextCatNum);
-			}
-
-			// User courses are updated
-			if (updatedUserCourses) {
-				const { myCourses } = nextProps;
-				const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
-				this.setState({ taken });
-			}
-
-			// User's cart is updated
-			if (updatedCart) {
-				const { cart } = nextProps;
-				const inCart = isInCart(nextSubject, nextCatNum, cart);
-				this.setState({ inCart });
-			}
+		// User selected new course
+		if (isNewCourse) {
+			const { myCourses, cart } = nextProps;
+			const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+			const inCart = isInCart(nextSubject, nextCatNum, cart);
+			this.setState({ courseLoading: true, classLoading: true, taken, inCart });
+			this.updatePageInfo(nextSubject, nextCatNum);
 		}
+
+		// User courses are updated
+		if (updatedUserCourses) {
+			const { myCourses } = nextProps;
+			const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+			this.setState({ taken });
+		}
+
+		// User's cart is updated
+		if (updatedCart) {
+			const { cart } = nextProps;
+			const inCart = isInCart(nextSubject, nextCatNum, cart);
+			this.setState({ inCart });
+		}
+
+		if (updatedWatchlist) this.updateWatchlist();
+	}
+
+	updateWatchlist() {
+		let { watchlist, isLoggedIn } = this.props;
+		if (!isLoggedIn) return;
+		watchlist = watchlist[this.state.term] || {};
+		this.setState({ watchlist });
 	}
 
 	async updatePageInfo(subject, catalogNumber) {
@@ -266,6 +287,20 @@ class CourseViewContainer extends Component {
 		this.setState({ classModalOpen: false, classInfo: defaultClassInfo });
 	}
 
+	onWatchClass(classNum) {
+		const { history, location, isLoggedIn, username } = this.props;
+		const { term } = this.state;
+		if (isLoggedIn) this.props.watchClassHandler(username, term, classNum);
+		else fireLoginPrompt(history, location.pathname);
+	}
+
+	onUnwatchClass(classNum) {
+		const { history, location, isLoggedIn, username } = this.props;
+		const { term } = this.state;
+		if (isLoggedIn) this.props.unwatchClassHandler(username, term, classNum);
+		else fireLoginPrompt(history, location.pathname);
+	}
+
 	render() {
 		const {
 			subject,
@@ -273,6 +308,7 @@ class CourseViewContainer extends Component {
 			course,
 			term,
 			classes,
+			watchlist,
 			taken,
 			inCart,
 			eligible,
@@ -299,8 +335,11 @@ class CourseViewContainer extends Component {
 				/>
 				<ClassDetails
 					classInfo={ classInfo }
+					watchlist={ watchlist }
 					open={ classModalOpen }
 					onClose={ this.closeClassModal }
+					onWatch={ this.onWatchClass }
+					onUnwatch={ this.onUnwatchClass }
 				/>
 			</div>
 		);
@@ -335,9 +374,10 @@ class CourseViewContainer extends Component {
 
 }
 
-const mapStateToProps = ({ myCourses, cart, user, isLoggedIn }) => ({
+const mapStateToProps = ({ myCourses, cart, watchlist, user, isLoggedIn }) => ({
 	myCourses,
 	cart,
+	watchlist,
 	username: user.username,
 	isLoggedIn,
 });
@@ -362,7 +402,9 @@ const mapDispatchToProps = dispatch => {
 			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber, username, cart));
 			dispatch(removeFromCart(subject, catalogNumber, username, cart));
 			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
-		}
+		},
+		watchClassHandler: (username, term, classNum) => dispatch(watchClass(username, term, classNum)),
+		unwatchClassHandler: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
 	};
 };
 
