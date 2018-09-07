@@ -82,18 +82,60 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
   }
 
   const  { name, email } = user;
+  const token = jwt.sign({ username, term, classNum, subject, catalogNumber }, JWT_SECRET);
+  const url = `https://watsmymajorbeta.herokuapp.com/unwatch-class?token=${token}`;
+
+  const numSeatsText = (numSeats === 1)
+    ? 'There is 1 seat left.  Go get it!!'
+    : `There are ${numSeats} seats left.`;
 
   const html = `
+    <style type="text/css" rel="stylesheet" media="all">
+      .button {
+        display: inline-block;
+        width: 200px;
+        background-color: #414EF9;
+        border-radius: 3px;
+        color: #ffffff;
+        font-size: 15px;
+        line-height: 45px;
+        text-align: center;
+        text-decoration: none;
+        -webkit-text-size-adjust: none;
+        mso-hide: all;
+      }
+      .button--blue {
+        background-color: #414EF9;
+      }
+    </style>
     <h2>Hey ${name}, there has been an opening for class ${classNum}!</h2>
-    <h3>There are ${numSeats} seats left.</h3>
+    <h3>${numSeatsText}</h3>
     <p>
       Click <a href="https://quest.pecs.uwaterloo.ca/psc/MS/ACADEMIC/SA/c/SA_LEARNER_SERVICES.SSR_SSENRL_SWAP.GBL?Page=SSR_SSENRL_SWAP&Action=A">here</a> to navigate to your shopping cart.
     </p>
+    <br /><br />
+    <a href="${url}" class="button button--blue">Unwatch class</a>
+    <p>
+      If you’re having trouble clicking the button, copy and paste the URL below into your web browser.
+    </p>
+    <a href="${url}">${url}</a>
   `;
 
   console.log(`Sending class update email to ${username}`);
 
   return await sendMail(email, `Open spot in ${subject} ${catalogNumber}!`, html);
+}
+
+// Token used to unsubscribe user from class
+function verifyUnwatchToken(token) {
+  try {
+    const { username, term, classNum, subject, catalogNumber } = jwt.verify(token, JWT_SECRET);
+    const info = { username, term, classNum, subject, catalogNumber };
+    return { err: null, info };
+  } catch (err) {
+    console.log(err);
+    return { err, info: null };
+  }
 }
 
 
@@ -102,4 +144,5 @@ module.exports = {
   sendVerificationEmail,
   verifyEmailToken,
   sendClassUpdateEmail,
+  verifyUnwatchToken,
 };

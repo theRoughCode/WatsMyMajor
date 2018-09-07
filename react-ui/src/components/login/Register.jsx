@@ -5,14 +5,13 @@ import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import EmailSent from './EmailSent';
+import EmailSent from '../email/EmailSent';
 import {
   validateUsername,
   validateName,
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-  validateBetaKey,
 } from '../../utils/validation';
 import { green, grey } from '../../constants/Colours';
 
@@ -82,7 +81,6 @@ export default class Register extends Component {
     nameError: '',
     emailError: '',
     passwordError: '',
-    keyError: '',
   }
 
   removeErrors = () => {
@@ -92,7 +90,6 @@ export default class Register extends Component {
       emailError: '',
       passwordError: '',
       confirmPasswordError: '',
-      keyError: '',
     });
   }
 
@@ -103,7 +100,6 @@ export default class Register extends Component {
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
     const confirmPassword = this.refs.confirmPassword.getValue();
-    const key = this.refs.key.getValue();
 
     const errors = {
       usernameError: validateUsername(username),
@@ -111,7 +107,6 @@ export default class Register extends Component {
       emailError: validateEmail(email),
       passwordError: validatePassword(password),
       confirmPasswordError: validateConfirmPassword(password, confirmPassword),
-      keyError: validateBetaKey(key),
     };
 
     for (let key in errors) {
@@ -215,12 +210,6 @@ export default class Register extends Component {
                 errorText={this.state.confirmPasswordError}
                 onChange={this.removeErrors}
                 ref="confirmPassword"
-              /><br />
-              <TextField
-                floatingLabelText="Beta Access Key"
-                errorText={this.state.keyError}
-                onChange={this.removeErrors}
-                ref="key"
               /><br />
               <RaisedButton
                 label="Sign up"

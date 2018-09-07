@@ -173,7 +173,7 @@ function cart(state = [], action) {
 	}
 }
 
-
+// TODO: Implement WATCH_CLASS_FAILURE and UNWATCH_CLASS_FAILURE
 function watchlist(state = {}, action) {
 	switch (action.type) {
 		case SET_USER:

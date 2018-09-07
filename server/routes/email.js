@@ -1,17 +1,28 @@
 const EmailRouter = require('express').Router();
 const email = require('../models/email');
-const usersDB = require('../models/database/users');
+const watchlist = require('../models/watchlist');
 const emailDB = require('../models/database/emails');
+const usersDB = require('../models/database/users');
 
-EmailRouter.get('/verify', async function(req, res) {
+// Verifies user token and set user to verified
+EmailRouter.get('/verify/user', async function(req, res) {
   const token = req.query.token;
   const { err, username } = email.verifyEmailToken(token);
   if (err) return res.status(400).send(err.message);
-  usersDB.setVerified(username, true);  // Set user as verified
+  await usersDB.setVerified(username, true);  // Set user as verified
   res.status(200).json({ username });
 });
 
-// Setd verifixation email
+// Verifies unwatch token and removes user from class
+EmailRouter.get('/verify/unwatch', async function(req, res) {
+  const token = req.query.token;
+  const { err, info } = email.verifyUnwatchToken(token);
+  if (err) return res.status(400).send(err.message);
+  await watchlist.removeWatcher(info.term, info.classNum, info.username);
+  res.status(200).json(info);
+});
+
+// Sends verification email
 EmailRouter.get('/user/:username/:email', async function(req, res) {
   const username = req.params.username;
   const userEmail = req.params.email;
@@ -19,6 +30,7 @@ EmailRouter.get('/user/:username/:email', async function(req, res) {
   res.json(result);
 });
 
+// Send an email (testing purposes)
 EmailRouter.post('/send/:to', async function(req, res) {
   const { to } = req.params;
   const { subject, html } = req.body;
@@ -26,6 +38,13 @@ EmailRouter.post('/send/:to', async function(req, res) {
   res.send(result);
 });
 
+// Send an unwatch email (testing purposes)
+EmailRouter.get('/send/unwatch', async function(req, res) {
+  await email.sendClassUpdateEmail(1189, 5694, 'MATH', '137', 1, 'testtest');
+  res.send('success');
+});
+
+// Create an email object in table
 EmailRouter.post('/create', async function(req, res) {
   const { username, email } = req.body;
   if (!username || !email) return res.status(400).send('Missing fields');

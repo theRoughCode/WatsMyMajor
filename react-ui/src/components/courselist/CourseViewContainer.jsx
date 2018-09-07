@@ -147,7 +147,7 @@ class CourseViewContainer extends Component {
 	componentDidMount() {
 		const { subject, catalogNumber } = this.state;
 		this.updatePageInfo(subject, catalogNumber);
-		this.updateWatchlist();
+		this.updateWatchlist(this.props.watchlist);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -185,11 +185,11 @@ class CourseViewContainer extends Component {
 			this.setState({ inCart });
 		}
 
-		if (updatedWatchlist) this.updateWatchlist();
+		if (updatedWatchlist) this.updateWatchlist(nextProps.watchlist);
 	}
 
-	updateWatchlist() {
-		let { watchlist, isLoggedIn } = this.props;
+	updateWatchlist(watchlist) {
+		let { isLoggedIn } = this.props;
 		if (!isLoggedIn) return;
 		watchlist = watchlist[this.state.term] || {};
 		this.setState({ watchlist });

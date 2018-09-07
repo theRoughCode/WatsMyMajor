@@ -15,7 +15,8 @@ import PrivacyPolicy from './components/privacy/PrivacyPolicy';
 import Dashboard from './components/dashboard/Dashboard';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
-import VerifyEmail from './components/login/VerifyEmail';
+import VerifyEmail from './components/email/VerifyEmail';
+import UnwatchedClass from './components/email/UnwatchedClass';
 import Settings from './components/settings/SettingsContainer';
 import Majors from './components/majors/MajorsContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
@@ -193,6 +194,7 @@ class App extends Component {
             <Route exact path='/register' render={ this.addUndirect(Register) } />
             <Route exact path='/login' render={ this.addUndirect(Login) } />
             <Route exact path='/verify-email' component={ VerifyEmail } />
+            <Route exact path='/unwatch-class' component={ UnwatchedClass } />
             <Route exact path='/settings' render={ this.addRedirect(Settings) } />
   					<Route exact path='/majors/:majorKey?' component={ Majors } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />

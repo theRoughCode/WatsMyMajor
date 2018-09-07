@@ -3,7 +3,6 @@ const TOO_SHORT_ERROR = (number) => `Must be at least ${number} characters long`
 const WHITESPACE_ERROR = 'Must not have white space';
 const WATERLOO_EMAIL_ERROR = 'Has to be a UWaterloo email address';
 const PASSWORD_MISMATCH_ERROR = 'Passwords do not match';
-const INVALID_KEY_ERROR = 'Invalid beta key';
 
 export const validateUsername = (username) => {
   if (!username) return MISSING_FIELD_ERROR;
@@ -30,10 +29,5 @@ export const validatePassword = (password) => {
 
 export const validateConfirmPassword = (password, confirmPassword) => {
   if (password !== confirmPassword) return PASSWORD_MISMATCH_ERROR;
-  return '';
-}
-
-export const validateBetaKey = (key) => {
-  if (key !== process.env.REACT_APP_BETA_KEY) return INVALID_KEY_ERROR;
   return '';
 }

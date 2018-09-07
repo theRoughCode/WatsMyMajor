@@ -70,7 +70,7 @@ class VerifyEmail extends Component {
     if (matchArr == null || matchArr.length < 3) return;
     const token = matchArr[2];
 
-    const response = await fetch(`/server/email/verify?token=${token}`, {
+    const response = await fetch(`/server/email/verify/user?token=${token}`, {
       headers: {
         "x-secret": process.env.REACT_APP_SERVER_SECRET
       }

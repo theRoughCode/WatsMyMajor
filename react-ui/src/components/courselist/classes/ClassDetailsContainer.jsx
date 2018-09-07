@@ -108,7 +108,7 @@ export default class ClassDetailsContainer extends Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { classes } = nextProps.classInfo;
+		const { classes, classNumber } = nextProps.classInfo;
 		if (classes == null || classes.length === 0) return;
 
 		const { instructor } = classes[0];
@@ -118,7 +118,7 @@ export default class ClassDetailsContainer extends Component {
 		}
 
 		if (!objectEquals(nextProps.watchlist, this.props.watchlist)) {
-			const watching = isWatching(this.nextProps.watchlist, this.props.classInfo.classNumber);
+			const watching = isWatching(nextProps.watchlist, classNumber);
 			this.setState({ watching });
 		}
 	}
