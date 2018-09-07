@@ -37,6 +37,11 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
 	({ err, reqs } = await requisites.getRequisites(subject, catalogNumber));
 	if (err) res.status(400).send(err);
 
+	const prereqs = (reqs != null) ? reqs.prereqs : {};
+	const coreqs = (reqs != null) ? reqs.coreqs : [];
+	const antireqs = (reqs != null) ? reqs.antireqs : [];
+	const postreqs = (reqs != null) ? reqs.postreqs : {};
+
 	res.json({
 		description,
 		crosslistings: crosslistings || '',
@@ -45,10 +50,10 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
 		title,
 		units,
 		url,
-		prereqs: reqs.prereqs || {},
-		coreqs: reqs.coreqs || [],
-		antireqs: reqs.antireqs || [],
-		postreqs: reqs.postreqs || {},
+		prereqs: prereqs || {},
+		coreqs: coreqs || [],
+		antireqs: antireqs || [],
+		postreqs: postreqs || {},
 	});
 });
 
