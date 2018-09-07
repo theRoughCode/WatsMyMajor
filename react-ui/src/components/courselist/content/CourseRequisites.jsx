@@ -109,6 +109,7 @@ class CourseRequisites extends Component {
 		switch (requisites.choose) {
 			case 0: return requisites.reqs.map(this.formatReqs);
 			default:
+				if (requisites.reqs == null) return [];
 				const newReqsArr = requisites.reqs.map(this.formatReqs);
 				return [
 					<Prereqs

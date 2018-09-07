@@ -2,8 +2,9 @@ export const white = '#FFF';
 
 // Grey
 export const whiteGrey = '#F2F2F2'
-export const lightGrey = '#ccd4e0';
-export const grey = '#888e99';
+export const lightGrey = '#CCD4E0';
+export const grey = '#888E99';
+export const darkGrey = '#636F82'
 
 // RED
 export const red = '#ff5454';
