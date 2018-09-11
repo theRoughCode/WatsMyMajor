@@ -2,6 +2,7 @@ const users = require('../models/database/users');
 const watchlist = require('../models/database/watchlist');
 
 async function addWatcher(term, classNum, username) {
+  username = username.toLowerCase();
   try {
     await watchlist.addWatcher(term, classNum, username);
 		await users.addToWatchlist(username, term, classNum);
@@ -13,6 +14,7 @@ async function addWatcher(term, classNum, username) {
 }
 
 async function removeWatcher(term, classNum, username) {
+  username = username.toLowerCase();
   try {
     await watchlist.removeWatcher(term, classNum, username);
 		await users.removeFromWatchlist(username, term, classNum);

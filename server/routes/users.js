@@ -5,6 +5,8 @@ const images = require('../models/database/images');
 const facebookUsers = require('../models/database/facebookUsers');
 const parseSchedule = require('../models/parsers/scheduleParser');
 
+// TODO: Find a better way to enforce lower case for username
+
 // Get user
 UsersRouter.get('/:username', async function(req, res) {
 	const username = req.params.username.toLowerCase();
