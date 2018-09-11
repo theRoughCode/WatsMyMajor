@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import FlatButton from 'material-ui/FlatButton';
 import { toast } from "react-toastify";
 import ArrowIcon from 'material-ui/svg-icons/content/forward';
-import { skyBlue } from '../../constants/Colours';
 import "react-toastify/dist/ReactToastify.css";
 
 let active = false;

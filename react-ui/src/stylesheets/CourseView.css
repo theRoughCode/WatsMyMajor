@@ -6,79 +6,8 @@
 }
 
 /* Browse Courses */
-.course-browse {
-  width: 90%;
-  height: 100%;
-  margin: auto;
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-}
-
-.course-card-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.popular-text {
-  font-size: 30px;
-  float: left;
-  margin-top: 40px;
-  margin-left: 20px;
-}
-
-.browse-popular {
-  display: flex;
-}
-
-.course-card {
-  position: relative;
-  width: 250px;
-  margin: 20px;
-}
-
-.card-content {
-  width: 100%;
-  height: auto;
-  flex-grow: 1;
-}
-
-.card-header {
-  width: 100%;
-}
-
-.card-header div {
-  padding-right: 2px !important;
-}
-
-.overlay {
-  display: flex;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  opacity: 0;
-  transition: .3s ease;
-  background-color: #f2f7f9;
-}
-
-.overlay-text {
-  height: 50%;
-  overflow: hidden;
-  margin: 15px;
-}
-
 .course-card:hover .overlay {
-  opacity: 1;
-}
-
-.course-card > div {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  opacity: 1 !important;
 }
 
 /* Course Content*/

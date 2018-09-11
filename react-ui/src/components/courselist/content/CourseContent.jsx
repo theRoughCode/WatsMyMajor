@@ -54,6 +54,8 @@ const CourseContent = ({
 		description,
 		rating,
 		url,
+		// notes,
+		// units,
 		terms,
 		crosslistings,
 		antireqs,

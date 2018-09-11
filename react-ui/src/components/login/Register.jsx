@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
@@ -153,7 +152,6 @@ export default class Register extends Component {
             return;
         }
       } else {
-        const user = await response.json();
         this.setState({ registered: true });
       }
     } catch (err) {

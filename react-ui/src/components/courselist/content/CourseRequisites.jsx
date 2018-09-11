@@ -6,7 +6,7 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import { hasTakenCourse } from '../../../utils/courses';
 import Prereqs from './Prereqs';
-import { lightGreen2, green, yellow, darkBlue } from '../../../constants/Colours';
+import { green, yellow, darkBlue } from '../../../constants/Colours';
 
 const styles = {
 	container: {

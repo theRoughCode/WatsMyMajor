@@ -13,7 +13,7 @@ import { objectEquals } from '../../utils/arrays';
 const stepContents = [
   {
     button: 'Log in to Quest',
-    text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank">here</a>.</p>
+    text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">here</a>.</p>
   },
   {
     button: 'Enroll',

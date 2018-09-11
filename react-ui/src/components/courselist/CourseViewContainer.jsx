@@ -235,6 +235,8 @@ class CourseViewContainer extends Component {
 				description,
 				rating: 2.1,
 				url,
+				notes,
+				units,
 				terms,
 				crosslistings,
 				antireqs,

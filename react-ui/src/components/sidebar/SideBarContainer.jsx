@@ -8,7 +8,6 @@ import MenuItem from 'material-ui/MenuItem';
 import { List, ListItem } from 'material-ui/List';
 import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
 import SchoolIcon from 'material-ui/svg-icons/social/school';
-import FolderIcon from 'material-ui/svg-icons/file/folder';
 import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
@@ -135,7 +134,7 @@ class SideBarContainer extends Component {
 				<div style={ styles.github }>
 					<div style={ styles.githubTextContainer }>
 						<span>Found an issue?</span>
-						<a target="_blank" href="https://github.com/theRoughCode/watsmymajorbeta/issues">
+						<a target="_blank" rel="noopener noreferrer" href="https://github.com/theRoughCode/watsmymajorbeta/issues">
 							<GithubIcon style={ styles.githubIcon} />
 						</a>
 					</div>

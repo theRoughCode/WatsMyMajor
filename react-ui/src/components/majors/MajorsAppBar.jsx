@@ -1,7 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import Dialog from 'material-ui/Dialog';
+import React from 'react';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
@@ -61,7 +58,7 @@ const MajorsAppBar = ({
         <IconButton
           style={ styles.openIcon }
           href={ url }
-          target="_blank"
+          target="_blank" rel="noopener noreferrer"
           hoveredStyle={{ backgroundColor: whiteGrey }}
         >
           <OpenIcon />

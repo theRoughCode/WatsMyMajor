@@ -38,7 +38,7 @@ export default class UserCoursesGraph extends Component {
     const { courses } = this.state;
     if (courses.length === 0) return null;
     return (
-      <Paper style={{ height: 400, height: 'fit-content', margin: 'auto' }} depth={ 1 }>
+      <Paper style={{ height: 'fit-content', margin: 'auto' }} depth={ 1 }>
         <VictoryLabel
           text="My Courses"
           x={225}

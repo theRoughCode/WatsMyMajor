@@ -38,5 +38,14 @@ WatchlistRouter.get('/enrollment/:term/:classNum', async function(req, res) {
 	else res.json(enrollment);
 });
 
+// Get subject and catalog number for a class
+WatchlistRouter.get('/info/:term/:classNum', async function(req, res) {
+	const { term, classNum } = req.params;
+
+	const { subject, catalogNumber, err } = await watchlistDB.getSubjectAndCatNum(term, classNum);
+	if (err) res.status(400).send(err.message);
+	else res.json({ subject, catalogNumber });
+});
+
 
 module.exports = WatchlistRouter;

@@ -29,6 +29,20 @@ function setEnrollment(term, classNum, info) {
     .set(info);
 }
 
+// Sets subject
+function setSubject(term, classNum, subject) {
+  return watchlistRef
+    .child(`${term}/${classNum}/subject`)
+    .set(subject.toUpperCase());
+}
+
+// Sets catalog number
+function setCatalogNumber(term, classNum, catalogNumber) {
+  return watchlistRef
+    .child(`${term}/${classNum}/catalogNumber`)
+    .set(catalogNumber);
+}
+
 
 /****************************
  *													*
@@ -60,10 +74,27 @@ async function getEnrollment(term, classNum) {
   }
 }
 
+// Returns { subject, catalogNumber, err }
+async function getSubjectAndCatNum(term, classNum) {
+  try {
+    const subjectSnapshot = await watchlistRef.child(`${term}/${classNum}/subject`).once('value');
+    const catalogNumberSnapshot = await watchlistRef.child(`${term}/${classNum}/catalogNumber`).once('value');
+    const subject = subjectSnapshot.val();
+    const catalogNumber = catalogNumberSnapshot.val();
+    return { subject, catalogNumber, err: null };
+  } catch (err) {
+    console.log(err);
+    return { subject: null, catalogNumber: null, err };
+  }
+}
+
 module.exports = {
   addWatcher,
   removeWatcher,
   setEnrollment,
+  setSubject,
+  setCatalogNumber,
   getWatchers,
   getEnrollment,
+  getSubjectAndCatNum,
 };

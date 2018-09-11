@@ -6,6 +6,31 @@ import { hasTakenCourse, isInCart } from '../../utils/courses';
 import { createSnack, addToCart, removeFromCart } from '../../actions';
 import '../../stylesheets/CourseView.css';
 
+const styles = {
+  container: {
+    width: '90%',
+    height: '100%',
+    margin: 'auto',
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  innerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  header: {
+    fontSize: 30,
+    float: 'left',
+    marginTop: 40,
+    marginLeft: 20,
+  },
+  cardContainer: {
+    display: 'flex',
+  },
+}
+
 class BrowseCourseContainer extends Component {
   static propTypes = {
     myCourses: PropTypes.object.isRequired,
@@ -37,11 +62,11 @@ class BrowseCourseContainer extends Component {
   render() {
     const { myCourses, cart, username, addToCartHandler } = this.props;
     return (
-      <div className="course-browse">
+      <div style={ styles.container }>
         { (this.state.popular.length > 0) && (
-          <div className="course-card-container">
-            <span className="popular-text">Most popular courses</span>
-            <div className="browse-popular">
+          <div style={ styles.innerContainer }>
+            <span style={ styles.header }>Most popular courses</span>
+            <div style={ styles.cardContainer }>
               { this.state.popular.map((course, index) => {
                 const { subject, catalogNumber, title, description } = course;
                 return (

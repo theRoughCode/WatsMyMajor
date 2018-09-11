@@ -9,7 +9,7 @@ import ClassInfo from './ClassInfo';
 import ClassProf from './ClassProf';
 import { objectEquals } from '../../../utils/arrays';
 import '../../../stylesheets/ClassDetails.css';
-import { darkRed, green3 } from '../../../constants/Colours';
+import { darkRed } from '../../../constants/Colours';
 
 const styles =  {
 	titleContainer: {
