@@ -27,7 +27,7 @@ async function sendMail(to, subject, html) {
 async function sendVerificationEmail(email, username) {
   const token = jwt.sign({ username }, JWT_SECRET);
   const subject = 'Verify Your Email!';
-  const url = `https://watsmymajorbeta.herokuapp.com/verify-email?token=${token}`;
+  const url = `https://www.watsmymajor.com/verify-email?token=${token}`;
   const html = `
     <style type="text/css" rel="stylesheet" media="all">
       .button {
@@ -83,7 +83,7 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
 
   const  { name, email } = user;
   const token = jwt.sign({ username, term, classNum, subject, catalogNumber }, JWT_SECRET);
-  const url = `https://watsmymajorbeta.herokuapp.com/unwatch-class?token=${token}`;
+  const url = `https://www.watsmymajor.com/unwatch-class?token=${token}`;
 
   const numSeatsText = (numSeats === 1)
     ? 'There is 1 seat left.  Go get it!!'
