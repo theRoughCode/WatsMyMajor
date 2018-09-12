@@ -46,8 +46,10 @@ EmailRouter.get('/send/unwatch', async function(req, res) {
 
 // Create an email object in table
 EmailRouter.post('/create', async function(req, res) {
-  const { username, email } = req.body;
+  let { username, email } = req.body;
   if (!username || !email) return res.status(400).send('Missing fields');
+  username = username.toLowerCase();
+  email = email.toLowerCase();
 
   const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (!emailRegex.test(email)) return res.status(400).send('Invalid email');

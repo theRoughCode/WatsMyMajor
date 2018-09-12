@@ -20,6 +20,8 @@ const BYPASS = process.env.AUTH_BYPASS;
 
 // Returns { err, user }
 async function createUser(username, email, name, password, callback) {
+  username = username.toLowerCase();
+  email = email.toLowerCase();
   const isDuplicate = await userExists(username);
 
   if (isDuplicate) return {
