@@ -1,12 +1,13 @@
+notifications:
+  email: false
 language: node_js
-nodejs:
+node_js:
   - "iojs"
   - "8"
-
 script:
   - npm run lint
   - npm run build
-
 cache:
   directories:
     - "node_modules"
+    - "react-ui/node_modules"
