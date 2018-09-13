@@ -12,9 +12,9 @@ import ImportIcon from 'material-ui/svg-icons/action/backup';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Parser from './ParseTranscript';
 import {
-	skyBlue,
+  skyBlue,
   red,
-	lightGreen2,
+  lightGreen2,
 } from '../../constants/Colours';
 
 const styles = {
@@ -44,72 +44,72 @@ const styles = {
     marginRight: 10,
   },
   button: {
-		margin: 10,
-	},
+    margin: 10,
+  },
 };
 
 export default class MyCourseAppBar extends Component {
 
   static propTypes = {
     onAddBoard: PropTypes.func.isRequired,
-		onImport: PropTypes.func.isRequired,
+    onImport: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     showClearButton: PropTypes.bool.isRequired,
   };
 
   state = {
-		addTermDialogOpen: false,
+    addTermDialogOpen: false,
     importDialogOpen: false,
-		clearDialogOpen: false,
-		text: '',
+    clearDialogOpen: false,
+    text: '',
     level: '1A',
-		errorText: '',
-	};
+    errorText: '',
+  };
 
   openAddTermDialog = () => this.setState({ addTermDialogOpen: true });
-	openImportDialog = () => this.setState({ importDialogOpen: true });
+  openImportDialog = () => this.setState({ importDialogOpen: true });
   openClearDialog = () => this.setState({ clearDialogOpen: true });
 
-	closeAddTermDialog = () => this.setState({ text: '', errorText: '', addTermDialogOpen: false });
-	closeImportDialog = () => this.setState({ text: '', importDialogOpen: false });
+  closeAddTermDialog = () => this.setState({ text: '', errorText: '', addTermDialogOpen: false });
+  closeImportDialog = () => this.setState({ text: '', importDialogOpen: false });
   closeClearDialog = () => this.setState({ clearDialogOpen: false });
 
-	onChangeText = (_, text) => this.setState({ text, errorText: '' });
+  onChangeText = (_, text) => this.setState({ text, errorText: '' });
   onChangeLevel = (ev, index, level) => this.setState({ level });
 
-	onAddTerm = () => {
-		const { text, level } = this.state;
-		if (text.length === 0) {
-			this.setState({ errorText: 'Field cannot be left blank' });
-			return;
-		}
-		this.props.onAddBoard(text, level);
-		this.closeAddTermDialog();
-	}
+  onAddTerm = () => {
+    const { text, level } = this.state;
+    if (text.length === 0) {
+      this.setState({ errorText: 'Field cannot be left blank' });
+      return;
+    }
+    this.props.onAddBoard(text, level);
+    this.closeAddTermDialog();
+  }
 
-	onImport = () => {
-		const { text } = this.state;
+  onImport = () => {
+    const { text } = this.state;
 
-		fetch('/server/parse/transcript', {
-			method: 'POST',
-			body: JSON.stringify({ text }),
-			headers: {
-				'content-type': 'application/json',
-				'x-secret': process.env.REACT_APP_SERVER_SECRET
-			}
-		}).then(response => {
-			if (!response.ok) throw new Error(`status ${response.status}`);
-			else return response.json();
-		}).then((terms) => {
-			this.setState({ importing: false });
-			this.props.onImport(terms);
-			this.closeImportDialog();
-		}).catch(err => {
-			this.closeImportDialog();
-			console.log(err);
-			toast.error(`Failed to parse your courses. Error: ${err.message}`);
-		});
-	}
+    fetch('/server/parse/transcript', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+      headers: {
+        'content-type': 'application/json',
+        'x-secret': process.env.REACT_APP_SERVER_SECRET
+      }
+    }).then(response => {
+      if (!response.ok) throw new Error(`status ${response.status}`);
+      else return response.json();
+    }).then((terms) => {
+      this.setState({ importing: false });
+      this.props.onImport(terms);
+      this.closeImportDialog();
+    }).catch(err => {
+      this.closeImportDialog();
+      console.error(err);
+      toast.error(`Failed to parse your courses. Error: ${err.message}`);
+    });
+  }
 
   onClear = () => {
     this.closeClearDialog();
@@ -120,36 +120,36 @@ export default class MyCourseAppBar extends Component {
     const addTermDialogActions = [
       <FlatButton
         label="Cancel"
-        primary={ true }
+        primary
         onClick={ this.closeAddTermDialog }
       />,
       <FlatButton
         label="Submit"
-        primary={ true }
+        primary
         onClick={ this.onAddTerm }
       />,
     ];
-		const importDialogActions = [
+    const importDialogActions = [
       <FlatButton
         label="Cancel"
-        primary={ true }
+        primary
         onClick={ this.closeImportDialog }
       />,
       <FlatButton
         label="Submit"
-        primary={ true }
+        primary
         onClick={ this.onImport }
       />,
     ];
     const clearDialogActions = [
       <FlatButton
         label="Cancel"
-        primary={ true }
+        primary
         onClick={ this.closeClearDialog }
       />,
       <FlatButton
         label="Confirm"
-        primary={ true }
+        primary
         onClick={ this.onClear }
       />,
     ];
@@ -191,8 +191,8 @@ export default class MyCourseAppBar extends Component {
             modal={ false }
             open={ this.state.addTermDialogOpen }
             onRequestClose={ this.closeAddTermDialog }
-            contentStyle={{  width: 400  }}
-            >
+            contentStyle={{ width: 400 }}
+          >
             <TextField
               hintText="e.g. Fall 2018"
               floatingLabelText="New Board Name"
@@ -222,7 +222,7 @@ export default class MyCourseAppBar extends Component {
             open={ this.state.importDialogOpen }
             onRequestClose={ this.closeImportDialog }
             contentStyle={{ width: 1000, maxWidth: 'none', height: 600 }}
-            >
+          >
             <Parser onChange={ text => this.onChangeText(null, text) } />
           </Dialog>
           <Dialog

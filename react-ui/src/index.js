@@ -11,27 +11,25 @@ import './stylesheets/index.css';
 import reducers from './reducers';
 
 const middlewares = [apiMiddleware];
-if (process.env.NODE_ENV !== 'production') {
-	middlewares.push(logger);
-}
+if (process.env.NODE_ENV !== 'production') middlewares.push(logger);
 
 
 const store = createStore(
-	reducers,
-	applyMiddleware(...middlewares)
+  reducers,
+  applyMiddleware(...middlewares)
 );
 
 const Wrapper = () => (
-	<Provider store={store}>
-		<MuiThemeProvider>
-			<Router>
-				<App />
-			</Router>
-		</MuiThemeProvider>
-	</Provider>
+  <Provider store={ store }>
+    <MuiThemeProvider>
+      <Router>
+        <App />
+      </Router>
+    </MuiThemeProvider>
+  </Provider>
 );
 
 ReactDOM.render(
-	<Wrapper />,
-	document.getElementById('root')
+  <Wrapper />,
+  document.getElementById('root')
 );

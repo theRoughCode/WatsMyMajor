@@ -4,9 +4,9 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 
 const styles = {
   tableRow: (isGreyed) => ({
-		cursor: 'pointer',
+    cursor: 'pointer',
     backgroundColor: (isGreyed) ? '#e5e5e5' : 'inherit',
-	}),
+  }),
   classesRow: {
     height: 'auto',
     minHeight: 48,
@@ -30,7 +30,7 @@ const formatClassTime = (classes) => (
             ? `${startTime} - ${endTime}`
             : 'N/A';
           if (isTBA) return 'TBA';
-          
+
           if (weekdays == null) weekdays = [];
           return (
             <span key={ index } style={ styles.classesLine }>

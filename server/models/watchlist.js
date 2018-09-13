@@ -5,10 +5,10 @@ async function addWatcher(term, classNum, username) {
   username = username.toLowerCase();
   try {
     await watchlist.addWatcher(term, classNum, username);
-		await users.addToWatchlist(username, term, classNum);
+    await users.addToWatchlist(username, term, classNum);
     return null;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return err;
   }
 }
@@ -17,10 +17,10 @@ async function removeWatcher(term, classNum, username) {
   username = username.toLowerCase();
   try {
     await watchlist.removeWatcher(term, classNum, username);
-		await users.removeFromWatchlist(username, term, classNum);
+    await users.removeFromWatchlist(username, term, classNum);
     return null;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return err;
   }
 }

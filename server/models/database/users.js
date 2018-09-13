@@ -53,6 +53,7 @@ async function createUser(username, email, name, password, callback) {
 async function verifyUser(username, password) {
   try {
     const { err, user } = await getUser(username);
+    if (err) return { err, user: null };
     if (user == null) return {
       err: {
         code: ERROR_USERNAME_NOT_FOUND,
@@ -97,7 +98,7 @@ async function updateUserSettings(username, user, callback) {
       await updateUser(username, user, callback);
       return null;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return err;
     }
   }
@@ -122,7 +123,7 @@ async function updateUserSettings(username, user, callback) {
     await updateUser(username, user, callback);
     return null;
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return err;
   }
 }
@@ -226,7 +227,6 @@ async function getAllUserCourses() {
     const snapshot = await usersRef.once('value');
     const courseCount = {};
     snapshot.forEach(child => {
-      const username = child.key;
       const { courseList } = child.val();
       if (courseList == null || courseList.length === 0) return;
       courseList.forEach(({ courses }) => {

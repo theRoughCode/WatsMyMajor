@@ -15,7 +15,7 @@ async function setMajorRequirements(key, value) {
   }
 }
 
- /****************************
+/****************************
   *													*
   *			G E T T E R S 			*
   *													*

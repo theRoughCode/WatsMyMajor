@@ -15,21 +15,21 @@ async function parseMajor(url) {
       };
       const p = $(elem).prev('p').text().trim();
       switch (p) {
-        case 'One of':
+      case 'One of':
+        currReq.type = 'choose';
+        currReq.choose = 1;
+        break;
+      case "All of":
+        currReq.type = "all";
+        break;
+      default:
+        if (/.*(Two).*(of|from).*/.test(p)) {
           currReq.type = 'choose';
-          currReq.choose = 1;
-          break;
-        case "All of":
-          currReq.type = "all";
-          break;
-        default:
-          if (/.*(Two).*(of|from).*/.test(p)) {
-            currReq.type = 'choose';
-            currReq.choose = 2;
-          } else if (/.*(Three).*(of|from).*/.test(p)) {
-            currReq.type = 'choose';
-            currReq.choose = 3;
-          }
+          currReq.choose = 2;
+        } else if (/.*(Three).*(of|from).*/.test(p)) {
+          currReq.type = 'choose';
+          currReq.choose = 3;
+        }
       }
       $(elem).find('a').each((i, elem) => {
         const [subject, catalogNumber] = $(elem).text().split(" ");

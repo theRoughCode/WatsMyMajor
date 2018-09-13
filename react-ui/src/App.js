@@ -5,7 +5,7 @@ import {
   Route,
   Switch,
   Redirect,
-	withRouter
+  withRouter
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Snackbar from 'material-ui/Snackbar';
@@ -33,8 +33,8 @@ import './stylesheets/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 let styles = {
-	marginLeft: 0,
-	transition: 'all 1s ease-in-out',
+  marginLeft: 0,
+  transition: 'all 1s ease-in-out',
   height: '100%',
   paddingTop: 64,
   boxSizing: 'border-box'
@@ -42,55 +42,55 @@ let styles = {
 
 class App extends Component {
 
-	static propTypes = {
+  static propTypes = {
     sideBarOpen: PropTypes.bool.isRequired,
     snack: PropTypes.object.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
     username: PropTypes.string.isRequired,
     onToggleSideBar: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
-		onLogout: PropTypes.func.isRequired,
-		onUndoSnack: PropTypes.func.isRequired
-	};
+    onLogout: PropTypes.func.isRequired,
+    onUndoSnack: PropTypes.func.isRequired
+  };
 
   constructor(props) {
     super(props);
 
-		const {
-			sideBarOpen,
-			snack,
+    const {
+      sideBarOpen,
+      snack,
       isLoggedIn,
       username,
       onToggleSideBar,
       onLogin,
-			onLogout,
-			onUndoSnack,
-		} = props;
+      onLogout,
+      onUndoSnack,
+    } = props;
 
     this.state = {
       username,
-			subject: '',
-			catalogNumber: '',
+      subject: '',
+      catalogNumber: '',
       message: null,
       fetching: true,
-			hasSnack: false,
-			sideBarOpen,
-			snackAutoHideDuration: 2000,
-			snackOpen: false,
-			snack,
+      hasSnack: false,
+      sideBarOpen,
+      snackAutoHideDuration: 2000,
+      snackOpen: false,
+      snack,
       isLoggedIn,
       loading: true,
     };
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
-		this.handleRequestClose = this.handleRequestClose.bind(this);
+    this.handleRequestClose = this.handleRequestClose.bind(this);
     this.handleActionClick = this.handleActionClick.bind(this);
-		this.addRedirect = this.addRedirect.bind(this);
+    this.addRedirect = this.addRedirect.bind(this);
     this.onToggleSideBar = onToggleSideBar;
     this.onLogin = onLogin;
-		this.onLogout = onLogout;
-		this.onUndoSnack = onUndoSnack;
-	}
+    this.onLogout = onLogout;
+    this.onUndoSnack = onUndoSnack;
+  }
 
   componentDidMount() {
     // Check localStorage if username is not set
@@ -104,17 +104,17 @@ class App extends Component {
     this.props.history.listen(this.handleRouteChange);
   }
 
-	componentWillReceiveProps(nextProps) {
-	  if (nextProps.sideBarOpen !== this.state.sideBarOpen) {
-			this.setState({ sideBarOpen: nextProps.sideBarOpen });
-		}
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.sideBarOpen !== this.state.sideBarOpen) {
+      this.setState({ sideBarOpen: nextProps.sideBarOpen });
+    }
 
-		if (nextProps.snack !== this.state.snack) {
-			this.setState({
-				snackOpen: true,
-				snack: nextProps.snack
-			});
-		}
+    if (nextProps.snack !== this.state.snack) {
+      this.setState({
+        snackOpen: true,
+        snack: nextProps.snack
+      });
+    }
 
     if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
       this.setState({ isLoggedIn: nextProps.isLoggedIn });
@@ -124,71 +124,71 @@ class App extends Component {
     if (nextProps.username !== this.state.username) {
       this.setState({ loading: false, username: nextProps.username });
     }
-	}
+  }
 
   handleRouteChange({ pathname }) {
     const pathArr = pathname.split("/").slice(1);
     switch (pathArr[0]) {
-      case "majors": // View majors
-        document.title = "View Majors :: WatsMyMajor";
-        break;
-      case "my-courses": // My courses
-        document.title = "My Courses :: WatsMyMajor";
-        break;
-      case "schedule": // My schedule
-        document.title = "My Schedule :: WatsMyMajor";
-        break;
-      default:
-        document.title = "WatsMyMajor";
+    case "majors": // View majors
+      document.title = "View Majors :: WatsMyMajor";
+      break;
+    case "my-courses": // My courses
+      document.title = "My Courses :: WatsMyMajor";
+      break;
+    case "schedule": // My schedule
+      document.title = "My Schedule :: WatsMyMajor";
+      break;
+    default:
+      document.title = "WatsMyMajor";
     }
   }
 
-	handleRequestClose() {
-		this.setState({ snackOpen: false });
-	}
+  handleRequestClose() {
+    this.setState({ snackOpen: false });
+  }
 
-	handleActionClick() {
+  handleActionClick() {
     const { handleActionClick, undoMsg } = this.state.snack;
-		this.setState({ snackOpen: false });
-		handleActionClick();
-		if (undoMsg) this.props.onUndoSnack(undoMsg);
-	}
+    this.setState({ snackOpen: false });
+    handleActionClick();
+    if (undoMsg) this.props.onUndoSnack(undoMsg);
+  }
 
   // Redirects to Login if not logged in
   addRedirect(Component) {
     return (props) => (
-      (this.state.isLoggedIn) ? <Component {...props} /> : <Redirect to="/login" />
+      (this.state.isLoggedIn) ? <Component { ...props } /> : <Redirect to="/login" />
     );
   }
 
   // Redirects to dashboard if logged in
   addUndirect(Component) {
     return (props) => (
-      (this.state.isLoggedIn) ? <Redirect to="/" /> : <Component {...props} />
+      (this.state.isLoggedIn) ? <Redirect to="/" /> : <Component { ...props } />
     );
   }
 
   render() {
     const marginLeft = (this.state.sideBarOpen) ? 200 : 0;
-		const transition = (this.state.sideBarOpen)
-													? 'all 0.3s ease-in-out'
-													: 'all 0.225s ease-out';
-		styles = Object.assign({}, styles, { marginLeft, transition });
+    const transition = (this.state.sideBarOpen)
+      ? 'all 0.3s ease-in-out'
+      : 'all 0.225s ease-out';
+    styles = Object.assign({}, styles, { marginLeft, transition });
 
     if (this.state.loading) {
       return <LoadingView />;
     }
 
     return (
-			<div className="App">
-				<AppBar
-          toggleSideBar={this.onToggleSideBar}
-          onLogout={this.onLogout}
-          isLoggedIn={this.state.isLoggedIn}
+      <div className="App">
+        <AppBar
+          toggleSideBar={ this.onToggleSideBar }
+          onLogout={ this.onLogout }
+          isLoggedIn={ this.state.isLoggedIn }
         />
-				<SideBar open={this.state.sideBarOpen} />
-        <div style={styles}>
-  				<Switch>
+        <SideBar open={ this.state.sideBarOpen } />
+        <div style={ styles }>
+          <Switch>
             <Route exact path='/' render={ this.addRedirect(Dashboard) } />
             <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
@@ -196,34 +196,34 @@ class App extends Component {
             <Route exact path='/verify-email' component={ VerifyEmail } />
             <Route exact path='/unwatch-class' component={ UnwatchedClass } />
             <Route exact path='/settings' render={ this.addRedirect(Settings) } />
-  					<Route exact path='/majors/:majorKey?' component={ Majors } />
+            <Route exact path='/majors/:majorKey?' component={ Majors } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
             <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
-  				</Switch>
-  			</div>
+          </Switch>
+        </div>
         <ToastContainer />
-				<Snackbar
-					open={this.state.snackOpen}
-					message={this.state.snack.msg}
-					action={this.state.snack.actionMsg}
-					autoHideDuration={this.state.snackAutoHideDuration}
-					onActionClick={this.handleActionClick}
-					onRequestClose={this.handleRequestClose}
-				/>
-			</div>
+        <Snackbar
+          open={ this.state.snackOpen }
+          message={ this.state.snack.msg }
+          action={ this.state.snack.actionMsg }
+          autoHideDuration={ this.state.snackAutoHideDuration }
+          onActionClick={ this.handleActionClick }
+          onRequestClose={ this.handleRequestClose }
+        />
+      </div>
     );
   }
 }
 
 const mapStateToProps = ({ sideBarOpen, snack, isLoggedIn, user }) => {
-	return { sideBarOpen, snack, isLoggedIn, username: user.username };
+  return { sideBarOpen, snack, isLoggedIn, username: user.username };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     onToggleSideBar: () => dispatch(toggleSideBar()),
-		onUndoSnack: (msg) =>	dispatch(createSnack(msg)),
+    onUndoSnack: (msg) =>  dispatch(createSnack(msg)),
     onLogin: (username) => dispatch(loginUser(username)),
     onLogout: () => dispatch(logoutUser()),
   }

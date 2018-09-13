@@ -5,14 +5,14 @@ async function getClassInfo(subject, catalogNumber, term) {
   const url = createURL(subject, catalogNumber, 'undergraduate', term);
   let $ = null;
 
-	// Get list of profs
-	try {
-		const html = await utils.getHTML(url);
-		$ = cheerio.load(html);
-	} catch (err) {
-		console.log(err);
-		return { err, classInfo: null };
-	}
+  // Get list of profs
+  try {
+    const html = await utils.getHTML(url);
+    $ = cheerio.load(html);
+  } catch (err) {
+    console.error(err);
+    return { err, classInfo: null };
+  }
 
   // Get unis
   const units = Number($('tr').eq(1).find('td').eq(2).text().trim());
@@ -65,14 +65,13 @@ async function getClassInfo(subject, catalogNumber, term) {
       }
     } else if (rowArr.length >= 12) {
       const metadata = { units, note, topic: '' };
-      if (rowArr[10] == null) console.log(subject, catalogNumber);
       const rowObj = Object.assign(metadata, formatRow(rowArr));
       if (rowObj.section.length === 0 && classInfo.length > 0) {
         const { classes } = rowObj;
         classInfo[classInfo.length - 1].classes.push(classes[0]);
       } else classInfo.push(rowObj);
     } else {
-      console.log(subject, catalogNumber, rowArr.join(' '));
+      console.warn(`Unable to parse row for ${subject} ${catalogNumber}: ${rowArr.join(' ')}`);
     }
   });
 
@@ -149,10 +148,10 @@ const formatTimes = (timeStr) => {
     datesStr,
   ] = matchArr.slice(1);
   const RE_DAY = /(M)?(Th|T)?(W)?(Th)?(F)?/g;
-	weekdays =  RE_DAY.exec(dayStr)
-		.slice(1, 6)
-		.map((d) => (d == null) ? null : d)
-		.filter(d => d != null);
+  const weekdays =  RE_DAY.exec(dayStr)
+    .slice(1, 6)
+    .map((d) => (d == null) ? null : d)
+    .filter(d => d != null);
 
   if (datesStr != null) timeObj.dateRange = datesStr;
 
@@ -205,8 +204,8 @@ const formatRow = (row) => ({
     }
   ],
   lastUpdated: new Date(Date.now()).toLocaleDateString("en-US", {
-      year: "numeric", month: "short",
-      day: "numeric", hour: "2-digit", minute: "2-digit"
+    year: "numeric", month: "short",
+    day: "numeric", hour: "2-digit", minute: "2-digit"
   }),
 });
 

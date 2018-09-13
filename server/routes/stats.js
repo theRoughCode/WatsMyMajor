@@ -5,9 +5,9 @@ const scheduler = require('../helpers/scheduler');
 
 // Updates count of all users' courses
 StatsRouter.get('/update/popular', async function(req, res) {
-	const { err, courseCount } = await scheduler.updatePopularCourses();
-	if (err) return res.status(404).send(err.message);
-	res.json(courseCount);
+  const { err, courseCount } = await scheduler.updatePopularCourses();
+  if (err) return res.status(404).send(err.message);
+  res.json(courseCount);
 });
 
 // Retrieves the top "limit" courses from the database
@@ -21,7 +21,7 @@ StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
   }
   const { err, results } = await stats.getMostPopular(limit);
   if (err) {
-    console.log(err);
+    console.error(err);
     res.status(404).send(err.message);
   } else res.json(results);
 });
@@ -30,18 +30,19 @@ StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
 StatsRouter.get('/courses/popular', async function(req, res) {
   let { err, results } = await stats.getMostPopular(3);
   if (err) {
-    console.log(err);
+    console.error(err);
     res.status(404).send(err.message);
   } else {
     const popularCourses = await Promise.all(Object.keys(results).map(async (courseStr) => {
       const [subject, catalogNumber] = courseStr.split("-");
-			({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
-			if (err) {
-		    console.log(err);
-		    res.status(404).send(err.message);
-		  }
-			const { title, description } = course;
-			return { subject, catalogNumber, title, description };
+      let course = null;
+      ({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
+      if (err) {
+        console.error(err);
+        res.status(404).send(err.message);
+      }
+      const { title, description } = course;
+      return { subject, catalogNumber, title, description };
     }));
     res.json(popularCourses);
   }

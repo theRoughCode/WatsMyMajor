@@ -61,7 +61,9 @@ export default class SettingsBoard extends Component {
       errors: {},
     };
 
+    this.handleChange = this.handleChange.bind(this);
     this.onEdit = this.onEdit.bind(this);
+    this.onSave = this.onSave.bind(this);
     this.onCancel = this.onCancel.bind(this);
   }
 
@@ -101,34 +103,34 @@ export default class SettingsBoard extends Component {
   render() {
     const buttons = (this.state.isEditing)
       ? (
-          <div style={ styles.buttonContainer }>
-            <RaisedButton
-              label="Save"
-              labelPosition="before"
-              primary
-              icon={ <SaveIcon style={ styles.buttonIcon } /> }
-              onClick={ this.onSave.bind(this, 'profile') }
-              type="submit"
-            />
-            <RaisedButton
-              label="Cancel"
-              labelPosition="before"
-              backgroundColor={ red }
-              icon={ <CancelIcon style={ styles.buttonIcon } /> }
-              style={{ marginLeft: 10 }}
-              onClick={ this.onCancel }
-            />
-          </div>
-        )
-      : (
+        <div style={ styles.buttonContainer }>
           <RaisedButton
-            label="Edit"
+            label="Save"
             labelPosition="before"
-            icon={ <EditIcon style={ styles.buttonIcon } /> }
-            style={ styles.buttonContainer }
-            onClick={ this.onEdit }
+            primary
+            icon={ <SaveIcon style={ styles.buttonIcon } /> }
+            onClick={ this.onSave }
+            type="submit"
           />
-        );
+          <RaisedButton
+            label="Cancel"
+            labelPosition="before"
+            backgroundColor={ red }
+            icon={ <CancelIcon style={ styles.buttonIcon } /> }
+            style={{ marginLeft: 10 }}
+            onClick={ this.onCancel }
+          />
+        </div>
+      )
+      : (
+        <RaisedButton
+          label="Edit"
+          labelPosition="before"
+          icon={ <EditIcon style={ styles.buttonIcon } /> }
+          style={ styles.buttonContainer }
+          onClick={ this.onEdit }
+        />
+      );
 
     return (
       <form style={ styles.boardContainer } onSubmit={ e => e.preventDefault() }>
@@ -141,12 +143,13 @@ export default class SettingsBoard extends Component {
             this.props.fields.map(({ name, label, type, Icon }, index) => (
               <Field
                 key={ index }
-                name={ label }
+                name={ name }
+                label={ label }
                 errorText={ this.state.errors[name] }
                 type={ type }
                 value={ this.state.values[name] }
                 isEditing={ this.state.isEditing }
-                onChange={ this.handleChange.bind(this, name) }
+                onChange={ this.handleChange }
                 Icon={ Icon }
               />
             ))

@@ -40,5 +40,6 @@ Raven.config(process.env.SENTRY_DSN).install();
 app.use('/', router);
 
 app.listen(PORT, function () {
+  /* eslint-disable no-console */
   console.log(`Listening on port ${PORT}`);
 });

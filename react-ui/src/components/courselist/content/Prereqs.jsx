@@ -30,8 +30,8 @@ const Prereqs = ({ choose, reqs }) => (
 );
 
 Prereqs.propTypes = {
-	choose: PropTypes.number.isRequired,
-	reqs: PropTypes.array.isRequired
+  choose: PropTypes.number.isRequired,
+  reqs: PropTypes.array.isRequired
 };
 
 export default Prereqs;

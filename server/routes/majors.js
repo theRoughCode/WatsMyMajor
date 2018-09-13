@@ -14,7 +14,7 @@ MajorsRouter.post('/set/:key', async function(req, res) {
   }
   const err = await majors.setMajorRequirements(key, { name, url, faculty, data });
   if (err) {
-    console.log(err);
+    console.error(err);
     res.status(404).send(err.message);
   } else res.send(`${name} updated successfully`);
 });
@@ -28,7 +28,7 @@ MajorsRouter.get('/get/:name', async function(req, res) {
   }
   const { err, data } = await majors.getMajorRequirements(name);
   if (err) {
-    console.log(err);
+    console.error(err);
     res.status(404).send(err.message);
   } else res.json(data);
 });
@@ -36,7 +36,7 @@ MajorsRouter.get('/get/:name', async function(req, res) {
 MajorsRouter.get('/list', async function(req, res) {
   const { err, list } = await majors.getList();
   if (err) {
-    console.log(err);
+    console.error(err);
     res.status(404).send(err.message);
   } else res.json(list);
 });

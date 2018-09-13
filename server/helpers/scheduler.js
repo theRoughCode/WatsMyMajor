@@ -4,6 +4,7 @@ const update = require('../models/update');
 // Update taken count of courses
 // Runs every midnight
 schedule.scheduleJob('0 0 0 * * *', fireDate => {
+  /* eslint-disable no-console */
   console.log(`Running nightly cron job for updating popular courses at: ${fireDate}`);
   update.updatePopularCourses();
 });

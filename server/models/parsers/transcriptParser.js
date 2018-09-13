@@ -1,5 +1,3 @@
-const { read } = require('./utils');
-
 // We verify a subject by checking if it's in all caps
 function isSubject(subject) {
   return subject === subject.toUpperCase();

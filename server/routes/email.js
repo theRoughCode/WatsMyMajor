@@ -51,6 +51,7 @@ EmailRouter.post('/create', async function(req, res) {
   username = username.toLowerCase();
   email = email.toLowerCase();
 
+  /* eslint-disable no-useless-escape */
   const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (!emailRegex.test(email)) return res.status(400).send('Invalid email');
 

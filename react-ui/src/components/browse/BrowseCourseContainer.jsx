@@ -48,7 +48,7 @@ class BrowseCourseContainer extends Component {
     this.fetchPopularCourses();
   }
 
-  async fetchPopularCourses() {
+  fetchPopularCourses = async () => {
     const response = await fetch('/server/stats/courses/popular', {
       headers: {
         "x-secret": process.env.REACT_APP_SERVER_SECRET
@@ -59,8 +59,12 @@ class BrowseCourseContainer extends Component {
     this.setState({ popular });
   }
 
+  addToCart = (subject, catalogNumber) => {
+    const { cart, username, addToCartHandler } = this.props;
+    addToCartHandler(username, cart, subject, catalogNumber);
+  }
+
   render() {
-    const { myCourses, cart, username, addToCartHandler } = this.props;
     return (
       <div style={ styles.container }>
         { (this.state.popular.length > 0) && (
@@ -71,14 +75,14 @@ class BrowseCourseContainer extends Component {
                 const { subject, catalogNumber, title, description } = course;
                 return (
                   <CourseCard
-                    key={index}
-                    taken={hasTakenCourse(subject, catalogNumber, myCourses)}
-                    inCart={isInCart(subject, catalogNumber, cart)}
-                    addToCart={addToCartHandler.bind(this, username, cart, subject, catalogNumber)}
-                    title={title}
-                    description={description}
-                    subject={subject}
-                    catalogNumber={catalogNumber}
+                    key={ index }
+                    taken={ hasTakenCourse(subject, catalogNumber, this.props.myCourses) }
+                    inCart={ isInCart(subject, catalogNumber, this.props.cart) }
+                    addToCart={ this.addToCart }
+                    title={ title }
+                    description={ description }
+                    subject={ subject }
+                    catalogNumber={ catalogNumber }
                   />
                 );
               }) }

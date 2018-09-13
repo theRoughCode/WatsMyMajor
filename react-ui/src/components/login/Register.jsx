@@ -118,18 +118,18 @@ export default class Register extends Component {
     try {
       const response = await fetch('/server/auth/register', {
         method: 'POST',
-  			body: JSON.stringify({
-  				username,
+        body: JSON.stringify({
+          username,
           name,
           email,
           password,
-  			}),
+        }),
         credentials: 'include',
-  			headers: {
-  	      'content-type': 'application/json',
+        headers: {
+          'content-type': 'application/json',
           'x-secret': process.env.REACT_APP_SERVER_SECRET
-  	    }
-  		});
+        }
+      });
 
       if (!response.ok) {
         const { code } = await response.json();
@@ -138,18 +138,18 @@ export default class Register extends Component {
         const ERROR_SERVER_ERROR = 400;
 
         switch (code) {
-          case ERROR_USERNAME_EXISTS:
-            this.setState({ usernameError: 'Username already exists' });
-            return;
-          case ERROR_EMAIL_EXISTS:
-            this.setState({ emailError: 'Email already exists' });
-            return;
-          case ERROR_SERVER_ERROR:
-            toast.error('Failed to create account. Please contact an administrator.');
-            return;
-          default:
-            toast.error('Failed to create account. Please contact an administrator.');
-            return;
+        case ERROR_USERNAME_EXISTS:
+          this.setState({ usernameError: 'Username already exists' });
+          return;
+        case ERROR_EMAIL_EXISTS:
+          this.setState({ emailError: 'Email already exists' });
+          return;
+        case ERROR_SERVER_ERROR:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
+        default:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
         }
       } else {
         this.setState({ registered: true });
@@ -163,58 +163,58 @@ export default class Register extends Component {
   render() {
     if (this.state.registered) return <EmailSent />;
     return  (
-      <div style={styles.viewContainer}>
-        <div style={styles.container}>
-          <div style={styles.header}>
-            <img src="images/logo.png" alt="logo" style={styles.logo} />
-            <span style={styles.title}>Hey there!</span>
-            <span style={styles.subtitle}>Sign up to begin organizing your courses.</span>
+      <div style={ styles.viewContainer }>
+        <div style={ styles.container }>
+          <div style={ styles.header }>
+            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <span style={ styles.title }>Hey there!</span>
+            <span style={ styles.subtitle }>Sign up to begin organizing your courses.</span>
           </div>
-          <Paper style={styles.formContainer} zDepth={2} rounded={false}>
-            <form style={styles.body}>
+          <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
+            <form style={ styles.body }>
               <TextField
                 hintText="e.g. Ferigoose123"
                 floatingLabelText="Username"
-                errorText={this.state.usernameError}
-                onChange={this.removeErrors}
+                errorText={ this.state.usernameError }
+                onChange={ this.removeErrors }
                 ref="username"
               /><br />
               <TextField
                 hintText="e.g. Feridun Hamdullahpur"
                 floatingLabelText="Full Name"
-                errorText={this.state.nameError}
-                onChange={this.removeErrors}
+                errorText={ this.state.nameError }
+                onChange={ this.removeErrors }
                 ref="name"
               /><br />
               <TextField
                 hintText="e.g. feridun@edu.uwaterloo.ca"
                 floatingLabelText="Email"
-                errorText={this.state.emailError}
-                onChange={this.removeErrors}
+                errorText={ this.state.emailError }
+                onChange={ this.removeErrors }
                 ref="email"
               /><br />
               <TextField
                 hintText="*********"
                 floatingLabelText="Password"
                 type="password"
-                errorText={this.state.passwordError}
-                onChange={this.removeErrors}
+                errorText={ this.state.passwordError }
+                onChange={ this.removeErrors }
                 ref="password"
               /><br />
               <TextField
                 hintText="*********"
                 floatingLabelText="Confirm Password"
                 type="password"
-                errorText={this.state.confirmPasswordError}
-                onChange={this.removeErrors}
+                errorText={ this.state.confirmPasswordError }
+                onChange={ this.removeErrors }
                 ref="confirmPassword"
               /><br />
               <RaisedButton
                 label="Sign up"
-                backgroundColor={ green }
-                style={styles.registerButton}
-                labelStyle={styles.registerText}
-                onClick={this.onRegister}
+                backgroundColor={  green  }
+                style={ styles.registerButton }
+                labelStyle={ styles.registerText }
+                onClick={ this.onRegister }
                 type="submit"
               />
             </form>
@@ -222,7 +222,7 @@ export default class Register extends Component {
           <div style={ styles.privacy }>
             <span>By signing up, you agree to our <a href="/privacy-policy">Privacy Policy</a>.</span>
           </div>
-          <div style={styles.footer}>
+          <div style={ styles.footer }>
             Already have an account yet? <Link to="/login">Sign in</Link>
           </div>
         </div>

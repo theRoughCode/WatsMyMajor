@@ -57,7 +57,7 @@ async function getWatchers(term, classNum) {
     const watchers = (snapshot.val() != null) ? Object.keys(snapshot.val()) : [];
     return { watchers, err: null };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { watchers: null, err };
   }
 }
@@ -69,7 +69,7 @@ async function getEnrollment(term, classNum) {
     const enrollment = snapshot.val();
     return { enrollment, err: null };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { enrollment: null, err };
   }
 }
@@ -83,7 +83,7 @@ async function getSubjectAndCatNum(term, classNum) {
     const catalogNumber = catalogNumberSnapshot.val();
     return { subject, catalogNumber, err: null };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { subject: null, catalogNumber: null, err };
   }
 }

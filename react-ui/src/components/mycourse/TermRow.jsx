@@ -6,11 +6,11 @@ import TermBoard from './TermBoard';
 
 const NUM_PER_ROW = 3;
 const styles = {
-	board: {
-		width: '100%',
-		display: 'flex',
-		overflow: 'auto',
-	},
+  board: {
+    width: '100%',
+    display: 'flex',
+    overflow: 'auto',
+  },
 }
 
 const TermRow = ({
@@ -25,18 +25,18 @@ const TermRow = ({
     droppableId={ `row/${rowNumber}` }
     type={ DragTypes.COLUMN }
     direction="horizontal"
-    ignoreContainerClipping={true}
+    ignoreContainerClipping
   >
-    {(provided, snapshot) => (
+    { (provided, snapshot) => (
       <div
         ref={ provided.innerRef }
-        {...provided.droppableProps}
+        { ...provided.droppableProps }
         style={ styles.board }
       >
         {
           courseList.map(({ term, level, courses }, index) => {
-						// Accounts for row number
-						const offsetIndex = index + rowNumber * NUM_PER_ROW;
+            // Accounts for row number
+            const offsetIndex = index + rowNumber * NUM_PER_ROW;
             return (
               <Draggable
                 draggableId={ `term/${rowNumber}/${index}` }
@@ -44,11 +44,11 @@ const TermRow = ({
                 index={ index }
                 key={ index }
               >
-                {(provided, snapshot) => (
+                { (provided, snapshot) => (
                   <TermBoard
                     index={ String(offsetIndex) }
                     term={ term }
-										level={ level }
+                    level={ level }
                     courses={ courses }
                     provided={ provided }
                     snapshot={ snapshot }
@@ -57,14 +57,14 @@ const TermRow = ({
                     onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
                     onUpdateCourses={ (courses) => onUpdateCourses(offsetIndex, courses) }
                   />
-                )}
+                ) }
               </Draggable>
             );
           })
         }
         { provided.placeholder }
       </div>
-    )}
+    ) }
   </Droppable>
 );
 

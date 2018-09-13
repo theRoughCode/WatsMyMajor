@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 const styles = {
   bigContainer: {
@@ -36,6 +37,10 @@ const styles = {
 
 // TODO: Include graphics/make prettier
 export default class UnwatchedClass extends Component {
+  static propTypes = {
+    location: PropTypes.object.isRequired,
+  };
+
   state = {
     info: {},
     error: false,
@@ -44,6 +49,7 @@ export default class UnwatchedClass extends Component {
 
   async componentDidMount() {
     const { search } = this.props.location;
+    /* eslint-disable no-useless-escape */
     const tokenRegex = /.*(\?|\&)token=([^&]*)(\&.*|$)/;
     const matchArr = search.match(tokenRegex);
     if (matchArr == null || matchArr.length < 3) return;

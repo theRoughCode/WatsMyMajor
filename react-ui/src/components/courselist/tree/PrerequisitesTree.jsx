@@ -16,11 +16,11 @@ class PrerequisitesTree extends Component {
     const { data, containerWidth, containerHeight } = this.props;
     return (
       <Tree
-        data={data}
-        height={containerHeight}
-        width={containerWidth}
-        nodeOffset={5}
-        nodeRadius={10}
+        data={ data }
+        height={ containerHeight }
+        width={ containerWidth }
+        nodeOffset={ 5 }
+        nodeRadius={ 10 }
         margins={{
           bottom: 50,
           left: 50,

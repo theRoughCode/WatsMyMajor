@@ -1,4 +1,3 @@
-const asyncjs = require('async');
 const { courseListRef } = require('./index');
 
 /*
@@ -17,7 +16,7 @@ const { courseListRef } = require('./index');
 // Set a course
 // TODO: Use title instead and then use this to search
 function setCourse(subject, catalogNumber) {
-	return courseListRef
+  return courseListRef
     .child(`${subject}/${catalogNumber}`)
     .set(true);
 }
@@ -43,24 +42,7 @@ async function getCourseList() {
   return courseList;
 }
 
-// Iterates over all courses and calls fn with subject, catalogNumber
-async function forEach(fn) {
-  const snapshot = await courseListRef.once('value');
-  // Store list of promises of fn executions
-  snapshot.forEach((subjectSnapshot) => {
-    const subject = subjectSnapshot.key;
-    subjectSnapshot.forEach((catalogNumberSnapshot) => {
-      const catalogNumber = catalogNumberSnapshot.key;
-      promises.push(fn(subject, catalogNumber));
-    });
-  });
-  // Wait for all promises to be done
-  await Promise.all(promises);
-  return null;
-}
-
 module.exports = {
   setCourse,
   getCourseList,
-  forEach,
 };

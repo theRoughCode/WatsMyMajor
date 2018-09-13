@@ -35,7 +35,7 @@ const styles = {
 // List of math subjects
 const coreSubjects = {
   'math': ['ACTSC', 'AMATH', 'CO', 'COMM', 'CS', 'MATH', 'MATBUS',
-            'MTHEL', 'PMATH', 'SE', 'STAT'],
+    'MTHEL', 'PMATH', 'SE', 'STAT'],
 };
 
 const getSubjectCourses = (subject, excluding, myCourses) => {
@@ -47,7 +47,7 @@ const getSubjectCourses = (subject, excluding, myCourses) => {
       (myCourses.hasOwnProperty(s))
         ? ({ subject: s, catNums: Object.keys(myCourses[s]) })
         : null
-      ).filter(c => c != null);
+    ).filter(c => c != null);
   }
   if (!myCourses.hasOwnProperty(subject)) return [];
 
@@ -70,9 +70,9 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
   level = level.trim();
   const levelNum = Number(level.charAt(0));
   if (isNaN(levelNum)) {
-		console.error(`Level: ${levelNum} is not a number!`);
-		return [];
-	}
+    console.error(`Level: ${levelNum} is not a number!`);
+    return [];
+  }
   const isPlus = level.charAt(level.length - 1) === '+';
 
   // Filter out courses that aren't the right level or is in the exclusion list
@@ -169,7 +169,7 @@ export default class LevelCheck extends Component {
         <Checkbox
           label={ `Any ${levelStr}${subject} course${excludingStr}` }
           checked={ this.state.isChecked }
-          onCheck={ this.onCheck.bind(this, -1) }
+          onCheck={ () => this.onCheck(-1) }
           labelStyle={ styles.labelStyle(this.state.taken) }
           iconStyle={ styles.iconStyle }
           style={ styles.checkbox }
@@ -186,7 +186,7 @@ export default class LevelCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ this.onCheck.bind(this, index) }
+                    onCheck={ () => this.onCheck(index) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }

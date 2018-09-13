@@ -38,7 +38,7 @@ export default class LinkFacebook extends Component {
     onUnlink: PropTypes.func.isRequired,
   };
 
-  async onFBLink(response) {
+  onFBLink = async (response) => {
     const { id, picture } = response;
     const hasPicture = Boolean(picture && picture.data && picture.data.url);
     this.props.onLink(this.props.username, id, hasPicture);
@@ -63,7 +63,7 @@ export default class LinkFacebook extends Component {
         <FacebookLogin
           appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
           fields="picture"
-          callback={ this.onFBLink.bind(this) }
+          callback={ this.onFBLink }
           render={ renderProps => (
             <RaisedButton
               label="Link Facebook"

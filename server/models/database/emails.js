@@ -6,7 +6,7 @@ const { emailsRef } = require('./index');
  */
 
 
- /****************************
+/****************************
   *													*
   *			S E T T E R S 			*
   *													*
@@ -14,7 +14,7 @@ const { emailsRef } = require('./index');
 
 function setEmail(username, email) {
   email = email.replace(/\./g, ',');
-	return emailsRef
+  return emailsRef
     .child(email)
     .set(username);
 }

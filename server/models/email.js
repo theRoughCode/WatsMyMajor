@@ -68,7 +68,7 @@ function verifyEmailToken(token) {
     const { username } = jwt.verify(token, JWT_SECRET);
     return { err: null, username };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { err, username: null };
   }
 }
@@ -77,7 +77,7 @@ function verifyEmailToken(token) {
 async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numSeats, username) {
   const { user, err } = await users.getUser(username);
   if (err) {
-    console.log(err);
+    console.error(err);
     return err;
   }
 
@@ -121,8 +121,6 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
     <a href="${url}">${url}</a>
   `;
 
-  console.log(`Sending class update email to ${username}`);
-
   return await sendMail(email, `Open spot in ${subject} ${catalogNumber}!`, html);
 }
 
@@ -133,7 +131,7 @@ function verifyUnwatchToken(token) {
     const info = { username, term, classNum, subject, catalogNumber };
     return { err: null, info };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { err, info: null };
   }
 }

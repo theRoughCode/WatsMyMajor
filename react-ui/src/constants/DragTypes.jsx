@@ -1,4 +1,4 @@
 export const DragTypes = {
-	COLUMN: 'column',
-	COURSE: 'course',
+  COLUMN: 'column',
+  COURSE: 'course',
 };

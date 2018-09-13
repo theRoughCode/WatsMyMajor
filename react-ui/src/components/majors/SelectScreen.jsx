@@ -58,7 +58,7 @@ const SelectScreen = ({ handleChange, majorsList, value }) => (
           style={ styles.select }
           value={ value }
           autoWidth
-          >
+        >
           {
             majorsList.map(({ key, name }, index) => (
               <MenuItem key={ index } value={ key } primaryText={ name } />

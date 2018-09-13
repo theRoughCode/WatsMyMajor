@@ -10,7 +10,7 @@ async function fetchQuery(query, maxNumberOfResults) {
       }
     });
     if (response.status !== 200) {
-      console.log('Looks like there was a problem. Status Code: ' +
+      console.error('Looks like there was a problem. Status Code: ' +
         response.status);
       return [];
     }
@@ -20,7 +20,7 @@ async function fetchQuery(query, maxNumberOfResults) {
       return `${subject} ${catalogNumber} - ${title}`;
     });
   } catch(err) {
-    console.log(err);
+    console.error(err);
     return [];
   }
 }
@@ -43,7 +43,7 @@ class AppSearchBar extends Component {
     super(props);
 
     this.state = {
-			dataSource: [],
+      dataSource: [],
       query: '',
       style: props.style
     };
@@ -63,29 +63,29 @@ class AppSearchBar extends Component {
   }
 
   // Find all courses that match the queried string
-	async queryForCourse(query) {
-		if (!query) return;
+  async queryForCourse(query) {
+    if (!query) return;
 
     this.setState({ query });
 
-		const maxNumberOfResults = 5;
+    const maxNumberOfResults = 5;
     const dataSource = await fetchQuery(query, maxNumberOfResults);
 
     this.setState({ dataSource });
-	}
+  }
 
-	async searchCourse(query) {
+  async searchCourse(query) {
     if (!query) return;
 
     const result = await fetchQuery(query, 1);
     if (result.length === 0) return;
-		const strArr = result[0].split(' ');
-		if (strArr.length < 2) return;
+    const strArr = result[0].split(' ');
+    if (strArr.length < 2) return;
 
     const subject = strArr[0];
     const catalogNumber = strArr[1];
-		this.props.onResult(subject, catalogNumber);
-	}
+    this.props.onResult(subject, catalogNumber);
+  }
 
   render() {
     return (

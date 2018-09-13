@@ -10,106 +10,103 @@ const msInDay = 1000 * 60 * 60 * 16;
 const offset = 7 * 60 * 60 * 1000;
 
 function getEventsBetweenDates(events, start, end) {
-	return events
-		.filter(event => event.props.start < end && event.props.end > start);
+  return events
+    .filter(event => event.props.start < end && event.props.end > start);
 }
 
-function getEventColumn(event: EventElement, columnsLastDate: Date[]): number {
-	for (let i = 0; i < columnsLastDate.length; i++) {
-		if (event.props.start >= columnsLastDate[i]) {
-			return i;
-		}
-	}
-	return columnsLastDate.length;
+function getEventColumn(event, columnsLastDate: Date[]): number {
+  for (let i = 0; i < columnsLastDate.length; i++) {
+    if (event.props.start >= columnsLastDate[i]) {
+      return i;
+    }
+  }
+  return columnsLastDate.length;
 }
 
-function getEventsColumns(events: EventElement[]) : Column[] {
-	let columnsLastDate = [];
-	const results = [];
-	let nextOverIndex = 0;
+function getEventsColumns(events) {
+  let columnsLastDate = [];
+  const results = [];
+  let nextOverIndex = 0;
 
-	function setOverColumnOnEventGroup(end) {
-		for (let j = nextOverIndex; j < end; j++) {
-			results[j].over = columnsLastDate.length;
-		}
-		columnsLastDate = [];
-		nextOverIndex = end;
-	}
+  function setOverColumnOnEventGroup(end) {
+    for (let j = nextOverIndex; j < end; j++) {
+      results[j].over = columnsLastDate.length;
+    }
+    columnsLastDate = [];
+    nextOverIndex = end;
+  }
 
-	for (let i = 0; i < events.length; i++) {
-		const app = events[i];
-		let column;
+  for (let i = 0; i < events.length; i++) {
+    const app = events[i];
+    let column;
 
-		if (columnsLastDate.length !== 0 && every(columnsLastDate, d => app.props.start >= d)) {
-			setOverColumnOnEventGroup(i);
-		}
+    if (columnsLastDate.length !== 0 && every(columnsLastDate, d => app.props.start >= d)) {
+      setOverColumnOnEventGroup(i);
+    }
 
-		column = getEventColumn(app, columnsLastDate);
-		columnsLastDate[column] = app.props.end;
-		results.push({ column: column, over: -1 });
-	}
+    column = getEventColumn(app, columnsLastDate);
+    columnsLastDate[column] = app.props.end;
+    results.push({ column: column, over: -1 });
+  }
 
-	setOverColumnOnEventGroup(events.length);
+  setOverColumnOnEventGroup(events.length);
 
-	return results;
+  return results;
 }
 
-function getEventItemY(event: EventElement, date: Date) {
-	if(event.props.start < date) {
-		return 0;
-	}
+function getEventItemY(event, date: Date) {
+  if(event.props.start < date) {
+    return 0;
+  }
 
-	return ((event.props.start.getTime() - date.getTime() - offset) / msInDay);
+  return ((event.props.start.getTime() - date.getTime() - offset) / msInDay);
 }
 
-function getEventItemHeight(event: EventElement, date: Date) {
-	const maxedDate = event.props.end.getTime() > (date.getTime() + totalMsInDay) ?
-		date.getTime() + msInDay :
-		event.props.end.getTime();
+function getEventItemHeight(event, date: Date) {
+  const maxedDate = event.props.end.getTime() > (date.getTime() + totalMsInDay) ?
+    date.getTime() + msInDay :
+    event.props.end.getTime();
 
-	const minDate = event.props.start < date ? date.getTime() + offset : event.props.start.getTime();
-	return (maxedDate - minDate) / msInDay;
+  const minDate = event.props.start < date ? date.getTime() + offset : event.props.start.getTime();
+  return (maxedDate - minDate) / msInDay;
 }
 
 function eventsToDayViewItems(events, date) {
-	const sortedEvents = events.sort((a, b) => a.props.start.getTime() - b.props.start.getTime());
-	const eventsColumn = getEventsColumns(sortedEvents);
-	return sortedEvents
-		.map((event, i) => ({
-			x: eventsColumn[i].column / eventsColumn[i].over,
-			y: getEventItemY(event, date),
-			width: (1 / eventsColumn[i].over),
-			height: getEventItemHeight(event, date),
-			event: event
-		}));
+  const sortedEvents = events.sort((a, b) => a.props.start.getTime() - b.props.start.getTime());
+  const eventsColumn = getEventsColumns(sortedEvents);
+  return sortedEvents
+    .map((event, i) => ({
+      x: eventsColumn[i].column / eventsColumn[i].over,
+      y: getEventItemY(event, date),
+      width: (1 / eventsColumn[i].over),
+      height: getEventItemHeight(event, date),
+      event: event
+    }));
 }
 
 function toPercent(i) {
-	return (i * 100) + '%';
+  return (i * 100) + '%';
 }
 
 function getHourDividerStyle(hour) {
-	return {
-		height: (100 / 16) + '%',
-		top: (hour * (100 / 16)) + '%',
-		right: '0px',
-		left: '0px',
-		position: 'absolute',
-		borderBottomColor: '#e2e2e2',
-		borderBottomWidth: '1px',
-		borderBottomStyle: 'solid',
-		boxSizing: 'border-box'
-	};
+  return {
+    height: (100 / 16) + '%',
+    top: (hour * (100 / 16)) + '%',
+    right: '0px',
+    left: '0px',
+    position: 'absolute',
+    borderBottomColor: '#e2e2e2',
+    borderBottomWidth: '1px',
+    borderBottomStyle: 'solid',
+    boxSizing: 'border-box'
+  };
 }
 
 function renderHoursDividers(date: Date) {
   const dividers = [];
   for(let i = 0; i < 16; i++) {
     dividers.push(
-      <div
-        key={i + 'divider'}
-        style={getHourDividerStyle(i)}>
-      </div>
+      <div key={ i + 'divider' } style={ getHourDividerStyle(i) } />
     );
   }
   return dividers;
@@ -125,7 +122,7 @@ function renderEventsItems(events, date) {
     });
 }
 
-function getDayViewItemStyle(item: DayViewItem) {
+function getDayViewItemStyle(item) {
   return {
     height: `calc(${toPercent(item.height)} - 3px)`,
     width: `calc(${toPercent(item.width)} - 4px)`,
@@ -134,21 +131,19 @@ function getDayViewItemStyle(item: DayViewItem) {
     position: 'absolute',
     boxSizing: 'border-box',
     minHeight: '10px',
-		//Styling
-		margin: '0 2.5px',
-		cursor: 'pointer',
-		borderRadius: '2px',
-		fontSize: '12px',
-		display: 'flex',
-		flexDirection: 'column',
-		verticalAlign: 'middle',
-		color: item.event.props.color ? item.event.props.color : 'white',
-		background: item.event.props.background ? item.event.props.background : '#049BE5'
+    //Styling
+    margin: '0 2.5px',
+    cursor: 'pointer',
+    borderRadius: '2px',
+    fontSize: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    verticalAlign: 'middle',
+    color: item.event.props.color ? item.event.props.color : 'white',
+    background: item.event.props.background ? item.event.props.background : '#049BE5'
   };
 }
 
-const DayEvents = ({ date, events }) => {
-	return renderHoursDividers(date).concat(renderEventsItems(events, date));
-}
+const DayEvents = ({ date, events }) => renderHoursDividers(date).concat(renderEventsItems(events, date));
 
 export default DayEvents;

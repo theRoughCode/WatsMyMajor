@@ -1,9 +1,9 @@
 const { classesRef } = require('./index');
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 function setClasses(subject, catalogNumber, term, classes) {
@@ -13,25 +13,25 @@ function setClasses(subject, catalogNumber, term, classes) {
 }
 
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
 
 async function getClasses(subject, catalogNumber, term) {
   try {
-		const snapshot = await classesRef
-	 		.child(`${term}/${subject}/${catalogNumber}`)
-	 		.once('value');
-		const classes = await snapshot.val();
-		return { err: null, classes };
-	} catch (err) {
-		console.log(err);
-		return { err: err.message, classes: null };
-	}
+    const snapshot = await classesRef
+      .child(`${term}/${subject}/${catalogNumber}`)
+      .once('value');
+    const classes = await snapshot.val();
+    return { err: null, classes };
+  } catch (err) {
+    console.error(err);
+    return { err: err.message, classes: null };
+  }
 }
 
 module.exports = {
   setClasses,
-	getClasses,
+  getClasses,
 };

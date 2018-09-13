@@ -33,13 +33,13 @@ export default class PopularCourseGraph extends Component {
         }
       });
       if (!response.ok) {
-        console.log(response)
+        console.error(`Failed to retrieve popular courses: ${response}`);
         return;
       }
       const data = await response.json();
       this.setState({ popular: formatPopular(data) });
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 
@@ -52,8 +52,8 @@ export default class PopularCourseGraph extends Component {
         <VictoryChart domainPadding={ 30 } >
           <VictoryLabel
             text="Popular Courses"
-            x={225}
-            y={30}
+            x={ 225 }
+            y={ 30 }
             textAnchor="middle"
             style={{ fontSize: 25 }}
           />
