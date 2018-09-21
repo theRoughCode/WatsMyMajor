@@ -27,11 +27,12 @@ const stepContents = [
 
 class ScheduleContainer extends Component {
   static propTypes = {
-		username: PropTypes.string.isRequired,
-		schedule: PropTypes.object.isRequired,
+    username: PropTypes.string.isRequired,
+    schedule: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     onUploadSchedule: PropTypes.func.isRequired,
-		onClearSchedule: PropTypes.func.isRequired,
-	};
+    onClearSchedule: PropTypes.func.isRequired,
+  };
 
   state = {
     text: '',
@@ -59,17 +60,18 @@ class ScheduleContainer extends Component {
   }
 
   onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+  onClearScheduleClick = () => this.props.onClearSchedule(this.props.username);
 
   render() {
     const importDialogActions = [
       <FlatButton
         label="Cancel"
-        primary={ true }
+        primary
         onClick={ this.onCloseDialog }
       />,
       <FlatButton
         label="Submit"
-        primary={ true }
+        primary
         onClick={ this.onSubmit }
       />,
     ];
@@ -80,7 +82,7 @@ class ScheduleContainer extends Component {
           <CalendarContainer
             schedule={ this.state.schedule }
             onClassClick={ this.onClassClick }
-            onClearSchedule={ this.props.onClearSchedule.bind(null, this.props.username) }
+            onClearSchedule={ this.onClearScheduleClick }
             onImportTerm={ this.onOpenDialog }
           />
           <Dialog
@@ -99,29 +101,29 @@ class ScheduleContainer extends Component {
         </div>
       )
       : (
-          <div style={{ marginTop: 50 }}>
-            <ParserInstructions
-              onChange={ this.onChange }
-              stepContents={ stepContents }
-            />
-            <RaisedButton
-              label="Submit"
-              primary={ true }
-              onClick={ this.onSubmit }
-              disabled={ this.state.text.length === 0 }
-            />
+        <div style={{ marginTop: 50 }}>
+          <ParserInstructions
+            onChange={ this.onChange }
+            stepContents={ stepContents }
+          />
+          <RaisedButton
+            label="Submit"
+            primary
+            onClick={ this.onSubmit }
+            disabled={ this.state.text.length === 0 }
+          />
         </div>
-        )
+      )
   }
 }
 
 const mapStateToProps = ({ user, mySchedule }) => ({
-	username: user.username,
-	schedule: mySchedule,
+  username: user.username,
+  schedule: mySchedule,
 });
 
 const mapDispatchToProps = dispatch => ({
-	onUploadSchedule: (username, text) => dispatch(addToSchedule(username, text)),
+  onUploadSchedule: (username, text) => dispatch(addToSchedule(username, text)),
   onClearSchedule: (username) => dispatch(clearSchedule(username)),
 });
 

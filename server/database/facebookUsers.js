@@ -16,7 +16,7 @@ async function removeFacebookUser(facebookID) {
   try {
     await facebookUsersRef.child(facebookID).remove();
   } catch(err) {
-    console.log(err)
+    console.error(err)
     return err;
   }
 }
@@ -34,7 +34,7 @@ async function getFacebookUser(facebookID) {
     const snapshot = await facebookUsersRef.child(facebookID).once('value');
     return { err: null, user: snapshot.val() };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { err, user: null };
   }
 }

@@ -55,14 +55,14 @@ export default class ParserInstructions extends Component {
     if (stepIndex < this.state.stepContents.length - 1) {
       this.setState({ stepIndex: stepIndex + 1 });
     }
-  };
+  }
 
   handlePrev() {
     const { stepIndex } = this.state;
     if (stepIndex > 0) {
       this.setState({ stepIndex: stepIndex - 1 });
     }
-  };
+  }
 
   getStepContent(stepIndex) {
     if (stepIndex < this.state.maxIndex - 1) {
@@ -114,13 +114,13 @@ export default class ParserInstructions extends Component {
               <FlatButton
                 label="Back"
                 disabled={ stepIndex === 0 }
-                onClick={this.handlePrev}
+                onClick={ this.handlePrev }
                 style={{ marginRight: 12 }}
-                />
+              />
               <RaisedButton
                 label="Next"
                 disabled={ stepIndex === stepContents.length - 1 }
-                primary={ true }
+                primary
                 onClick={ this.handleNext }
               />
             </div>

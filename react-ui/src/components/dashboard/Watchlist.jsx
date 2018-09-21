@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from 'material-ui/List';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { objectEquals, arrayEquals } from '../../utils/arrays';
+import { arrayEquals } from '../../utils/arrays';
 
 const CURRENT_TERM = '1189';
 
@@ -26,24 +25,26 @@ const styles = {
 
 // Gets subject and catalog number for classes in watchlist
 const getWatchlistInfo = async watchlist => {
+  if (Object.keys(watchlist) === 0) return [];
+  if (!watchlist.hasOwnProperty(CURRENT_TERM)) return [];
   let classes = Object.keys(watchlist[CURRENT_TERM]);
 
   classes = await Promise.all(classes.map(async classNum => {
     try {
-  		const response = await fetch(`/server/watchlist/info/${CURRENT_TERM}/${classNum}`, {
-  			headers: {
-  				'x-secret': process.env.REACT_APP_SERVER_SECRET
-  			}
-  		});
+      const response = await fetch(`/server/watchlist/info/${CURRENT_TERM}/${classNum}`, {
+        headers: {
+          'x-secret': process.env.REACT_APP_SERVER_SECRET
+        }
+      });
 
-  		if (!response.ok) return { subject: '', catalogNumber: '', classNum };
+      if (!response.ok) return { subject: '', catalogNumber: '', classNum };
 
-  		const { subject, catalogNumber } = await response.json();
-  		return { subject, catalogNumber, classNum };
-  	} catch (err) {
-      console.log(err);
-  		return { subject: '', catalogNumber: '', classNum };
-  	}
+      const { subject, catalogNumber } = await response.json();
+      return { subject, catalogNumber, classNum };
+    } catch (err) {
+      console.error(err);
+      return { subject: '', catalogNumber: '', classNum };
+    }
   }));
 
   return classes;
@@ -52,7 +53,41 @@ const getWatchlistInfo = async watchlist => {
 // Compares state's watchlist to nextProps'.  Returns true if changed.
 const watchlistChanged = (state, nextProps) => {
   const classNums = state.map(c => c.classNum);
+  if (nextProps == null) return classNums.length > 0;
   return !arrayEquals(classNums, Object.keys(nextProps));
+};
+
+const WatchlistItem = ({
+  index,
+  subject,
+  catalogNumber,
+  classNum,
+  onClassClick,
+  onDeleteClick,
+}) => {
+  const classClickHandler = () => onClassClick(subject, catalogNumber);
+  const deleteClickHandler = () => onDeleteClick(index);
+
+  return (
+    <ListItem
+      primaryText={ `${subject} ${catalogNumber} (${classNum})` }
+      onClick={ classClickHandler }
+      rightIconButton={
+        <IconButton tooltip="Unwatch" onClick={ deleteClickHandler }>
+          <DeleteIcon />
+        </IconButton>
+      }
+    />
+  );
+};
+
+WatchlistItem.propTypes = {
+  index: PropTypes.number.isRequired,
+  subject: PropTypes.string.isRequired,
+  catalogNumber: PropTypes.string.isRequired,
+  classNum: PropTypes.string.isRequired,
+  onClassClick: PropTypes.func.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
 };
 
 class Watchlist extends Component {
@@ -120,15 +155,14 @@ class Watchlist extends Component {
           <span style={ styles.header }>Class Watchlist</span>
           {
             watchlist.map(({ subject, catalogNumber, classNum }, index) => (
-              <ListItem
+              <WatchlistItem
                 key={ index }
-                primaryText={ `${subject} ${catalogNumber} (${classNum})` }
-                onClick={ this.onClassClick.bind(this, subject, catalogNumber) }
-                rightIconButton={
-                  <IconButton tooltip="Unwatch" onClick={ this.onDeleteClick.bind(this, index) }>
-                    <DeleteIcon />
-                  </IconButton>
-                }
+                index={ index }
+                subject={ subject }
+                catalogNumber={ catalogNumber }
+                classNum={ classNum }
+                onClassClick={ this.onClassClick }
+                onDeleteClick={ this.onDeleteClick }
               />
             ))
           }

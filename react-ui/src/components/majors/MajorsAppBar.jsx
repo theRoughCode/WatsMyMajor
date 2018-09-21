@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
@@ -82,5 +83,13 @@ const MajorsAppBar = ({
     </div>
   </div>
 );
+
+MajorsAppBar.propTypes = {
+  majorName: PropTypes.string.isRequired,
+  majorKey: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  majorsList: PropTypes.array.isRequired,
+};
 
 export default MajorsAppBar;

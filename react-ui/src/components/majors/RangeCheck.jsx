@@ -33,32 +33,32 @@ const styles = {
 
 // Check if taken a course in range and not in the excluding list
 const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
-	if (myCourses[subject] == null) return [];
-	const fromNum = Number(from.trim());
-	const toNum = Number(to.trim());
-	if (isNaN(from)) {
-		console.error(`From: ${from} is not a number!`);
-		return [];
-	}
-	if (isNaN(to)) {
-		console.error(`To: ${to} is not a number!`);
-		return [];
-	}
+  if (myCourses[subject] == null) return [];
+  const fromNum = Number(from.trim());
+  const toNum = Number(to.trim());
+  if (isNaN(from)) {
+    console.error(`From: ${from} is not a number!`);
+    return [];
+  }
+  if (isNaN(to)) {
+    console.error(`To: ${to} is not a number!`);
+    return [];
+  }
 
-	const catNums = Object.keys(myCourses[subject]);
-	return catNums.filter((catNum) => {
-		const num = Number(catNum.replace(/\D/g,'').trim());
-		if (isNaN(num)) {
-			console.error(`Catalog number ${num} (${catNum}) is not a number!`);
-			return false;
-		}
+  const catNums = Object.keys(myCourses[subject]);
+  return catNums.filter((catNum) => {
+    const num = Number(catNum.replace(/\D/g,'').trim());
+    if (isNaN(num)) {
+      console.error(`Catalog number ${num} (${catNum}) is not a number!`);
+      return false;
+    }
     if (num < fromNum || num > toNum) return false;
-		// Check if course is in exclude list
-		for (let i = 0; i < excluding.length; i++) {
-			if (catNum === excluding[i]) return false;
-		}
-		return true;
-	});
+    // Check if course is in exclude list
+    for (let i = 0; i < excluding.length; i++) {
+      if (catNum === excluding[i]) return false;
+    }
+    return true;
+  });
 }
 
 export default class RangeCheck extends Component {
@@ -130,9 +130,9 @@ export default class RangeCheck extends Component {
     return (
       <div>
         <Checkbox
-          label={ `${subject} ${from} - ${subject} ${to}${excludingStr}`}
+          label={ `${subject} ${from} - ${subject} ${to}${excludingStr}` }
           checked={ this.state.isChecked }
-          onCheck={ this.onCheck.bind(this, -1) }
+          onCheck={ () => this.onCheck(-1) }
           iconStyle={ styles.iconStyle }
           labelStyle={ styles.labelStyle(this.state.taken) }
           style={ styles.checkbox }
@@ -149,7 +149,7 @@ export default class RangeCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ this.onCheck.bind(this, index) }
+                    onCheck={ () => this.onCheck(index) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }

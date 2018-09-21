@@ -78,17 +78,17 @@ const styles = {
 const renderDaysHeader = (dates) => {
   return dates.map((date,i) => (
     <DayHeader
-      key={i}
-      style={styles.dayHeader(dates.length, i)}
-      date={date}/>
+      key={ i }
+      style={ styles.dayHeader(dates.length, i) }
+      date={ date } />
   ));
 }
 
 const renderDays = (dates, children) => {
   return dates.map((date,i) => (
     <div
-      key={i}
-      style={styles.dayEvent(dates.length, i)}
+      key={ i }
+      style={ styles.dayEvent(dates.length, i) }
     >
       {
         renderDayEvents({
@@ -107,28 +107,28 @@ const MultipleDaysView = ({
   isScrollDisable,
   children
 }) => (
-  <div style={styles.container}>
-    <div style={styles.firstColumn}></div>
-    <div style={styles.headerContainer}>
+  <div style={ styles.container }>
+    <div style={ styles.firstColumn } />
+    <div style={ styles.headerContainer }>
       {
         renderDaysHeader(dates)
       }
     </div>
     <div
-      ref={elem => {
+      ref={ elem => {
         if(elem != null) {
           this.scrollViewer = elem;
           elem.scrollTop = scrollPosition;
         }
-      }}
-      onTouchStart={(e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop),100)}
-      style={styles.bodyContainer(isScrollDisable)}>
-      <div style={styles.hoursContainer}>
+      } }
+      onTouchStart={ (e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop), 100) }
+      style={ styles.bodyContainer(isScrollDisable) }>
+      <div style={ styles.hoursContainer }>
         {
           verticalHours()
         }
       </div>
-      <div style={styles.daysContainer}>
+      <div style={ styles.daysContainer }>
         {
           renderDays(dates, children)
         }
@@ -139,8 +139,8 @@ const MultipleDaysView = ({
 
 MultipleDaysView.propTypes = {
   dates: PropTypes.array.isRequired,
-	scrollPosition: PropTypes.number.isRequired,
-	onScrollChange: PropTypes.func.isRequired,
+  scrollPosition: PropTypes.number.isRequired,
+  onScrollChange: PropTypes.func.isRequired,
   isScrollDisable: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired
 }

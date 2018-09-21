@@ -38,46 +38,46 @@ export const UNLINK_FACEBOOK_FAILURE = 'UNLINK_FACEBOOK_FAILURE';
 export const toggleSideBar = () => ({ type: TOGGLE_SIDEBAR });
 
 export const setUser = (username, user) => ({
-	type: SET_USER,
-	username,
-	user
+  type: SET_USER,
+  username,
+  user
 });
 
 export const loginUser = (username) => {
-	if (!username) {
-		console.error('Username is undefined. ' + username);
-		return {};
-	}
+  if (!username) {
+    console.error('Username is undefined. ' + username);
+    return {};
+  }
 
-	return {
-		[RSAA]: {
-			endpoint: `/server/users/${username}`,
-			method: 'GET',
-			headers: {
-				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-			},
-			types: ['', { type: LOGIN_USER, meta: { username } }, { type: LOGOUT_USER }]
-		}
-	}
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/${username}`,
+      method: 'GET',
+      headers: {
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      },
+      types: ['', { type: LOGIN_USER, meta: { username } }, { type: LOGOUT_USER }]
+    }
+  }
 };
 
 export const logoutUser = () => {
-	deleteCookie('watsmymajor_jwt');
-	return { type: LOGOUT_USER };
+  deleteCookie('watsmymajor_jwt');
+  return { type: LOGOUT_USER };
 };
 
 export const createSnack = (
-	msg,
-	actionMsg,
-	undoMsg,
-	handleActionClick
+  msg,
+  actionMsg,
+  undoMsg,
+  handleActionClick
 ) => ({
-	type: CREATE_SNACK,
-	msg,
-	actionMsg,
-	undoMsg,
-	handleActionClick
+  type: CREATE_SNACK,
+  msg,
+  actionMsg,
+  undoMsg,
+  handleActionClick
 });
 
 
@@ -85,168 +85,168 @@ export const createSnack = (
 // Used when adding to courses
 // Updates course list.  Use this when adding new courses.
 export const updateUserCourses = (username, courseList) => ({
-	[RSAA]: {
-		endpoint: `/server/users/set/courselist/${username}`,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		body: JSON.stringify({ courseList }),
-		types: [
-			{ type: UPDATE_USER_COURSES, meta: { courseList } },
-			{ type: UPDATE_USER_COURSES_PREREQS },
-			''
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/users/set/courselist/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    body: JSON.stringify({ courseList }),
+    types: [
+      { type: UPDATE_USER_COURSES, meta: { courseList } },
+      { type: UPDATE_USER_COURSES_PREREQS },
+      ''
+    ]
+  }
 });
 
 // Reorders course list.  Does not create prereqs.  Do not call this function
 // if there are new courses added.
 export const reorderUserCourses = (username, courseList) => ({
-	[RSAA]: {
-		endpoint: `/server/users/reorder/courselist/${username}`,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		body: JSON.stringify({ courseList }),
-		types: [
-			{ type: UPDATE_USER_COURSES, meta: { courseList } },
-			'',
-			''
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/users/reorder/courselist/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    body: JSON.stringify({ courseList }),
+    types: [
+      { type: UPDATE_USER_COURSES, meta: { courseList } },
+      '',
+      ''
+    ]
+  }
 });
 
 export const addToSchedule = (username, text) => ({
-	[RSAA]: {
-		endpoint: `/server/users/add/schedule/${username}`,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		body: JSON.stringify({ text }),
-		types: [
-			'',
-			{ type: UPDATE_USER_SCHEDULE },
-			{ type: UPDATE_USER_SCHEDULE_FAILURE },
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/users/add/schedule/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    body: JSON.stringify({ text }),
+    types: [
+      '',
+      { type: UPDATE_USER_SCHEDULE },
+      { type: UPDATE_USER_SCHEDULE_FAILURE },
+    ]
+  }
 });
 
 export const clearSchedule = (username) => ({
-	[RSAA]: {
-		endpoint: `/server/users/set/schedule/${username}`,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		body: JSON.stringify({ schedule: {} }),
-		types: [
-			'',
-			{ type: CLEAR_USER_SCHEDULE },
-			{ type: CLEAR_USER_SCHEDULE_FAILURE },
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/users/set/schedule/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    body: JSON.stringify({ schedule: {} }),
+    types: [
+      '',
+      { type: CLEAR_USER_SCHEDULE },
+      { type: CLEAR_USER_SCHEDULE_FAILURE },
+    ]
+  }
 });
 
 export const addToCart = (subject, catalogNumber, username, cart) => {
-	cart = cart.concat([{ subject, catalogNumber }]);
-	return {
-		[RSAA]: {
-			endpoint: `/server/users/set/cart/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-			},
-			body: JSON.stringify({ cart }),
-			types: [
-				{ type: SET_CART, meta: { cart } },
-				{ type: SET_CART_PREREQS },
-				''
-			]
-		}
-	};
+  cart = cart.concat([{ subject, catalogNumber }]);
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/set/cart/${username}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      },
+      body: JSON.stringify({ cart }),
+      types: [
+        { type: SET_CART, meta: { cart } },
+        { type: SET_CART_PREREQS },
+        ''
+      ]
+    }
+  };
 }
 
 export const removeFromCart = (subject, catalogNumber, username, cart) => {
-	cart = cart.filter(course =>
-		course.subject !== subject ||
+  cart = cart.filter(course =>
+    course.subject !== subject ||
 		course.catalogNumber !== catalogNumber
-	);
-	return {
-		[RSAA]: {
-			endpoint: `/server/users/set/cart/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-			},
-			body: JSON.stringify({ cart }),
-			types: [{ type: SET_CART, meta: { cart } }, '', '']
-		}
-	};
+  );
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/set/cart/${username}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      },
+      body: JSON.stringify({ cart }),
+      types: [{ type: SET_CART, meta: { cart } }, '', '']
+    }
+  };
 }
 
 export const reorderCart = (username, cart) => ({
-	[RSAA]: {
-		endpoint: `/server/users/reorder/cart/${username}`,
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		body: JSON.stringify({ cart }),
-		types: [{ type: SET_CART, 	meta: { cart } }, '', '']
-	}
+  [RSAA]: {
+    endpoint: `/server/users/reorder/cart/${username}`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    body: JSON.stringify({ cart }),
+    types: [{ type: SET_CART, 	meta: { cart } }, '', '']
+  }
 });
 
 export const watchClass = (username, term, classNum) => ({
-	[RSAA]: {
-		endpoint: `/server/watchlist/watchers/add/${term}/${classNum}/${username}`,
-		method: 'GET',
-		headers: {
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-		},
-		types: [
-			{
-				type: WATCH_CLASS,
-				meta: { term, classNum },
-			},
-			'',
-			{ type: WATCH_CLASS_FAILURE },
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/watchlist/watchers/add/${term}/${classNum}/${username}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+    },
+    types: [
+      {
+        type: WATCH_CLASS,
+        meta: { term, classNum },
+      },
+      '',
+      { type: WATCH_CLASS_FAILURE },
+    ]
+  }
 });
 
 export const unwatchClass = (username, term, classNum) => ({
-	[RSAA]: {
-		endpoint: `/server/watchlist/watchers/remove/${term}/${classNum}/${username}`,
-		method: 'GET',
-		headers: {
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-		},
-		types: [
-			{
-				type: UNWATCH_CLASS,
-				meta: { term, classNum },
-			},
-			'',
-			{ type: UNWATCH_CLASS_FAILURE },
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/watchlist/watchers/remove/${term}/${classNum}/${username}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+    },
+    types: [
+      {
+        type: UNWATCH_CLASS,
+        meta: { term, classNum },
+      },
+      '',
+      { type: UNWATCH_CLASS_FAILURE },
+    ]
+  }
 });
 
 export const highlightPrereqs = (prereqs) => ({ type: HIGHLIGHT_PREREQS, prereqs });
@@ -254,67 +254,67 @@ export const highlightPrereqs = (prereqs) => ({ type: HIGHLIGHT_PREREQS, prereqs
 export const unhighlightPrereqs = () => ({ type: UNHIGHLIGHT_PREREQS });
 
 export const editSettings = (username, user) => {
-	if (!username) {
-		console.error('Username is undefined. ');
-		return { type: '' };
-	}
+  if (!username) {
+    console.error('Username is undefined. ');
+    return { type: '' };
+  }
 
-	return {
-		[RSAA]: {
-			endpoint: `/server/users/edit/settings/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-			},
-			body: JSON.stringify(user),
-			types: [
-				{ type: EDIT_SETTINGS, meta: { user } },
-				'',
-				{ type: EDIT_SETTINGS_FAILURE }
-			]
-		}
-	}
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/edit/settings/${username}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      },
+      body: JSON.stringify(user),
+      types: [
+        { type: EDIT_SETTINGS, meta: { user } },
+        '',
+        { type: EDIT_SETTINGS_FAILURE }
+      ]
+    }
+  }
 }
 
 export const linkFacebook = (username, facebookID, hasFBPic) => {
-	if (!username) {
-		console.error('Username is undefined.');
-		return { type: '' };
-	}
+  if (!username) {
+    console.error('Username is undefined.');
+    return { type: '' };
+  }
 
-	return {
-		[RSAA]: {
-			endpoint: `/server/users/link/facebook/${username}`,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-				'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-			},
-			body: JSON.stringify({ facebookID, hasFBPic }),
-			types: [
-				'',
-				{ type: LINK_FACEBOOK, meta: { username } },
-				{ type: LINK_FACEBOOK_FAILURE },
-			]
-		}
-	}
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/link/facebook/${username}`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      },
+      body: JSON.stringify({ facebookID, hasFBPic }),
+      types: [
+        '',
+        { type: LINK_FACEBOOK, meta: { username } },
+        { type: LINK_FACEBOOK_FAILURE },
+      ]
+    }
+  }
 }
 
 export const unlinkFacebook = (username) => ({
-	[RSAA]: {
-		endpoint: `/server/users/unlink/facebook/${username}`,
-		method: 'GET',
-		headers: {
-			'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-			'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-		},
-		types: [
-			'',
-			{ type: UNLINK_FACEBOOK, meta: { username } },
-			{ type: UNLINK_FACEBOOK_FAILURE },
-		]
-	}
+  [RSAA]: {
+    endpoint: `/server/users/unlink/facebook/${username}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    types: [
+      '',
+      { type: UNLINK_FACEBOOK, meta: { username } },
+      { type: UNLINK_FACEBOOK_FAILURE },
+    ]
+  }
 });

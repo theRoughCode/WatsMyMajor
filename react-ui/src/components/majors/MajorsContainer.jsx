@@ -23,37 +23,37 @@ const styles = {
   },
   body: {
     width: 'calc(100% - 15px)',
-		height: '100%',
-	  display: 'flex',
+    height: '100%',
+    display: 'flex',
     flexWrap: 'wrap',
-		overflowX: 'hidden',
+    overflowX: 'hidden',
     paddingLeft: 15,
   },
 };
 
 const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   switch (type) {
-    case "choose":
-      return (
-        <ChooseBoard
-          key={ index }
-          choose={ choose }
-          title={ `Choose ${choose} of:` }
-          courses={ courses }
-          myCourses={ myCourses }
-        />
-      );
-    case "all":
-      return (
-        <ChooseBoard
-          key={ index }
-          choose={ courses.length }
-          title="Choose all of:"
-          courses={ courses }
-          myCourses={ myCourses }
-        />
-      );
-    default: return null;
+  case "choose":
+    return (
+      <ChooseBoard
+        key={ index }
+        choose={ choose }
+        title={ `Choose ${choose} of:` }
+        courses={ courses }
+        myCourses={ myCourses }
+      />
+    );
+  case "all":
+    return (
+      <ChooseBoard
+        key={ index }
+        choose={ courses.length }
+        title="Choose all of:"
+        courses={ courses }
+        myCourses={ myCourses }
+      />
+    );
+  default: return null;
   }
 };
 
@@ -79,9 +79,12 @@ async function fetchList() {
 }
 
 class MajorsContainer extends Component {
-  static propTypes: {
+  static propTypes = {
     myCourses: PropTypes.object.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
+    match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
   };
 
   state = {
@@ -122,7 +125,7 @@ class MajorsContainer extends Component {
   }
 
   // Handle selection of menu item
-  async handleChange(_, index, key) {
+  handleChange = async (_, index, key) => {
     const { data, url } = await fetchRequirements(key);
     this.props.history.push(`/majors/${key}`);
     this.setState({ key, name: this.state.majorsList[index].name, reqs: data, url });
@@ -138,7 +141,7 @@ class MajorsContainer extends Component {
     if (key.length === 0) {
       return (
         <SelectScreen
-          handleChange={ this.handleChange.bind(this) }
+          handleChange={ this.handleChange }
           majorsList={ majorsList }
           value={ key }
         />
@@ -151,13 +154,13 @@ class MajorsContainer extends Component {
             majorKey={ key }
             url={ url }
             majorsList={ majorsList }
-            onChange={ this.handleChange.bind(this) }
+            onChange={ this.handleChange }
           />
           <div style={ styles.body }>
             { this.state.reqs.map((req, index) => renderReqNode(req, index, this.props.myCourses)) }
           </div>
         </div>
-     );
+      );
     }
   }
 }

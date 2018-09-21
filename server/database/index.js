@@ -26,7 +26,7 @@ const profilePicBucket = admin.storage().bucket();
 module.exports = {
   classesRef,
   courseListRef,
-	coursesRef,
+  coursesRef,
   emailsRef,
   facebookUsersRef,
   majorsRef,

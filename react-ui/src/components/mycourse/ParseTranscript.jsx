@@ -31,7 +31,7 @@ const ParseTranscript = ({ onChange }) => {
     },
   ];
 
-  return <ParserInstructions stepContents={ stepContents } onChange={onChange} />;
+  return <ParserInstructions stepContents={ stepContents } onChange={ onChange } />;
 };
 
 ParseTranscript.propTypes = {

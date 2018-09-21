@@ -25,30 +25,36 @@ const styles = {
 
 const Field = ({
   name,
+  label,
   value,
   isEditing,
   onChange,
   Icon,
   errorText,
   type,
-}) => (
-  <div style={ styles.fieldContainer }>
-    <Icon style={ styles.fieldIcon } />
-    <TextField
-      id={ name }
-      floatingLabelText={ name }
-      value={ value }
-      type={ type }
-      errorText={ errorText }
-      disabled={ !isEditing }
-      onChange={ onChange }
-      style={ styles.fieldText }
-    />
-  </div>
-);
+}) => {
+  const onChangeHandler = (ev) => onChange(name, ev);
+
+  return (
+    <div style={ styles.fieldContainer }>
+      <Icon style={ styles.fieldIcon } />
+      <TextField
+        id={ name }
+        floatingLabelText={ name }
+        value={ value }
+        type={ type }
+        errorText={ errorText }
+        disabled={ !isEditing }
+        onChange={ onChangeHandler }
+        style={ styles.fieldText }
+      />
+    </div>
+  );
+};
 
 Field.propTypes = {
   name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
   isEditing: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired,

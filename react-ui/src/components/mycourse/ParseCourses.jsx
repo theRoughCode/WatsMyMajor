@@ -22,7 +22,7 @@ const ParseCourses = ({ onChange }) => {
     },
   ];
 
-  return <ParserInstructions stepContents={ stepContents } onChange={onChange} />;
+  return <ParserInstructions stepContents={ stepContents } onChange={ onChange } />;
 };
 
 ParseCourses.propTypes = {

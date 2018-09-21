@@ -23,15 +23,16 @@ const styles = {
 
 const hasTakenOption = (option, myCourses) => {
   switch (option.type) {
-    case "sum":
-      for (let i = 0; i < option.courses.length; i++) {
-        const { subject, catalogNumber } = option.courses[i];
-        if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
-      }
-      return true;
-    default:
-      const { subject, catalogNumber } = option;
-      return hasTakenCourse(subject, catalogNumber, myCourses);
+  case "sum":
+    for (let i = 0; i < option.courses.length; i++) {
+      const { subject, catalogNumber } = option.courses[i];
+      if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
+    }
+    return true;
+  default: {
+    const { subject, catalogNumber } = option;
+    return hasTakenCourse(subject, catalogNumber, myCourses);
+  }
   }
 }
 
@@ -81,12 +82,12 @@ export default class OptionCheck extends Component {
     const { options } = this.props;
     const formattedOptions = options.map((option) => {
       switch (option.type) {
-        case "sum":
-          return '(' + option.courses
-            .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
-            .join(' & ') + ')';
-        default:
-          return `${option.subject} ${option.catalogNumber}`;
+      case "sum":
+        return '(' + option.courses
+          .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
+          .join(' & ') + ')';
+      default:
+        return `${option.subject} ${option.catalogNumber}`;
       }
     });
     return (

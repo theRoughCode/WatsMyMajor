@@ -17,7 +17,7 @@ const getEasterURL = () => {
 // Returns { err, publicUrl }
 async function setProfilePicture(username, { base64Str, contentType }) {
   const bufferStream = new stream.PassThrough();
-  bufferStream.end(new Buffer(base64Str, 'base64'));
+  bufferStream.end(Buffer.from(base64Str, 'base64'));
 
   // Delete user's previous images
   try {
@@ -53,7 +53,6 @@ function removeProfilePicture(fileName, callback) {
   const file = profilePicBucket.file(fileName);
   file.delete((err, resp) => {
     if (err) return callback(err);
-    console.log(resp);
     callback(null);
   });
 }

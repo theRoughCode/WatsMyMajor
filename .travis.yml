@@ -1,0 +1,16 @@
+notifications:
+  email: false
+language: node_js
+node_js: 8
+before_install:
+  - npm i -g npm@6.4.1
+install:
+  - npm i
+  - cd react-ui && npm i && cd ..
+script:
+  - npm run lint
+  - npm run build
+cache:
+  directories:
+    - "node_modules"
+    - "react-ui/node_modules"

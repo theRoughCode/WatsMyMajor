@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const passport = require('passport');
-const path = require('path');
 
 // Enable env vars
 require('dotenv').config();
@@ -9,8 +8,8 @@ const SERVER_SECRET = process.env.SERVER_SECRET;
 
 // Pre-check to ensure that API secret key is set.
 router.use(function(req, res, next) {
-	if (req.headers['x-secret'] === SERVER_SECRET) next();
-	else res.sendStatus(401);
+  if (req.headers['x-secret'] === SERVER_SECRET) next();
+  else res.sendStatus(401);
 });
 
 router.get('/', (req, res) => res.send('By Raphael Koh'));

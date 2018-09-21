@@ -29,7 +29,7 @@ export default class Event extends Component {
     onClick: PropTypes.func,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    classNum: PropTypes.string.isRequired,
+    // classNum: PropTypes.string.isRequired,
     section: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     instructor: PropTypes.string.isRequired
@@ -47,7 +47,7 @@ export default class Event extends Component {
       onClick,
       title,
       type,
-      classNum,
+      // classNum,
       section,
       location,
       instructor

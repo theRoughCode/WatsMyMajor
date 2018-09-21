@@ -6,7 +6,7 @@ const { emailsRef } = require('./index');
  */
 
 
- /****************************
+/****************************
   *													*
   *			S E T T E R S 			*
   *													*
@@ -14,9 +14,14 @@ const { emailsRef } = require('./index');
 
 function setEmail(username, email) {
   email = email.replace(/\./g, ',');
-	return emailsRef
+  return emailsRef
     .child(email)
     .set(username);
+}
+
+function deleteEmail(email) {
+  email = email.replace(/\./g, ',');
+  return emailsRef.child(email).remove();
 }
 
 
@@ -36,5 +41,6 @@ async function emailExists(email) {
 
 module.exports = {
   setEmail,
+  deleteEmail,
   emailExists,
 };

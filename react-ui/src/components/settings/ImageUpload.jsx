@@ -109,13 +109,13 @@ export default class ImageUpload extends Component {
         file: img
       });
     };
-    reader.onabort = () => console.log('File upload aborted.');
-    reader.onerror = () => console.log('File upload failed.');
+    // reader.onabort = () => console.log('File upload aborted.');
+    // reader.onerror = () => console.log('File upload failed.');
 
     reader.readAsDataURL(file);
   }
 
-  async onSubmit(e, isEaster = false) {
+  onSubmit = async (_, isEaster = false) => {
     this.setState({ loading: true });
     const requestBody = (isEaster)
       ? { easterRaph: isEaster }
@@ -149,6 +149,8 @@ export default class ImageUpload extends Component {
     }
   }
 
+  onUnlockEaster = () => this.onSubmit(null, true);
+
   render() {
     const actions = [
       <FlatButton
@@ -158,13 +160,13 @@ export default class ImageUpload extends Component {
       />,
       <FlatButton
         label="Unlock Easter Egg"
-        onClick={ this.onSubmit.bind(this, null, true) }
+        onClick={ this.onUnlockEaster }
         style={{ display: 'none' }}
       />,
       <FlatButton
         label="Submit"
-        primary={ true }
-        onClick={ this.onSubmit.bind(this) }
+        primary
+        onClick={ this.onSubmit }
         disabled={ this.state.file.length === 0 }
       />,
     ];
@@ -173,10 +175,10 @@ export default class ImageUpload extends Component {
       ? (
         <div style={ styles.loaderContainer }>
           <CircularProgress
-            size={80}
-            thickness={5}
+            size={ 80 }
+            thickness={ 5 }
             style={ styles.loader }
-            />
+          />
         </div>
       )
       : (
@@ -219,7 +221,7 @@ export default class ImageUpload extends Component {
         <Dialog
           title="Upload Avatar"
           actions={ actions }
-          modal={ true }
+          modal
           open={ this.state.open }
           contentStyle={ styles.dialog }
         >

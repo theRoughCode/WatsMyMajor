@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node server",
     "heroku-postbuild": "cd react-ui/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
-    "build": "cd react-ui/ && npm run build"
+    "build": "cd react-ui/ && npm run build",
+    "lint": "./node_modules/.bin/eslint . --ext .js --ext .jsx"
   },
   "cacheDirectories": [
     "node_modules",
@@ -16,7 +17,7 @@
   ],
   "dependencies": {
     "async": "^2.6.0",
-    "bcrypt": "^3.0.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "cheerio": "^1.0.0-rc.2",
     "cookie-parser": "^1.4.3",
@@ -47,5 +48,16 @@
     "react",
     "waterloo"
   ],
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.5.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-config-standard-react": "^7.0.2",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-react": "^7.11.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "react-scripts": "^1.1.4"
+  }
 }

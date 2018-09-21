@@ -90,6 +90,8 @@ class Login extends Component {
 
   static propTypes = {
     onSetUser: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -125,17 +127,17 @@ class Login extends Component {
 
     try {
       const response = await fetch('/server/auth/login', {
-  			method: 'POST',
-  			body: JSON.stringify({
-  				username,
+        method: 'POST',
+        body: JSON.stringify({
+          username,
           password
-  			}),
+        }),
         credentials: 'include',
-  			headers: {
-  	      'content-type': 'application/json',
+        headers: {
+          'content-type': 'application/json',
           'x-secret': process.env.REACT_APP_SERVER_SECRET
-  	    }
-  		});
+        }
+      });
       if (!response.ok) {
         const { code } = await response.json();
         const ERROR_USERNAME_NOT_FOUND = 101;
@@ -144,21 +146,21 @@ class Login extends Component {
         const ERROR_SERVER_ERROR = 400;
 
         switch (code) {
-          case ERROR_USERNAME_NOT_FOUND:
-            this.setState({ usernameError: 'Username not found' });
-            return;
-          case ERROR_WRONG_PASSWORD:
-            this.setState({ passwordError: 'Wrong password' });
-            return;
-          case ERROR_USER_NOT_VERIFIED:
-            toast.error("Please verify your email.  We've sent you a verification email at the email you provided.");
-            return;
-          case ERROR_SERVER_ERROR:
-            toast.error('Failed to create account. Please contact an administrator.');
-            return;
-          default:
-            toast.error('Failed to create account. Please contact an administrator.');
-            return;
+        case ERROR_USERNAME_NOT_FOUND:
+          this.setState({ usernameError: 'Username not found' });
+          return;
+        case ERROR_WRONG_PASSWORD:
+          this.setState({ passwordError: 'Wrong password' });
+          return;
+        case ERROR_USER_NOT_VERIFIED:
+          toast.error("Please verify your email.  We've sent you a verification email at the email you provided.");
+          return;
+        case ERROR_SERVER_ERROR:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
+        default:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
         }
       } else {
         const user = await response.json();
@@ -179,13 +181,13 @@ class Login extends Component {
 
     try {
       const response = await fetch('/server/auth/facebook', {
-  			method: 'GET',
+        method: 'GET',
         credentials: 'include',
-  			headers: {
+        headers: {
           'x-secret': process.env.REACT_APP_SERVER_SECRET,
           'authorization': `Bearer ${accessToken}`
-  	    }
-  		});
+        }
+      });
       if (!response.ok) {
         const err = await response.text();
         toast.warn('This Facebook account has not been linked yet. Please log in to your WatsMyMajor account (or create one) to link your Facebook account.');
@@ -206,44 +208,44 @@ class Login extends Component {
 
   render() {
     return  (
-      <div style={styles.viewContainer}>
-        <div style={styles.container}>
-          <div style={styles.header}>
-            <img src="images/logo.png" alt="logo" style={styles.logo} />
-            <span style={styles.title}>Welcome back!</span>
-            <span style={styles.subtitle}>Log in to see your courses.</span>
+      <div style={ styles.viewContainer }>
+        <div style={ styles.container }>
+          <div style={ styles.header }>
+            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <span style={ styles.title }>Welcome back!</span>
+            <span style={ styles.subtitle }>Log in to see your courses.</span>
           </div>
-          <Paper style={styles.formContainer} zDepth={2} rounded={false}>
-            <form style={styles.body}>
+          <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
+            <form style={ styles.body }>
               <TextField
                 hintText="e.g. Ferigoose123"
                 floatingLabelText="Username"
-                errorText={this.state.usernameError}
+                errorText={ this.state.usernameError }
                 ref="username"
               /><br />
               <TextField
                 hintText="*********"
                 floatingLabelText="Password"
                 type="password"
-                errorText={this.state.passwordError}
+                errorText={ this.state.passwordError }
                 ref="password"
               /><br />
               <RaisedButton
                 label="Sign in"
-                backgroundColor={ green }
-                style={styles.loginButton}
-                labelStyle={styles.loginText}
-                onClick={this.onLogin}
+                backgroundColor={ green  }
+                style={ styles.loginButton }
+                labelStyle={ styles.loginText }
+                onClick={ this.onLogin }
                 type="submit"
               />
             </form>
           </Paper>
-          <div style={styles.fbContainer}>
-            <span style={styles.subtitle}>or</span>
+          <div style={ styles.fbContainer }>
+            <span style={ styles.subtitle }>or</span>
             <FacebookLogin
-              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
-              callback={this.onFacebookLogin}
-              onFailure={err => console.log(err)}
+              appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
+              callback={ this.onFacebookLogin }
+              onFailure={ err => console.error(err) }
               render={ renderProps => (
                 <RaisedButton
                   label="Continue with Facebook"
@@ -252,12 +254,12 @@ class Login extends Component {
                   buttonStyle={ styles.fbInnerButton }
                   labelStyle={ styles.fbText }
                   backgroundColor="#3b5998"
-                  icon={ <FacebookIcon style={ styles.fbIcon } /> }
+                  icon={ <FacebookIcon style={ styles.fbIcon } />  }
                 />
-              ) }
-              />
+              )  }
+            />
           </div>
-          <div style={styles.footer}>
+          <div style={ styles.footer }>
             Don't have an account yet? <Link to="/register">Sign up</Link>
           </div>
         </div>

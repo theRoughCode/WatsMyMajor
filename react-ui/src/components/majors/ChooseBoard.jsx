@@ -28,63 +28,63 @@ const styles = {
 
 const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
   switch (node.type) {
-    case "course":
-      return (
-        <CourseCheck
-          key={ index }
-          subject={ node.subject }
-          catalogNumber={ node.catalogNumber }
-          onCheck={ onCheck }
-          myCourses={ myCourses }
-        />
-      );
-    case "range":
-      return (
-        <RangeCheck
-          key={ index }
-          subject={ node.subject }
-          from={ node.from }
-          to={ node.to }
-          excluding={ node.excluding || [] }
-          choose={ choose }
-          onCheck={ onCheck }
-          myCourses={ myCourses }
-        />
-      );
-    case "level":
-    case "subject":
-    case "subject-level":
-      return (
-        <LevelCheck
-          key={ index }
-          subject={ node.subject }
-          level={ node.catalogNumber }
-          excluding={ node.excluding }
-          choose={ choose }
-          note={ node.note }
-          onCheck={ onCheck }
-          myCourses={ myCourses }
-        />
-      );
-    case "option":
-      return (
-        <OptionCheck
-          key={ index }
-          options={ node.options }
-          myCourses={ myCourses }
-          onCheck={ onCheck }
-        />
-      );
-    case "any":
-      return (
-        <AnyCheck
-          key={ index }
-          choose={ choose }
-          myCourses={ myCourses }
-          onCheck={ onCheck }
-        />
-      );
-    default: return null;
+  case "course":
+    return (
+      <CourseCheck
+        key={ index }
+        subject={ node.subject }
+        catalogNumber={ node.catalogNumber }
+        onCheck={ onCheck }
+        myCourses={ myCourses }
+      />
+    );
+  case "range":
+    return (
+      <RangeCheck
+        key={ index }
+        subject={ node.subject }
+        from={ node.from }
+        to={ node.to }
+        excluding={ node.excluding || [] }
+        choose={ choose }
+        onCheck={ onCheck }
+        myCourses={ myCourses }
+      />
+    );
+  case "level":
+  case "subject":
+  case "subject-level":
+    return (
+      <LevelCheck
+        key={ index }
+        subject={ node.subject }
+        level={ node.catalogNumber }
+        excluding={ node.excluding }
+        choose={ choose }
+        note={ node.note }
+        onCheck={ onCheck }
+        myCourses={ myCourses }
+      />
+    );
+  case "option":
+    return (
+      <OptionCheck
+        key={ index }
+        options={ node.options }
+        myCourses={ myCourses }
+        onCheck={ onCheck }
+      />
+    );
+  case "any":
+    return (
+      <AnyCheck
+        key={ index }
+        choose={ choose }
+        myCourses={ myCourses }
+        onCheck={ onCheck }
+      />
+    );
+  default: return null;
   }
 };
 
@@ -137,7 +137,7 @@ export default class ChooseBoard extends Component {
       <Paper style={ styles.board(this.state.fulfilled) }>
         <span style={ styles.boardTitle }>{ title }</span>
         { courses.map((node, i) =>
-            renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
+          renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
       </Paper>
     );
   }

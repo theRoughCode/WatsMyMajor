@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const passport = require('passport');
 const path = require('path');
 
 // Server endpoint routes requests to backend server

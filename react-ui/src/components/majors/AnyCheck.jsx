@@ -121,7 +121,7 @@ export default class AnyCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ this.onCheck.bind(this, index) }
+                    onCheck={ () => this.onCheck(index) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }

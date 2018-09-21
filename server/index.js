@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(cookieParser());
 
 // Initialize passport authentication
-require('./helpers/passport');
+require('./core/passport');
 app.use(passport.initialize());
 
 // Priority serve any static files.
@@ -40,5 +40,6 @@ Raven.config(process.env.SENTRY_DSN).install();
 app.use('/', router);
 
 app.listen(PORT, function () {
+  /* eslint-disable no-console */
   console.log(`Listening on port ${PORT}`);
 });

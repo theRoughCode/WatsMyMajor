@@ -12,354 +12,356 @@ import { fireLoginPrompt } from '../tools/LoginPrompt';
 import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
 import {
-	createSnack,
-	addToCart,
-	removeFromCart,
-	watchClass,
-	unwatchClass,
+  createSnack,
+  addToCart,
+  removeFromCart,
+  watchClass,
+  unwatchClass,
 } from '../../actions';
 import '../../stylesheets/CourseView.css';
 
 const styles = {
-	courseView: {
-		width: '100%',
-	  display: 'flex',
-	}
+  courseView: {
+    width: '100%',
+    display: 'flex',
+  }
 };
 
 const defaultCourse = {
-	title: '',
-	description: '',
-	rating: 0,
-	url: '',
-	termsOffered: [],
-	crosslistings: '',
-	antireqs: [],
-	coreqs: [],
-	prereqs: {},
-	postreqs: [],
-	term: '',
+  title: '',
+  description: '',
+  rating: 0,
+  url: '',
+  termsOffered: [],
+  crosslistings: '',
+  antireqs: [],
+  coreqs: [],
+  prereqs: {},
+  postreqs: [],
+  term: '',
 };
 
 const defaultClassInfo = {
-	units: 0,
-	topic: '',
-	note: '',
-	classNumber: 0,
-	section: '',
-	campus: '',
-	enrollmentCap: 0,
-	enrollmentTotal: 0,
-	waitingCap: 0,
-	waitingTotal: 0,
-	reserveCap: 0,
-	reserveTotal: 0,
-	reserveGroup: '',
-	classes: [],
-	isTBA: false,
-	isCancelled: false,
-	isClosed: false,
-	lastUpdated: ''
+  units: 0,
+  topic: '',
+  note: '',
+  classNumber: 0,
+  section: '',
+  campus: '',
+  enrollmentCap: 0,
+  enrollmentTotal: 0,
+  waitingCap: 0,
+  waitingTotal: 0,
+  reserveCap: 0,
+  reserveTotal: 0,
+  reserveGroup: '',
+  classes: [],
+  isTBA: false,
+  isCancelled: false,
+  isClosed: false,
+  lastUpdated: ''
 };
 
 const getCourseData = async (subject, catalogNumber) => {
-	const response = await fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
-		headers: {
-			'x-secret': process.env.REACT_APP_SERVER_SECRET
-		}
-	});
-	if (!response.ok) {
-		throw new Error(`status ${response.status}`);
-	}
-	return await response.json();
+  const response = await fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`status ${response.status}`);
+  }
+  return await response.json();
 };
 
 const getCourseClasses = async (subject, catalogNumber, term) => {
-	const response = await fetch(`/server/courses/classes/${term}/${subject}/${catalogNumber}`, {
-		headers: {
-			'x-secret': process.env.REACT_APP_SERVER_SECRET
-		}
-	});
-	if (!response.ok) {
-		throw new Error(`status ${response.status}`);
-	}
-	return await response.json();
+  const response = await fetch(`/server/courses/classes/${term}/${subject}/${catalogNumber}`, {
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`status ${response.status}`);
+  }
+  return await response.json();
 };
 
 // Formats postreqs obj into arr
 const formatPostreqs = (postreqs) => {
-	const formatted = [];
-	for (let subject in postreqs) {
-		for (let catalogNumber in postreqs[subject]) {
-			formatted.push({ subject, catalogNumber });
-		}
-	}
-	return formatted;
+  const formatted = [];
+  for (let subject in postreqs) {
+    for (let catalogNumber in postreqs[subject]) {
+      formatted.push({ subject, catalogNumber });
+    }
+  }
+  return formatted;
 };
 
 class CourseViewContainer extends Component {
 
-	static propTypes = {
-		myCourses: PropTypes.object.isRequired,
-		cart: PropTypes.array.isRequired,
-		watchlist: PropTypes.object.isRequired,
-		username: PropTypes.string.isRequired,
-		isLoggedIn: PropTypes.bool.isRequired,
-		addToCartHandler: PropTypes.func.isRequired,
-		removeFromCartHandler: PropTypes.func.isRequired,
-		watchClassHandler: PropTypes.func.isRequired,
-		unwatchClassHandler: PropTypes.func.isRequired,
-		match: PropTypes.object.isRequired,
-	};
+  static propTypes = {
+    myCourses: PropTypes.object.isRequired,
+    cart: PropTypes.array.isRequired,
+    watchlist: PropTypes.object.isRequired,
+    username: PropTypes.string.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
+    addToCartHandler: PropTypes.func.isRequired,
+    removeFromCartHandler: PropTypes.func.isRequired,
+    watchClassHandler: PropTypes.func.isRequired,
+    unwatchClassHandler: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+  };
 
-	constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
 
-		const { subject, catalogNumber } = props.match.params;
+    const { subject, catalogNumber } = props.match.params;
 
-		this.state = {
-			subject,
-			catalogNumber,
-			term: '1189',
-			courseLoading: true,
-			classLoading: true,
-			error: false,
-			classModalOpen: false,
-			taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
-			inCart: isInCart(subject, catalogNumber, props.cart),
-			eligible: false,
-			course: defaultCourse,
-			classes: [],
-			classInfo: defaultClassInfo,
-			watchlist: {},
-		}
+    this.state = {
+      subject,
+      catalogNumber,
+      term: '1189',
+      courseLoading: true,
+      classLoading: true,
+      error: false,
+      classModalOpen: false,
+      taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
+      inCart: isInCart(subject, catalogNumber, props.cart),
+      eligible: false,
+      course: defaultCourse,
+      classes: [],
+      classInfo: defaultClassInfo,
+      watchlist: {},
+    }
 
-		this.onExpandClass = this.onExpandClass.bind(this);
-		this.closeClassModal = this.closeClassModal.bind(this);
-		this.updatePageInfo = this.updatePageInfo.bind(this);
-		this.viewCart = this.viewCart.bind(this);
-		this.addCourseToCart = this.addCourseToCart.bind(this);
-		this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
-		this.onWatchClass = this.onWatchClass.bind(this);
-		this.onUnwatchClass = this.onUnwatchClass.bind(this);
-	}
+    this.onExpandClass = this.onExpandClass.bind(this);
+    this.closeClassModal = this.closeClassModal.bind(this);
+    this.updatePageInfo = this.updatePageInfo.bind(this);
+    this.viewCart = this.viewCart.bind(this);
+    this.addCourseToCart = this.addCourseToCart.bind(this);
+    this.removeCourseFromCart = this.removeCourseFromCart.bind(this);
+    this.onWatchClass = this.onWatchClass.bind(this);
+    this.onUnwatchClass = this.onUnwatchClass.bind(this);
+  }
 
-	componentDidMount() {
-		const { subject, catalogNumber } = this.state;
-		this.updatePageInfo(subject, catalogNumber);
-		this.updateWatchlist(this.props.watchlist);
-	}
+  componentDidMount() {
+    const { subject, catalogNumber } = this.state;
+    this.updatePageInfo(subject, catalogNumber);
+    this.updateWatchlist(this.props.watchlist);
+  }
 
-	componentWillReceiveProps(nextProps) {
-		const { subject, catalogNumber } = this.props.match.params;
-		const nextSubject = nextProps.match.params.subject;
-		const nextCatNum = nextProps.match.params.catalogNumber;
-		const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
-		const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
-		const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
-		const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
+  componentWillReceiveProps(nextProps) {
+    const { subject, catalogNumber } = this.props.match.params;
+    const nextSubject = nextProps.match.params.subject;
+    const nextCatNum = nextProps.match.params.catalogNumber;
+    const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
+    const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
+    const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
+    const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
 
-		// Don't want class info from previous class
-		if (isNewCourse) this.closeClassModal();
+    // Don't want class info from previous class
+    if (isNewCourse) this.closeClassModal();
 
-		// User selected new course
-		if (isNewCourse) {
-			const { myCourses, cart } = nextProps;
-			const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
-			const inCart = isInCart(nextSubject, nextCatNum, cart);
-			this.setState({ courseLoading: true, classLoading: true, taken, inCart });
-			this.updatePageInfo(nextSubject, nextCatNum);
-		}
+    // User selected new course
+    if (isNewCourse) {
+      const { myCourses, cart } = nextProps;
+      const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+      const inCart = isInCart(nextSubject, nextCatNum, cart);
+      this.setState({ courseLoading: true, classLoading: true, taken, inCart });
+      this.updatePageInfo(nextSubject, nextCatNum);
+    }
 
-		// User courses are updated
-		if (updatedUserCourses) {
-			const { myCourses } = nextProps;
-			const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
-			this.setState({ taken });
-		}
+    // User courses are updated
+    if (updatedUserCourses) {
+      const { myCourses } = nextProps;
+      const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
+      this.setState({ taken });
+    }
 
-		// User's cart is updated
-		if (updatedCart) {
-			const { cart } = nextProps;
-			const inCart = isInCart(nextSubject, nextCatNum, cart);
-			this.setState({ inCart });
-		}
+    // User's cart is updated
+    if (updatedCart) {
+      const { cart } = nextProps;
+      const inCart = isInCart(nextSubject, nextCatNum, cart);
+      this.setState({ inCart });
+    }
 
-		if (updatedWatchlist) this.updateWatchlist(nextProps.watchlist);
-	}
+    if (updatedWatchlist) this.updateWatchlist(nextProps.watchlist);
+  }
 
-	updateWatchlist(watchlist) {
-		let { isLoggedIn } = this.props;
-		if (!isLoggedIn) return;
-		watchlist = watchlist[this.state.term] || {};
-		this.setState({ watchlist });
-	}
+  updateWatchlist(watchlist) {
+    let { isLoggedIn } = this.props;
+    if (!isLoggedIn) return;
+    watchlist = watchlist[this.state.term] || {};
+    this.setState({ watchlist });
+  }
 
-	async updatePageInfo(subject, catalogNumber) {
-		this.setState({ subject, catalogNumber });
-		if (!subject || !catalogNumber) {
-			this.setState({
-				courseLoading: false,
-				classLoading: false,
-				error: 'Invalid course name',
-			});
-			return;
-		}
+  async updatePageInfo(subject, catalogNumber) {
+    this.setState({ subject, catalogNumber });
+    if (!subject || !catalogNumber) {
+      this.setState({
+        courseLoading: false,
+        classLoading: false,
+        error: 'Invalid course name',
+      });
+      return;
+    }
 
-		this.fetchCourseData(subject, catalogNumber);
-		this.fetchClasses(subject, catalogNumber);
-	};
+    this.fetchCourseData(subject, catalogNumber);
+    this.fetchClasses(subject, catalogNumber);
+  }
 
-	async fetchCourseData(subject, catalogNumber) {
-		try {
-			const json = await getCourseData(subject, catalogNumber);
-			let {
-				description,
-				crosslistings,
-				notes,
-				terms,
-				title,
-				units,
-				url,
-				prereqs,
-				coreqs,
-				antireqs,
-				postreqs,
-			} = json;
+  async fetchCourseData(subject, catalogNumber) {
+    try {
+      const json = await getCourseData(subject, catalogNumber);
+      let {
+        description,
+        crosslistings,
+        notes,
+        terms,
+        title,
+        units,
+        url,
+        prereqs,
+        coreqs,
+        antireqs,
+        postreqs,
+      } = json;
 
-			// Update page title
-			document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`;
+      // Update page title
+      document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`;
 
-			const course = {
-				title,
-				description,
-				rating: 2.1,
-				url,
-				notes,
-				units,
-				terms,
-				crosslistings,
-				antireqs,
-				coreqs,
-				prereqs,
-				postreqs: formatPostreqs(postreqs),
-			};
+      const course = {
+        title,
+        description,
+        rating: 2.1,
+        url,
+        notes,
+        units,
+        terms,
+        crosslistings,
+        antireqs,
+        coreqs,
+        prereqs,
+        postreqs: formatPostreqs(postreqs),
+      };
 
-			const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
+      const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
 
-			this.setState({ courseLoading: false, course, eligible });
-		} catch(error) {
-			console.error(`ERROR: ${error}`);
-			this.setState({ courseLoading: false, error });
-		};
-	}
+      this.setState({ courseLoading: false, course, eligible });
+    } catch(error) {
+      console.error(`ERROR: ${error}`);
+      this.setState({ courseLoading: false, error });
+    }
+  }
 
-	async fetchClasses(subject, catalogNumber) {
-		try {
-			const classes = await getCourseClasses(subject, catalogNumber, this.state.term) || [];
-			this.setState({ classLoading: false, classes });
-		} catch (error) {
-			console.error(`ERROR: ${error}`);
-			this.setState({ classLoading: false });
-			toast.error('Failed to load classes.');
-		}
-	}
+  async fetchClasses(subject, catalogNumber) {
+    try {
+      const classes = await getCourseClasses(subject, catalogNumber, this.state.term) || [];
+      this.setState({ classLoading: false, classes });
+    } catch (error) {
+      console.error(`ERROR: ${error}`);
+      this.setState({ classLoading: false });
+      toast.error('Failed to load classes.');
+    }
+  }
 
-	viewCart() {
-		this.props.history.push('/my-courses');
-	}
+  viewCart() {
+    this.props.history.push('/my-courses');
+  }
 
-	addCourseToCart(subject, catalogNumber) {
-		const { addToCartHandler, username, isLoggedIn, cart, history, location } = this.props;
-		const { taken } = this.state;
-		if (!isLoggedIn) fireLoginPrompt(history, location.pathname);
-		else addToCartHandler(username, cart, subject, catalogNumber, taken, this.viewCart);
-	}
+  addCourseToCart(subject, catalogNumber) {
+    const { addToCartHandler, username, isLoggedIn, cart, history, location } = this.props;
+    const { taken } = this.state;
+    if (!isLoggedIn) fireLoginPrompt(history, location.pathname);
+    else addToCartHandler(username, cart, subject, catalogNumber, taken, this.viewCart);
+  }
 
-	removeCourseFromCart(subject, catalogNumber) {
-		const { removeFromCartHandler, username, cart } = this.props;
-		removeFromCartHandler(username, cart, subject, catalogNumber);
-	}
+  removeCourseFromCart(subject, catalogNumber) {
+    const { removeFromCartHandler, username, cart } = this.props;
+    removeFromCartHandler(username, cart, subject, catalogNumber);
+  }
 
-	onExpandClass(classInfo) {
-		this.setState({ classModalOpen: true, classInfo });
-	}
+  onExpandClass(classInfo) {
+    this.setState({ classModalOpen: true, classInfo });
+  }
 
-	closeClassModal() {
-		this.setState({ classModalOpen: false, classInfo: defaultClassInfo });
-	}
+  closeClassModal() {
+    this.setState({ classModalOpen: false, classInfo: defaultClassInfo });
+  }
 
-	onWatchClass(classNum) {
-		const { history, location, isLoggedIn, username } = this.props;
-		const { term } = this.state;
-		if (isLoggedIn) this.props.watchClassHandler(username, term, classNum);
-		else fireLoginPrompt(history, location.pathname);
-	}
+  onWatchClass(classNum) {
+    const { history, location, isLoggedIn, username } = this.props;
+    const { term } = this.state;
+    if (isLoggedIn) this.props.watchClassHandler(username, term, classNum);
+    else fireLoginPrompt(history, location.pathname);
+  }
 
-	onUnwatchClass(classNum) {
-		const { history, location, isLoggedIn, username } = this.props;
-		const { term } = this.state;
-		if (isLoggedIn) this.props.unwatchClassHandler(username, term, classNum);
-		else fireLoginPrompt(history, location.pathname);
-	}
+  onUnwatchClass(classNum) {
+    const { history, location, isLoggedIn, username } = this.props;
+    const { term } = this.state;
+    if (isLoggedIn) this.props.unwatchClassHandler(username, term, classNum);
+    else fireLoginPrompt(history, location.pathname);
+  }
 
-	render() {
-		const {
-			subject,
-			catalogNumber,
-			course,
-			term,
-			classes,
-			watchlist,
-			taken,
-			inCart,
-			eligible,
-			classInfo,
-			classModalOpen,
-			courseLoading,
-			error
-		} = this.state;
+  render() {
+    const {
+      subject,
+      catalogNumber,
+      course,
+      term,
+      classes,
+      watchlist,
+      taken,
+      inCart,
+      eligible,
+      classInfo,
+      classModalOpen,
+      courseLoading,
+      error
+    } = this.state;
 
-		const renderedCourseView = (
-			<div style={ styles.courseView }>
-				<CourseContent
-					subject={ subject }
-					catalogNumber={ catalogNumber }
-					course={ course }
-					term={ term }
-					classes={ classes }
-					expandClass={ this.onExpandClass }
-					taken={ taken }
-					inCart={ inCart }
-					eligible={ eligible }
-					addToCartHandler={ this.addCourseToCart }
-					removeFromCartHandler={ this.removeCourseFromCart }
-				/>
-				<ClassDetails
-					classInfo={ classInfo }
-					watchlist={ watchlist }
-					open={ classModalOpen }
-					onClose={ this.closeClassModal }
-					onWatch={ this.onWatchClass }
-					onUnwatch={ this.onUnwatchClass }
-				/>
-			</div>
-		);
+    const renderedCourseView = (
+      <div style={ styles.courseView }>
+        <CourseContent
+          subject={ subject }
+          catalogNumber={ catalogNumber }
+          course={ course }
+          term={ term }
+          classes={ classes }
+          expandClass={ this.onExpandClass }
+          taken={ taken }
+          inCart={ inCart }
+          eligible={ eligible }
+          addToCartHandler={ this.addCourseToCart }
+          removeFromCartHandler={ this.removeCourseFromCart }
+        />
+        <ClassDetails
+          classInfo={ classInfo }
+          watchlist={ watchlist }
+          open={ classModalOpen }
+          onClose={ this.closeClassModal }
+          onWatch={ this.onWatchClass }
+          onUnwatch={ this.onUnwatchClass }
+        />
+      </div>
+    );
 
-		const courseView = (courseLoading)
-			? <LoadingView />
-			: (error)
-				? (
-					<ErrorView
-						msgHeader={"Oops!"}
-						msgBody={`${subject} ${catalogNumber} is not a valid course!`}
-					/>
-				)
-				: renderedCourseView;
+    const courseView = (courseLoading)
+      ? <LoadingView />
+      : (error)
+        ? (
+          <ErrorView
+            msgHeader={ "Oops!" }
+            msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
+          />
+        )
+        : renderedCourseView;
 
-		const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;
+    const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;
 
-		return (
+    return (
       <div style={{ width: '100%', height: '100%' }}>
         <Route
           path={ `${this.props.match.path}` }
@@ -372,42 +374,42 @@ class CourseViewContainer extends Component {
         />
       </div>
     );
-	}
+  }
 
 }
 
 const mapStateToProps = ({ myCourses, cart, watchlist, user, isLoggedIn }) => ({
-	myCourses,
-	cart,
-	watchlist,
-	username: user.username,
-	isLoggedIn,
+  myCourses,
+  cart,
+  watchlist,
+  username: user.username,
+  isLoggedIn,
 });
 
 const mapDispatchToProps = dispatch => {
-	return {
-		addToCartHandler: (username, cart, subject, catalogNumber, hasTaken, viewCartHandler) => {
-			if (hasTaken) {
-				const msg = `${subject} ${catalogNumber} is already in your courses.`;
-				dispatch(createSnack(msg));
-			} else {
-				const msg = `${subject} ${catalogNumber} has been added to your cart.`;
-				const actionMsg = 'View Cart';
-				dispatch(addToCart(subject, catalogNumber, username, cart));
-				dispatch(createSnack(msg, actionMsg, null, viewCartHandler));
-			}
-		},
-		removeFromCartHandler: (username, cart, subject, catalogNumber) => {
-			const msg = `${subject} ${catalogNumber} has been removed from your cart.`;
-			const actionMsg = 'undo';
-			const undoMsg = `${subject} ${catalogNumber} has been re-added to your cart.`;
-			const handleActionClick = () => dispatch(addToCart(subject, catalogNumber, username, cart));
-			dispatch(removeFromCart(subject, catalogNumber, username, cart));
-			dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
-		},
-		watchClassHandler: (username, term, classNum) => dispatch(watchClass(username, term, classNum)),
-		unwatchClassHandler: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
-	};
+  return {
+    addToCartHandler: (username, cart, subject, catalogNumber, hasTaken, viewCartHandler) => {
+      if (hasTaken) {
+        const msg = `${subject} ${catalogNumber} is already in your courses.`;
+        dispatch(createSnack(msg));
+      } else {
+        const msg = `${subject} ${catalogNumber} has been added to your cart.`;
+        const actionMsg = 'View Cart';
+        dispatch(addToCart(subject, catalogNumber, username, cart));
+        dispatch(createSnack(msg, actionMsg, null, viewCartHandler));
+      }
+    },
+    removeFromCartHandler: (username, cart, subject, catalogNumber) => {
+      const msg = `${subject} ${catalogNumber} has been removed from your cart.`;
+      const actionMsg = 'undo';
+      const undoMsg = `${subject} ${catalogNumber} has been re-added to your cart.`;
+      const handleActionClick = () => dispatch(addToCart(subject, catalogNumber, username, cart));
+      dispatch(removeFromCart(subject, catalogNumber, username, cart));
+      dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
+    },
+    watchClassHandler: (username, term, classNum) => dispatch(watchClass(username, term, classNum)),
+    unwatchClassHandler: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
+  };
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CourseViewContainer));

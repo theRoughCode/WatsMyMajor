@@ -65,6 +65,7 @@ class VerifyEmail extends Component {
 
   async componentDidMount() {
     const { search } = this.props.location;
+    /* eslint-disable no-useless-escape */
     const tokenRegex = /.*(\?|\&)token=([^&]*)(\&.*|$)/;
     const matchArr = search.match(tokenRegex);
     if (matchArr == null || matchArr.length < 3) return;

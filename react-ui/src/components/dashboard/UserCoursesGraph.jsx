@@ -27,11 +27,11 @@ export default class UserCoursesGraph extends Component {
   };
 
   constructor(props) {
-		super(props);
+    super(props);
 
-		this.state = {
+    this.state = {
       courses: formatMyCourses(props.myCourses),
-		};
+    };
   }
 
   render() {
@@ -41,8 +41,8 @@ export default class UserCoursesGraph extends Component {
       <Paper style={{ height: 'fit-content', margin: 'auto' }} depth={ 1 }>
         <VictoryLabel
           text="My Courses"
-          x={225}
-          y={30}
+          x={ 225 }
+          y={ 30 }
           textAnchor="middle"
           style={{ fontSize: 25 }}
         />
