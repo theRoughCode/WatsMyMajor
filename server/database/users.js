@@ -57,9 +57,6 @@ function setUser(username, user) {
 }
 
 function updateUser(username, user) {
-  // Ensure that passwords aren't being set here (would be plaintext).
-  // Should use updateUserSettings
-  if (Object.hasOwnProperty('password')) delete user.password;
   return usersRef
     .child(username)
     .update(user);
@@ -96,18 +93,6 @@ async function getUser(username) {
   }
 }
 
-async function getUserByFacebookID(facebookId, callback) {
-  try {
-    const snapshot = await usersRef
-      .orderByChild('facebookID')
-      .equalTo(facebookId)
-      .once('value');
-    callback(null, snapshot.val());
-  } catch (err) {
-    callback(err, null);
-  }
-}
-
 async function getAllUserCourses() {
   try {
     const snapshot = await usersRef.once('value');
@@ -137,100 +122,12 @@ async function userExists(username) {
 }
 
 
-/****************************
- *													*
- *			   M I S C 			    *
- *													*
- ****************************/
-
-
-
-async function setVerified(username, isVerified) {
-  try {
-    await setField(username, 'verified', isVerified);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function setCart(username, cart) {
-  try {
-    await setField(username, 'cart', cart);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function setSchedule(username, schedule) {
-  try {
-    await setField(username, 'schedule', schedule);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function setCourseList(username, courseList) {
-  try {
-    await setField(username, 'courseList', courseList);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function addToWatchlist(username, term, classNum) {
-  try {
-    await setField(username, `watchlist/${term}/${classNum}`, true);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function removeFromWatchlist(username, term, classNum) {
-  try {
-    await setField(username, `watchlist/${term}/${classNum}`, null);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function setFacebookID(username, facebookID) {
-  try {
-    await setField(username, 'facebookID', facebookID);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
-async function setProfilePicture(username, url) {
-  try {
-    await setField(username, 'profileURL', url);
-    return null;
-  } catch (err) {
-    return err;
-  }
-}
-
 module.exports = {
   setUser,
   updateUser,
   deleteUser,
+  setField,
   getUser,
-  getUserByFacebookID,
   getAllUserCourses,
   userExists,
-  setVerified,
-  setCart,
-  setSchedule,
-  setCourseList,
-  addToWatchlist,
-  removeFromWatchlist,
-  setFacebookID,
-  setProfilePicture,
 };

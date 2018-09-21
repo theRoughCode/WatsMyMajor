@@ -1,11 +1,11 @@
 const StatsRouter = require('express').Router();
 const courses = require('../core/courses');
+const update = require('../core/update');
 const stats = require('../database/stats');
-const scheduler = require('../core/scheduler');
 
 // Updates count of all users' courses
 StatsRouter.get('/update/popular', async function(req, res) {
-  const { err, courseCount } = await scheduler.updatePopularCourses();
+  const { err, courseCount } = await update.updatePopularCourses();
   if (err) return res.status(404).send(err.message);
   res.json(courseCount);
 });

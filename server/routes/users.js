@@ -1,9 +1,10 @@
 const UsersRouter = require('express').Router();
 const { setCourseListPrereqs, setCoursesPrereqs } = require('../core/utils');
-const users = require('../database/users');
+const auth = require('../core/auth');
+const parseSchedule = require('../core/parsers/scheduleParser');
+const users = require('../core/users');
 const images = require('../database/images');
 const facebookUsers = require('../database/facebookUsers');
-const parseSchedule = require('../core/parsers/scheduleParser');
 
 // TODO: Find a better way to enforce lower case for username
 
@@ -99,7 +100,7 @@ UsersRouter.post('/edit/settings/:username', async function(req, res) {
   let user = Object.assign({}, req.body);
 
   try {
-    let err = await users.updateUserSettings(username, user);
+    let err = await auth.updateUserSettings(username, user);
     if (err) {
       console.error(err);
       return res.status(400).send(err);
