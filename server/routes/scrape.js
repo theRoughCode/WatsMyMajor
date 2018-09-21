@@ -1,6 +1,6 @@
 const ScrapeRouter = require('express').Router();
-const classes = require('../models/scrapers/classes');
-const majors = require('../models/scrapers/majors');
+const classes = require('../core/scrapers/classes');
+const majors = require('../core/scrapers/majors');
 
 // Scrape ADM and get classes
 ScrapeRouter.get('/classes/:term/:subject/:catalogNumber', async function(req, res) {

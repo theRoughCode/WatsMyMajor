@@ -19,6 +19,11 @@ function setEmail(username, email) {
     .set(username);
 }
 
+function deleteEmail(email) {
+  email = email.replace(/\./g, ',');
+  return emailsRef.child(email).remove();
+}
+
 
 /****************************
  *													*
@@ -36,5 +41,6 @@ async function emailExists(email) {
 
 module.exports = {
   setEmail,
+  deleteEmail,
   emailExists,
 };

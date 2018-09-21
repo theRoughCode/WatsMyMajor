@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use(cookieParser());
 
 // Initialize passport authentication
-require('./helpers/passport');
+require('./core/passport');
 app.use(passport.initialize());
 
 // Priority serve any static files.

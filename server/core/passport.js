@@ -4,8 +4,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const FacebookTokenStrategy = require('passport-facebook-token');
-const users = require('../models/database/users');
-const facebookUsers = require('../models/database/facebookUsers');
+const auth = require('./auth');
+const facebookUsers = require('../database/facebookUsers');
 
 const opt = {
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
@@ -16,7 +16,7 @@ const opt = {
 passport.use('login', new LocalStrategy(
   async function(username, password, callback) {
     try {
-      const { err, user } = await users.verifyUser(username.toLowerCase(), password);
+      const { err, user } = await auth.verifyUser(username.toLowerCase(), password);
       if (err) return callback(err);
       callback(null, user);
     } catch (err) {

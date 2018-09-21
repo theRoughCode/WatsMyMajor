@@ -1,6 +1,6 @@
 const WatchlistRouter = require('express').Router();
-const watchlist = require('../models/watchlist');
-const watchlistDB = require('../models/database/watchlist');
+const watchlist = require('../core/watchlist');
+const watchlistDB = require('../database/watchlist');
 
 // Get watchers for a class
 WatchlistRouter.get('/watchers/:term/:classNum', async function(req, res) {

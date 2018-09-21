@@ -1,5 +1,5 @@
 const MajorsRouter = require('express').Router();
-const majors = require('../models/database/majors');
+const majors = require('../database/majors');
 
 // Set major requirements
 MajorsRouter.post('/set/:key', async function(req, res) {

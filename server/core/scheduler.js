@@ -1,5 +1,5 @@
 const schedule = require('node-schedule');
-const update = require('../models/update');
+const update = require('./update');
 
 // Update taken count of courses
 // Runs every midnight

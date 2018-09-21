@@ -1,5 +1,5 @@
 const TreeRouter = require('express').Router();
-const tree = require('../models/tree');
+const tree = require('../core/tree');
 
 // Get prerequisite tree for course
 TreeRouter.get('/:subject/:number', async function(req, res) {

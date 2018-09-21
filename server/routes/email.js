@@ -1,8 +1,8 @@
 const EmailRouter = require('express').Router();
-const email = require('../models/email');
-const watchlist = require('../models/watchlist');
-const emailDB = require('../models/database/emails');
-const usersDB = require('../models/database/users');
+const email = require('../core/email');
+const watchlist = require('../core/watchlist');
+const emailDB = require('../database/emails');
+const usersDB = require('../database/users');
 
 // Verifies user token and set user to verified
 EmailRouter.get('/verify/user', async function(req, res) {
@@ -60,6 +60,13 @@ EmailRouter.post('/create', async function(req, res) {
 
   await emailDB.setEmail(username, email);
   res.send('Email created');
+});
+
+// Delete email
+EmailRouter.get('/delete/:email', async function(req, res) {
+  const email = req.params.email;
+  await emailDB.deleteEmail(email);
+  res.send(`${email} deleted`);
 });
 
 module.exports = EmailRouter;

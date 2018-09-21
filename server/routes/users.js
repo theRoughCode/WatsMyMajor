@@ -1,9 +1,9 @@
 const UsersRouter = require('express').Router();
-const { setCourseListPrereqs, setCoursesPrereqs } = require('../models/utils');
-const users = require('../models/database/users');
-const images = require('../models/database/images');
-const facebookUsers = require('../models/database/facebookUsers');
-const parseSchedule = require('../models/parsers/scheduleParser');
+const { setCourseListPrereqs, setCoursesPrereqs } = require('../core/utils');
+const users = require('../database/users');
+const images = require('../database/images');
+const facebookUsers = require('../database/facebookUsers');
+const parseSchedule = require('../core/parsers/scheduleParser');
 
 // TODO: Find a better way to enforce lower case for username
 

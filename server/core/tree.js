@@ -1,4 +1,4 @@
-const requisites = require('./database/requisites');
+const requisites = require('../database/requisites');
 
 const cached = {};
 

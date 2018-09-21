@@ -1,7 +1,7 @@
 const ParseRouter = require('express').Router();
-const parseSchedule = require('../models/parsers/scheduleParser');
-const parseCourses = require('../models/parsers/courseParser');
-const parseTranscript = require('../models/parsers/transcriptParser');
+const parseSchedule = require('../core/parsers/scheduleParser');
+const parseCourses = require('../core/parsers/courseParser');
+const parseTranscript = require('../core/parsers/transcriptParser');
 
 ParseRouter.post('/schedule', function(req, res) {
   const schedule = parseSchedule(req.body.text);

@@ -1,7 +1,7 @@
 const StatsRouter = require('express').Router();
-const courses = require('../models/database/courses');
-const stats = require('../models/database/stats');
-const scheduler = require('../helpers/scheduler');
+const courses = require('../database/courses');
+const stats = require('../database/stats');
+const scheduler = require('../core/scheduler');
 
 // Updates count of all users' courses
 StatsRouter.get('/update/popular', async function(req, res) {

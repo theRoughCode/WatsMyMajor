@@ -1,5 +1,5 @@
-const users = require('../models/database/users');
-const watchlist = require('../models/database/watchlist');
+const users = require('../database/users');
+const watchlist = require('../database/watchlist');
 
 async function addWatcher(term, classNum, username) {
   username = username.toLowerCase();

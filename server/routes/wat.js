@@ -1,5 +1,5 @@
 const WatRouter = require('express').Router();
-const waterloo = require('../models/waterloo');
+const waterloo = require('../core/waterloo');
 
 WatRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
   const { subject, catalogNumber } = req.params;

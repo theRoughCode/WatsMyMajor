@@ -1,5 +1,5 @@
 const ReqsRouter = require('express').Router();
-const requisites = require('../models/database/requisites');
+const requisites = require('../database/requisites');
 
 // Get requisites from course
 ReqsRouter.get('/:subject/:number', async function(req, res) {

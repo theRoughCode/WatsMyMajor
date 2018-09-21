@@ -1,8 +1,9 @@
 const AuthRouter = require('express').Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const email = require('../models/email');
-const users = require('../models/database/users');
+const auth = require('../core/auth');
+const email = require('../core/email');
+const users = require('../core/users');
 
 const JWT_SECRET = process.env.SERVER_SECRET;
 
@@ -19,7 +20,7 @@ AuthRouter.post('/register', async function(req, res) {
   const password = req.body.password;
 
   try {
-    const { err, user } = await users.createUser(username, userEmail, name, password);
+    const { err, user } = await auth.createUser(username, userEmail, name, password);
     if (err) {
       console.error(err);
       return res.status(400).json(err);
@@ -73,6 +74,23 @@ AuthRouter.get('/facebook', function(req, res) {
       res.status(400).send(err);
     }
   })(req, res);
+});
+
+// Register user
+AuthRouter.get('/delete/:username', async function(req, res) {
+  const username = req.params.username.toLowerCase();
+
+  try {
+    const err = await auth.deleteUser(username);
+    if (err) {
+      console.error(err);
+      return res.status(400).json(err);
+    }
+    return res.send(`Successfully deleted ${username}`);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(err);
+  }
 });
 
 module.exports = AuthRouter;

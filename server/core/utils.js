@@ -1,4 +1,4 @@
-const { getPrereqs } = require('./database/requisites');
+const { getPrereqs } = require('../database/requisites');
 
 /*
 	PROVIDES UTILITY FUNCTIONS FOR OTHER MODULES

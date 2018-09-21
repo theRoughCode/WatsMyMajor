@@ -2,13 +2,13 @@ const asyncjs = require('async');
 const email = require('./email');
 const waterloo = require('./waterloo');
 const classScraper = require('./scrapers/classes');
-const classes = require('./database/classes');
-const courseList = require('./database/courseList');
-const courses = require('./database/courses');
-const requisites = require('./database/requisites');
-const stats = require('./database/stats');
-const users = require('./database/users');
-const watchlist = require('./database/watchlist');
+const classes = require('../database/classes');
+const courseList = require('../database/courseList');
+const courses = require('../database/courses');
+const requisites = require('../database/requisites');
+const stats = require('../database/stats');
+const users = require('../database/users');
+const watchlist = require('../database/watchlist');
 
 /****************************
  *                          *

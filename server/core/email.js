@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const users = require('./database/users');
+const users = require('../database/users');
 
 require('dotenv').config();
 const JWT_SECRET = process.env.SERVER_SECRET;

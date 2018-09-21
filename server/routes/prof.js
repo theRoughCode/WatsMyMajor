@@ -1,5 +1,5 @@
 const ProfRouter = require('express').Router();
-const rmp = require('../models/scrapers/rmp');
+const rmp = require('../core/scrapers/rmp');
 
 // Get professor rating from ratemyprofessors.com
 ProfRouter.get('/:name', async function(req, res) {

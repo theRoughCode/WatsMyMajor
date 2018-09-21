@@ -1,5 +1,5 @@
 const UpdateRouter = require('express').Router();
-const update = require('../models/update');
+const update = require('../core/update');
 
 // Update list of courses
 UpdateRouter.get('/courselist', async function(req, res) {
