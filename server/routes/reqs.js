@@ -1,12 +1,12 @@
 const ReqsRouter = require('express').Router();
-const requisites = require('../database/requisites');
+const requisitesDB = require('../database/requisites');
 
 // Get requisites from course
 ReqsRouter.get('/:subject/:number', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
-  const { err, reqs } = await requisites.getRequisites(subject, number);
+  const { err, reqs } = await requisitesDB.getRequisites(subject, number);
   if (err) {
     console.error(err);
     res.send(err);
@@ -21,7 +21,7 @@ ReqsRouter.get('/prereqs/:subject/:number', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
-  const { err, reqs } = await requisites.getPrereqs(subject, number);
+  const { err, reqs } = await requisitesDB.getPrereqs(subject, number);
   if (err) {
     console.error(err);
     res.send(err);
@@ -36,7 +36,7 @@ ReqsRouter.get('/coreqs/:subject/:number', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
-  let { err, reqs } = await requisites.getCoreqs(subject, number);
+  let { err, reqs } = await requisitesDB.getCoreqs(subject, number);
   if (err) {
     console.error(err);
     res.send(err);
@@ -52,7 +52,7 @@ ReqsRouter.get('/antireqs/:subject/:number', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
-  let { err, reqs } = await requisites.getAntireqs(subject, number);
+  let { err, reqs } = await requisitesDB.getAntireqs(subject, number);
   if (err) {
     console.error(err);
     res.send(err);
@@ -68,7 +68,7 @@ ReqsRouter.get('/postreqs/:subject/:number', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
-  let { err, reqs } = await requisites.getPostreqs(subject, number);
+  let { err, reqs } = await requisitesDB.getPostreqs(subject, number);
   if (err) {
     console.error(err);
     res.send(err);
