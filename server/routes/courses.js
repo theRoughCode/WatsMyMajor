@@ -1,5 +1,5 @@
 const CoursesRouter = require('express').Router();
-const courses = require('../database/courses');
+const courses = require('../core/courses');
 const courseClasses = require('../database/classes');
 const requisites = require('../database/requisites');
 

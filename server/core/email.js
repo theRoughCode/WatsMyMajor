@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const users = require('../database/users');
+const emailsDB = require('../database/emails');
+const usersDB = require('../database/users');
 
 require('dotenv').config();
 const JWT_SECRET = process.env.SERVER_SECRET;
@@ -12,6 +13,27 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_PASS,
   },
 });
+
+// Returns err
+async function createEmail(username, email) {
+  username = username.toLowerCase();
+  email = email.toLowerCase();
+
+  /* eslint-disable no-useless-escape */
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!emailRegex.test(email)) return 'Invalid email';
+
+  // Check if email already exists
+  const emailExists = await emailsDB.emailExists(email);
+  if (emailExists) return 'Email already exists';
+
+  await emailsDB.setEmail(username, email);
+  return null;
+}
+
+function deleteEmail(email) {
+  return emailsDB.deleteEmail(email);
+}
 
 async function sendMail(to, subject, html) {
   const mailOptions = {
@@ -63,9 +85,12 @@ async function sendVerificationEmail(email, username) {
 }
 
 // Verify email token to verify user's email
-function verifyEmailToken(token) {
+// Returns { err, username }
+async function verifyEmailToken(token) {
   try {
     const { username } = jwt.verify(token, JWT_SECRET);
+    // Set user as verified
+    await usersDB.setVerified(username, true);
     return { err: null, username };
   } catch (err) {
     console.error(err);
@@ -75,7 +100,7 @@ function verifyEmailToken(token) {
 
 // Send update email to user about a class opening
 async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numSeats, username) {
-  const { user, err } = await users.getUser(username);
+  const { user, err } = await usersDB.getUser(username);
   if (err) {
     console.error(err);
     return err;
@@ -138,6 +163,8 @@ function verifyUnwatchToken(token) {
 
 
 module.exports = {
+  createEmail,
+  deleteEmail,
   sendMail,
   sendVerificationEmail,
   verifyEmailToken,

@@ -1,5 +1,5 @@
 const StatsRouter = require('express').Router();
-const courses = require('../database/courses');
+const courses = require('../core/courses');
 const stats = require('../database/stats');
 const scheduler = require('../core/scheduler');
 
