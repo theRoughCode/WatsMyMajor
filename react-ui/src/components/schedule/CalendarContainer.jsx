@@ -107,6 +107,8 @@ const parseCourses = (courses) => {
         date: endDate.day
       });
       let date = startDateMoment;
+
+      /* eslint-disable no-loop-func */
       while (date.isSameOrBefore(endDateMoment)) {
         days.forEach(dayStr => {
           let day = 0;

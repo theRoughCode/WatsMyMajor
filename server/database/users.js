@@ -1,13 +1,4 @@
-const bcrypt = require('bcryptjs');
 const { usersRef } = require('./index');
-const emails = require('./emails');
-
-const ERROR_USERNAME_EXISTS = 100;
-const ERROR_USERNAME_NOT_FOUND = 101;
-const ERROR_WRONG_PASSWORD = 105;
-const ERROR_USER_NOT_VERIFIED = 107;
-const ERROR_EMAIL_EXISTS = 200;
-const ERROR_SERVER_ERROR = 400;
 
 /* A list of the courses available
     {

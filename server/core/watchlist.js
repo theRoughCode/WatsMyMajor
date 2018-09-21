@@ -1,10 +1,22 @@
-const users = require('../database/users');
-const watchlist = require('../database/watchlist');
+const users = require('./users');
+const watchlistDB = require('../database/watchlist');
+
+function getWatchers(term, classNum) {
+  return watchlistDB.getWatchers(term, classNum);
+}
+
+function getEnrollment(term, classNum) {
+  return watchlistDB.getEnrollment(term, classNum);
+}
+
+function getSubjectAndCatNum(term, classNum) {
+  return watchlistDB.getSubjectAndCatNum(term, classNum);
+}
 
 async function addWatcher(term, classNum, username) {
   username = username.toLowerCase();
   try {
-    await watchlist.addWatcher(term, classNum, username);
+    await watchlistDB.addWatcher(term, classNum, username);
     await users.addToWatchlist(username, term, classNum);
     return null;
   } catch (err) {
@@ -16,7 +28,7 @@ async function addWatcher(term, classNum, username) {
 async function removeWatcher(term, classNum, username) {
   username = username.toLowerCase();
   try {
-    await watchlist.removeWatcher(term, classNum, username);
+    await watchlistDB.removeWatcher(term, classNum, username);
     await users.removeFromWatchlist(username, term, classNum);
     return null;
   } catch (err) {
@@ -26,6 +38,9 @@ async function removeWatcher(term, classNum, username) {
 }
 
 module.exports = {
+  getWatchers,
+  getEnrollment,
+  getSubjectAndCatNum,
   addWatcher,
   removeWatcher,
 };
