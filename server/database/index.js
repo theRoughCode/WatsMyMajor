@@ -7,7 +7,7 @@ const serviceAccount = JSON.parse(process.env.FIREBASE);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://watsmymajor.firebaseio.com",
+  databaseURL: process.env.FIREBASE_URL,
   storageBucket: "watsmymajor.appspot.com"
 });
 

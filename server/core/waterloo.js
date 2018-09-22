@@ -13,7 +13,7 @@ const TERM = '1189';  // Fall 2018
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
-const uwclient = new watApi({
+const uwclient = (process.env.TESTING) ? null : new watApi({
   API_KEY : process.env.WATERLOO_API_KEY
 });
 
