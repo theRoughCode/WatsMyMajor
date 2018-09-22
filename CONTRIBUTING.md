@@ -22,6 +22,9 @@ Unsure where to begin contributing to WatsMyMajor? You can start by looking thro
 WatsMyMajor's code base is divided up into 2 directories:
 - server: Node.js backend that contains the logic for the app
 - react-ui: React frontend that serves the web app
+
+_NOTE:_
+Before beginning development, send me a message at raph[dot]koh[at]gmail[dot]com. I will set you up with the development environment required to get started!
 #### Run the API Server
 
 In a terminal:
