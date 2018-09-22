@@ -159,8 +159,8 @@ class SideBarContainer extends Component {
         </List>
         <div style={ styles.github }>
           <div style={ styles.githubTextContainer }>
-            <span>Found an issue?</span>
-            <a target="_blank" rel="noopener noreferrer" href="https://github.com/theRoughCode/watsmymajorbeta/issues">
+            <a style={{ color: 'white', textDecoration: 'none' }} target="_blank" rel="noopener noreferrer" href="https://github.com/theRoughCode/watsmymajor/issues">
+              <span>Found an issue?</span>
               <GithubIcon style={ styles.githubIcon } />
             </a>
           </div>
