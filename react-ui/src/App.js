@@ -130,16 +130,16 @@ class App extends Component {
     const pathArr = pathname.split("/").slice(1);
     switch (pathArr[0]) {
     case "majors": // View majors
-      document.title = "View Majors :: WatsMyMajor";
+      document.title = "View Majors - WatsMyMajor";
       break;
     case "my-courses": // My courses
-      document.title = "My Courses :: WatsMyMajor";
+      document.title = "My Courses - WatsMyMajor";
       break;
     case "schedule": // My schedule
-      document.title = "My Schedule :: WatsMyMajor";
+      document.title = "My Schedule - WatsMyMajor";
       break;
     default:
-      document.title = "WatsMyMajor";
+      document.title = "WatsMyMajor - University of Waterloo Course Planner";
     }
   }
 

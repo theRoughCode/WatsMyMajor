@@ -39,7 +39,6 @@ AuthRouter.post('/login', function(req, res) {
 
   passport.authenticate('login', { session: false }, (err, user, info) => {
     if (err) {
-      console.error(err);
       res.status(400).send(err);
     } else if (!user) {
       res.status(400).send('User not found.');

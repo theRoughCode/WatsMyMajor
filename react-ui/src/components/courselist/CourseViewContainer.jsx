@@ -120,7 +120,7 @@ class CourseViewContainer extends Component {
     const { subject, catalogNumber } = props.match.params;
 
     this.state = {
-      subject,
+      subject: subject.toUpperCase(),
       catalogNumber,
       term: '1189',
       courseLoading: true,
@@ -230,7 +230,7 @@ class CourseViewContainer extends Component {
       } = json;
 
       // Update page title
-      document.title = `${subject} ${catalogNumber} - ${title} :: WatsMyMajor`;
+      document.title = `${subject} ${catalogNumber} | ${title} | University of Waterloo - WatsMyMajor`;
 
       const course = {
         title,

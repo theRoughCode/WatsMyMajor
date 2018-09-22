@@ -118,6 +118,7 @@ class MajorsContainer extends Component {
       const { key, name } = majorsList[i];
       if (key === majorKey) {
         const { data, url } = await fetchRequirements(key);
+        document.title = `${name} Major | University of Waterloo - WatsMyMajor`;
         this.setState({ key, name, reqs: data, url });
         return;
       }
