@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
+const users = require('../core/users');
 const emailsDB = require('../database/emails');
 const usersDB = require('../database/users');
 
@@ -90,7 +91,7 @@ async function verifyEmailToken(token) {
   try {
     const { username } = jwt.verify(token, JWT_SECRET);
     // Set user as verified
-    await usersDB.setVerified(username, true);
+    await users.setVerified(username, true);
     return { err: null, username };
   } catch (err) {
     console.error(err);
