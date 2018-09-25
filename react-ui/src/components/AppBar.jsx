@@ -27,6 +27,13 @@ const styles = {
     textDecoration: 'none',
     color: (isWelcomeScreen) ? darkGrey : 'inherit',
   }),
+  logo: {
+    width: 35,
+    height: 35,
+    margin: 'auto 7px',
+    marginRight: 10,
+    verticalAlign: 'text-bottom',
+  },
 };
 
 class AppBar extends Component {
@@ -79,7 +86,8 @@ class AppBar extends Component {
         zDepth={ (isWelcomeScreen) ? 0 : 1 }
         title={
           <Link to={ `/` } style={ styles.titleLink(isWelcomeScreen) }>
-            WatsMyMajor
+            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <span>WatsMyMajor</span>
           </Link>
         }
       >
