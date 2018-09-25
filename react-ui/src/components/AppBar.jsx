@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
@@ -22,7 +22,11 @@ const styles = {
   searchBar: {
     marginTop: '5px',
     width: '30%',
-  }
+  },
+  titleLink: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
 };
 
 class AppBar extends Component {
@@ -70,7 +74,11 @@ class AppBar extends Component {
       <Bar
         style={ styles.container }
         onLeftIconButtonClick={ toggleSideBar }
-        title="WatsMyMajor"
+        title={
+          <Link to={ `/` } style={ styles.titleLink }>
+            WatsMyMajor
+          </Link>
+        }
       >
         <SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
         { button }

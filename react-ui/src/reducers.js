@@ -28,10 +28,15 @@ import {
   UNLINK_FACEBOOK_FAILURE,
 } from './actions';
 
-function sideBarOpen(state = true, action) {
+function sideBarOpen(state = false, action) {
   switch (action.type) {
   case TOGGLE_SIDEBAR:
     return !state;
+  case SET_USER:
+  case LOGIN_USER:
+    return true;
+  case LOGOUT_USER:
+    return false;
   default:
     return state;
   }

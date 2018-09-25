@@ -13,6 +13,7 @@ import AppBar from './components/AppBar';
 import SideBar from './components/sidebar/SideBarContainer';
 import PrivacyPolicy from './components/privacy/PrivacyPolicy';
 import Dashboard from './components/dashboard/Dashboard';
+import LaunchScreen from './components/launch/LaunchScreen';
 import Login from './components/login/Login';
 import Register from './components/login/Register';
 import VerifyEmail from './components/email/VerifyEmail';
@@ -155,9 +156,9 @@ class App extends Component {
   }
 
   // Redirects to Login if not logged in
-  addRedirect(Component) {
+  addRedirect(Component, redirectUrl = 'login') {
     return (props) => (
-      (this.state.isLoggedIn) ? <Component { ...props } /> : <Redirect to="/login" />
+      (this.state.isLoggedIn) ? <Component { ...props } /> : <Redirect to={ redirectUrl } />
     );
   }
 
@@ -189,8 +190,9 @@ class App extends Component {
         <SideBar open={ this.state.sideBarOpen } />
         <div style={ styles }>
           <Switch>
-            <Route exact path='/' render={ this.addRedirect(Dashboard) } />
+            <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
             <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
+            <Route exact path='/welcome' render={ this.addUndirect(LaunchScreen) } />
             <Route exact path='/register' render={ this.addUndirect(Register) } />
             <Route exact path='/login' render={ this.addUndirect(Login) } />
             <Route exact path='/verify-email' component={ VerifyEmail } />
