@@ -14,7 +14,7 @@ CourseRatingsRouter.post('/update/:subject/:catalogNumber', async function(req, 
   if (rating < 1 || rating > 5) return res.status(400).send('Rating must be from 1 to 5.');
 
   const result = await courseRatingsDB.updateUserRating(username, subject, catalogNumber, rating);
-  if (result.err) res.status(400).send(err.message);
+  if (result.err) res.status(400).send(result.err.message);
   else res.json(result.rating);
 });
 

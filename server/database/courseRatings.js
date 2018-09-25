@@ -53,13 +53,13 @@ async function updateUserRating(username, subject, catalogNumber, rating) {
       };
     });
     if (!committed) {
-      console.log(`Not updating rating for ${username} because data was not committed.`);
+      console.error(`Not updating rating for ${username} because data was not committed.`);
       return { err: { message: 'Failed to update rating.' }, rating: null };
     }
     await userRef.set(rating);
     return { err: null, rating: snapshot.val() };
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return { err, rating: null };
   }
 }
@@ -74,7 +74,8 @@ async function updateUserRating(username, subject, catalogNumber, rating) {
 async function getCourseRatings(subject, catalogNumber) {
   try {
     const snapshot = await courseRatingsRef.child(`${subject}/${catalogNumber}/rating`).once('value');
-    return { err: null, rating: snapshot.val() };
+    const rating = snapshot.val() || { avgRating: 0, numRatings: 0 };
+    return { err: null, rating };
   } catch (err) {
     return { err, rating: null };
   }

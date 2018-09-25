@@ -1,6 +1,7 @@
 const CoursesRouter = require('express').Router();
 const courses = require('../core/courses');
 const courseClassesDB = require('../database/classes');
+const courseRatingsDB = require('../database/courseRatings');
 const requisitesDB = require('../database/requisites');
 
 // Get search results for query string and max number of results
@@ -40,6 +41,11 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
   const prereqs = (reqs != null) ? reqs.prereqs : {};
   const coreqs = (reqs != null) ? reqs.coreqs : [];
   const antireqs = (reqs != null) ? reqs.antireqs : [];
+  let rating = null;
+
+  ({ err, rating } = await courseRatingsDB.getCourseRatings(subject, catalogNumber));
+  if (err) res.status(400).send(err);
+
   const postreqs = (reqs != null) ? reqs.postreqs : {};
 
   res.json({
@@ -50,6 +56,7 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
     title,
     units,
     url,
+    rating,
     prereqs: prereqs || {},
     coreqs: coreqs || [],
     antireqs: antireqs || [],
