@@ -19,6 +19,7 @@ router.use('/email', require('./email'));
 router.use('/majors', require('./majors'));
 router.use('/parse', require('./parse'));
 router.use('/prof', require('./prof'));
+router.use('/ratings/course', require('./courseRatings'));
 router.use('/reqs', require('./reqs'));
 router.use('/scrape', require('./scrape'));
 router.use('/stats', require('./stats'));

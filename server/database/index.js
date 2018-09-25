@@ -13,6 +13,7 @@ admin.initializeApp({
 
 const classesRef = admin.database().ref('/classes/');
 const courseListRef = admin.database().ref('/courseList/');
+const courseRatingsRef = admin.database().ref('/courseRatings/');
 const coursesRef = admin.database().ref('/courses/');
 const emailsRef = admin.database().ref('/emails/');
 const facebookUsersRef = admin.database().ref('/facebookUsers/');
@@ -26,6 +27,7 @@ const profilePicBucket = admin.storage().bucket();
 module.exports = {
   classesRef,
   courseListRef,
+  courseRatingsRef,
   coursesRef,
   emailsRef,
   facebookUsersRef,

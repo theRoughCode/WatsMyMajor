@@ -1,7 +1,7 @@
 const CoursesRouter = require('express').Router();
 const courses = require('../core/courses');
-const courseClasses = require('../database/classes');
-const requisites = require('../database/requisites');
+const courseClassesDB = require('../database/classes');
+const requisitesDB = require('../database/requisites');
 
 // Get search results for query string and max number of results
 CoursesRouter.get('/query/:query/:num', async function(req, res) {
@@ -34,7 +34,7 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
 
   // Get course requisites
   let reqs = null;
-  ({ err, reqs } = await requisites.getRequisites(subject, catalogNumber));
+  ({ err, reqs } = await requisitesDB.getRequisites(subject, catalogNumber));
   if (err) res.status(400).send(err);
 
   const prereqs = (reqs != null) ? reqs.prereqs : {};
@@ -60,7 +60,7 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
 // Get classes for a course
 CoursesRouter.get('/classes/:term/:subject/:catalogNumber', async function(req, res) {
   const { subject, catalogNumber, term } = req.params;
-  const { err, classes } = await courseClasses.getClasses(subject.toUpperCase(), catalogNumber, term);
+  const { err, classes } = await courseClassesDB.getClasses(subject.toUpperCase(), catalogNumber, term);
   if (err) res.status(400).send(err);
   else res.json(classes);
 });
