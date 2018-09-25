@@ -16,10 +16,6 @@ const coursesForSearch = [];
  *                          *
  ****************************/
 
-function setCourses(courses) {
-  return coursesRef.set(courses);
-}
-
 function setCourseInfo(subject, catalogNumber, info) {
   return coursesRef.child(`${subject}/${catalogNumber}`).set(info);
 }
@@ -70,7 +66,6 @@ async function getCourseInfo(subject, catalogNumber) {
 }
 
 module.exports = {
-  setCourses,
   setCourseInfo,
   getCoursesForSearch,
   getCourseInfo,

@@ -223,6 +223,7 @@ class CourseViewContainer extends Component {
         title,
         units,
         url,
+        rating,
         prereqs,
         coreqs,
         antireqs,
@@ -231,11 +232,10 @@ class CourseViewContainer extends Component {
 
       // Update page title
       document.title = `${subject} ${catalogNumber} | ${title} | University of Waterloo - WatsMyMajor`;
-
       const course = {
         title,
         description,
-        rating: 2.1,
+        rating,
         url,
         notes,
         units,

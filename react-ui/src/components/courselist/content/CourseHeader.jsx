@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
-import StarRatings from 'react-star-ratings';
 import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
 import CheckIcon from 'material-ui/svg-icons/action/check-circle';
-import { lightGreen2, green, yellow, red } from '../../../constants/Colours';
+import CourseRatings from './CourseRatings';
+import { lightGreen2, green, red } from '../../../constants/Colours';
 
 const styles = {
   container: {
@@ -29,10 +29,6 @@ const styles = {
     fontWeight: 400,
     margin: 'auto 0',
     whiteSpace: 'nowrap',
-  },
-  stars: {
-    color: '#5c5f63',
-    margin: 'auto 20px',
   },
   rightContainer: {
     display: 'flex',
@@ -97,14 +93,11 @@ const CourseHeader = ({
       <div style={ styles.leftContainer }>
         <div className="course-code" style={ styles.courseCodeContainer }>
           <h1 style={ styles.courseCode }>{ subject } { catalogNumber }</h1>
-          <StarRatings
-            rating={ rating }
-            isSelectable={ false }
-            isAggregateRating
-            numOfStars={ 5 }
-            starRatedColor={ yellow }
-            starDimension="25px"
-            starSpacing="1px"
+          <CourseRatings
+            avgRating={ rating.avgRating }
+            numRatings={ rating.numRatings }
+            subject={ subject }
+            catalogNumber={ catalogNumber }
           />
         </div>
         <a href={ url } className="course-header-title">{ title }</a>
@@ -131,7 +124,7 @@ CourseHeader.propTypes = {
   subject: PropTypes.string.isRequired,
   catalogNumber: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
+  rating: PropTypes.object.isRequired,
   url: PropTypes.string.isRequired,
   terms: PropTypes.array.isRequired,
   addToCartHandler: PropTypes.func.isRequired,

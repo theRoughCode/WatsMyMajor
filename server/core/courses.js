@@ -45,11 +45,39 @@ async function searchCourses(query, limit) {
   }
 }
 
-function setCourses(courses) {
-  return coursesDB.setCourses(courses);
+/*
+Course Info: {
+  title,
+  units,
+  description,
+  crosslistings,
+  terms,
+  notes,
+  url,
+  academicLevel
 }
+*/
 
-function setCourseInfo(subject, catalogNumber, info) {
+function setCourseInfo(subject, catalogNumber, {
+  title,
+  units,
+  description,
+  crosslistings,
+  terms,
+  notes,
+  url,
+  academicLevel
+}) {
+  const info = {
+    title,
+    units,
+    description,
+    crosslistings,
+    terms,
+    notes,
+    url,
+    academicLevel,
+  };
   return coursesDB.setCourseInfo(subject, catalogNumber, info);
 }
 
@@ -59,7 +87,6 @@ function getCourseInfo(subject, catalogNumber) {
 
 module.exports = {
   searchCourses,
-  setCourses,
   setCourseInfo,
   getCourseInfo,
 };
