@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import BrowseCourseContainer from '../browse/BrowseCourseContainer';
 import { green, white } from '../../constants/Colours';
 
 const styles = {

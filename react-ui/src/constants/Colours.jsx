@@ -1,3 +1,4 @@
+export const transparent = 'rgba(0,0,0,0)';
 export const white = '#FFF';
 
 // Grey

@@ -4,29 +4,29 @@ import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
-import { darkGrey } from '../constants/Colours';
+import { darkGrey, white, transparent } from '../constants/Colours';
 
 const styles = {
-  container: {
-    backgroundColor: darkGrey,
+  container: (isWelcomeScreen) => ({
+    backgroundColor: (isWelcomeScreen) ? transparent : darkGrey,
     textAlign: 'left',
     position: 'fixed',
-  },
+  }),
   buttonStyle: {
     marginTop: 11,
     marginLeft: 20
   },
-  buttonLabel: {
-    color: 'white'
-  },
+  buttonLabel: (isWelcomeScreen) => ({
+    color: (isWelcomeScreen) ? darkGrey : white,
+  }),
   searchBar: {
     marginTop: '5px',
     width: '30%',
   },
-  titleLink: {
+  titleLink: (isWelcomeScreen) => ({
     textDecoration: 'none',
-    color: 'inherit',
-  },
+    color: (isWelcomeScreen) ? darkGrey : 'inherit',
+  }),
 };
 
 class AppBar extends Component {
@@ -53,12 +53,13 @@ class AppBar extends Component {
 
   render() {
     const { toggleSideBar, isLoggedIn } = this.props;
+    const isWelcomeScreen = (this.props.history.location.pathname === '/welcome');
     const button = (isLoggedIn)
       ? (
         <FlatButton
           label="Logout"
           onClick={ this.onLogout }
-          labelStyle={ styles.buttonLabel }
+          labelStyle={ styles.buttonLabel(false) }
           style={ styles.buttonStyle }
         />
       )
@@ -66,16 +67,18 @@ class AppBar extends Component {
         <FlatButton
           label="Login"
           onClick={ this.onLogin }
-          labelStyle={ styles.buttonLabel }
+          labelStyle={ styles.buttonLabel(isWelcomeScreen) }
           style={ styles.buttonStyle }
         />
       );
     return (
       <Bar
-        style={ styles.container }
+        style={ styles.container(isWelcomeScreen) }
         onLeftIconButtonClick={ toggleSideBar }
+        showMenuIconButton={ !isWelcomeScreen }
+        zDepth={ (isWelcomeScreen) ? 0 : 1 }
         title={
-          <Link to={ `/` } style={ styles.titleLink }>
+          <Link to={ `/` } style={ styles.titleLink(isWelcomeScreen) }>
             WatsMyMajor
           </Link>
         }
