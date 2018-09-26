@@ -1,6 +1,7 @@
 const StatsRouter = require('express').Router();
 const courses = require('../core/courses');
 const statsDB = require('../database/stats');
+const usersDB = require('../database/users');
 
 // Retrieves the top "limit" courses from the database
 StatsRouter.get('/course/popular/:limit', async function(req, res) {
@@ -72,6 +73,12 @@ StatsRouter.get('/course/ratings/:limit', async function(req, res) {
     console.error(err);
     res.status(404).send(err.message);
   } else res.json(popular);
+});
+
+// Get number of users
+StatsRouter.get('/users/count', async function(req, res) {
+  const num = await usersDB.getNumUsers();
+  res.json({ num });
 });
 
 module.exports = StatsRouter;

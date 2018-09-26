@@ -112,6 +112,11 @@ async function userExists(username) {
   return snapshot.exists();
 }
 
+async function getNumUsers() {
+  const snapshot = await usersRef.once('value');
+  return snapshot.numChildren();
+}
+
 
 module.exports = {
   setUser,
@@ -121,4 +126,5 @@ module.exports = {
   getUser,
   getAllUserCourses,
   userExists,
+  getNumUsers,
 };

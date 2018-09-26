@@ -183,7 +183,7 @@ async function updatePopularCourses() {
   }
 
   // Assignment without declaration
-  ({ err } = await statsDB.updateMostPopular(courseCount));
+  err = await statsDB.updateMostPopular(courseCount);
   if (err) {
     console.error(err);
     return { err, courseCount: null };
@@ -205,7 +205,7 @@ async function updateCourseRatings() {
   }
 
   // Assignment without declaration
-  ({ err } = await statsDB.updateRatings(courseRatings));
+  err = await statsDB.updateRatings(courseRatings);
   if (err) {
     console.error(err);
     return { err, courseRatings: null };

@@ -8,6 +8,10 @@ function setUser(username) {
   return usersDB.setUser(username);
 }
 
+function getNumUsers() {
+  return usersDB.getNumUsers();
+}
+
 function updateUser(username, user) {
   // Ensure that passwords aren't being set here (would be plaintext).
   // Should use updateUserSettings for passwords
@@ -90,6 +94,7 @@ async function setProfilePicture(username, url) {
 module.exports = {
   getUser,
   setUser,
+  getNumUsers,
   updateUser,
   setVerified,
   setCart,

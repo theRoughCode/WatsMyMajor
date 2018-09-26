@@ -19,9 +19,9 @@ async function updateMostPopular(courses) {
   try {
     statsRef.child('popular').set(courses);
   } catch (err) {
-    return { err };
+    return err;
   }
-  return { err: null };
+  return null;
 }
 
 // Update course ratings
@@ -29,9 +29,9 @@ async function updateRatings(ratings) {
   try {
     statsRef.child('courseRatings').set(ratings);
   } catch (err) {
-    return { err };
+    return err;
   }
-  return { err: null };
+  return null;
 }
 
 
