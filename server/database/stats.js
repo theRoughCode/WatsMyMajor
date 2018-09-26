@@ -24,6 +24,16 @@ async function updateMostPopular(courses) {
   return { err: null };
 }
 
+// Update course ratings
+async function updateRatings(ratings) {
+  try {
+    statsRef.child('courseRatings').set(ratings);
+  } catch (err) {
+    return { err };
+  }
+  return { err: null };
+}
+
 
 /****************************
  *													*
@@ -47,7 +57,24 @@ async function getMostPopular(limit) {
   }
 }
 
+// Get most rated courses
+async function getMostRated(limit) {
+  try {
+    const snapshot = await statsRef
+      .child('courseRatings')
+      .orderByChild('numRatings')
+      .limitToLast(limit)
+      .once('value');
+    const results = snapshot.val();
+    return { err: null, results };
+  } catch (err) {
+    return { err, results: [] };
+  }
+}
+
 module.exports = {
   updateMostPopular,
+  updateRatings,
   getMostPopular,
+  getMostRated,
 };

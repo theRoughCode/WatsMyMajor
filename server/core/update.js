@@ -1,14 +1,15 @@
 const asyncjs = require('async');
 const email = require('./email');
 const waterloo = require('./waterloo');
+const courses = require('./courses');
 const classScraper = require('./scrapers/classes');
-const classes = require('../database/classes');
-const courseList = require('../database/courseList');
-const courses = require('../core/courses');
-const requisites = require('../database/requisites');
-const stats = require('../database/stats');
-const users = require('../database/users');
-const watchlist = require('../database/watchlist');
+const classesDB = require('../database/classes');
+const courseListDB = require('../database/courseList');
+const courseRatingsDB = require('../database/courseRatings');
+const requisitesDB = require('../database/requisites');
+const statsDB = require('../database/stats');
+const usersDB = require('../database/users');
+const watchlistDB = require('../database/watchlist');
 
 /****************************
  *                          *
@@ -25,7 +26,7 @@ function updateCourseList() {
       if (err) return resolve(err);
 
       await Promise.all(data.map(async ({ subject, catalog_number }) => {
-        await courseList.setCourse(subject, catalog_number);
+        await courseListDB.setCourse(subject, catalog_number);
       }));
       resolve(null);
     });
@@ -96,13 +97,13 @@ function updateCourseRequisite(subject, catalogNumber) {
 
         try {
           // Store prereqs in database
-          await requisites.setPrereqs(subject, catalogNumber, prereqs);
+          await requisitesDB.setPrereqs(subject, catalogNumber, prereqs);
 
           // Store coreqs in database
-          await requisites.setCoreqs(subject, catalogNumber, coreqs);
+          await requisitesDB.setCoreqs(subject, catalogNumber, coreqs);
 
           // Store antireqs in database
-          await requisites.setAntireqs(subject, catalogNumber, antireqs);
+          await requisitesDB.setAntireqs(subject, catalogNumber, antireqs);
         } catch (err) {
           return resolve(err);
         }
@@ -128,7 +129,7 @@ function updateCourseRequisite(subject, catalogNumber) {
 // Get courses from courseList and updates all course requisites
 async function updateAllRequisites() {
   try {
-    const reqsSnapshot = await requisites.getRequisitesSnapshot();
+    const reqsSnapshot = await requisitesDB.getRequisitesSnapshot();
     const failedList = [];
     const reqs = reqsSnapshot.val();
 
@@ -175,18 +176,40 @@ async function updateAllRequisites() {
 
 // Updates database with count of all users courses
 async function updatePopularCourses() {
-  let { err, courseCount } = await users.getAllUserCourses();
+  let { err, courseCount } = await usersDB.getAllUserCourses();
   if (err) {
     console.error(err);
     return { err, courseCount: null };
   }
 
   // Assignment without declaration
-  ({ err } = await stats.updateMostPopular(courseCount));
+  ({ err } = await statsDB.updateMostPopular(courseCount));
   if (err) {
     console.error(err);
     return { err, courseCount: null };
   } else return { err: null, courseCount };
+}
+
+/****************************
+ *                          *
+ *        R A T I N G       *
+ *                          *
+ ****************************/
+
+// Updates database with count of all users courses
+async function updateCourseRatings() {
+  let { err, courseRatings } = await courseRatingsDB.getAllCourseRatings();
+  if (err) {
+    console.error(err);
+    return { err, courseRatings: null };
+  }
+
+  // Assignment without declaration
+  ({ err } = await statsDB.updateRatings(courseRatings));
+  if (err) {
+    console.error(err);
+    return { err, courseRatings: null };
+  } else return { err: null, courseRatings };
 }
 
 /****************************
@@ -201,7 +224,7 @@ async function updateClass(subject, catalogNumber, term) {
   if (err) return err;
 
   try {
-    await classes.setClasses(subject, catalogNumber, term, classInfo);
+    await classesDB.setClasses(subject, catalogNumber, term, classInfo);
     asyncjs.forEachOf(classInfo, (info, _, callback) => {
       info.subject = subject;
       info.catalogNumber = catalogNumber;
@@ -223,7 +246,7 @@ function updateAllClasses(term) {
   const failedList = [];
   try {
     return new Promise(async (resolve, reject) => {
-      const courses = await courseList.getCourseList();
+      const courses = await courseListDB.getCourseList();
       asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
         updateClass(subject, catalogNumber, term)
           .then(callback)
@@ -284,7 +307,7 @@ async function storePostreqs(choose, prereqs, postreq, prereq) {
     const { subject, catalogNumber } = prereq;
     const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
 
-    await requisites.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
+    await requisitesDB.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
   }
 }
 
@@ -299,7 +322,7 @@ async function updateWatchlist(term, classInfo) {
     enrollmentTotal,
   } = classInfo;
 
-  let { enrollment, err } = await watchlist.getEnrollment(term, classNumber);
+  let { enrollment, err } = await watchlistDB.getEnrollment(term, classNumber);
   if (err) return err;
 
   // If no change, return
@@ -313,13 +336,13 @@ async function updateWatchlist(term, classInfo) {
   }
 
   // Else, update enrollment results
-  await watchlist.setEnrollment(term, classNumber, { enrollmentCap, enrollmentTotal });
+  await watchlistDB.setEnrollment(term, classNumber, { enrollmentCap, enrollmentTotal });
 
   // Nothing to compare to
   if (enrollment == null) return;
 
   let watchers = null;
-  ({ watchers, err } = await watchlist.getWatchers(term, classNumber));
+  ({ watchers, err } = await watchlistDB.getWatchers(term, classNumber));
   if (err) return err;
   if (watchers == null || watchers.length === 0) return;
 
@@ -341,6 +364,7 @@ module.exports = {
   updateCourseRequisite,
   updateAllRequisites,
   updatePopularCourses,
+  updateCourseRatings,
   updateClass,
   updateAllClasses,
   updateLatestClasses,

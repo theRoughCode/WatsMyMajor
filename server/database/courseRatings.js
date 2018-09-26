@@ -81,7 +81,26 @@ async function getCourseRatings(subject, catalogNumber) {
   }
 }
 
+async function getAllCourseRatings() {
+  try {
+    const snapshot = await courseRatingsRef.once('value');
+    const courseRatings = {};
+    snapshot.forEach(subjectSnapshot => {
+      const subject = subjectSnapshot.key;
+      subjectSnapshot.forEach(courseSnapshot => {
+        const catalogNumber = courseSnapshot.key;
+        const rating = courseSnapshot.child('rating').val();
+        courseRatings[`${subject}-${catalogNumber}`] = rating;
+      });
+    });
+    return { err: null, courseRatings };
+  } catch (err) {
+    return { err, courseRatings: {} };
+  }
+}
+
 module.exports = {
   updateUserRating,
   getCourseRatings,
+  getAllCourseRatings,
 };

@@ -56,4 +56,18 @@ UpdateRouter.get('/classes/:term/:subject/:catalogNumber', async function(req, r
   else res.send({ success: true });
 });
 
+// Updates count of all users' courses
+UpdateRouter.get('/popular', async function(req, res) {
+  const { err, courseCount } = await update.updatePopularCourses();
+  if (err) return res.status(404).send(err.message);
+  res.json(courseCount);
+});
+
+// Updates ratings of courses
+UpdateRouter.get('/ratings', async function(req, res) {
+  const { err, courseRatings } = await update.updateCourseRatings();
+  if (err) return res.status(404).send(err.message);
+  res.json(courseRatings);
+});
+
 module.exports = UpdateRouter;

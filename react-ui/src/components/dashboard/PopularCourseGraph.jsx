@@ -10,14 +10,11 @@ const colours = [
   '#af2cc5',
 ];
 
-const formatPopular = (data) => {
-  const courses = Object.keys(data);
-  return courses.map((course, index) => ({
-    course: course.replace('-', ' '),
-    count: data[course],
-    colour: colours[index],
-  }));
-};
+const assignColours = (data) => data.map(({ subject, catalogNumber, count }, index) => ({
+  course: `${subject} ${catalogNumber}`,
+  count,
+  colour: colours[index]
+}));
 
 
 export default class PopularCourseGraph extends Component {
@@ -27,7 +24,7 @@ export default class PopularCourseGraph extends Component {
 
   async componentDidMount() {
     try {
-      const response = await fetch('/server/stats/retrieve/popular/5', {
+      const response = await fetch('/server/stats/course/popular/5', {
         headers: {
           "x-secret": process.env.REACT_APP_SERVER_SECRET
         }
@@ -37,7 +34,7 @@ export default class PopularCourseGraph extends Component {
         return;
       }
       const data = await response.json();
-      this.setState({ popular: formatPopular(data) });
+      this.setState({ popular: assignColours(data) });
     } catch (e) {
       console.error(e);
     }

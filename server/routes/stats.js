@@ -1,17 +1,9 @@
 const StatsRouter = require('express').Router();
 const courses = require('../core/courses');
-const update = require('../core/update');
-const stats = require('../database/stats');
-
-// Updates count of all users' courses
-StatsRouter.get('/update/popular', async function(req, res) {
-  const { err, courseCount } = await update.updatePopularCourses();
-  if (err) return res.status(404).send(err.message);
-  res.json(courseCount);
-});
+const statsDB = require('../database/stats');
 
 // Retrieves the top "limit" courses from the database
-StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
+StatsRouter.get('/course/popular/:limit', async function(req, res) {
   const limitStr = req.params.limit;
   const limit = parseInt(limitStr);
 
@@ -19,16 +11,25 @@ StatsRouter.get('/retrieve/popular/:limit', async function(req, res) {
     res.status(400).send('Limit provided is not an integer');
     return;
   }
-  const { err, results } = await stats.getMostPopular(limit);
+  const { err, results } = await statsDB.getMostPopular(limit);
+  const popular = Object.keys(results).map(courseStr => {
+    const [subject, catalogNumber] = courseStr.split("-");
+    const count = results[courseStr];
+    return {
+      subject,
+      catalogNumber,
+      count,
+    };
+  });
   if (err) {
     console.error(err);
     res.status(404).send(err.message);
-  } else res.json(results);
+  } else res.json(popular);
 });
 
 // Gets top 3 most popular courses from database and returns information
-StatsRouter.get('/courses/popular', async function(req, res) {
-  let { err, results } = await stats.getMostPopular(3);
+StatsRouter.get('/course/popular', async function(req, res) {
+  let { err, results } = await statsDB.getMostPopular(3);
   if (err) {
     console.error(err);
     res.status(404).send(err.message);
@@ -46,6 +47,31 @@ StatsRouter.get('/courses/popular', async function(req, res) {
     }));
     res.json(popularCourses);
   }
-})
+});
+
+// Retrieves the top "limit" courses from the database
+StatsRouter.get('/course/ratings/:limit', async function(req, res) {
+  const limitStr = req.params.limit;
+  const limit = parseInt(limitStr);
+
+  if (!Number.isInteger(limit)) {
+    res.status(400).send('Limit provided is not an integer');
+    return;
+  }
+  const { err, results } = await statsDB.getMostRated(limit);
+  const popular = Object.keys(results).map(courseStr => {
+    const [subject, catalogNumber] = courseStr.split("-");
+    const rating = results[courseStr];
+    return {
+      subject,
+      catalogNumber,
+      rating,
+    };
+  });
+  if (err) {
+    console.error(err);
+    res.status(404).send(err.message);
+  } else res.json(popular);
+});
 
 module.exports = StatsRouter;

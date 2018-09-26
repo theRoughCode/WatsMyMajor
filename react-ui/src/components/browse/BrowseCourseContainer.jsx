@@ -49,7 +49,7 @@ class BrowseCourseContainer extends Component {
   }
 
   fetchPopularCourses = async () => {
-    const response = await fetch('/server/stats/courses/popular', {
+    const response = await fetch('/server/stats/course/popular', {
       headers: {
         "x-secret": process.env.REACT_APP_SERVER_SECRET
       }

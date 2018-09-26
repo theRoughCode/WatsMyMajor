@@ -28,4 +28,11 @@ CourseRatingsRouter.get('/:subject/:catalogNumber', async function(req, res) {
   else res.json(rating);
 });
 
+// Retrieves ratings of all courses
+CourseRatingsRouter.get('/all', async function(req, res) {
+  const { err, courseRatings } = await courseRatingsDB.getAllCourseRatings();
+  if (err) res.status(400).send(err.message);
+  else res.json(courseRatings);
+});
+
 module.exports = CourseRatingsRouter;

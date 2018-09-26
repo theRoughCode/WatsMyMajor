@@ -103,7 +103,7 @@ async function getAllUserCourses() {
     });
     return { err: null, courseCount };
   } catch (err) {
-    return { err, courseCount: [] };
+    return { err, courseCount: {} };
   }
 }
 
