@@ -1,7 +1,8 @@
+// MISC
 export const transparent = 'rgba(0,0,0,0)';
 export const white = '#FFF';
 
-// Grey
+// GREY
 export const whiteGrey = '#F2F2F2'
 export const lightGrey = '#CCD4E0';
 export const grey = '#888E99';

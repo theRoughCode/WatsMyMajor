@@ -4,11 +4,11 @@ import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
-import { darkGrey, white, transparent } from '../constants/Colours';
+import { darkGrey, white } from '../constants/Colours';
 
 const styles = {
   container: (isWelcomeScreen) => ({
-    backgroundColor: (isWelcomeScreen) ? transparent : darkGrey,
+    backgroundColor: (isWelcomeScreen) ? white : darkGrey,
     textAlign: 'left',
     position: 'fixed',
   }),

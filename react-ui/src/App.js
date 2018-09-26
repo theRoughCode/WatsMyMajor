@@ -139,6 +139,9 @@ class App extends Component {
     case "schedule": // My schedule
       document.title = "My Schedule - WatsMyMajor";
       break;
+    case "welcome":
+      this.setState({ sideBarOpen: false });
+      // falls through
     default:
       document.title = "WatsMyMajor - University of Waterloo Course Planner";
     }
