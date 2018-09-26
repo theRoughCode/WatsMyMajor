@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../../images/logo.png';
 
 const styles = {
   margin: 'auto',
@@ -10,7 +11,7 @@ const styles = {
 
 const LoadingView = () => (
   <div className="loading course-view">
-    <img src={ `${process.env.PUBLIC_URL}/images/logo.png` } style={ styles } alt="logo" />
+    <img src={ logo } style={ styles } alt="logo" />
   </div>
 );
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import logo from '../../images/logo.png';
 
 const styles = {
   bigContainer: {
@@ -33,7 +34,7 @@ const styles = {
 const EmailSent = () => (
   <div style={ styles.bigContainer }>
     <div style={ styles.smallContainer }>
-      <img src="images/logo.png" alt="logo" style={ styles.logo } />
+      <img src={ logo } alt="logo" style={ styles.logo } />
       <span style={ styles.title }>Verification Email Sent!</span>
       <span style={ styles.text }>A verification email has been sent to your provided email.  Please use the link provided in the email to verify your account before you can use the app!</span>
       <span>Click <a href="/">here</a> to return to the login screen.</span>

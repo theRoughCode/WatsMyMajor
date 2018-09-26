@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import logo from '../../images/logo.png';
 
 const styles = {
   bigContainer: {
@@ -83,7 +84,7 @@ export default class UnwatchedClass extends Component {
       : (
         <div style={ styles.bigContainer }>
           <div style={ styles.smallContainer }>
-            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <img src={ logo } alt="logo" style={ styles.logo } />
             <span style={ styles.title }>Success!</span>
             <span style={ styles.subtitle }>{ `You have unwatched class ${classNum} (${subject} ${catalogNumber}).` }</span>
             <span>Click <a href="/">here</a> to return to the home screen.</span>

@@ -4,6 +4,7 @@ import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
+import logo from '../images/logo.png';
 import { darkGrey, white } from '../constants/Colours';
 
 const styles = {
@@ -86,7 +87,7 @@ class AppBar extends Component {
         zDepth={ (isWelcomeScreen) ? 0 : 1 }
         title={
           <Link to={ `/` } style={ styles.titleLink(isWelcomeScreen) }>
-            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <img src={ logo } alt="logo" style={ styles.logo } />
             <span>WatsMyMajor</span>
           </Link>
         }

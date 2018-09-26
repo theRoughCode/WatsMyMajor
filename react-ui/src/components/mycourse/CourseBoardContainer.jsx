@@ -9,6 +9,7 @@ import TermRow from './TermRow';
 import { DragTypes } from '../../constants/DragTypes';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart } from '../../utils/courses';
+import emptyBoardImage from '../../images/empty_board.png';
 import {
   reorderUserCourses,
   updateUserCourses,
@@ -366,7 +367,7 @@ class CourseBoardContainer extends Component {
       return (
         <div style={ styles.emptyContainer }>
           <div style={ styles.emptyInnerDiv }>
-            <img src="images/empty_board.png" alt="Empty Board" style={ styles.emptyImage } />
+            <img src={ emptyBoardImage } alt="Empty Board" style={ styles.emptyImage } />
             <div style={ styles.emptyTextDiv }>
               <span style={ styles.emptyTextTitle }>
                 Oops, looks like there's nothing here yet.

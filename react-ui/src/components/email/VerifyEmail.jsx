@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
+import logo from '../../images/logo.png';
 import { grey } from '../../constants/Colours';
 import { logoutUser } from '../../actions';
 
@@ -102,7 +103,7 @@ class VerifyEmail extends Component {
       )
       : (
         <div style={ styles.verifiedContainer }>
-          <img src="images/logo.png" alt="logo" style={ styles.logo } />
+          <img src={ logo } alt="logo" style={ styles.logo } />
           <span style={ styles.verifiedTitle }>Welcome, { this.state.username }!</span>
           <span style={ styles.verifiedSubtitle }>Please log in to your account to continue.</span>
           <div style={ styles.loadingContainer }>

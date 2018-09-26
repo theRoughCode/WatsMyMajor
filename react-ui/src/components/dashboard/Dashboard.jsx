@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
-import BrowseCourse from '../browse/BrowseCourseContainer';
 import PopularCourseGraph from './PopularCourseGraph';
 import UserCoursesGraph from './UserCoursesGraph';
 import Watchlist from './Watchlist';
@@ -47,7 +46,6 @@ const Dashboard = ({
       history={ history }
       onUnwatch={ (term, classNum) => onUnwatchClass(username, term, classNum) }
     />
-    <BrowseCourse />
   </div>
 );
 

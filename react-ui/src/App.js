@@ -20,6 +20,7 @@ import VerifyEmail from './components/email/VerifyEmail';
 import UnwatchedClass from './components/email/UnwatchedClass';
 import Settings from './components/settings/SettingsContainer';
 import Majors from './components/majors/MajorsContainer';
+import BrowseCourseView from './components/browse/BrowseCourseContainer';
 import MyCourseView from './components/mycourse/CourseBoardContainer';
 import MyScheduleView from './components/schedule/MyScheduleContainer';
 import CourseView from './components/courselist/CourseViewContainer';
@@ -204,6 +205,7 @@ class App extends Component {
             <Route exact path='/majors/:majorKey?' component={ Majors } />
             <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
             <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
+            <Route path='/courses/browse' component={ BrowseCourseView } />
             <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
           </Switch>
         </div>

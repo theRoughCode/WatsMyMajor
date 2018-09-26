@@ -12,6 +12,7 @@ import {
   validatePassword,
   validateConfirmPassword,
 } from '../../utils/validation';
+import logo from '../../images/logo.png';
 import { green, grey } from '../../constants/Colours';
 
 const styles = {
@@ -166,7 +167,7 @@ export default class Register extends Component {
       <div style={ styles.viewContainer }>
         <div style={ styles.container }>
           <div style={ styles.header }>
-            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <img src={ logo } alt="logo" style={ styles.logo } />
             <span style={ styles.title }>Hey there!</span>
             <span style={ styles.subtitle }>Sign up to begin organizing your courses.</span>
           </div>

@@ -8,6 +8,7 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
+import logo from '../../images/logo.png';
 import { setUser } from '../../actions';
 import { white, green, grey } from '../../constants/Colours';
 
@@ -211,7 +212,7 @@ class Login extends Component {
       <div style={ styles.viewContainer }>
         <div style={ styles.container }>
           <div style={ styles.header }>
-            <img src="images/logo.png" alt="logo" style={ styles.logo } />
+            <img src={ logo } alt="logo" style={ styles.logo } />
             <span style={ styles.title }>Welcome back!</span>
             <span style={ styles.subtitle }>Log in to see your courses.</span>
           </div>

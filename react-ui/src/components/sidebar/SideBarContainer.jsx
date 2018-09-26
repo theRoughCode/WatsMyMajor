@@ -8,6 +8,7 @@ import MenuItem from 'material-ui/MenuItem';
 import { List, ListItem } from 'material-ui/List';
 import DashboardIcon from 'material-ui/svg-icons/action/dashboard';
 import SchoolIcon from 'material-ui/svg-icons/social/school';
+import SearchIcon from 'material-ui/svg-icons/action/search';
 import MyCoursesIcon from 'material-ui/svg-icons/social/person';
 import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
@@ -45,6 +46,9 @@ const styles = {
     backgroundColor: (isSelected) ? green : 'inherit',
     color: (isSelected) ? white : lightGrey,
   }),
+  listTextItem: {
+    marginLeft: -10,
+  },
   github: {
     marginBottom: 20,
     display: 'flex',
@@ -65,7 +69,9 @@ const LinkItem = ({ primaryText, icon, path, onClick, isSelected }) => {
   const onItemClick = () => onClick(`/${path}`);
   return (
     <ListItem
-      primaryText={ text }
+      primaryText={
+        <span style={ styles.listTextItem }>{ text }</span>
+      }
       leftIcon={ icon }
       style={ styles.listItem(isSelected) }
       onClick={ onItemClick }
@@ -106,10 +112,17 @@ class SideBarContainer extends Component {
     });
   }
 
-  onNavClick = (to) => {
+  // Link is clicked.  If login is required and user is not logged in, fire
+  // a warning message.
+  onNavClick = (to, isLoginRequired = false) => {
     const { isLoggedIn, history } = this.props;
-    if (isLoggedIn) this.props.history.push(to);
+    if (isLoggedIn || !isLoginRequired) this.props.history.push(to);
     else fireLoginPrompt(history, to);
+  }
+
+  // Link requires user to be logged in
+  onLoginRequiredClick = (to) => {
+    this.onNavClick(to, true);
   }
 
   render() {
@@ -133,13 +146,20 @@ class SideBarContainer extends Component {
             path=""
             icon={ <DashboardIcon color={ white } /> }
             isSelected={ (pathname === "/") }
+            onClick={ this.onLoginRequiredClick }
+          />
+          <LinkItem
+            primaryText="Browse Courses"
+            path="courses/browse"
+            icon={ <SearchIcon color={ white } /> }
+            isSelected={ (pathname.startsWith("/courses")) }
             onClick={ this.onNavClick }
           />
           <LinkItem
             primaryText="View Majors"
             path="majors"
             icon={ <SchoolIcon color={ white } /> }
-            isSelected={ (pathname === "/majors") }
+            isSelected={ (pathname.startsWith("/majors")) }
             onClick={ this.onNavClick }
           />
           <LinkItem
@@ -147,14 +167,14 @@ class SideBarContainer extends Component {
             path="my-courses"
             icon={ <MyCoursesIcon color={ white } /> }
             isSelected={ (pathname === "/my-courses") }
-            onClick={ this.onNavClick }
+            onClick={ this.onLoginRequiredClick }
           />
           <LinkItem
             primaryText="My Schedule"
             path="schedule"
             icon={ <ScheduleIcon color={ white } /> }
             isSelected={ (pathname === "/schedule") }
-            onClick={ this.onNavClick }
+            onClick={ this.onLoginRequiredClick }
           />
         </List>
         <div style={ styles.github }>
