@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import { green, white } from '../../constants/Colours';
 
@@ -42,39 +43,80 @@ const styles = {
   },
   rightContainer: {
     width: '50%',
-  }
+  },
+  numUsersContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 20,
+  },
+  numUsersText: {
+    fontSize: 15,
+    fontWeight: 300,
+  },
 };
 
-const LaunchScreen = ({ history }) => {
-  const goToLogin = () => history.push('/login');
-  return (
-    <div style={ styles.container }>
-      <div style={ styles.innerContainer }>
-        <div style={ styles.leftContainer }>
-          <div style={ styles.infoContainer }>
-            <div style={ styles.title }>
-              Get the most out of your university career
-            </div>
-            <span style={ styles.subtitle }>
-              WatsMyMajor simplifies planning your courses and majors.
-            </span>
-            <div style={ styles.buttonContainer }>
-              <RaisedButton
-                label="Get Started"
-                backgroundColor={ green  }
-                style={ styles.loginButton }
-                labelStyle={ styles.loginText }
-                onClick={ goToLogin }
-                type="submit"
-              />
+const fetchNumUsers = async () => {
+  const response = await fetch('/server/stats/users/count', {
+    headers: {
+      "x-secret": process.env.REACT_APP_SERVER_SECRET
+    }
+  });
+  if (!response.ok) return;
+  const { num } = await response.json();
+  return num;
+};
+
+export default class LaunchScreen extends Component {
+  static propTypes = {
+    history: PropTypes.object.isRequired,
+  };
+
+  state = {
+    numUsers: 0,
+  };
+
+  async componentDidMount() {
+    const numUsers = await fetchNumUsers();
+    this.setState({ numUsers });
+  }
+
+  goToLogin = () => this.props.history.push('/login');
+
+  render() {
+    return (
+      <div style={ styles.container }>
+        <div style={ styles.innerContainer }>
+          <div style={ styles.leftContainer }>
+            <div style={ styles.infoContainer }>
+              <div style={ styles.title }>
+                Get the most out of your university career
+              </div>
+              <span style={ styles.subtitle }>
+                WatsMyMajor simplifies planning your courses and majors.
+              </span>
+              <div style={ styles.buttonContainer }>
+                <RaisedButton
+                  label="Get Started"
+                  backgroundColor={ green  }
+                  style={ styles.loginButton }
+                  labelStyle={ styles.loginText }
+                  onClick={ this.goToLogin }
+                  type="submit"
+                />
+              </div>
             </div>
           </div>
+          <div style={ styles.rightContainer }>
+          </div>
         </div>
-        <div style={ styles.rightContainer }>
+        <div style={ styles.numUsersContainer }>
+          { this.state.numUsers > 0 && (
+            <span style={ styles.numUsersText }>
+              { `${this.state.numUsers} total users` }
+            </span>
+          ) }
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
-
-export default LaunchScreen;
