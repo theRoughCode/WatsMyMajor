@@ -10,10 +10,16 @@ const styles = {
     width: 250,
     margin: 20,
   },
+  innerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
+  },
   content: {
     width: '100%',
     height: 'auto',
-    flexGrow: 1,
+    flex: 1,
   },
   header: {
     width: '100%',
@@ -43,14 +49,18 @@ const CourseCard = ({
   subject,
   catalogNumber,
   description,
+  isLoggedIn,
   taken,
   inCart,
   addToCart,
 }) => {
   const onAddToCart = () => addToCart(subject, catalogNumber);
   return (
-    <Card className="course-card" style={ styles.container }>
-      <div style={ styles.content }>
+    <Card
+      style={ styles.container }
+      containerStyle={ styles.innerContainer }
+    >
+      <div className="course-card" style={ styles.content }>
         <div style={ styles.header }>
           <CardHeader
             title={ `${subject} ${catalogNumber}` }
@@ -72,7 +82,7 @@ const CourseCard = ({
         </Link>
         <FlatButton
           label="Quick add"
-          disabled={ taken || inCart }
+          disabled={ !isLoggedIn || taken || inCart }
           onClick={ onAddToCart }
         />
       </CardActions>
@@ -85,6 +95,7 @@ CourseCard.propTypes = {
   subject: PropTypes.string.isRequired,
   catalogNumber: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
   taken: PropTypes.bool.isRequired,
   inCart: PropTypes.bool.isRequired,
   addToCart: PropTypes.func.isRequired,

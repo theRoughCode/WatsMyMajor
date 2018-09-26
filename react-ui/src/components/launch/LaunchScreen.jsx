@@ -106,8 +106,7 @@ export default class LaunchScreen extends Component {
               </div>
             </div>
           </div>
-          <div style={ styles.rightContainer }>
-          </div>
+          <div style={ styles.rightContainer } />
         </div>
         <div style={ styles.numUsersContainer }>
           { this.state.numUsers > 0 && (

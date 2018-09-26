@@ -28,9 +28,9 @@ StatsRouter.get('/course/popular/:limit', async function(req, res) {
   } else res.json(popular);
 });
 
-// Gets top 3 most popular courses from database and returns information
+// Gets top 8 most popular courses from database and returns information
 StatsRouter.get('/course/popular', async function(req, res) {
-  let { err, results } = await statsDB.getMostPopular(3);
+  let { err, results } = await statsDB.getMostPopular(8);
   if (err) {
     console.error(err);
     res.status(404).send(err.message);
@@ -73,6 +73,28 @@ StatsRouter.get('/course/ratings/:limit', async function(req, res) {
     console.error(err);
     res.status(404).send(err.message);
   } else res.json(popular);
+});
+
+// Gets top 8 most rated courses from database and returns information
+StatsRouter.get('/course/ratings', async function(req, res) {
+  let { err, results } = await statsDB.getMostRated(8);
+  if (err) {
+    console.error(err);
+    res.status(404).send(err.message);
+  } else {
+    const ratedCourses = await Promise.all(Object.keys(results).map(async (courseStr) => {
+      const [subject, catalogNumber] = courseStr.split("-");
+      let course = null;
+      ({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
+      if (err) {
+        console.error(err);
+        res.status(404).send(err.message);
+      }
+      const { title, description } = course;
+      return { subject, catalogNumber, title, description };
+    }));
+    res.json(ratedCourses);
+  }
 });
 
 // Get number of users
