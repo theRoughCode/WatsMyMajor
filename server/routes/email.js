@@ -35,12 +35,6 @@ EmailRouter.post('/send/:to', async function(req, res) {
   res.send(result);
 });
 
-// Send an unwatch email (testing purposes)
-EmailRouter.get('/send/unwatch', async function(req, res) {
-  await emails.sendClassUpdateEmail(1189, 5694, 'MATH', '137', 1, 'testtest');
-  res.send('success');
-});
-
 // Create an email object in table
 EmailRouter.post('/create', async function(req, res) {
   let { username, email } = req.body;

@@ -325,7 +325,11 @@ async function updateWatchlist(term, classInfo) {
 
   // Notify watchers if there are spaces
   const openings = enrollmentCap - enrollmentTotal;
-  if (openings > 0) email.sendClassUpdateEmail(term, classNumber, subject.toUpperCase(), catalogNumber, openings, 'theroughcode');
+  if (openings > 0) {
+    watchers.forEach(username => {
+      email.sendClassUpdateEmail(term, classNumber, subject.toUpperCase(), catalogNumber, openings, username);
+    });
+  }
   return;
 }
 
