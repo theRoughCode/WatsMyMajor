@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
-import CalendarIcon from '../../images/calendar_icon.png'
-import MortarBoardIcon from '../../images/mortar_board_icon.png'
-import SearchIcon from '../../images/search_icon.png'
-import WatchingIcon from '../../images/watching_icon.png'
+import IconButton from 'material-ui/IconButton';
+import ReactTooltip from 'react-tooltip';
+import WatermanImage from '../../images/waterman.png';
+import CalendarIcon from '../../images/calendar_icon.png';
+import MortarBoardIcon from '../../images/mortar_board_icon.png';
+import SearchIcon from '../../images/search_icon.png';
+import WatchingIcon from '../../images/watching_icon.png';
 import { green, white, darkGrey } from '../../constants/Colours';
 
 const styles = {
@@ -17,7 +20,7 @@ const styles = {
   innerContainer: {
     display: 'flex',
     margin: 'auto',
-    width: '90%',
+    width: '80%',
     height: 'fit-content',
   },
   leftContainer: {
@@ -33,13 +36,17 @@ const styles = {
   title: {
     fontSize: 30,
     fontWeight: 350,
+    margin: 'auto',
     marginBottom: 15,
   },
   subtitle: {
     fontSize: 15,
     fontWeight: 300,
+    margin: 'auto',
   },
   buttonContainer: {
+    margin: 'auto',
+    marginTop: 10,
   },
   loginButton: {
     marginTop: 20,
@@ -49,33 +56,40 @@ const styles = {
   },
   rightContainer: {
     display: 'flex',
+    flexDirection: 'row-reverse',
     width: '50%',
   },
   rightInnerContainer: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexDirection: 'row-reverse',
     margin: 'auto',
+    width: '80%',
   },
   iconRow: {
     display: 'flex',
     margin: '10px auto',
+    marginBottom: 20,
   },
   iconContainer: {
     display: 'flex',
     flexDirection: 'column',
     width: 'fit-content',
     height: 'fit-content',
-    margin: 20,
+    marginRight: 30,
   },
   iconButton: {
-    width: 120,
-    height: 120,
+    width: 90,
+    height: 90,
+    margin: 'auto',
   },
   iconText: {
-    fontSize: 20,
+    fontSize: 13,
     fontWeight: 380,
     color: darkGrey,
     marginTop: 3,
+  },
+  waterman: {
+    height: 500,
   },
   numUsersContainer: {
     position: 'absolute',
@@ -101,10 +115,12 @@ const fetchNumUsers = async () => {
 
 const LaunchIcon = ({ url, text, icon, alt }) => (
   <div style={ styles.iconContainer }>
-    <a href={ url }>
+    <ReactTooltip id={ text } effect='solid'>
+      <span>{ text }</span>
+    </ReactTooltip>
+    <a data-tip data-for={ text } href={ url } style={{ display: 'flex' }}>
       <img src={ icon } alt={ alt } style={ styles.iconButton } />
     </a>
-    <span style={ styles.iconText }>{ text }</span>
   </div>
 );
 
@@ -137,6 +153,32 @@ export default class LaunchScreen extends Component {
         <div style={ styles.innerContainer }>
           <div style={ styles.leftContainer }>
             <div style={ styles.infoContainer }>
+              <div style={ styles.iconRow }>
+                <LaunchIcon
+                  url="../schedule"
+                  text="Schedule Courses"
+                  icon={ CalendarIcon }
+                  alt="Schedule"
+                />
+                <LaunchIcon
+                  url="../majors"
+                  text="Track Majors"
+                  icon={ MortarBoardIcon }
+                  alt="Majors"
+                />
+                <LaunchIcon
+                  url="../courses/browse"
+                  text="Browse Courses"
+                  icon={ SearchIcon }
+                  alt="Browse"
+                />
+                <LaunchIcon
+                  url="../courses/browse"
+                  text="Watch Classes"
+                  icon={ WatchingIcon }
+                  alt="Watch Classes"
+                />
+              </div>
               <div style={ styles.title }>
                 Get the most out of your university career
               </div>
@@ -157,34 +199,7 @@ export default class LaunchScreen extends Component {
           </div>
           <div style={ styles.rightContainer }>
             <div style={ styles.rightInnerContainer }>
-              <div style={ styles.iconRow }>
-                <LaunchIcon
-                  url="../schedule"
-                  text="Schedule Courses"
-                  icon={ CalendarIcon }
-                  alt="Schedule"
-                />
-                <LaunchIcon
-                  url="../majors"
-                  text="Track Majors"
-                  icon={ MortarBoardIcon }
-                  alt="Majors"
-                />
-              </div>
-              <div style={ styles.iconRow }>
-                <LaunchIcon
-                  url="../courses/browse"
-                  text="Browse Courses"
-                  icon={ SearchIcon }
-                  alt="Browse"
-                />
-                <LaunchIcon
-                  url="../courses/browse"
-                  text="Watch Classes"
-                  icon={ WatchingIcon }
-                  alt="Watch Classes"
-                />
-              </div>
+              <img src={ WatermanImage } alt="waterman" style={ styles.waterman } />
             </div>
           </div>
         </div>
