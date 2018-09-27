@@ -102,12 +102,16 @@ const CourseContent = ({
           }
         </div>
         <div style={ styles.leftContainer }>
-          <Link to={ `/courses/${subject}/${catalogNumber}/tree/prereqs` }>
-            <RaisedButton
-              label="View Requisites Tree"
-              style={ styles.treeButton }
-            />
-          </Link>
+          {
+            Object.keys(prereqs).length > 0 && (
+              <Link to={ `/courses/${subject}/${catalogNumber}/tree/prereqs` }>
+                <RaisedButton
+                  label="View Requisites Tree"
+                  style={ styles.treeButton }
+                />
+              </Link>
+            )
+          }
           <CourseRequisites
             antireqs={ antireqs }
             coreqs={ coreqs }
