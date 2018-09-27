@@ -5,6 +5,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const router = require('./router');
+const scheduler = require('./core/scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -8,7 +8,7 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import ClassRow from './ClassRow';
-import { darkBlue } from '../../../constants/Colours';
+import { purple } from '../../../constants/Colours';
 
 
 const styles = {
@@ -36,7 +36,7 @@ const styles = {
     fontSize: '15px',
     fontWeight: '500',
     textAlign: 'center',
-    backgroundColor: darkBlue,
+    backgroundColor: purple,
     color: 'white'
   },
 };

@@ -1,3 +1,11 @@
+// https://coolors.co/2c2c38-6045ff-ffd54f-119da4-19647e
+// SCHEME
+export const gunMetal = '#2c2c38';
+export const purple = '#6045FF';
+export const mustard = '#FFC857';
+export const blueGreen = '#119DA4';
+export const blueSapphire = '#19647E';
+
 // MISC
 export const transparent = 'rgba(0,0,0,0)';
 export const white = '#FFF';
@@ -30,4 +38,4 @@ export const darkGreen = '#045D56';
 export const yellow = '#FFD54F';
 
 // PURPLE
-export const purple = '#6045FF';
+export const lightPurple = '#9280ff';

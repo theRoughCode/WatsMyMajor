@@ -179,7 +179,7 @@ export default class LaunchScreen extends Component {
                 />
               </div>
               <div style={ styles.title }>
-                Get the most out of your university career
+                Warriors, get the most out of your university career!
               </div>
               <span style={ styles.subtitle }>
                 WatsMyMajor simplifies planning your courses and majors.

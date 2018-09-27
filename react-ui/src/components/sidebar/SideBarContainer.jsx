@@ -15,7 +15,7 @@ import Avatar from './Avatar';
 import GithubIcon from '../tools/GithubIcon';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
 import {
-  darkBlue,
+  gunMetal,
   lightGrey,
   green,
   white
@@ -28,13 +28,13 @@ const styles = {
     textAlign: 'left',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: darkBlue,
+    backgroundColor: gunMetal,
   },
   avatarMenuItem: (isLoggedIn) =>( {
     marginTop: (isLoggedIn) ? 60 : 0,
     paddingBottom: (isLoggedIn) ? 5 : 0,
     paddingTop: '20px',
-    backgroundColor: darkBlue,
+    backgroundColor: gunMetal,
   }),
   divider: {
     width: '80%',

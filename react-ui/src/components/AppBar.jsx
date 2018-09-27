@@ -5,11 +5,11 @@ import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
 import logo from '../images/logo.png';
-import { darkGrey, white, purple } from '../constants/Colours';
+import { darkGrey, white, blueGreen } from '../constants/Colours';
 
 const styles = {
   container: (isWelcomeScreen) => ({
-    backgroundColor: (isWelcomeScreen) ? white : purple,
+    backgroundColor: (isWelcomeScreen) ? white : blueGreen,
     textAlign: 'left',
     position: 'fixed',
   }),

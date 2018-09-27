@@ -6,7 +6,7 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import { hasTakenCourse } from '../../../utils/courses';
 import Prereqs from './Prereqs';
-import { green, yellow, darkBlue } from '../../../constants/Colours';
+import { green, mustard, purple } from '../../../constants/Colours';
 
 const styles = {
   container: {
@@ -16,10 +16,10 @@ const styles = {
     height: '90%',
   },
   tabHeader: {
-    backgroundColor: darkBlue,
+    backgroundColor: purple,
   },
   bar: {
-    backgroundColor: yellow,
+    backgroundColor: mustard,
   },
   headline: {
     fontSize: 13,

@@ -17,8 +17,8 @@ import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from '../../constants/DragTypes';
 import {
-  darkBlue,
-  darkBlueHighlight,
+  purple,
+  lightPurple,
   lightGreen
 } from '../../constants/Colours';
 
@@ -37,7 +37,7 @@ const styles = {
   },
   header: (isDragging) => ({
     padding: '5px 0',
-    backgroundColor: isDragging ? darkBlueHighlight : darkBlue,
+    backgroundColor: isDragging ? lightPurple : purple,
     color: 'white',
     fontSize: 18,
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
