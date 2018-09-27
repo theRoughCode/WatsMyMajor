@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
-import { green, white } from '../../constants/Colours';
+import CalendarIcon from '../../images/calendar_icon.png'
+import MortarBoardIcon from '../../images/mortar_board_icon.png'
+import SearchIcon from '../../images/search_icon.png'
+import WatchingIcon from '../../images/watching_icon.png'
+import { green, white, darkGrey } from '../../constants/Colours';
 
 const styles = {
   container: {
@@ -18,6 +22,8 @@ const styles = {
   },
   leftContainer: {
     width: '50%',
+    display: 'flex',
+    alignItems: 'center',
   },
   infoContainer: {
     display: 'flex',
@@ -42,7 +48,34 @@ const styles = {
     color: white,
   },
   rightContainer: {
+    display: 'flex',
     width: '50%',
+  },
+  rightInnerContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    margin: 'auto',
+  },
+  iconRow: {
+    display: 'flex',
+    margin: '10px auto',
+  },
+  iconContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: 'fit-content',
+    height: 'fit-content',
+    margin: 20,
+  },
+  iconButton: {
+    width: 120,
+    height: 120,
+  },
+  iconText: {
+    fontSize: 20,
+    fontWeight: 380,
+    color: darkGrey,
+    marginTop: 3,
   },
   numUsersContainer: {
     position: 'absolute',
@@ -64,6 +97,22 @@ const fetchNumUsers = async () => {
   if (!response.ok) return;
   const { num } = await response.json();
   return num;
+};
+
+const LaunchIcon = ({ url, text, icon, alt }) => (
+  <div style={ styles.iconContainer }>
+    <a href={ url }>
+      <img src={ icon } alt={ alt } style={ styles.iconButton } />
+    </a>
+    <span style={ styles.iconText }>{ text }</span>
+  </div>
+);
+
+LaunchIcon.propTypes = {
+  url: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
 };
 
 export default class LaunchScreen extends Component {
@@ -106,7 +155,38 @@ export default class LaunchScreen extends Component {
               </div>
             </div>
           </div>
-          <div style={ styles.rightContainer } />
+          <div style={ styles.rightContainer }>
+            <div style={ styles.rightInnerContainer }>
+              <div style={ styles.iconRow }>
+                <LaunchIcon
+                  url="../schedule"
+                  text="Schedule Courses"
+                  icon={ CalendarIcon }
+                  alt="Schedule"
+                />
+                <LaunchIcon
+                  url="../majors"
+                  text="Track Majors"
+                  icon={ MortarBoardIcon }
+                  alt="Majors"
+                />
+              </div>
+              <div style={ styles.iconRow }>
+                <LaunchIcon
+                  url="../courses/browse"
+                  text="Browse Courses"
+                  icon={ SearchIcon }
+                  alt="Browse"
+                />
+                <LaunchIcon
+                  url="../courses/browse"
+                  text="Watch Classes"
+                  icon={ WatchingIcon }
+                  alt="Watch Classes"
+                />
+              </div>
+            </div>
+          </div>
         </div>
         <div style={ styles.numUsersContainer }>
           { this.state.numUsers > 0 && (
