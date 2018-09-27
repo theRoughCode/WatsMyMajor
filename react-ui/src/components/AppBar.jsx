@@ -5,11 +5,11 @@ import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
 import logo from '../images/logo.png';
-import { darkGrey, white } from '../constants/Colours';
+import { darkGrey, white, purple } from '../constants/Colours';
 
 const styles = {
   container: (isWelcomeScreen) => ({
-    backgroundColor: (isWelcomeScreen) ? white : darkGrey,
+    backgroundColor: (isWelcomeScreen) ? white : purple,
     textAlign: 'left',
     position: 'fixed',
   }),
@@ -24,9 +24,11 @@ const styles = {
     marginTop: '5px',
     width: '30%',
   },
-  titleLink: (isWelcomeScreen) => ({
+  titleContainer: (isWelcomeScreen) => ({
+    color: (isWelcomeScreen) ? darkGrey : white,
+    cursor: 'pointer',
+    fontWeight: 400,
     textDecoration: 'none',
-    color: (isWelcomeScreen) ? darkGrey : 'inherit',
   }),
   logo: {
     width: 35,
@@ -86,7 +88,7 @@ class AppBar extends Component {
         showMenuIconButton={ !isWelcomeScreen }
         zDepth={ (isWelcomeScreen) ? 0 : 1 }
         title={
-          <Link to={ `/` } style={ styles.titleLink(isWelcomeScreen) }>
+          <Link to='/' style={ styles.titleContainer(isWelcomeScreen) }>
             <img src={ logo } alt="logo" style={ styles.logo } />
             <span>WatsMyMajor</span>
           </Link>

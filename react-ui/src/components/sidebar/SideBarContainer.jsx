@@ -30,12 +30,12 @@ const styles = {
     flexDirection: 'column',
     backgroundColor: darkBlue,
   },
-  avatarMenuItem: {
-    marginTop: '60px',
+  avatarMenuItem: (isLoggedIn) =>( {
+    marginTop: (isLoggedIn) ? 60 : 0,
+    paddingBottom: (isLoggedIn) ? 5 : 0,
     paddingTop: '20px',
-    paddingBottom: '5px',
     backgroundColor: darkBlue,
-  },
+  }),
   divider: {
     width: '80%',
     height: 1.5,
@@ -133,7 +133,7 @@ class SideBarContainer extends Component {
       <Drawer open={ open } width={ 200 } containerStyle={ styles.drawer }>
         <MenuItem
           className="avatar-menu"
-          style={ styles.avatarMenuItem }
+          style={ styles.avatarMenuItem(isLoggedIn) }
           onClick={ () => history.push('/settings') }
           disabled={ !isLoggedIn }
         >

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
 import ReactTooltip from 'react-tooltip';
 import WatermanImage from '../../images/waterman.png';
 import CalendarIcon from '../../images/calendar_icon.png';

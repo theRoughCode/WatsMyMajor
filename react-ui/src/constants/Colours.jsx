@@ -28,3 +28,6 @@ export const darkGreen = '#045D56';
 
 // YELLOW
 export const yellow = '#FFD54F';
+
+// PURPLE
+export const purple = '#6045FF';
