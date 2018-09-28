@@ -33,6 +33,7 @@ export const green = '#1EB980';
 export const green2 = '#107f0c';
 export const green3 = '#1acead';
 export const darkGreen = '#045D56';
+export const blueGreenHighlight = '#5aced5';
 
 // YELLOW
 export const yellow = '#FFD54F';

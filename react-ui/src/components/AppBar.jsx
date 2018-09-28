@@ -5,7 +5,7 @@ import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
 import logo from '../images/logo.png';
-import { darkGrey, white, blueGreen } from '../constants/Colours';
+import { darkGrey, white, blueGreen, blueGreenHighlight } from '../constants/Colours';
 
 const styles = {
   container: (isWelcomeScreen) => ({
@@ -64,12 +64,14 @@ class AppBar extends Component {
   render() {
     const { toggleSideBar, isLoggedIn } = this.props;
     const isWelcomeScreen = (this.props.history.location.pathname === '/welcome');
+    const hoverColor = (isWelcomeScreen) ? 'rgba(230, 230, 230, 0.8)' : blueGreenHighlight;
     const button = (isLoggedIn)
       ? (
         <FlatButton
           label="Logout"
           onClick={ this.onLogout }
           labelStyle={ styles.buttonLabel(false) }
+          hoverColor={ blueGreenHighlight }
           style={ styles.buttonStyle }
         />
       )
@@ -78,6 +80,7 @@ class AppBar extends Component {
           label="Login"
           onClick={ this.onLogin }
           labelStyle={ styles.buttonLabel(isWelcomeScreen) }
+          hoverColor={ hoverColor }
           style={ styles.buttonStyle }
         />
       );
