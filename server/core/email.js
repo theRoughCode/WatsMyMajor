@@ -68,7 +68,7 @@ async function sendVerificationEmail(email, username) {
       }
       .button--blue {
         background-color: #414EF9;
-        color: '#ffffff',
+        color: #ffffff;
       }
     </style>
     <h1>Verify your email address</h1>
@@ -133,7 +133,7 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
       }
       .button--blue {
         background-color: #414EF9;
-        color: '#ffffff',
+        color: #ffffff;
       }
     </style>
     <h2>Hey ${name}, there has been an opening for class ${classNum}!</h2>
