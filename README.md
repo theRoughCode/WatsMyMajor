@@ -1,4 +1,4 @@
-# WatsMyMajor <img src="https://raw.githubusercontent.com/theRoughCode/WatsMyMajor/master/react-ui/public/images/logo.png" alt="logo" width="100">
+# WatsMyMajor <img src="https://raw.githubusercontent.com/theRoughCode/WatsMyMajor/master/react-ui/src/images/logo.png" alt="logo" width="100">
 This project was inspired when I was considering doing a double major in Mathematical Physics and Computer Science at the University of Waterloo.  To plan it out, I had to create a giant spreadsheet in Google Sheets and see if I could fulfill the requirements for both majors while still graduating on time.  Here's a screenshot of a part of it:
 <p align="center">
   <img src="https://user-images.githubusercontent.com/19257435/42981890-7a2312c4-8b93-11e8-9896-ed00712e4ee7.png" alt="logo" width="750" height="auto">
