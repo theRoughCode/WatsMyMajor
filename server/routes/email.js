@@ -23,7 +23,7 @@ EmailRouter.get('/verify/unwatch', async function(req, res) {
 EmailRouter.get('/user/:username/:email', async function(req, res) {
   const username = req.params.username;
   const userEmail = req.params.email;
-  const result = await emails.sendClassUpdateEmail(1189, 1, 'MATH', 239, 1, username);
+  const result = await emails.sendVerificationEmail(userEmail, username);
   res.json(result);
 });
 
