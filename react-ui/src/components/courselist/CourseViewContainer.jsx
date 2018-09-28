@@ -306,7 +306,7 @@ class CourseViewContainer extends Component {
   }
 
   render() {
-    const {
+    let {
       subject,
       catalogNumber,
       course,
@@ -321,6 +321,11 @@ class CourseViewContainer extends Component {
       courseLoading,
       error
     } = this.state;
+    if (!this.props.isLoggedIn) {
+      taken = false;
+      inCart = false;
+      eligible = false;
+    }
 
     const renderedCourseView = (
       <div style={ styles.courseView }>
