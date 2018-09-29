@@ -117,6 +117,11 @@ async function getNumUsers() {
   return snapshot.numChildren();
 }
 
+async function getUnverifiedUsers() {
+  const snapshot = await usersRef.orderByChild('verified').equalTo(false).once('value');
+  return snapshot.val();
+}
+
 
 module.exports = {
   setUser,
@@ -127,4 +132,5 @@ module.exports = {
   getAllUserCourses,
   userExists,
   getNumUsers,
+  getUnverifiedUsers,
 };

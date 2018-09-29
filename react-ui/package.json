@@ -20,6 +20,7 @@
     "react-facebook-login": "^4.0.1",
     "react-fontawesome": "^1.6.1",
     "react-redux": "^5.0.7",
+    "react-responsive": "^5.0.0",
     "react-router-dom": "^4.2.2",
     "react-star-ratings": "^2.2.0",
     "react-swipeable-views": "^0.12.13",

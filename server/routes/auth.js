@@ -92,4 +92,9 @@ AuthRouter.get('/delete/:username', async function(req, res) {
   }
 });
 
+AuthRouter.get('/unverified', async function(req, res) {
+  const usersList = await users.getUnverifiedUsers();
+  res.json(usersList);
+});
+
 module.exports = AuthRouter;

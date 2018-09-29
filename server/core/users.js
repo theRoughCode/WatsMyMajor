@@ -12,6 +12,10 @@ function getNumUsers() {
   return usersDB.getNumUsers();
 }
 
+function getUnverifiedUsers() {
+  return usersDB.getUnverifiedUsers();
+}
+
 function updateUser(username, user) {
   // Ensure that passwords aren't being set here (would be plaintext).
   // Should use updateUserSettings for passwords
@@ -95,6 +99,7 @@ module.exports = {
   getUser,
   setUser,
   getNumUsers,
+  getUnverifiedUsers,
   updateUser,
   setVerified,
   setCart,
