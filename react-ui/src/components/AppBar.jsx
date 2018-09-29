@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
@@ -22,7 +23,7 @@ const styles = {
   }),
   searchBar: {
     marginTop: '5px',
-    width: '30%',
+    width: 400,
   },
   titleContainer: (isWelcomeScreen) => ({
     color: (isWelcomeScreen) ? darkGrey : white,
@@ -36,6 +37,19 @@ const styles = {
     margin: 'auto 7px',
     marginRight: 10,
     verticalAlign: 'text-bottom',
+  },
+};
+
+const mobileStyles = {
+  titleContainer: (isWelcomeScreen) => ({
+    cursor: 'pointer',
+    width: 55,
+    flex: 'none',
+    marginRight: 24,
+  }),
+  searchBar: {
+    marginTop: '5px',
+    flex: 1,
   },
 };
 
@@ -85,21 +99,44 @@ class AppBar extends Component {
         />
       );
     return (
-      <Bar
-        style={ styles.container(isWelcomeScreen) }
-        onLeftIconButtonClick={ toggleSideBar }
-        showMenuIconButton={ !isWelcomeScreen }
-        zDepth={ (isWelcomeScreen) ? 0 : 1 }
-        title={
-          <Link to='/' style={ styles.titleContainer(isWelcomeScreen) }>
-            <img src={ logo } alt="logo" style={ styles.logo } />
-            <span>WatsMyMajor</span>
-          </Link>
+      <MediaQuery minDeviceWidth={ 768 }>
+        { matches => (matches)
+          ? (
+            <Bar
+              style={ styles.container(isWelcomeScreen) }
+              onLeftIconButtonClick={ toggleSideBar }
+              showMenuIconButton={ !isWelcomeScreen }
+              zDepth={ (isWelcomeScreen) ? 0 : 1 }
+              title={
+                <Link to='/' style={ styles.titleContainer(isWelcomeScreen) }>
+                  <img src={ logo } alt="logo" style={ styles.logo } />
+                  <span>WatsMyMajor</span>
+                </Link>
+              }
+            >
+              <SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
+              { button }
+            </Bar>
+          )
+          : (
+            <Bar
+              style={ styles.container(isWelcomeScreen) }
+              titleStyle={ mobileStyles.titleContainer(isWelcomeScreen) }
+              onLeftIconButtonClick={ toggleSideBar }
+              showMenuIconButton={ !isWelcomeScreen }
+              zDepth={ (isWelcomeScreen) ? 0 : 1 }
+              title={
+                <a href="/">
+                  <img src={ logo } alt="logo" style={ styles.logo } />
+                </a>
+              }
+            >
+              <SearchBar onResult={ this.onSearchResult } style={ mobileStyles.searchBar } />
+              { button }
+            </Bar>
+          )
         }
-      >
-        <SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
-        { button }
-      </Bar>
+      </MediaQuery>
     );
   }
 }

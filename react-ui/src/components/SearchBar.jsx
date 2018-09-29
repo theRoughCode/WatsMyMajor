@@ -45,7 +45,6 @@ class AppSearchBar extends Component {
     this.state = {
       dataSource: [],
       query: '',
-      style: props.style
     };
 
     this.onClick = this.onClick.bind(this);
@@ -98,7 +97,7 @@ class AppSearchBar extends Component {
         onClick={ this.onClick }
         onRequestSearch={ () => null }
         onNewRequest={ this.searchCourse }
-        style={ this.state.style }
+        style={ this.props.style }
         value={ this.state.query }
       />
     );

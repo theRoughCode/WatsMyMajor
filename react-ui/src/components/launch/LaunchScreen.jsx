@@ -12,23 +12,30 @@ import { green, white, darkGrey } from '../../constants/Colours';
 const styles = {
   container: {
     display: 'flex',
+    flexDirection: 'column',
     width: '100%',
-    height: '100%',
+    minHeight: '100%',
+    height: 'fit-content',
     backgroundColor: 'white',
   },
   innerContainer: {
     display: 'flex',
+    flexWrap: 'wrap-reverse',
     margin: 'auto',
+    marginBottom: 50,
     width: '80%',
     height: 'fit-content',
   },
   leftContainer: {
     width: '50%',
+    minWidth: 'fit-content',
+    margin: 'auto',
     display: 'flex',
     alignItems: 'center',
   },
   infoContainer: {
     display: 'flex',
+    width: 460,
     flexDirection: 'column',
     textAlign: 'left',
   },
@@ -56,13 +63,12 @@ const styles = {
   rightContainer: {
     display: 'flex',
     flexDirection: 'row-reverse',
+    margin: 'auto',
     width: '50%',
+    minWidth: 'fit-content',
   },
   rightInnerContainer: {
     display: 'flex',
-    flexDirection: 'row-reverse',
-    margin: 'auto',
-    width: '80%',
   },
   iconRow: {
     display: 'flex',
@@ -91,9 +97,9 @@ const styles = {
     height: 500,
   },
   numUsersContainer: {
-    position: 'absolute',
-    bottom: 10,
-    left: 20,
+    textAlign: 'left',
+    marginBottom: 10,
+    marginLeft: 20,
   },
   numUsersText: {
     fontSize: 15,

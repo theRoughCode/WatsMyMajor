@@ -4,12 +4,7 @@ html {
 
 html, body, #root, .App {
 	height: 100%;
-}
-
-.App {
-	text-align: center;
-	display: flex;
-	flex-direction: column;
+  margin: 0;
 }
 
 .App a {
