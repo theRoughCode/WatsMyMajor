@@ -37,8 +37,7 @@ import 'react-toastify/dist/ReactToastify.css';
 let styles = {
   marginLeft: 0,
   transition: 'all 1s ease-in-out',
-  height: '100%',
-  paddingTop: 64,
+  height: 'calc(100% - 64px)',
   boxSizing: 'border-box'
 };
 

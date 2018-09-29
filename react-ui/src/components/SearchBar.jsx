@@ -35,7 +35,10 @@ class AppSearchBar extends Component {
   static defaultProps = {
     style: {
       marginTop: '5px',
-      maxWidth: 800
+      maxWidth: 800,
+      whitespace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     }
   };
 
@@ -45,7 +48,6 @@ class AppSearchBar extends Component {
     this.state = {
       dataSource: [],
       query: '',
-      style: props.style
     };
 
     this.onClick = this.onClick.bind(this);
@@ -91,14 +93,14 @@ class AppSearchBar extends Component {
     return (
       <SearchBar
         ref={ (input) => this.searchBar = input }
-        hintText="Search for courses"
+        placeholder="Search for courses"
         dataSource={ this.state.dataSource }
         filter={ (searchValue, key) => searchValue.length }
         onChange={ this.queryForCourse }
         onClick={ this.onClick }
         onRequestSearch={ () => null }
         onNewRequest={ this.searchCourse }
-        style={ this.state.style }
+        style={ this.props.style }
         value={ this.state.query }
       />
     );
