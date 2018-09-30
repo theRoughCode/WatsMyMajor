@@ -8,7 +8,7 @@ const serviceAccount = JSON.parse(process.env.FIREBASE);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: process.env.FIREBASE_URL,
-  storageBucket: "watsmymajor.appspot.com"
+  storageBucket: process.env.FIREBASE_STORAGE_URL
 });
 
 const classesRef = admin.database().ref('/classes/');
