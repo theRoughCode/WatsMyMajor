@@ -15,23 +15,23 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
-    minHeight: '100%',
-    height: 'fit-content',
+    minHeight: 'calc(100% - 0.5vh)',
     backgroundColor: 'white',
+    paddingBottom: '0.5vh',
   },
   innerContainer: (isMobile) => ({
     display: 'flex',
     flexWrap: 'wrap-reverse',
     margin: 'auto',
-    marginBottom: (isMobile) ? 50 : 'auto',
+    flex: (isMobile) ? 1 : 'none',
     width: (isMobile) ? '100%' : '80%',
     height: 'fit-content',
   }),
   leftContainer: (isMobile) => ({
-    width: (isMobile) ? 'calc(100% - 26px)' : '49%',
-    minWidth: (isMobile) ? 'none' : 'fit-content',
+    width: (isMobile) ? 'calc(100% - 26px)' : '50%',
     padding: (isMobile) ? '0px 13px' : 'none',
     margin: 'auto',
+    marginTop: (isMobile) ? 0 : 'auto',
     display: 'flex',
     alignItems: 'center',
   }),
@@ -49,12 +49,12 @@ const styles = {
     marginBottom: 15,
     textAlign: 'center',
   }),
-  subtitle: {
-    fontSize: 15,
+  subtitle: (isMobile) => ({
+    fontSize: (isMobile) ? '3.5vw' : 15,
     fontWeight: 300,
     margin: 'auto',
     textAlign: 'center',
-  },
+  }),
   buttonContainer: {
     margin: 'auto',
     marginTop: 10,
@@ -67,14 +67,13 @@ const styles = {
   },
   rightContainer: (isMobile) => ({
     width: (isMobile) ? '100%' : '50%',
-    minWidth: (isMobile) ? 'none' : 'fit-content',
     margin: 'auto',
     display: 'flex',
     flexDirection: 'row-reverse',
   }),
   rightInnerContainer: (isMobile) => ({
-    display: 'flex',
     margin: (isMobile) ? 'auto' : 'none',
+    maxWidth: '100%',
   }),
   iconRow: {
     display: 'flex',
@@ -97,17 +96,19 @@ const styles = {
     marginTop: 3,
   },
   waterman: (isMobile) => ({
-    height: (isMobile) ? '40vh' : '60vh',
+    height: (isMobile) ? '40vh' : 'auto',
+    width: (isMobile) ? 'auto' : '30vw',
+    maxWidth: '100%',
   }),
   numUsersContainer: {
     textAlign: 'left',
-    marginBottom: 10,
     marginLeft: 20,
+    marginTop: 20,
   },
-  numUsersText: {
-    fontSize: 15,
+  numUsersText: (isMobile) => ({
+    fontSize: (isMobile) ? '1.5vh' : 15,
     fontWeight: 300,
-  },
+  }),
 };
 
 const fetchNumUsers = async () => {
@@ -123,12 +124,14 @@ const fetchNumUsers = async () => {
 
 const LaunchIcon = ({ url, text, icon, alt }) => (
   <div style={ styles.iconContainer }>
-    <ReactTooltip id={ text } effect='solid'>
+    <ReactTooltip id={ text } effect='solid' place='top'>
       <span>{ text }</span>
     </ReactTooltip>
-    <a data-tip data-for={ text } href={ url }>
-      <img src={ icon } alt={ alt } style={ styles.iconButton } />
-    </a>
+    <div data-tip data-for={ text }>
+      <a href={ url }>
+        <img src={ icon } alt={ alt } style={ styles.iconButton } />
+      </a>
+    </div>
   </div>
 );
 
@@ -192,7 +195,7 @@ export default class LaunchScreen extends Component {
                   <div style={ styles.title(!matches) }>
                     Warriors, get the most out of your university career!
                   </div>
-                  <span style={ styles.subtitle }>
+                  <span style={ styles.subtitle(!matches) }>
                     WatsMyMajor simplifies planning your courses and majors.
                   </span>
                   <div style={ styles.buttonContainer }>
@@ -215,7 +218,7 @@ export default class LaunchScreen extends Component {
             </div>
             <div style={ styles.numUsersContainer }>
               { this.state.numUsers > 0 && (
-                <span style={ styles.numUsersText }>
+                <span style={ styles.numUsersText(!matches) }>
                   { `${this.state.numUsers} total users` }
                 </span>
               ) }
