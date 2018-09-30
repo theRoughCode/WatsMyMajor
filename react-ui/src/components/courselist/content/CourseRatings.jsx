@@ -8,7 +8,9 @@ import { red, yellow, grey } from '../../../constants/Colours';
 const styles = {
   container: {
     display: 'flex',
-    margin: 'auto 15px',
+    flexWrap: 'wrap-reverse',
+    margin: 'auto 0px',
+    marginRight: 10,
   },
   numRatingsText: {
     fontSize: 13,

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import { connect } from 'react-redux';
 import {
   Route,
@@ -173,51 +174,56 @@ class App extends Component {
   }
 
   render() {
-    const marginLeft = (this.state.sideBarOpen) ? 200 : 0;
-    const transition = (this.state.sideBarOpen)
-      ? 'all 0.3s ease-in-out'
-      : 'all 0.225s ease-out';
-    styles = Object.assign({}, styles, { marginLeft, transition });
+    styles = (isXSmall) => Object.assign({}, styles, {
+      marginLeft: (!isXSmall && this.state.sideBarOpen) ? 200 : 0,
+      transition: (!isXSmall && this.state.sideBarOpen)
+        ? 'all 0.3s ease-in-out'
+        : 'all 0.225s ease-out'
+    });
 
     if (this.state.loading) {
       return <LoadingView />;
     }
 
     return (
-      <div className="App">
-        <AppBar
-          toggleSideBar={ this.onToggleSideBar }
-          onLogout={ this.onLogout }
-          isLoggedIn={ this.state.isLoggedIn }
-        />
-        <SideBar open={ this.state.sideBarOpen } />
-        <div style={ styles }>
-          <Switch>
-            <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
-            <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
-            <Route exact path='/welcome' render={ this.addUndirect(LaunchScreen) } />
-            <Route exact path='/register' render={ this.addUndirect(Register) } />
-            <Route exact path='/login' render={ this.addUndirect(Login) } />
-            <Route exact path='/verify-email' component={ VerifyEmail } />
-            <Route exact path='/unwatch-class' component={ UnwatchedClass } />
-            <Route exact path='/settings' render={ this.addRedirect(Settings) } />
-            <Route exact path='/majors/:majorKey?' component={ Majors } />
-            <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
-            <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
-            <Route path='/courses/browse' component={ BrowseCourseView } />
-            <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
-          </Switch>
-        </div>
-        <ToastContainer />
-        <Snackbar
-          open={ this.state.snackOpen }
-          message={ this.state.snack.msg }
-          action={ this.state.snack.actionMsg }
-          autoHideDuration={ this.state.snackAutoHideDuration }
-          onActionClick={ this.handleActionClick }
-          onRequestClose={ this.handleRequestClose }
-        />
-      </div>
+      <MediaQuery minWidth={ 475 }>
+        { matches => (
+          <div className="App">
+            <AppBar
+              toggleSideBar={ this.onToggleSideBar }
+              onLogout={ this.onLogout }
+              isLoggedIn={ this.state.isLoggedIn }
+            />
+            <SideBar open={ this.state.sideBarOpen } />
+            <div style={ styles(!matches) }>
+              <Switch>
+                <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
+                <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
+                <Route exact path='/welcome' render={ this.addUndirect(LaunchScreen) } />
+                <Route exact path='/register' render={ this.addUndirect(Register) } />
+                <Route exact path='/login' render={ this.addUndirect(Login) } />
+                <Route exact path='/verify-email' component={ VerifyEmail } />
+                <Route exact path='/unwatch-class' component={ UnwatchedClass } />
+                <Route exact path='/settings' render={ this.addRedirect(Settings) } />
+                <Route exact path='/majors/:majorKey?' component={ Majors } />
+                <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
+                <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
+                <Route path='/courses/browse' component={ BrowseCourseView } />
+                <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
+              </Switch>
+            </div>
+            <ToastContainer />
+            <Snackbar
+              open={ this.state.snackOpen }
+              message={ this.state.snack.msg }
+              action={ this.state.snack.actionMsg }
+              autoHideDuration={ this.state.snackAutoHideDuration }
+              onActionClick={ this.handleActionClick }
+              onRequestClose={ this.handleRequestClose }
+            />
+          </div>
+        ) }
+      </MediaQuery>
     );
   }
 }

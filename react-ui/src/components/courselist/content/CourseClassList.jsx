@@ -13,6 +13,7 @@ import { purple } from '../../../constants/Colours';
 
 const styles = {
   container: {
+    maxWidth: '100%',
     marginTop: 40,
     display: 'inline-block',
     flexDirection: 'column',
@@ -23,9 +24,16 @@ const styles = {
     textAlign: 'left',
     marginBottom: 15,
   },
+  scrollable: {
+    width: '100%',
+    whiteSpace: 'nowrap',
+    overflowX: 'scroll',
+    overflowY: 'hidden',
+  },
   paper: {
     display: 'table',
     width: '100%',
+    WebkitOverflowScrolling: 'touch',
   },
   table: {
     height: 'auto',
@@ -71,33 +79,35 @@ const CourseClassList = ({
     <div style={ styles.header }>
       <span>{ termStr(term) }</span>
     </div>
-    <Paper zDepth={ 1 } style={ styles.paper }>
-      <Table
-        className="course-class-list-table"
-        style={ styles.table }
-        headerStyle={{ height: 0 }}
-      >
-        <TableBody displayRowCheckbox={ false }>
-          <TableRow>
-            <TableRowColumn style={ styles.tableHeader }>Section</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Class</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Campus</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Enrolled</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Time</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Location</TableRowColumn>
-            <TableRowColumn style={ styles.tableHeader }>Instructor</TableRowColumn>
-          </TableRow>
-          {
-            classes.map((classData, index) => (
-              <ClassRow
-                key={ index }
-                classData={ classData }
-                onClickHandler={ () => expandClass(classData) } />
-            ))
-          }
-        </TableBody>
-      </Table>
-    </Paper>
+    <div style={ styles.scrollable }>
+      <Paper zDepth={ 1 } style={ styles.paper }>
+        <Table
+          className="course-class-list-table"
+          style={ styles.table }
+          headerStyle={{ height: 0 }}
+        >
+          <TableBody displayRowCheckbox={ false }>
+            <TableRow>
+              <TableRowColumn style={ styles.tableHeader }>Section</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Class</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Campus</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Enrolled</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Time</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Location</TableRowColumn>
+              <TableRowColumn style={ styles.tableHeader }>Instructor</TableRowColumn>
+            </TableRow>
+            {
+              classes.map((classData, index) => (
+                <ClassRow
+                  key={ index }
+                  classData={ classData }
+                  onClickHandler={ () => expandClass(classData) } />
+              ))
+            }
+          </TableBody>
+        </Table>
+      </Paper>
+    </div>
   </div>
 );
 

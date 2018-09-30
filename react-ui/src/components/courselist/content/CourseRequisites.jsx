@@ -13,6 +13,7 @@ const styles = {
     margin: 'auto',
     marginTop: 20,
     width: 300,
+    maxWidth: '100%',
     height: '90%',
   },
   tabHeader: {

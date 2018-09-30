@@ -38,7 +38,7 @@ const styles = {
   infoContainer: {
     display: 'flex',
     margin: 'auto',
-    width: 460,
+    maxWidth: 460,
     flexDirection: 'column',
     textAlign: 'left',
   },
@@ -86,9 +86,8 @@ const styles = {
     margin: '0px 15px',
   },
   iconButton: {
-    width: 90,
     height: 'auto',
-    maxWidth: '100%',
+    width: '100%',
     margin: 'auto',
   },
   iconText: {
@@ -158,7 +157,7 @@ export default class LaunchScreen extends Component {
 
   render() {
     return (
-      <MediaQuery minDeviceWidth={ 530 }>
+      <MediaQuery minWidth={ 530 }>
         { matches => (
           <div style={ styles.container }>
             <div style={ styles.innerContainer(!matches) }>

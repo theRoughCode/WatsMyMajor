@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import RaisedButton from 'material-ui/RaisedButton';
 import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
@@ -13,6 +14,7 @@ const styles = {
     textAlign: 'left',
     width: '100%',
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'flex-end',
     paddingBottom: 10,
   },
@@ -23,11 +25,13 @@ const styles = {
   },
   courseCodeContainer: {
     display: 'flex',
+    flexWrap: 'wrap-reverse',
   },
   courseCode: {
     fontSize: 40,
     fontWeight: 400,
     margin: 'auto 0',
+    marginRight: 15,
     whiteSpace: 'nowrap',
   },
   rightContainer: {
@@ -38,6 +42,9 @@ const styles = {
   },
   terms: {
     margin: '0 auto',
+    textAlign: 'center',
+    display: 'flex',
+    flexWrap: 'wrap',
   },
   button: {
     margin: '10px auto',
@@ -64,11 +71,11 @@ const CourseHeader = ({
   inCart,
   eligible
 }) => {
-  const cartButton = (inCart)
+  const cartButton = (isMobile) => (inCart)
     ? (
       <RaisedButton
         onClick={ () => removeFromCartHandler(subject, catalogNumber) }
-        label="Remove From Cart"
+        label={ (isMobile) ? "" : "Remove From Cart" }
         backgroundColor={ red }
         style={ styles.button }
         icon={ <RemoveCartIcon /> }
@@ -77,7 +84,7 @@ const CourseHeader = ({
     : (
       <RaisedButton
         onClick={ () => addToCartHandler(subject, catalogNumber) }
-        label="Add To Cart"
+        label={ (isMobile) ? "" : "Add To Cart" }
         backgroundColor={ lightGreen2 }
         style={ styles.button }
         icon={ <CartIcon /> }
@@ -89,34 +96,41 @@ const CourseHeader = ({
   else if (eligible) takeStatus = "You are eligible to take this course";
 
   return (
-    <div style={ styles.container }>
-      <div style={ styles.leftContainer }>
-        <div className="course-code" style={ styles.courseCodeContainer }>
-          <h1 style={ styles.courseCode }>{ subject } { catalogNumber }</h1>
-          <CourseRatings
-            avgRating={ rating.avgRating }
-            numRatings={ rating.numRatings }
-            subject={ subject }
-            catalogNumber={ catalogNumber }
-          />
-        </div>
-        <a href={ url } className="course-header-title">{ title }</a>
-        {
-          takeStatus && (
-            <div style={ styles.taken } >
-              <CheckIcon style={{ marginRight: 5 }} />
-              <span>{ takeStatus }</span>
+    <MediaQuery minWidth={ 600 }>
+      { matches => (
+        <div style={ styles.container }>
+          <div style={ styles.leftContainer }>
+            <div className="course-code" style={ styles.courseCodeContainer }>
+              <h1 style={ styles.courseCode }>{ subject } { catalogNumber }</h1>
+              <CourseRatings
+                avgRating={ rating.avgRating }
+                numRatings={ rating.numRatings }
+                subject={ subject }
+                catalogNumber={ catalogNumber }
+              />
             </div>
-          )
-        }
-      </div>
-      <div style={ styles.rightContainer }>
-        {terms.length > 0 && (
-          <span style={ styles.terms }>Offered in: {terms.join(', ')}</span>
-        )}
-        { cartButton }
-      </div>
-    </div>
+            <a href={ url } className="course-header-title">{ title }</a>
+            {
+              takeStatus && (
+                <div style={ styles.taken } >
+                  <CheckIcon style={{ marginRight: 5 }} />
+                  <span>{ takeStatus }</span>
+                </div>
+              )
+            }
+          </div>
+          <div style={ styles.rightContainer }>
+            {terms.length > 0 && (
+              <div style={ styles.terms }>
+                <span style={{ margin: 'auto' }}>Offered in: &nbsp;</span>
+                <span style={{ margin: 'auto' }}>{ terms.join(', ') }</span>
+              </div>
+            )}
+            { cartButton(!matches) }
+          </div>
+        </div>
+      ) }
+    </MediaQuery>
   );
 };
 

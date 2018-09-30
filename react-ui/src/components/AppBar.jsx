@@ -5,6 +5,8 @@ import { withRouter, Link } from 'react-router-dom';
 import Bar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import SearchBar from './SearchBar';
+import LogoutIcon from 'material-ui/svg-icons/action/exit-to-app';
+import LoginIcon from 'material-ui/svg-icons/action/open-in-browser';
 import logo from '../images/logo.png';
 import { darkGrey, white, blueGreen, blueGreenHighlight } from '../constants/Colours';
 
@@ -21,6 +23,11 @@ const styles = {
   buttonStyle: {
     marginTop: 11,
     marginLeft: 20
+  },
+  xsButtonStyle: {
+    marginLeft: 20,
+    marginTop: 11,
+    minWidth: 'fit-content',
   },
   buttonLabel: (isWelcomeScreen) => ({
     color: (isWelcomeScreen) ? darkGrey : white,
@@ -47,14 +54,21 @@ const styles = {
 const mobileStyles = {
   titleContainer: (isWelcomeScreen) => ({
     cursor: 'pointer',
-    width: 55,
+    width: 'fit-content',
     flex: 'none',
-    marginRight: 24,
+    marginRight: 15,
   }),
   searchBar: {
     marginTop: '5px',
     flex: 1,
   },
+  logo: {
+    width: 35,
+    height: 35,
+    margin: 0,
+    marginRight: 5,
+    verticalAlign: 'text-bottom',
+  }
 };
 
 class AppBar extends Component {
@@ -89,7 +103,7 @@ class AppBar extends Component {
           label="Logout"
           onClick={ this.onLogout }
           labelStyle={ styles.buttonLabel(false) }
-          hoverColor={ blueGreenHighlight }
+          hoverColor={ hoverColor }
           style={ styles.buttonStyle }
         />
       )
@@ -102,9 +116,26 @@ class AppBar extends Component {
           style={ styles.buttonStyle }
         />
       );
+    const xsButton = (isLoggedIn)
+      ? (
+        <FlatButton
+          icon={ <LogoutIcon color={ (isWelcomeScreen) ? darkGrey : white } /> }
+          onClick={ this.onLogout }
+          hoverColor={ hoverColor }
+          style={ styles.xsButtonStyle }
+        />
+      )
+      : (
+        <FlatButton
+          icon={ <LoginIcon color={ (isWelcomeScreen) ? darkGrey : white } /> }
+          onClick={ this.onLogin }
+          hoverColor={ hoverColor }
+          style={ styles.xsButtonStyle }
+        />
+      );
     return (
       <div style={ styles.divContainer }>
-        <MediaQuery minDeviceWidth={ 768 }>
+        <MediaQuery minWidth={ 768 }>
           <Bar
             style={ styles.container(isWelcomeScreen) }
             onLeftIconButtonClick={ toggleSideBar }
@@ -121,7 +152,7 @@ class AppBar extends Component {
             { button }
           </Bar>
         </MediaQuery>
-        <MediaQuery minDeviceWidth={ 530 } maxDeviceWidth={ 767 }>
+        <MediaQuery maxWidth={ 767 }>
           <Bar
             style={ styles.container(isWelcomeScreen) }
             titleStyle={ mobileStyles.titleContainer(isWelcomeScreen) }
@@ -130,28 +161,17 @@ class AppBar extends Component {
             zDepth={ (isWelcomeScreen) ? 0 : 1 }
             title={
               <a href="/">
-                <img src={ logo } alt="logo" style={ styles.logo } />
+                <img src={ logo } alt="logo" style={ mobileStyles.logo } />
               </a>
             }
           >
             <SearchBar onResult={ this.onSearchResult } style={ mobileStyles.searchBar } />
-            { button }
-          </Bar>
-        </MediaQuery>
-        <MediaQuery maxDeviceWidth={ 529 }>
-          <Bar
-            style={ styles.container(isWelcomeScreen) }
-            titleStyle={ mobileStyles.titleContainer(isWelcomeScreen) }
-            onLeftIconButtonClick={ toggleSideBar }
-            showMenuIconButton={ !isWelcomeScreen }
-            zDepth={ (isWelcomeScreen) ? 0 : 1 }
-            title={
-              <a href="/">
-                <img src={ logo } alt="logo" style={ styles.logo } />
-              </a>
-            }
-          >
-            <SearchBar onResult={ this.onSearchResult } style={ mobileStyles.searchBar } />
+            <MediaQuery minWidth={ 530 }>
+              { button }
+            </MediaQuery>
+            <MediaQuery maxWidth={ 529 }>
+              { xsButton }
+            </MediaQuery>
           </Bar>
         </MediaQuery>
       </div>
