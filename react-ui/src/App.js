@@ -35,7 +35,7 @@ import {
 import './stylesheets/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
-let styles = {
+const styles = {
   marginLeft: 0,
   transition: 'all 1s ease-in-out',
   height: 'calc(100% - 64px)',
@@ -174,7 +174,7 @@ class App extends Component {
   }
 
   render() {
-    styles = (isXSmall) => Object.assign({}, styles, {
+    const newStyles = (isXSmall) => Object.assign({}, styles, {
       marginLeft: (!isXSmall && this.state.sideBarOpen) ? 200 : 0,
       transition: (!isXSmall && this.state.sideBarOpen)
         ? 'all 0.3s ease-in-out'
@@ -195,7 +195,7 @@ class App extends Component {
               isLoggedIn={ this.state.isLoggedIn }
             />
             <SideBar open={ this.state.sideBarOpen } />
-            <div style={ styles(!matches) }>
+            <div style={ newStyles(!matches) }>
               <Switch>
                 <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
                 <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
