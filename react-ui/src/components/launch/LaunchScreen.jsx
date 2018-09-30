@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import RaisedButton from 'material-ui/RaisedButton';
 import ReactTooltip from 'react-tooltip';
 import WatermanImage from '../../images/waterman.png';
@@ -18,37 +19,40 @@ const styles = {
     height: 'fit-content',
     backgroundColor: 'white',
   },
-  innerContainer: {
+  innerContainer: (isMobile) => ({
     display: 'flex',
     flexWrap: 'wrap-reverse',
     margin: 'auto',
     marginBottom: 50,
-    width: '80%',
+    width: (isMobile) ? '100%' : '80%',
     height: 'fit-content',
-  },
-  leftContainer: {
-    width: '50%',
-    minWidth: 'fit-content',
+  }),
+  leftContainer: (isMobile) => ({
+    width: (isMobile) ? 'calc(100% - 26px)' : '50%',
+    minWidth: (isMobile) ? 'none' : 'fit-content',
+    padding: (isMobile) ? '0px 13px' : 'none',
     margin: 'auto',
     display: 'flex',
     alignItems: 'center',
-  },
+  }),
   infoContainer: {
     display: 'flex',
     width: 460,
     flexDirection: 'column',
     textAlign: 'left',
   },
-  title: {
-    fontSize: 30,
+  title: (isMobile) => ({
+    fontSize: (isMobile) ? '5vw' : 30,
     fontWeight: 350,
     margin: 'auto',
     marginBottom: 15,
-  },
+    textAlign: 'center',
+  }),
   subtitle: {
     fontSize: 15,
     fontWeight: 300,
     margin: 'auto',
+    textAlign: 'center',
   },
   buttonContainer: {
     margin: 'auto',
@@ -60,15 +64,16 @@ const styles = {
   loginText: {
     color: white,
   },
-  rightContainer: {
+  rightContainer: (isMobile) => ({
     display: 'flex',
     flexDirection: 'row-reverse',
     margin: 'auto',
-    width: '50%',
-    minWidth: 'fit-content',
-  },
+    width: (isMobile) ? '100%' : '50%',
+    minWidth: (isMobile) ? 'none' : 'fit-content',
+  }),
   rightInnerContainer: {
     display: 'flex',
+    margin: 'auto',
   },
   iconRow: {
     display: 'flex',
@@ -76,15 +81,13 @@ const styles = {
     marginBottom: 20,
   },
   iconContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: 'fit-content',
-    height: 'fit-content',
-    marginRight: 30,
+    flex: 1,
+    margin: '0px 15px',
   },
   iconButton: {
     width: 90,
-    height: 90,
+    height: 'auto',
+    maxWidth: '100%',
     margin: 'auto',
   },
   iconText: {
@@ -93,9 +96,9 @@ const styles = {
     color: darkGrey,
     marginTop: 3,
   },
-  waterman: {
-    height: 500,
-  },
+  waterman: (isMobile) => ({
+    height: (isMobile) ? '40vh' : 600,
+  }),
   numUsersContainer: {
     textAlign: 'left',
     marginBottom: 10,
@@ -123,7 +126,7 @@ const LaunchIcon = ({ url, text, icon, alt }) => (
     <ReactTooltip id={ text } effect='solid'>
       <span>{ text }</span>
     </ReactTooltip>
-    <a data-tip data-for={ text } href={ url } style={{ display: 'flex' }}>
+    <a data-tip data-for={ text } href={ url }>
       <img src={ icon } alt={ alt } style={ styles.iconButton } />
     </a>
   </div>
@@ -154,68 +157,72 @@ export default class LaunchScreen extends Component {
 
   render() {
     return (
-      <div style={ styles.container }>
-        <div style={ styles.innerContainer }>
-          <div style={ styles.leftContainer }>
-            <div style={ styles.infoContainer }>
-              <div style={ styles.iconRow }>
-                <LaunchIcon
-                  url="../schedule"
-                  text="Schedule Courses"
-                  icon={ CalendarIcon }
-                  alt="Schedule"
-                />
-                <LaunchIcon
-                  url="../majors"
-                  text="Track Majors"
-                  icon={ MortarBoardIcon }
-                  alt="Majors"
-                />
-                <LaunchIcon
-                  url="../courses/browse"
-                  text="Browse Courses"
-                  icon={ SearchIcon }
-                  alt="Browse"
-                />
-                <LaunchIcon
-                  url="../courses/browse"
-                  text="Watch Classes"
-                  icon={ WatchingIcon }
-                  alt="Watch Classes"
-                />
+      <MediaQuery minDeviceWidth={ 530 }>
+        { matches => (
+          <div style={ styles.container }>
+            <div style={ styles.innerContainer(!matches) }>
+              <div style={ styles.leftContainer(!matches) }>
+                <div style={ styles.infoContainer }>
+                  <div style={ styles.iconRow }>
+                    <LaunchIcon
+                      url="../schedule"
+                      text="Schedule Courses"
+                      icon={ CalendarIcon }
+                      alt="Schedule"
+                    />
+                    <LaunchIcon
+                      url="../majors"
+                      text="Track Majors"
+                      icon={ MortarBoardIcon }
+                      alt="Majors"
+                    />
+                    <LaunchIcon
+                      url="../courses/browse"
+                      text="Browse Courses"
+                      icon={ SearchIcon }
+                      alt="Browse"
+                    />
+                    <LaunchIcon
+                      url="../courses/browse"
+                      text="Watch Classes"
+                      icon={ WatchingIcon }
+                      alt="Watch Classes"
+                    />
+                  </div>
+                  <div style={ styles.title(!matches) }>
+                    Warriors, get the most out of your university career!
+                  </div>
+                  <span style={ styles.subtitle }>
+                    WatsMyMajor simplifies planning your courses and majors.
+                  </span>
+                  <div style={ styles.buttonContainer }>
+                    <RaisedButton
+                      label="Get Started"
+                      backgroundColor={ green  }
+                      style={ styles.loginButton }
+                      labelStyle={ styles.loginText }
+                      onClick={ this.goToLogin }
+                      type="submit"
+                    />
+                  </div>
+                </div>
               </div>
-              <div style={ styles.title }>
-                Warriors, get the most out of your university career!
-              </div>
-              <span style={ styles.subtitle }>
-                WatsMyMajor simplifies planning your courses and majors.
-              </span>
-              <div style={ styles.buttonContainer }>
-                <RaisedButton
-                  label="Get Started"
-                  backgroundColor={ green  }
-                  style={ styles.loginButton }
-                  labelStyle={ styles.loginText }
-                  onClick={ this.goToLogin }
-                  type="submit"
-                />
+              <div style={ styles.rightContainer(!matches) }>
+                <div style={ styles.rightInnerContainer }>
+                  <img src={ WatermanImage } alt="waterman" style={ styles.waterman(!matches) } />
+                </div>
               </div>
             </div>
-          </div>
-          <div style={ styles.rightContainer }>
-            <div style={ styles.rightInnerContainer }>
-              <img src={ WatermanImage } alt="waterman" style={ styles.waterman } />
+            <div style={ styles.numUsersContainer }>
+              { this.state.numUsers > 0 && (
+                <span style={ styles.numUsersText }>
+                  { `${this.state.numUsers} total users` }
+                </span>
+              ) }
             </div>
           </div>
-        </div>
-        <div style={ styles.numUsersContainer }>
-          { this.state.numUsers > 0 && (
-            <span style={ styles.numUsersText }>
-              { `${this.state.numUsers} total users` }
-            </span>
-          ) }
-        </div>
-      </div>
+        ) }
+      </MediaQuery>
     );
   }
 }

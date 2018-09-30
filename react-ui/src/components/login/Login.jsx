@@ -19,7 +19,7 @@ const styles = {
     display: 'flex',
   },
   container: {
-    margin: '60px auto',
+    margin: '40px auto',
   },
   header: {
     display: 'flex',
@@ -83,7 +83,8 @@ const styles = {
     textTransform: 'none',
   },
   footer: {
-    marginTop: 50,
+    marginTop: 40,
+    marginBottom: 20,
   }
 };
 

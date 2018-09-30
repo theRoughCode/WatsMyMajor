@@ -7,6 +7,10 @@ html, body, #root, .App {
   margin: 0;
 }
 
+.App {
+  text-align: center;
+}
+
 .App a {
 	color: #356abf;
 }

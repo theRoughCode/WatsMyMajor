@@ -22,7 +22,7 @@ const styles = {
     display: 'flex',
   },
   container: {
-    margin: '60px auto',
+    margin: '40px auto',
   },
   header: {
     display: 'flex',
