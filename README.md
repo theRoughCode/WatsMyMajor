@@ -42,7 +42,7 @@ The requisite tree provides a neat and cool way to visualize which courses are r
 <p align="center">
   <img src="https://user-images.githubusercontent.com/19257435/42982866-47f78e2e-8b98-11e8-869a-00b850d8464c.png" alt="logo" width="750" height="auto">
  </p>
-This is the main sauce that binds the app together.  This is the feature that brings the other features to their fullest potential.  This page manages your courses and allows you to plan out your entire university career.  It functions by drag-and-drop, which makes sense because I drew my inspiration from exactly how I was doing it in Google Sheets: dragging and dropping while I rearrange and plan my schedule.  It has the following features:
+This is the main sauce that binds the app together.  This is the feature that brings the other features to their full potential.  This page manages your courses and allows you to plan out your entire university career.  It functions by drag-and-drop, which makes sense because I drew my inspiration from exactly how I was doing it in Google Sheets: dragging and dropping while I rearranged and planned my schedule.  It has the following features:
 - Add term: Adds a term board which you can fill out with courses
 - Cart: Contains miscellaneous courses that you haven't decided where to put in yet
 - Adding courses to a term: there are 3 ways to do this
