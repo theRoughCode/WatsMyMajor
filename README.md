@@ -23,7 +23,7 @@ The most accessible feature is viewing courses.  This is done by typing a course
 - whether you're eligible for the course
 - ability to add the course to your cart
 - current term's class list
-  - Clicking on a row in the class list will open up an expanded view where more information about the availability of the class is shown, together with any stats about the instructor teaching that class.
+  - clicking on a row in the class list will open up an expanded view where more information about the availability of the class is shown, together with any stats about the instructor teaching that class.
 - requisites.  This includes:
   - Prerequisites: courses you need to take before you can take this course
   - Corequisites: courses you need to take before or at the same time as this course
