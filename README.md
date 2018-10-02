@@ -36,7 +36,7 @@ The most accessible feature is viewing courses.  This is done by typing a course
 <p align="center">
   <img src="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" alt="logo" width="750" height="auto">
  </p>
-The requisite tree provides a neat and cool way to visualize which courses are required to take a certain course.  If the user has their courses filled out, it will highlight taken courses in green.  The user can also toggle "Simplified View" on, which parses the tree via depth-first traversal and figure out which nodes can be taken out of three depending on courses the user has already taken.  In effect, it "simplifies" the tree down to just the information *you* need to know.
+The requisite tree provides a neat and cool way to visualize which courses are required to take a certain course.  If the user has their courses filled out, it will highlight taken courses in green.  The user can also toggle "Simplified View" on, which parses the tree via depth-first traversal and figures out which nodes can be taken out of three depending on courses the user has already taken.  In effect, it "simplifies" the tree down to just the information *you* need to know.
 
 ### My Courses
 <p align="center">
