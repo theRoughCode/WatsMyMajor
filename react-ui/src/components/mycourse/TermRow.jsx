@@ -9,7 +9,7 @@ const styles = {
   board: {
     width: '100%',
     display: 'flex',
-    overflow: 'auto',
+    overflowX: 'auto',
   },
 }
 
@@ -20,6 +20,9 @@ const TermRow = ({
   onRenameBoard,
   onDeleteBoard,
   onUpdateCourses,
+  showCart,
+  cart,
+  onClearCart,
 }) => (
   <Droppable
     droppableId={ `row/${rowNumber}` }
@@ -33,6 +36,14 @@ const TermRow = ({
         { ...provided.droppableProps }
         style={ styles.board }
       >
+        { showCart && (
+          <TermBoard
+            term="Cart"
+            courses={ cart }
+            isCart
+            onClearBoard={ onClearCart }
+          />
+        ) }
         {
           courseList.map(({ term, level, courses }, index) => {
             // Accounts for row number
@@ -75,6 +86,15 @@ TermRow.propTypes = {
   onRenameBoard: PropTypes.func.isRequired,
   onDeleteBoard: PropTypes.func.isRequired,
   onUpdateCourses: PropTypes.func.isRequired,
+  showCart: PropTypes.bool,
+  cart: PropTypes.array,
+  onClearCart: PropTypes.func,
 }
+
+TermRow.defaultProps = {
+  showCart: false,
+  cart: [],
+  onClearCart: () => {},
+};
 
 export default TermRow;

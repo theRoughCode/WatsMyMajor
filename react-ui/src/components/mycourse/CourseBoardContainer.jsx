@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import MediaQuery from 'react-responsive';
 import { DragDropContext } from 'react-beautiful-dnd';
 import MyCourseSideBar from './MyCourseSideBar';
 import MyCourseAppBar from './MyCourseAppBar';
@@ -19,7 +20,6 @@ import {
   createSnack
 } from '../../actions';
 
-const NUM_PER_ROW = 3;
 const styles = {
   viewContainer: {
     width: '100%',
@@ -28,15 +28,19 @@ const styles = {
     overflowX: 'hidden',
   },
   boardContainer: {
-    width: '70%',
+    width: 'calc(100% - 224px)',
     height: 'fit-content',
-    padding: '30px 60px',
+    margin: 'auto',
+    marginRight: 224,
+    padding: '30px 0',
     display: 'flex',
   },
   termRowContainer: {
     display: 'flex',
     flexDirection: 'column',
+    height: '100%',
     margin: 'auto',
+    overflowX: 'auto',
   },
   emptyContainer: {
     width: '90%',
@@ -68,8 +72,32 @@ const styles = {
   emptyTextSubtitle: {
     fontSize: 22,
     color: '#888e99',
-  }
+  },
 }
+
+const mobileStyles = {
+  viewContainer: {
+    width: '100%',
+    height: 'calc(100% - 10px)',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+  boardContainer: {
+    width: '100%',
+    height: '100%',
+    margin: 'auto',
+    display: 'flex',
+  },
+  termRowContainer: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    margin: 'auto',
+    overflow: 'none',
+  },
+};
 
 class CourseBoardContainer extends Component {
 
@@ -93,39 +121,14 @@ class CourseBoardContainer extends Component {
       courseList,
       cart,
       username,
-      updateCourseHandler,
-      reorderCourseHandler,
-      reorderCartHandler,
-      deselectCourseHandler,
     } = props;
 
     this.state = {
       courseList,
       cart,
       username,
+      isDraggingCourse: false,
     };
-
-    this.onDragStart = this.onDragStart.bind(this);
-    this.onDragEnd = this.onDragEnd.bind(this);
-    this.onDragTerm = this.onDragTerm.bind(this);
-    this.onDragCourse = this.onDragCourse.bind(this);
-    this.move = this.move.bind(this);
-    this.loadCourses = this.loadCourses.bind(this);
-    this.clearCourses = this.clearCourses.bind(this);
-    this.importTerms = this.importTerms.bind(this);
-    this.clearCart = this.clearCart.bind(this);
-    this.reorderTerm = this.reorderTerm.bind(this);
-    this.getBoard = this.getBoard.bind(this);
-    this.updateBoard = this.updateBoard.bind(this);
-    this.renameBoard = this.renameBoard.bind(this);
-    this.addBoard = this.addBoard.bind(this);
-    this.clearBoard = this.clearBoard.bind(this);
-    this.deleteBoard = this.deleteBoard.bind(this);
-    this.renderBoard = this.renderBoard.bind(this);
-    this.updateCourseHandler = updateCourseHandler;
-    this.reorderCourseHandler = reorderCourseHandler;
-    this.reorderCartHandler = reorderCartHandler;
-    this.deselectCourseHandler = deselectCourseHandler;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -140,17 +143,18 @@ class CourseBoardContainer extends Component {
     }
   }
 
-  getTermList(id) {
-    return this.state.courseList[id].courses;
-  }
+  getTermList = (id) =>  this.state.courseList[id].courses;
 
   // Highlight prereqs when dragging a course card
-  onDragStart(start) {
+  onDragStart = (start) => {
     if (start.type !== DragTypes.COURSE) return;
+    this.setState({ isDraggingCourse: true });
+
     const splitId = start.draggableId.split("/");
     if (splitId.length < 3) return;
     const [ subject, catalogNumber ] = splitId;
     let prereqs = [];
+
     switch (start.source.droppableId) {
     case "Cart":
       prereqs = this.state.cart[start.source.index].prereqs || [];
@@ -161,48 +165,50 @@ class CourseBoardContainer extends Component {
         prereqs = this.props.myCourses[subject][catalogNumber];
       }
     }
+
     if (prereqs.length === 0) return;
     this.props.highlightPrereqsHandler(prereqs);
   }
 
-  onDragEnd(result) {
+  onDragEnd = (numPerRow) => (result) => {
     const { source, destination } = result;
-    this.deselectCourseHandler();
+    this.props.deselectCourseHandler();
 
     // dropped outside the list
     if (!destination) return;
 
     switch (result.type) {
     case DragTypes.COLUMN:
-      this.onDragTerm(source, destination);
+      this.onDragTerm(source, destination, numPerRow);
       break;
     case DragTypes.COURSE:
-      this.onDragCourse(source, destination);
+      this.setState({ isDraggingCourse: false });
+      this.onDragCourse(source, destination, numPerRow);
       break;
     default:
     }
   }
 
   // Called when a term is being dragged
-  onDragTerm(source, destination) {
+  onDragTerm = (source, destination, numPerRow) => {
     const fromRowNum = Number(source.droppableId.split('/')[1]);
     const toRowNum = Number(destination.droppableId.split('/')[1]);
-    const fromIndex = source.index + fromRowNum * NUM_PER_ROW;
+    const fromIndex = source.index + fromRowNum * numPerRow;
     // Offset by 1 when moving from a lower number to higher because the indices
     // have not been reshuffled yet to account for the blank space in the lower row.
     const offsetNum = (fromRowNum < toRowNum) ? 1 : 0;
-    const toIndex = destination.index + toRowNum * NUM_PER_ROW - offsetNum;
+    const toIndex = destination.index + toRowNum * numPerRow - offsetNum;
 
     if (fromIndex === toIndex) return;
     const { username, courseList } = this.state;
     const [removed] = courseList.splice(fromIndex, 1);
     courseList.splice(toIndex, 0, removed);
     this.setState({ courseList });
-    this.reorderCourseHandler(username, courseList);
+    this.props.reorderCourseHandler(username, courseList);
   }
 
   // Called when a course is being dragged
-  onDragCourse(source, destination) {
+  onDragCourse = (source, destination) => {
     if (source.droppableId === destination.droppableId) {
       this.reorderTerm(source.droppableId, source.index, destination.index);
     } else {
@@ -211,7 +217,7 @@ class CourseBoardContainer extends Component {
   }
 
   // Retrieves board
-  getBoard(id) {
+  getBoard = (id) => {
     switch (id) {
     case 'Cart':
       return this.state.cart;
@@ -223,24 +229,24 @@ class CourseBoardContainer extends Component {
   }
 
   // Updates the board
-  updateBoard(id, board) {
+  updateBoard = (id, board) => {
     switch (id) {
     case 'Cart':
       this.setState({ cart: board });
-      this.reorderCartHandler(this.state.username, board);
+      this.props.reorderCartHandler(this.state.username, board);
       break;
     case 'Trash': break;
     default: {
       const { username, courseList } = this.state;
       courseList[id].courses = board;
       this.setState({ courseList });
-      this.reorderCourseHandler(username, courseList);
+      this.props.reorderCourseHandler(username, courseList);
     }
     }
   }
 
   // Reorder term board
-  reorderTerm(id, fromIndex, toIndex) {
+  reorderTerm = (id, fromIndex, toIndex) => {
     if (fromIndex === toIndex) return;
     const board = this.getBoard(id);
     const [removed] = board.splice(fromIndex, 1);
@@ -249,7 +255,7 @@ class CourseBoardContainer extends Component {
   }
 
   // Move an item between terms
-  move(source, dest) {
+  move = (source, dest) => {
     const sourceBoard = this.getBoard(source.droppableId);
     const destBoard = this.getBoard(dest.droppableId);
     const [removed] = sourceBoard.splice(source.index, 1);
@@ -258,34 +264,34 @@ class CourseBoardContainer extends Component {
     this.updateBoard(dest.droppableId, destBoard);
   }
 
-  renameBoard(id, name, level) {
+  renameBoard = (id, name, level) => {
     const { username, courseList } = this.state;
     courseList[id].term = name;
     courseList[id].level = level;
     this.setState({ courseList });
-    this.reorderCourseHandler(username, courseList);
+    this.props.reorderCourseHandler(username, courseList);
   }
 
-  clearBoard(id) {
+  clearBoard = (id) => {
     const { username, courseList } = this.state;
     courseList[id].courses = [];
     this.setState({ courseList });
-    this.reorderCourseHandler(username, courseList);
+    this.props.reorderCourseHandler(username, courseList);
   }
 
-  clearCart() {
+  clearCart = () => {
     this.setState({ cart: [] });
-    this.reorderCartHandler(this.state.username, []);
+    this.props.reorderCartHandler(this.state.username, []);
   }
 
-  addBoard(term, level) {
+  addBoard = (term, level) => {
     const { username, courseList } = this.state;
     courseList.push({ term, level, courses: [] });
     this.setState({ courseList });
-    this.reorderCourseHandler(username, courseList);
+    this.props.reorderCourseHandler(username, courseList);
   }
 
-  loadCourses(id, newCourses) {
+  loadCourses = (id, newCourses) => {
     const { username, courseList } = this.state;
     let courses = courseList[id].courses || [];
 
@@ -305,15 +311,15 @@ class CourseBoardContainer extends Component {
     courseList[id].courses = courses;
 
     this.setState({ courseList });
-    this.updateCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
-  clearCourses() {
+  clearCourses = () => {
     this.setState({ courseList: [] });
-    this.updateCourseHandler(this.state.username, []);
+    this.props.updateCourseHandler(this.state.username, []);
   }
 
-  importTerms(terms) {
+  importTerms = (terms) => {
     const { username, courseList } = this.state;
 
     // Dedup courses: remove courses that are duplicates in imported terms
@@ -348,17 +354,17 @@ class CourseBoardContainer extends Component {
     }
 
     this.setState({ courseList: terms });
-    this.updateCourseHandler(username, terms);
+    this.props.updateCourseHandler(username, terms);
   }
 
-  deleteBoard(id) {
+  deleteBoard = (id) => {
     const { username, courseList } = this.state;
     courseList.splice(id, 1);
     this.setState({ courseList });
-    this.reorderCourseHandler(username, courseList);
+    this.props.reorderCourseHandler(username, courseList);
   }
 
-  renderBoard() {
+  renderBoard = (numPerRow) => {
     const { courseList } = this.state;
     const numTerms = courseList.length;
 
@@ -381,12 +387,28 @@ class CourseBoardContainer extends Component {
       );
     }
 
-    const numRows = Math.ceil(numTerms / 3);
+    if (!numPerRow) return (
+      <div style={ mobileStyles.termRowContainer }>
+        <TermRow
+          rowNumber={ 0 }
+          courseList={ courseList }
+          onClearBoard={ this.clearBoard }
+          onRenameBoard={ this.renameBoard }
+          onDeleteBoard={ this.deleteBoard }
+          onUpdateCourses={ this.loadCourses }
+          showCart
+          cart={ this.state.cart }
+          onClearCart={ this.onClearCart }
+        />
+      </div>
+    );
+
+    const numRows = Math.ceil(numTerms / numPerRow);
     return (
       <div style={ styles.termRowContainer }>
         {
           Array(numRows).fill().map((_, i) => {
-            const courses = courseList.slice(i * NUM_PER_ROW, (i + 1) * NUM_PER_ROW);
+            const courses = courseList.slice(i * numPerRow, (i + 1) * numPerRow);
             return (
               <TermRow
                 key={ i }
@@ -407,23 +429,70 @@ class CourseBoardContainer extends Component {
   render() {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <MyCourseAppBar
-          onAddBoard={ this.addBoard }
-          onImport={ this.importTerms }
-          onClear={ this.clearCourses }
-          showClearButton={ this.state.courseList.length > 0 }
-        />
-        <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd }>
-          <div style={ styles.viewContainer }>
-            <div style={ styles.boardContainer }>
-              { this.renderBoard() }
-            </div>
-            <MyCourseSideBar
-              cartCourses={ this.state.cart }
-              onClearCart={ this.clearCart }
+        <MediaQuery minWidth={ 445 }>
+          <MyCourseAppBar
+            onAddBoard={ this.addBoard }
+            onImport={ this.importTerms }
+            onClear={ this.clearCourses }
+            showClearButton={ this.state.courseList.length > 0 }
+          />
+          <MediaQuery minWidth={ 852 }>
+            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(3) }>
+              <div style={ styles.viewContainer }>
+                <div style={ styles.boardContainer }>
+                  { this.renderBoard(3) }
+                </div>
+                <MyCourseSideBar
+                  cartCourses={ this.state.cart }
+                  onClearCart={ this.clearCart }
+                />
+              </div>
+            </DragDropContext>
+          </MediaQuery>
+          <MediaQuery minWidth={ 652 } maxWidth={ 852 }>
+            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(2) }>
+              <div style={ styles.viewContainer }>
+                <div style={ styles.boardContainer }>
+                  { this.renderBoard(2) }
+                </div>
+                <MyCourseSideBar
+                  cartCourses={ this.state.cart }
+                  onClearCart={ this.clearCart }
+                />
+              </div>
+            </DragDropContext>
+          </MediaQuery>
+          <MediaQuery minWidth={ 445 } maxWidth={ 652 }>
+            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(1) }>
+              <div style={ styles.viewContainer }>
+                <div style={ styles.boardContainer }>
+                  { this.renderBoard(1) }
+                </div>
+                <MyCourseSideBar
+                  cartCourses={ this.state.cart }
+                  onClearCart={ this.clearCart }
+                />
+              </div>
+            </DragDropContext>
+          </MediaQuery>
+        </MediaQuery>
+        <MediaQuery maxWidth={ 445 }>
+          <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(0) }>
+            <MyCourseAppBar
+              onAddBoard={ this.addBoard }
+              onImport={ this.importTerms }
+              onClear={ this.clearCourses }
+              showClearButton={ this.state.courseList.length > 0 }
+              showTrashOnDrag
+              isDraggingCourse={ this.state.isDraggingCourse }
             />
-          </div>
-        </DragDropContext>
+            <div style={ mobileStyles.viewContainer }>
+              <div style={ mobileStyles.boardContainer }>
+                { this.renderBoard(0) }
+              </div>
+            </div>
+          </DragDropContext>
+        </MediaQuery>
       </div>
     );
   }

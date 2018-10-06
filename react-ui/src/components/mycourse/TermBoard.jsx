@@ -24,16 +24,15 @@ import {
 
 const space = 8;
 const stylesConst = {
-  minHeight: 200,
   height: 'auto',
-  width: 200
+  width: 200,
 };
 const styles = {
   board: {
     margin: 10,
     width:  stylesConst.width,
-    minHeight: stylesConst.minHeight,
-    height: stylesConst.height,
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: (isDragging) => ({
     padding: '5px 0',
@@ -62,10 +61,9 @@ const styles = {
     color: 'white',
     marginLeft: 'auto'
   },
-  cartBoard: {
-    margin: '20px auto',
-    width:  stylesConst.width,
-    height: stylesConst.height
+  listContainer: {
+    height: 'calc(100% - 70px)',
+    margin: '6px 0',
   },
   addCourseCard: {
     border: '1px dashed #bcbcbc',
@@ -84,11 +82,9 @@ const styles = {
 const getListStyle = (isDraggingOver, isCart) => ({
   padding: space,
   width: stylesConst.width - space * 2,
-  minHeight: stylesConst.minHeight,
-  maxHeight: isCart ? 400 : 'none',
+  maxHeight: '100%',
   height: stylesConst.height,
   background: isDraggingOver ? lightGreen : 'inherit',
-  overflow: isCart ? 'auto' : 'none',
 });
 
 const AddCourseCard = ({ onClick }) => (
@@ -282,9 +278,8 @@ export default class TermBoard extends Component {
     return (
       <div ref={ innerRef } { ...draggableProps }>
         <Paper
-          className="term-paper"
           zDepth={ 1 }
-          style={ (isCart) ? styles.cartBoard : styles.board }
+          style={ styles.board }
         >
           <div style={ styles.header(isDragging) } { ...dragHandleProps }>
             <div style={ styles.box } />
@@ -319,7 +314,7 @@ export default class TermBoard extends Component {
               </IconMenu>
             </div>
           </div>
-          <div>
+          <div style={ styles.listContainer }>
             <Droppable
               droppableId={ droppableId }
               type={ DragTypes.COURSE }
@@ -344,7 +339,7 @@ export default class TermBoard extends Component {
             contentStyle={{ width: 400 }}
           >
             <TextField
-              hintText="e.g. Fall 2018"
+              hintText="e.g. Winter 2019"
               floatingLabelText="New Board Name"
               value={ this.state.rename }
               errorText={ this.state.renameError }
