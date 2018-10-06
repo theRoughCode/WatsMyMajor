@@ -10,6 +10,15 @@ const colours = [
   '#af2cc5',
 ];
 
+const styles = {
+  container: {
+    width: 400,
+    height: 'fit-content',
+    margin: 'auto',
+    marginBottom: 20,
+  },
+};
+
 const assignColours = (data) => data.map(({ subject, catalogNumber, count }, index) => ({
   course: `${subject} ${catalogNumber}`,
   count,
@@ -45,7 +54,7 @@ export default class PopularCourseGraph extends Component {
     if (popular.length === 0) return null;
 
     return (
-      <Paper style={{ width: 400, height: 'fit-content', margin: 'auto' }} depth={ 1 }>
+      <Paper style={ styles.container } depth={ 1 }>
         <VictoryChart domainPadding={ 30 } >
           <VictoryLabel
             text="Popular Courses"

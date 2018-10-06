@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import { toast } from 'react-toastify';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -11,6 +12,7 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import ImportIcon from 'material-ui/svg-icons/action/backup';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Parser from './ParseTranscript';
+import Trash from './Trash';
 import {
   skyBlue,
   red,
@@ -25,26 +27,38 @@ const styles = {
     height: 70,
     zIndex: 1,
     boxShadow: '0 8px 6px -6px #999',
-    display: 'flex',
   },
+  trashContainer: (isShowing) => ({
+    display: (isShowing) ? 'flex' : 'none',
+    height: '100%',
+  }),
+  innerContainer: (isHiding) => ({
+    width: '100%',
+    height: '100%',
+    display: (isHiding) ? 'none' : 'flex',
+  }),
   titleContainer: {
     height: '100%',
     display: 'flex',
     flex: 1,
   },
-  title: {
+  title: (isBig) => ({
     color: 'black',
     textAlign: 'left',
     margin: 'auto',
     marginLeft: 30,
-    fontSize: 25,
-  },
+    fontSize: (isBig) ? 25 : 20,
+  }),
   buttonContainer: {
-    marginTop: 5,
+    margin: 'auto',
     marginRight: 10,
   },
-  button: {
-    margin: 10,
+  button: (isBig) => ({
+    margin: (isBig) ? 10 : 5,
+  }),
+  xsButton: {
+    margin: 5,
+    minWidth: 50,
   },
 };
 
@@ -55,6 +69,13 @@ export default class MyCourseAppBar extends Component {
     onImport: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     showClearButton: PropTypes.bool.isRequired,
+    showTrashOnDrag: PropTypes.bool,
+    isDraggingCourse: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    showTrashOnDrag: false,
+    isDraggingCourse: false,
   };
 
   state = {
@@ -154,86 +175,133 @@ export default class MyCourseAppBar extends Component {
       />,
     ];
 
+    const showTrash = (this.props.showTrashOnDrag && this.props.isDraggingCourse);
+
     return (
       <div style={ styles.container }>
-        <div style={ styles.titleContainer }>
-          <span style={ styles.title }>My Courses</span>
-        </div>
-        <div style={ styles.buttonContainer }>
-          <RaisedButton
-            onClick={ this.openAddTermDialog }
-            label="Add Term"
-            backgroundColor={ lightGreen2 }
-            style={ styles.button }
-            icon={ <AddIcon /> }
-          />
-          <RaisedButton
-            onClick={ this.openImportDialog }
-            label="Import Courses"
-            backgroundColor={ skyBlue }
-            style={ styles.button }
-            icon={ <ImportIcon /> }
-          />
-          {
-            this.props.showClearButton && (
+        { this.props.showTrashOnDrag && (
+          <div style={ styles.trashContainer(showTrash) }>
+            <Trash isMobile />
+          </div>
+        ) }
+        <div style={ styles.innerContainer(showTrash) }>
+          <div style={ styles.titleContainer }>
+            <MediaQuery minWidth={ 552 }>
+              { matches => (
+                <span style={ styles.title(matches) }>My Courses</span>
+              ) }
+            </MediaQuery>
+          </div>
+          <div style={ styles.buttonContainer }>
+            <MediaQuery minWidth={ 821 }>
+              <MediaQuery minWidth={ 852 }>
+                { matches => (
+                  <div>
+                    <RaisedButton
+                      onClick={ this.openAddTermDialog }
+                      label="Add Term"
+                      backgroundColor={ lightGreen2 }
+                      style={ styles.button(matches) }
+                      icon={ <AddIcon /> }
+                    />
+                    <RaisedButton
+                      onClick={ this.openImportDialog }
+                      label="Import Courses"
+                      backgroundColor={ skyBlue }
+                      style={ styles.button(matches) }
+                      icon={ <ImportIcon /> }
+                    />
+                    {
+                      this.props.showClearButton && (
+                        <RaisedButton
+                          onClick={ this.openClearDialog }
+                          label="Clear Board"
+                          backgroundColor={ red }
+                          style={ styles.button(matches) }
+                          icon={ <ClearIcon /> }
+                        />
+                      )
+                    }
+                  </div>
+                ) }
+              </MediaQuery>
+            </MediaQuery>
+            <MediaQuery maxWidth={ 821 }>
               <RaisedButton
-                onClick={ this.openClearDialog }
-                label="Clear Board"
-                backgroundColor={ red }
-                style={ styles.button }
-                icon={ <ClearIcon /> }
+                onClick={ this.openAddTermDialog }
+                backgroundColor={ lightGreen2 }
+                style={ styles.xsButton }
+                icon={ <AddIcon /> }
               />
-            )
-          }
-          <Dialog
-            title="Add Term"
-            actions={ addTermDialogActions }
-            modal={ false }
-            open={ this.state.addTermDialogOpen }
-            onRequestClose={ this.closeAddTermDialog }
-            contentStyle={{ width: 400 }}
-          >
-            <TextField
-              hintText="e.g. Fall 2018"
-              floatingLabelText="New Board Name"
-              errorText={ this.state.errorText }
-              onChange={ this.onChangeText }
-            />
-            <SelectField
-              floatingLabelText="Term Level"
-              value={ this.state.level }
-              onChange={ this.onChangeLevel }
+              <RaisedButton
+                onClick={ this.openImportDialog }
+                backgroundColor={ skyBlue }
+                style={ styles.xsButton }
+                icon={ <ImportIcon /> }
+              />
+              {
+                this.props.showClearButton && (
+                  <RaisedButton
+                    onClick={ this.openClearDialog }
+                    backgroundColor={ red }
+                    style={ styles.xsButton }
+                    icon={ <ClearIcon /> }
+                  />
+                )
+              }
+            </MediaQuery>
+          </div>
+          <div>
+            <Dialog
+              title="Add Term"
+              actions={ addTermDialogActions }
+              modal={ false }
+              open={ this.state.addTermDialogOpen }
+              onRequestClose={ this.closeAddTermDialog }
+              contentStyle={{ width: 400 }}
             >
-              <MenuItem value="1A" primaryText="1A" />
-              <MenuItem value="1B" primaryText="1B" />
-              <MenuItem value="2A" primaryText="2A" />
-              <MenuItem value="2B" primaryText="2B" />
-              <MenuItem value="3A" primaryText="3A" />
-              <MenuItem value="3B" primaryText="3B" />
-              <MenuItem value="4A" primaryText="4A" />
-              <MenuItem value="4B" primaryText="4B" />
-              <MenuItem value="5A+" primaryText="5A+" />
-            </SelectField>
-          </Dialog>
-          <Dialog
-            title="Import Courses"
-            actions={ importDialogActions }
-            modal={ false }
-            open={ this.state.importDialogOpen }
-            onRequestClose={ this.closeImportDialog }
-            contentStyle={{ width: 1000, maxWidth: 'none', height: 600 }}
-          >
-            <Parser onChange={ text => this.onChangeText(null, text) } />
-          </Dialog>
-          <Dialog
-            title="Clear Courses"
-            actions={ clearDialogActions }
-            modal={ false }
-            open={ this.state.clearDialogOpen }
-            onRequestClose={ this.closeClearDialog }
-          >
-            <span>Are you sure you want to clear your courses?</span>
-          </Dialog>
+              <TextField
+                hintText="e.g. Fall 2018"
+                floatingLabelText="New Board Name"
+                errorText={ this.state.errorText }
+                onChange={ this.onChangeText }
+              />
+              <SelectField
+                floatingLabelText="Term Level"
+                value={ this.state.level }
+                onChange={ this.onChangeLevel }
+              >
+                <MenuItem value="1A" primaryText="1A" />
+                <MenuItem value="1B" primaryText="1B" />
+                <MenuItem value="2A" primaryText="2A" />
+                <MenuItem value="2B" primaryText="2B" />
+                <MenuItem value="3A" primaryText="3A" />
+                <MenuItem value="3B" primaryText="3B" />
+                <MenuItem value="4A" primaryText="4A" />
+                <MenuItem value="4B" primaryText="4B" />
+                <MenuItem value="5A+" primaryText="5A+" />
+              </SelectField>
+            </Dialog>
+            <Dialog
+              title="Import Courses"
+              actions={ importDialogActions }
+              modal={ false }
+              open={ this.state.importDialogOpen }
+              onRequestClose={ this.closeImportDialog }
+              contentStyle={{ width: 1000, maxWidth: 'none', height: 600 }}
+            >
+              <Parser onChange={ text => this.onChangeText(null, text) } />
+            </Dialog>
+            <Dialog
+              title="Clear Courses"
+              actions={ clearDialogActions }
+              modal={ false }
+              open={ this.state.clearDialogOpen }
+              onRequestClose={ this.closeClearDialog }
+            >
+              <span>Are you sure you want to clear your courses?</span>
+            </Dialog>
+          </div>
         </div>
       </div>
     );

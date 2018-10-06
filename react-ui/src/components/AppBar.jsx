@@ -135,7 +135,7 @@ class AppBar extends Component {
       );
     return (
       <div style={ styles.divContainer }>
-        <MediaQuery minWidth={ 768 }>
+        <MediaQuery minWidth={ 800 }>
           <Bar
             style={ styles.container(isWelcomeScreen) }
             onLeftIconButtonClick={ toggleSideBar }
@@ -152,7 +152,7 @@ class AppBar extends Component {
             { button }
           </Bar>
         </MediaQuery>
-        <MediaQuery maxWidth={ 767 }>
+        <MediaQuery maxWidth={ 800 }>
           <Bar
             style={ styles.container(isWelcomeScreen) }
             titleStyle={ mobileStyles.titleContainer(isWelcomeScreen) }
@@ -169,7 +169,7 @@ class AppBar extends Component {
             <MediaQuery minWidth={ 530 }>
               { button }
             </MediaQuery>
-            <MediaQuery maxWidth={ 529 }>
+            <MediaQuery maxWidth={ 530 }>
               { xsButton }
             </MediaQuery>
           </Bar>

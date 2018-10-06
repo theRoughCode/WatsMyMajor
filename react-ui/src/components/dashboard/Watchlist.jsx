@@ -15,7 +15,6 @@ const styles = {
     width: 'fit-content',
     height: 'fit-content',
     margin: 'auto',
-    marginTop: 40,
   },
   header: {
     fontSize: 20,
