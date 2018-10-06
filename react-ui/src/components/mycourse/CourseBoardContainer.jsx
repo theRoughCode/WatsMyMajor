@@ -21,6 +21,11 @@ import {
 } from '../../actions';
 
 const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
   viewContainer: {
     width: '100%',
     height: '100%',
@@ -28,10 +33,9 @@ const styles = {
     overflowX: 'hidden',
   },
   boardContainer: {
-    width: 'calc(100% - 224px)',
+    width: 'calc(100% - 250px)',
     height: 'fit-content',
-    margin: 'auto',
-    marginRight: 224,
+    marginRight: 250,
     padding: '30px 0',
     display: 'flex',
   },
@@ -77,12 +81,12 @@ const styles = {
 
 const mobileStyles = {
   viewContainer: {
-    width: '100%',
-    height: 'calc(100% - 10px)',
+    width: 'calc(100% - 20px)',
+    height: 'calc(100% - 20px)',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
-    marginBottom: 10,
+    margin: 10,
   },
   boardContainer: {
     width: '100%',
@@ -428,72 +432,80 @@ class CourseBoardContainer extends Component {
 
   render() {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <MediaQuery minWidth={ 445 }>
-          <MyCourseAppBar
-            onAddBoard={ this.addBoard }
-            onImport={ this.importTerms }
-            onClear={ this.clearCourses }
-            showClearButton={ this.state.courseList.length > 0 }
-          />
-          <MediaQuery minWidth={ 852 }>
-            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(3) }>
-              <div style={ styles.viewContainer }>
-                <div style={ styles.boardContainer }>
-                  { this.renderBoard(3) }
-                </div>
-                <MyCourseSideBar
-                  cartCourses={ this.state.cart }
-                  onClearCart={ this.clearCart }
-                />
-              </div>
-            </DragDropContext>
-          </MediaQuery>
-          <MediaQuery minWidth={ 652 } maxWidth={ 852 }>
-            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(2) }>
-              <div style={ styles.viewContainer }>
-                <div style={ styles.boardContainer }>
-                  { this.renderBoard(2) }
-                </div>
-                <MyCourseSideBar
-                  cartCourses={ this.state.cart }
-                  onClearCart={ this.clearCart }
-                />
-              </div>
-            </DragDropContext>
-          </MediaQuery>
-          <MediaQuery minWidth={ 445 } maxWidth={ 652 }>
-            <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(1) }>
-              <div style={ styles.viewContainer }>
-                <div style={ styles.boardContainer }>
-                  { this.renderBoard(1) }
-                </div>
-                <MyCourseSideBar
-                  cartCourses={ this.state.cart }
-                  onClearCart={ this.clearCart }
-                />
-              </div>
-            </DragDropContext>
-          </MediaQuery>
-        </MediaQuery>
-        <MediaQuery maxWidth={ 445 }>
-          <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(0) }>
-            <MyCourseAppBar
-              onAddBoard={ this.addBoard }
-              onImport={ this.importTerms }
-              onClear={ this.clearCourses }
-              showClearButton={ this.state.courseList.length > 0 }
-              showTrashOnDrag
-              isDraggingCourse={ this.state.isDraggingCourse }
-            />
-            <div style={ mobileStyles.viewContainer }>
-              <div style={ mobileStyles.boardContainer }>
-                { this.renderBoard(0) }
-              </div>
+      <MediaQuery minWidth={ 460 }>
+        { matches => matches
+          ? (
+            <div style={ styles.container }>
+              <MyCourseAppBar
+                onAddBoard={ this.addBoard }
+                onImport={ this.importTerms }
+                onClear={ this.clearCourses }
+                showClearButton={ this.state.courseList.length > 0 }
+              />
+              <MediaQuery minWidth={ 900 }>
+                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(3) }>
+                  <div style={ styles.viewContainer }>
+                    <div style={ styles.boardContainer }>
+                      { this.renderBoard(3) }
+                    </div>
+                    <MyCourseSideBar
+                      cartCourses={ this.state.cart }
+                      onClearCart={ this.clearCart }
+                    />
+                  </div>
+                </DragDropContext>
+              </MediaQuery>
+              <MediaQuery minWidth={ 685 } maxWidth={ 900 }>
+                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(2) }>
+                  <div style={ styles.viewContainer }>
+                    <div style={ styles.boardContainer }>
+                      { this.renderBoard(2) }
+                    </div>
+                    <MyCourseSideBar
+                      cartCourses={ this.state.cart }
+                      onClearCart={ this.clearCart }
+                    />
+                  </div>
+                </DragDropContext>
+              </MediaQuery>
+              <MediaQuery minWidth={ 460 } maxWidth={ 685 }>
+                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(1) }>
+                  <div style={ styles.viewContainer }>
+                    <div style={ styles.boardContainer }>
+                      { this.renderBoard(1) }
+                    </div>
+                    <MyCourseSideBar
+                      cartCourses={ this.state.cart }
+                      onClearCart={ this.clearCart }
+                    />
+                  </div>
+                </DragDropContext>
+              </MediaQuery>
             </div>
-          </DragDropContext>
-        </MediaQuery>
-      </div>
+          )
+          : (
+            <div style={ styles.container }>
+              <MediaQuery maxWidth={ 460 }>
+                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(0) }>
+                  <MyCourseAppBar
+                    onAddBoard={ this.addBoard }
+                    onImport={ this.importTerms }
+                    onClear={ this.clearCourses }
+                    showClearButton={ this.state.courseList.length > 0 }
+                    showTrashOnDrag
+                    isDraggingCourse={ this.state.isDraggingCourse }
+                  />
+                  <div style={ mobileStyles.viewContainer }>
+                    <div style={ mobileStyles.boardContainer }>
+                      { this.renderBoard(0) }
+                    </div>
+                  </div>
+                </DragDropContext>
+              </MediaQuery>
+            </div>
+          )
+        }
+      </MediaQuery>
     );
   }
 }
