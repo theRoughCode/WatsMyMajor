@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 import {
   yellow,
@@ -59,9 +59,9 @@ const CourseCard = ({
   const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
 
   return (
+    <Link to={`/courses/${subject}/${catalogNumber}`} target="_blank" style={{ textDecoration: 'none' }}>
     <Paper
       zDepth={ 1 }
-      onClick={ () => history.push(`/courses/${subject}/${catalogNumber}`) }
       style={ styles.container(highlightBackground) }
     >
       <div
@@ -78,6 +78,7 @@ const CourseCard = ({
         { `${subject} ${catalogNumber}` }
       </div>
     </Paper>
+    </Link>
   );
 }
 
