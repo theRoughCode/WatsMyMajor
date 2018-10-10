@@ -34,13 +34,13 @@ const Field = ({
   type,
 }) => {
   const onChangeHandler = (ev) => onChange(name, ev);
-
+  
   return (
     <div style={ styles.fieldContainer }>
       <Icon style={ styles.fieldIcon } />
       <TextField
         id={ name }
-        floatingLabelText={ name }
+        floatingLabelText={ label }
         value={ value }
         type={ type }
         errorText={ errorText }
