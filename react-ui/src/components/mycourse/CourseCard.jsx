@@ -60,24 +60,24 @@ const CourseCard = ({
 
   return (
     <Link to={`/courses/${subject}/${catalogNumber}`} target="_blank" style={{ textDecoration: 'none' }}>
-    <Paper
-      zDepth={ 1 }
-      style={ styles.container(highlightBackground) }
-    >
-      <div
-        ref={ provided.innerRef }
-        { ...provided.draggableProps }
-        { ...provided.dragHandleProps }
-        style={ getItemStyle(
-          snapshot.isDragging,
-          isPrereq,
-          provided.draggableProps.style,
-          highlightBackground,
-        ) }
+      <Paper
+        zDepth={ 1 }
+        style={ styles.container(highlightBackground) }
       >
-        { `${subject} ${catalogNumber}` }
-      </div>
-    </Paper>
+        <div
+          ref={ provided.innerRef }
+          { ...provided.draggableProps }
+          { ...provided.dragHandleProps }
+          style={ getItemStyle(
+            snapshot.isDragging,
+            isPrereq,
+            provided.draggableProps.style,
+            highlightBackground,
+          ) }
+        >
+          { `${subject} ${catalogNumber}` }
+        </div>
+      </Paper>
     </Link>
   );
 }
