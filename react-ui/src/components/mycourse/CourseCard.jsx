@@ -59,7 +59,7 @@ const CourseCard = ({
   const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
 
   return (
-    <Link to={`/courses/${subject}/${catalogNumber}`} target="_blank" style={{ textDecoration: 'none' }}>
+    <Link to={ `/courses/${subject}/${catalogNumber}` } target="_blank" style={{ textDecoration: 'none' }}>
       <Paper
         zDepth={ 1 }
         style={ styles.container(highlightBackground) }
