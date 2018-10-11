@@ -27,7 +27,7 @@ const styles = {
   scrollable: {
     width: '100%',
     whiteSpace: 'nowrap',
-    overflowX: 'scroll',
+    overflowX: 'auto',
     overflowY: 'hidden',
   },
   paper: {
@@ -79,8 +79,8 @@ const CourseClassList = ({
     <div style={ styles.header }>
       <span>{ termStr(term) }</span>
     </div>
-    <div style={ styles.scrollable }>
-      <Paper zDepth={ 1 } style={ styles.paper }>
+    <Paper zDepth={ 1 } style={ styles.scrollable }>
+      <div style={ styles.paper }>
         <Table
           className="course-class-list-table"
           style={ styles.table }
@@ -106,8 +106,8 @@ const CourseClassList = ({
             }
           </TableBody>
         </Table>
-      </Paper>
-    </div>
+      </div>
+    </Paper>
   </div>
 );
 
