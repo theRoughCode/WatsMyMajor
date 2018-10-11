@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 import {
   yellow,
@@ -59,25 +59,26 @@ const CourseCard = ({
   const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
 
   return (
-    <Paper
-      zDepth={ 1 }
-      onClick={ () => history.push(`/courses/${subject}/${catalogNumber}`) }
-      style={ styles.container(highlightBackground) }
-    >
-      <div
-        ref={ provided.innerRef }
-        { ...provided.draggableProps }
-        { ...provided.dragHandleProps }
-        style={ getItemStyle(
-          snapshot.isDragging,
-          isPrereq,
-          provided.draggableProps.style,
-          highlightBackground,
-        ) }
+    <Link to={ `/courses/${subject}/${catalogNumber}` } target="_blank" style={{ textDecoration: 'none' }}>
+      <Paper
+        zDepth={ 1 }
+        style={ styles.container(highlightBackground) }
       >
-        { `${subject} ${catalogNumber}` }
-      </div>
-    </Paper>
+        <div
+          ref={ provided.innerRef }
+          { ...provided.draggableProps }
+          { ...provided.dragHandleProps }
+          style={ getItemStyle(
+            snapshot.isDragging,
+            isPrereq,
+            provided.draggableProps.style,
+            highlightBackground,
+          ) }
+        >
+          { `${subject} ${catalogNumber}` }
+        </div>
+      </Paper>
+    </Link>
   );
 }
 
