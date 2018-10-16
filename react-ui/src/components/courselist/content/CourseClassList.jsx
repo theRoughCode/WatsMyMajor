@@ -25,7 +25,8 @@ const styles = {
     marginBottom: 15,
   },
   scrollable: {
-    width: '100%',
+    width: 'fit-content',
+    maxWidth: '100%',
     whiteSpace: 'nowrap',
     overflowX: 'auto',
     overflowY: 'hidden',
