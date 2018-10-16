@@ -22,6 +22,7 @@ CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
   // Get course information
   let { err, course } = await courses.getCourseInfo(subject.toUpperCase(), catalogNumber);
   if (err) return res.status(400).send(err);
+  if (course == null) return res.status(400).send('Course not found.');
   const {
     // academicLevel,
     description,
