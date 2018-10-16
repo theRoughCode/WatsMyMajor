@@ -9,27 +9,12 @@ const utils = require('./utils');
 // Enable hiding of API Key
 require('dotenv').config();
 
-const TERM = '1189';  // Fall 2018
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
 const uwclient = (process.env.TESTING) ? null : new watApi({
   API_KEY : process.env.WATERLOO_API_KEY
 });
-
-function getInstructor(instructor) {
-  if (!instructor || !instructor.length) return '';
-  return instructor.split(',').reverse().join(' ');
-}
-
-// Extract weekdays from courses
-function parseWeekdays(weekdays) {
-  const RE_DAY = /(M)?(Th|T)?(W)?(Th)?(F)?/g;
-  return RE_DAY.exec(weekdays)
-    .slice(1, 6)
-    .map((d) => (d == null) ? null : d)
-    .filter(d => d != null);
-}
 
 // Retrieves terms
 // Returns { currentTerm, previousTerm, nextTerm }
@@ -42,98 +27,6 @@ function getTerms(callback) {
       currentTerm: current_term,
       previousTerm: previous_term,
       nextTerm: next_term
-    });
-  });
-}
-
-// Retrieves specific information on classes
-// TODO: Move to firebase
-function getCourseClasses(subject, catalogNumber) {
-  return new Promise((resolve, reject) => {
-    uwclient.get(`/terms/${TERM}/${subject}/${catalogNumber}/schedule.json`, function(err, res) {
-      if (err || res.data.length === 0) {
-        if (err) console.error(err);
-        return resolve(null);
-      }
-
-      const classes = res.data.map(course => {
-        const {
-          units,
-          note,
-          class_number,
-          section,
-          campus,
-          enrollment_capacity,
-          enrollment_total,
-          waiting_capacity,
-          waiting_total,
-          reserves,
-          classes,
-          last_updated
-        } = course;
-
-        const lastUpdated = new Date(last_updated);
-        const options = {
-          year: "numeric", month: "short",
-          day: "numeric", hour: "2-digit", minute: "2-digit"
-        };
-
-        const {
-          date,
-          location,
-          instructors
-        } = classes[0];
-
-        const {
-          start_time,
-          end_time,
-          weekdays,
-          is_tba,
-          is_cancelled,
-          is_closed
-        } = date;
-
-        const { building, room } = location;
-
-        const reserveObj = reserves[0];
-        let reserve_capacity = 0;
-        let reserve_total = 0;
-        let reserve_group = '';
-        if (reserveObj != null) {
-          reserve_capacity = reserveObj.enrollment_capacity;
-          reserve_total = reserveObj.enrollment_total;
-          reserve_group = reserveObj.reserve_group;
-        }
-
-        return {
-          units,
-          note: note || '',
-          classNumber: class_number,
-          section,
-          campus,
-          enrollmentCap: enrollment_capacity,
-          enrollmentTotal: enrollment_total,
-          waitingCap: waiting_capacity,
-          waitingTotal: waiting_total,
-          reserveCap: reserve_capacity,
-          reserveTotal: reserve_total,
-          reserveGroup: reserve_group,
-          startTime: start_time,
-          endTime: end_time,
-          weekdays: parseWeekdays(weekdays),
-          isTBA: is_tba,
-          isCancelled: is_cancelled,
-          isClosed: is_closed,
-          instructor: getInstructor(instructors[0]),
-          location: (building || room) ? `${building} ${room}` : 'TBA',
-          lastUpdated: lastUpdated.toLocaleDateString("en-US", options)
-        };
-      });
-
-      resolve({
-        term: TERM,
-        classes
-      });
     });
   });
 }
@@ -158,11 +51,17 @@ function getPrereqs(subject, catalogNumber, callback) {
     });
 
     const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
-    const prereqs = res.data.prerequisites_parsed;
+    let prereqs = res.data.prerequisites_parsed;
+
+    try {
+      prereqs = utils.nestReqs(prereqs);
+    } catch (err) {
+      callback(err, null);
+    }
 
     callback(null, {
       prereqString,
-      prereqs: utils.nestReqs(prereqs)
+      prereqs,
     });
   })
 }
@@ -243,19 +142,23 @@ function getReqs(subject, catalogNumber, callback) {
       let antireqs = antireqString;
 
       if (coreqs) {
-        // Edge case of "Oneof"
-        if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + catalogNumber))
-          coreqs = coreqs.replace('Coreq:', '');
-        coreqs = utils.unpick(coreqs);
+        try {
+          // Edge case of "One of" or "or"
+          if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + catalogNumber))
+            coreqs = coreqs.replace('Coreq:', '');
+          coreqs = utils.unpick(coreqs);
 
-        if (coreqs.hasOwnProperty('choose')) {
-          coreqs.reqs = utils.parseReqs(coreqs.reqs);
-        }
+          if (coreqs.hasOwnProperty('choose')) {
+            coreqs.reqs = utils.parseReqs(coreqs.reqs);
+          }
 
-        if (Array.isArray(coreqs)) {
-          coreqs = utils.parseReqs(coreqs);
-        } else {
-          coreqs = [coreqs];
+          if (Array.isArray(coreqs)) {
+            coreqs = utils.parseReqs(coreqs);
+          } else {
+            coreqs = [coreqs];
+          }
+        } catch (err) {
+          callback(err, null);
         }
       } else coreqs = [];
 
@@ -268,7 +171,11 @@ function getReqs(subject, catalogNumber, callback) {
             .replace('/', ',')
             .split(',');
 
-          antireqs = utils.parseReqs(antireqs);
+          try {
+            antireqs = utils.parseReqs(antireqs);
+          } catch (err) {
+            callback(err, null);
+          }
         } else antireqs = [antireqString];
       } else antireqs = [];
 
@@ -321,7 +228,6 @@ function getCourses(callback) {
 // Exports
 module.exports = {
   getTerms,
-  getCourseClasses,
   getCourseInformation,
   getCourseDescription,
   getReqs,

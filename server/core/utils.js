@@ -41,7 +41,7 @@ function nestReqs(reqArr) {
   const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
     if (Array.isArray(req)) {
       // [1, 'CS136']
-      if (!isNaN(req[0]) && req.slice(1).length === 1) return parseCourse(req[1]);
+      if (!isNaN(req[0]) && typeof req[1] === 'string') return parseCourse(req[1]);
       else return nestReqs(req);
     } else return parseCourse(req);
   });
@@ -112,16 +112,20 @@ function unpick(str) {
       return str;
     }
     const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
-    return { choose, reqs: arr };
+    return { choose, reqs: fillInSubject(arr) };
   } else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
-    const open = str.indexOf('(');
-    const close = str.indexOf(')');
-    // replace 'or' with comma and split into array
-    const chooseReqs = str.slice(open + 1, close).replace(/or/g,', ').replace(/\s/g, '').split(',');
+    let open = str.indexOf('(');
+    let close = str.indexOf(')');
+    if (open === -1 || close === -1) close = str.length;
+    // replace ' or ' with comma and split into array.  Also remove periods
+    const chooseReqs = str.slice(open + 1, close).replace(/\sor\s/g,', ').replace(/(\s|\.)/g, '').split(',');
     const arr = [{
       choose: 1,
       reqs: fillInSubject(chooseReqs)
     }];
+
+    if (!str.includes('[')) return arr[0];
+
     // Remove special chars
     /* eslint-disable no-useless-escape */
     const checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');

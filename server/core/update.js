@@ -87,7 +87,7 @@ function updateAllCourses() {
 function updateCourseRequisite(subject, catalogNumber) {
   return new Promise((resolve, reject) => {
     waterloo.getReqs(subject, catalogNumber, async function(err, reqs) {
-      if (err) return resolve(err);
+      if (err) return reject(err);
       else {
         let { prereqs, coreqs, antireqs } = reqs;
 
@@ -129,30 +129,24 @@ function updateCourseRequisite(subject, catalogNumber) {
 // Get courses from courseList and updates all course requisites
 async function updateAllRequisites() {
   try {
-    const reqsSnapshot = await requisitesDB.getRequisitesSnapshot();
+    const courses = await courseListDB.getCourseList();
     const failedList = [];
-    const reqs = reqsSnapshot.val();
 
     return new Promise((resolve, reject) => {
-      asyncjs.forEachOfLimit(reqs, 10, (courses, subject, subjectCallback) => {
-        asyncjs.forEachOfLimit(courses, 10, (_, catalogNumber, catNumCallback) => {
-          // Get course reqs
-          updateCourseRequisite(subject, catalogNumber)
-            .then(err => {
-              if (err) {
-                console.error(`${subject} ${catalogNumber}: ${err}`);
-              }
-              catNumCallback();
-            })
-            .catch(err => {
+      asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
+        // Get course reqs
+        updateCourseRequisite(subject, catalogNumber)
+          .then(err => {
+            if (err) {
               console.error(`${subject} ${catalogNumber}: ${err}`);
-              failedList.push({ subject, catalogNumber, err });
-              catNumCallback();
-            });
-        }, err => {
-          if (err) subjectCallback(err);
-          else subjectCallback(null);
-        });
+            }
+            callback();
+          })
+          .catch(err => {
+            console.error(`${subject} ${catalogNumber}: ${err}`);
+            failedList.push({ subject, catalogNumber, err });
+            callback();
+          });
       }, err => {
         if (err) {
           console.error('\n\n\n\n', err);
