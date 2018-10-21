@@ -29,6 +29,13 @@ const styles = {
   innerIcon: {
     left: 0,
     width: 20,
+  },
+  note: {
+    display: 'flex',
+    textAlign: 'left',
+    maxWidth: 280,
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-all",
   }
 };
 
@@ -165,7 +172,7 @@ export default class LevelCheck extends Component {
     const levelStr = (level.length > 0) ? `${level}-level ` : '';
     const excludingStr = (excluding.length > 0) ? ` (excl. ${excluding.join(',')})` : '';
     return (
-      <div data-tip data-for='note'>
+      <div data-tip data-for={ `note-${subject}-${level}-${choose}` }>
         <Checkbox
           label={ `Any ${levelStr}${subject} course${excludingStr}` }
           checked={ this.state.isChecked }
@@ -198,8 +205,8 @@ export default class LevelCheck extends Component {
         ) }
         {
           (note.length > 0) && (
-            <ReactTooltip id='note' type='info' effect='solid'>
-              <span>{ note }</span>
+            <ReactTooltip id={ `note-${subject}-${level}-${choose}` } type='info' effect='solid'>
+              <span style={ styles.note }>{ note }</span>
             </ReactTooltip>
           )
         }
