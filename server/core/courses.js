@@ -1,5 +1,7 @@
 const fuzzy = require('fuzzy');
+const requisites = require('./requisites');
 const coursesDB = require('../database/courses');
+const courseRatingsDB = require('../database/courseRatings');
 
 // Extractors for fuzzy searching
 const simpleExtractor = ({ subject, catalogNumber }) => subject + ' ' + catalogNumber;
@@ -81,9 +83,51 @@ function setCourseInfo(subject, catalogNumber, {
   return coursesDB.setCourseInfo(subject, catalogNumber, info);
 }
 
-function getCourseInfo(subject, catalogNumber) {
-  return coursesDB.getCourseInfo(subject, catalogNumber);
+async function getCourseInfo(subject, catalogNumber) {
+  // Get course information
+  let { err, course } = await coursesDB.getCourseInfo(subject, catalogNumber);
+  if (err || course == null) return { err, info: null };
+
+  const {
+    // academicLevel,
+    description,
+    crosslistings,
+    notes,
+    terms,
+    title,
+    units,
+    url,
+  } = course;
+
+  // Get course requisites
+  let reqs = null;
+  ({ err, reqs } = await requisites.getFormattedReqs(subject, catalogNumber));
+  if (err) return { err, info: null };
+
+  let rating = null;
+  ({ err, rating } = await courseRatingsDB.getCourseRatings(subject, catalogNumber));
+  if (err) return { err, info: null };
+  
+  return {
+    err: null,
+    info: {
+      description,
+      crosslistings: crosslistings || '',
+      notes: notes || '',
+      terms: terms || [],
+      title,
+      units,
+      url,
+      rating,
+      prereqs: reqs.prereqs,
+      coreqs: reqs.coreqs,
+      antireqs: reqs.antireqs,
+      postreqs: reqs.postreqs,
+    },
+  };
 }
+
+
 
 module.exports = {
   searchCourses,
