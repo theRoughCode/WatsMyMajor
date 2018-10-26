@@ -4,9 +4,11 @@ import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import { DragDropContext } from 'react-beautiful-dnd';
+import ReactTooltip from 'react-tooltip';
 import MyCourseSideBar from './MyCourseSideBar';
 import MyCourseAppBar from './MyCourseAppBar';
 import TermRow from './TermRow';
+import LoadingView from '../tools/LoadingView';
 import { DragTypes } from '../../constants/DragTypes';
 import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart } from '../../utils/courses';
@@ -103,6 +105,46 @@ const mobileStyles = {
   },
 };
 
+const getCourseTitle = async (subject, catalogNumber) => {
+  try {
+    const response = await fetch(`/server/courses/title/${subject}/${catalogNumber}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Failed to get course")
+      return "";
+    }
+
+    return response.text();
+  } catch (err) {
+    console.error(err);
+    return "";
+  }
+}
+
+// Fill course list with titles
+const fillCourseTitles = async (courseList) => {
+  if (!courseList) return courseList;
+
+  return await Promise.all(courseList.map(async course => {
+    if (course.hasOwnProperty('title')) return course;
+    course = Object.assign({}, course);
+    course.title = await getCourseTitle(course.subject, course.catalogNumber);
+    return course;
+  }));
+}
+
+// Fill course list with titles
+const fillUserCourses = async (courseList) =>
+  await Promise.all(courseList.map(async term => {
+    term = Object.assign({}, term);
+    term.courses = await fillCourseTitles(term.courses);
+    return term;
+  }));
+
 class CourseBoardContainer extends Component {
 
   static propTypes = {
@@ -121,26 +163,34 @@ class CourseBoardContainer extends Component {
   constructor(props) {
     super(props);
 
-    const {
-      courseList,
-      cart,
-      username,
-    } = props;
+    const { username } = props;
 
     this.state = {
-      courseList,
-      cart,
+      courseList: [],
+      cart: [],
+      loading: true,
       username,
       isDraggingCourse: false,
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  async componentDidMount() {
+    const courseList = await fillUserCourses(this.props.courseList);
+    const cart = await fillCourseTitles(this.props.cart);
+
+    this.setState({
+      courseList,
+      cart,
+      loading: false,
+    });
+  }
+
+  async componentWillReceiveProps(nextProps) {
     if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
-      this.setState({ courseList: nextProps.courseList });
+      this.setState({ courseList: await fillUserCourses(nextProps.courseList) });
     }
     if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
-      this.setState({ cart: nextProps.cart });
+      this.setState({ cart: await fillCourseTitles(nextProps.cart) });
     }
     if (nextProps.username !== this.state.username) {
       this.setState({ username: nextProps.username });
@@ -431,6 +481,8 @@ class CourseBoardContainer extends Component {
   }
 
   render() {
+    if (this.state.loading) return <LoadingView />;
+
     return (
       <MediaQuery minWidth={ 460 }>
         { matches => matches
@@ -481,6 +533,7 @@ class CourseBoardContainer extends Component {
                   </div>
                 </DragDropContext>
               </MediaQuery>
+              <ReactTooltip id="course-card-title" effect="solid" />
             </div>
           )
           : (
@@ -502,6 +555,7 @@ class CourseBoardContainer extends Component {
                   </div>
                 </DragDropContext>
               </MediaQuery>
+              <ReactTooltip id="course-card-title" effect="solid" />
             </div>
           )
         }

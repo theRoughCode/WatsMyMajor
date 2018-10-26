@@ -54,7 +54,7 @@ async function getFormattedReqs(subject, catalogNumber) {
   else antireqs = await fillCourseTitles(antireqs);
 
   let postreqs = reqs.postreqs
-  if (postreqs == null) postreqs = {};
+  if (postreqs == null) postreqs = [];
   else postreqs = await fillCourseTitles(formatPostreqs(postreqs));
 
   return {
