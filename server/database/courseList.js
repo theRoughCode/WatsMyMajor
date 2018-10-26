@@ -6,6 +6,8 @@ const { courseListRef } = require('./index');
  *  to populate their data.
  */
 
+let cachedCourseList = [];
+let valid = false;
 
 /****************************
  *													*
@@ -14,8 +16,8 @@ const { courseListRef } = require('./index');
  ****************************/
 
 // Set a course
-// TODO: Use title instead and then use this to search
 function setCourse(subject, catalogNumber, title) {
+  valid = false;
   return courseListRef
     .child(`${subject}/${catalogNumber}`)
     .set(title);
@@ -44,6 +46,8 @@ async function getCourseTitle(subject, catalogNumber) {
 
 // Returns array of courses: { subject, catalogNumber }
 async function getCourseList() {
+  if (valid) return cachedCourseList;  // use cached version if valid flag is true
+
   const courseList = [];
   const snapshot = await courseListRef.once('value');
   snapshot.forEach((subjectSnapshot) => {
@@ -53,6 +57,8 @@ async function getCourseList() {
       courseList.push({ subject, catalogNumber, title: catalogNumberSnapshot.val() });
     });
   });
+  cachedCourseList = courseList.slice();
+  valid = true;
   return courseList;
 }
 

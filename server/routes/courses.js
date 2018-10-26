@@ -2,8 +2,6 @@ const CoursesRouter = require('express').Router();
 const courses = require('../core/courses');
 const courseClassesDB = require('../database/classes');
 const courseListDB = require('../database/courseList');
-const courseRatingsDB = require('../database/courseRatings');
-const requisitesDB = require('../database/requisites');
 
 // Get search results for query string and max number of results
 CoursesRouter.get('/query/:query/:num', async function(req, res) {

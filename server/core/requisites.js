@@ -20,7 +20,7 @@ const fillCourseTitles = async (coursesArr) => {
       const { subject, catalogNumber } = course;
       const { err, title } = await courseListDB.getCourseTitle(subject, catalogNumber);
       if (err) {
-        console.err(err);
+        console.error(err);
         return {};
       }
       return { subject, catalogNumber, title };
@@ -28,7 +28,7 @@ const fillCourseTitles = async (coursesArr) => {
       let { choose, reqs } = course;
       reqs = await fillCourseTitles(reqs);
       return { choose, reqs };
-    } else console.err('Should not happen', course);
+    } else console.error('Should not happen', course);
   }));
 }
 
