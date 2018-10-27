@@ -53,7 +53,7 @@ const CourseCard = ({
   highlightBackground,
   history
 }) => {
-  const { subject, catalogNumber } = course;
+  const { subject, catalogNumber, title } = course;
 
   // Mark this card as selected if is a prereq of dragged card
   const isPrereq = isInPrereqs(subject, catalogNumber, courseCardPrereqs);
@@ -74,6 +74,8 @@ const CourseCard = ({
             provided.draggableProps.style,
             highlightBackground,
           ) }
+          data-tip={ title }
+          data-for="course-card-title"
         >
           { `${subject} ${catalogNumber}` }
         </div>

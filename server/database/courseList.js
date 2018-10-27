@@ -6,6 +6,8 @@ const { courseListRef } = require('./index');
  *  to populate their data.
  */
 
+let cachedCourseList = [];
+let valid = false;
 
 /****************************
  *													*
@@ -14,11 +16,11 @@ const { courseListRef } = require('./index');
  ****************************/
 
 // Set a course
-// TODO: Use title instead and then use this to search
-function setCourse(subject, catalogNumber) {
+function setCourse(subject, catalogNumber, title) {
+  valid = false;
   return courseListRef
     .child(`${subject}/${catalogNumber}`)
-    .set(true);
+    .set(title);
 }
 
 
@@ -28,21 +30,40 @@ function setCourse(subject, catalogNumber) {
  *													*
  ****************************/
 
+// Returns course name
+async function getCourseTitle(subject, catalogNumber) {
+  try {
+    const snapshot = await courseListRef
+      .child(`${subject}/${catalogNumber}`)
+      .once('value');
+    const title = await snapshot.val();
+    return { err: null, title };
+  } catch (err) {
+    console.error(err);
+    return { err: err.message, title: null };
+  }
+}
+
 // Returns array of courses: { subject, catalogNumber }
 async function getCourseList() {
+  if (valid) return cachedCourseList;  // use cached version if valid flag is true
+
   const courseList = [];
   const snapshot = await courseListRef.once('value');
   snapshot.forEach((subjectSnapshot) => {
     const subject = subjectSnapshot.key;
     subjectSnapshot.forEach((catalogNumberSnapshot) => {
       const catalogNumber = catalogNumberSnapshot.key;
-      courseList.push({ subject, catalogNumber });
+      courseList.push({ subject, catalogNumber, title: catalogNumberSnapshot.val() });
     });
   });
+  cachedCourseList = courseList.slice();
+  valid = true;
   return courseList;
 }
 
 module.exports = {
   setCourse,
+  getCourseTitle,
   getCourseList,
 };

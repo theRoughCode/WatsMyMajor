@@ -25,8 +25,8 @@ function updateCourseList() {
     waterloo.getCourses(async function(err, data) {
       if (err) return resolve(err);
 
-      await Promise.all(data.map(async ({ subject, catalog_number }) => {
-        await courseListDB.setCourse(subject, catalog_number);
+      await Promise.all(data.map(async ({ subject, catalog_number, title }) => {
+        await courseListDB.setCourse(subject, catalog_number, title);
       }));
       resolve(null);
     });

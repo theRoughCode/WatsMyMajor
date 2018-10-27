@@ -1,8 +1,7 @@
 const CoursesRouter = require('express').Router();
 const courses = require('../core/courses');
 const courseClassesDB = require('../database/classes');
-const courseRatingsDB = require('../database/courseRatings');
-const requisitesDB = require('../database/requisites');
+const courseListDB = require('../database/courseList');
 
 // Get search results for query string and max number of results
 CoursesRouter.get('/query/:query/:num', async function(req, res) {
@@ -14,55 +13,31 @@ CoursesRouter.get('/query/:query/:num', async function(req, res) {
   else res.json(result);
 });
 
+// Gets list of all courses
+CoursesRouter.get('/all', async function (req, res) {
+  const courseList = await courseListDB.getCourseList();
+  res.json(courseList);
+});
+
+// Gets course title
+CoursesRouter.get('/title/:subject/:catalogNumber', async function (req, res) {
+  const subject = req.params.subject.toUpperCase();
+  const catalogNumber = req.params.catalogNumber;
+
+  const { err, title } = await courseListDB.getCourseTitle(subject, catalogNumber);
+  if (err) res.status(400).send(err);
+  else res.send(title);
+});
+
 // Get information about course
 CoursesRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
   const subject = req.params.subject.toUpperCase();
   const catalogNumber = req.params.catalogNumber;
 
   // Get course information
-  let { err, course } = await courses.getCourseInfo(subject.toUpperCase(), catalogNumber);
-  if (err) return res.status(400).send(err);
-  if (course == null) return res.status(400).send('Course not found.');
-  const {
-    // academicLevel,
-    description,
-    crosslistings,
-    notes,
-    terms,
-    title,
-    units,
-    url,
-  } = course;
-
-  // Get course requisites
-  let reqs = null;
-  ({ err, reqs } = await requisitesDB.getRequisites(subject, catalogNumber));
-  if (err) res.status(400).send(err);
-
-  const prereqs = (reqs != null) ? reqs.prereqs : {};
-  const coreqs = (reqs != null) ? reqs.coreqs : [];
-  const antireqs = (reqs != null) ? reqs.antireqs : [];
-  let rating = null;
-
-  ({ err, rating } = await courseRatingsDB.getCourseRatings(subject, catalogNumber));
-  if (err) res.status(400).send(err);
-
-  const postreqs = (reqs != null) ? reqs.postreqs : {};
-
-  res.json({
-    description,
-    crosslistings: crosslistings || '',
-    notes: notes || '',
-    terms: terms || [],
-    title,
-    units,
-    url,
-    rating,
-    prereqs: prereqs || {},
-    coreqs: coreqs || [],
-    antireqs: antireqs || [],
-    postreqs: postreqs || {},
-  });
+  let { err, info } = await courses.getCourseInfo(subject.toUpperCase(), catalogNumber);
+  if (err) return res.status(400).send(err.message);
+  else res.json(info);
 });
 
 // Get classes for a course

@@ -80,6 +80,7 @@ const parseCourses = (courses) => {
   const classesArr = [];
 
   courses.forEach(({ subject, catalogNumber, classes }) => {
+    if (!classes) return;
     const colour = RandomColour({ luminosity: 'dark' });
     Object.entries(classes).forEach(arr => {
       const type = arr[0];

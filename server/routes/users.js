@@ -240,7 +240,6 @@ UsersRouter.post('/set/courselist/:username', async function(req, res) {
   if (req.user !== username) return res.sendStatus(401);
 
   const courseList = await setCourseListPrereqs(req.body.courseList);
-  // console.log(courseList)
   const err = await users.setCourseList(username, courseList);
   if (err) {
     console.error(err);

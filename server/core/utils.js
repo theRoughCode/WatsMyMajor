@@ -158,6 +158,7 @@ function flattenPrereqs(prereqs) {
 
 // Set prereqs for input courses
 async function setCoursesPrereqs(courses) {
+  if (!courses) return [];
   return await Promise.all(courses.map(async function(course) {
     let { subject, catalogNumber, prereqs } = course;
     if (prereqs != null) return course;

@@ -20,7 +20,7 @@ const styles = {
   },
 };
 
-const Prereqs = ({ choose, reqs }) => (
+const ChooseReqs = ({ choose, reqs }) => (
   <div style={ styles.container }>
     <span style={ styles.choose }>{ `Choose ${choose} of:` }</span>
     <div style={ styles.reqs }>
@@ -29,9 +29,9 @@ const Prereqs = ({ choose, reqs }) => (
   </div>
 );
 
-Prereqs.propTypes = {
+ChooseReqs.propTypes = {
   choose: PropTypes.number.isRequired,
   reqs: PropTypes.array.isRequired
 };
 
-export default Prereqs;
+export default ChooseReqs;

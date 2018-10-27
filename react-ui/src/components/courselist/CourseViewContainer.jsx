@@ -86,17 +86,6 @@ const getCourseClasses = async (subject, catalogNumber, term) => {
   return await response.json();
 };
 
-// Formats postreqs obj into arr
-const formatPostreqs = (postreqs) => {
-  const formatted = [];
-  for (let subject in postreqs) {
-    for (let catalogNumber in postreqs[subject]) {
-      formatted.push({ subject, catalogNumber });
-    }
-  }
-  return formatted;
-};
-
 class CourseViewContainer extends Component {
 
   static propTypes = {
@@ -244,7 +233,7 @@ class CourseViewContainer extends Component {
         antireqs,
         coreqs,
         prereqs,
-        postreqs: formatPostreqs(postreqs),
+        postreqs,
       };
 
       const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);

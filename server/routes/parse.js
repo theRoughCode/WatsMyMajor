@@ -13,6 +13,7 @@ ParseRouter.post('/courses', function(req, res) {
   res.json(courses);
 });
 
+// Parse user's transcript into courses (fill up My Courses)
 ParseRouter.post('/transcript', function(req, res) {
   const transcript = parseTranscript(req.body.text);
   res.json(transcript);

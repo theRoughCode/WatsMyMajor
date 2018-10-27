@@ -5,7 +5,7 @@ import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import { hasTakenCourse } from '../../../utils/courses';
-import Prereqs from './Prereqs';
+import ChooseReqs from './ChooseReqs';
 import { green, mustard, purple } from '../../../constants/Colours';
 
 const styles = {
@@ -32,14 +32,19 @@ const styles = {
     padding: 10,
     display: 'flex',
     flexDirection: 'column',
+    overflowX: 'hidden',
   },
   reqs: (isSelected) => ({
+    width: '100%',
     color: (isSelected) ? green : 'inherit',
     textDecoration: 'none',
     padding: 1,
     paddingLeft: 10,
     textAlign: 'left',
     cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
 };
 
@@ -82,7 +87,7 @@ class CourseRequisites extends Component {
     if (typeof course === "string") return course;
 
     const { myCourses } = this.props;
-    const { subject, catalogNumber } = course;
+    const { subject, catalogNumber, title } = course;
     const hasTaken = hasTakenCourse(subject, catalogNumber, myCourses);
 
     return (
@@ -94,6 +99,7 @@ class CourseRequisites extends Component {
       >
         { `${subject} ${catalogNumber}` }
         { hasTakenCourse(subject, catalogNumber, myCourses) ? ' ✔' : '' }
+        <span style={{ fontSize: 12 }}>&ensp;<i>{ title }</i></span>
       </a>
     )
   }
@@ -113,7 +119,7 @@ class CourseRequisites extends Component {
       if (requisites.reqs == null) return [];
       const newReqsArr = requisites.reqs.map(this.formatReqs);
       return [
-        <Prereqs
+        <ChooseReqs
           key={ 0 }
           choose={ requisites.choose }
           reqs={ newReqsArr }
