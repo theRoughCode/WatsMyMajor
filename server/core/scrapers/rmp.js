@@ -49,7 +49,6 @@ async function getProfInfo(name, callback) {
     .split(',')
     .map(tag => tag.trim());
 
-  // TODO: Remove prof avatar url
   return {
     err: null,
     prof: {
@@ -57,7 +56,6 @@ async function getProfInfo(name, callback) {
       difficulty,
       tags,
       rmpURL,
-      profAvatarURL: 'images/firas_mansour.jpg',
     },
   };
 }

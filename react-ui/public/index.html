@@ -8,6 +8,12 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://use.fontawesome.com/5bc7c1b3eb.js"></script>
+    <!-- For use in Facebook link previews. Learn more: https://developers.facebook.com/docs/sharing/webmasters -->
+    <meta property="og:url"           content="https://www.watsmymajor.com" />
+    <meta property="og:type"          content="website" />
+    <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
+    <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
+    <meta property="og:image"         content="%PUBLIC_URL%/images/logo.png" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     <!--
       Notice the use of %PUBLIC_URL% in the tag above.
@@ -37,10 +43,12 @@
          var js, fjs = d.getElementsByTagName(s)[0];
          if (d.getElementById(id)) {return;}
          js = d.createElement(s); js.id = id;
-         js.src = "https://connect.facebook.net/en_US/sdk.js";
+         js.async = true; 
+         js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
          fjs.parentNode.insertBefore(js, fjs);
        }(document, 'script', 'facebook-jssdk'));
     </script>
+    <div id="fb-root"></div>
     <div id="root"></div>
     <!--
       This HTML file is a template.

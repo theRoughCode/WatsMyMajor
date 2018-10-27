@@ -1,5 +1,6 @@
 // Check if course is in user's courses
 export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
+  if (subject == null || catalogNumber == null) return false;
   if (myCourses[subject] == null) return false;
   const advancedCSCatNum = catalogNumber + 'E';
   return myCourses[subject].hasOwnProperty(catalogNumber) ||

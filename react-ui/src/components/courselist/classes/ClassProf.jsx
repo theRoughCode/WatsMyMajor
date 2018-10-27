@@ -77,7 +77,7 @@ const styles = {
 };
 
 
-const ProfHeader = ({ name, stars, image }) => (
+const ProfHeader = ({ name, stars }) => (
   <div style={ styles.prof }>
     { name }
     <StarRatings
@@ -146,7 +146,6 @@ const ClassProf = ({
     difficulty,
     tags,
     rmpURL,
-    profAvatarURL
   } = prof;
 
   const loadingView = (
@@ -164,7 +163,6 @@ const ClassProf = ({
       <ProfHeader
         name={ instructor }
         stars={ rating }
-        image={ profAvatarURL }
       />
       <Divider style={ styles.divider } />
       <Rating

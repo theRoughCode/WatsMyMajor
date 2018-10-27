@@ -14,7 +14,7 @@ const formatPostreqs = (postreqs) => {
 
 // Fills course array with titles
 const fillCourseTitles = async (coursesArr) => {
-  if (!coursesArr) return coursesArr;
+  if (!coursesArr) return [];
   return await Promise.all(coursesArr.map(async (course) => {
     if (course.hasOwnProperty("subject")) {
       const { subject, catalogNumber } = course;
@@ -28,7 +28,7 @@ const fillCourseTitles = async (coursesArr) => {
       let { choose, reqs } = course;
       reqs = await fillCourseTitles(reqs);
       return { choose, reqs };
-    } else console.error('Should not happen', course);
+    } else return course;  // string
   }));
 }
 
