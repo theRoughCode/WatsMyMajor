@@ -100,14 +100,25 @@ const styles = {
     width: (isMobile) ? 'auto' : '30vw',
     maxWidth: '100%',
   }),
+  footer: {
+    display: 'flex',
+    margin: 20,
+    marginBottom: 0,
+  },
+  fbContainer: {
+    display: 'flex',
+    flex: 1,
+    overflow: 'hidden',
+  },
   numUsersContainer: {
-    textAlign: 'left',
-    marginLeft: 20,
-    marginTop: 20,
+    display: 'flex',
+    textAlign: 'right',
   },
   numUsersText: (isMobile) => ({
     fontSize: (isMobile) ? '1.5vh' : 15,
     fontWeight: 300,
+    margin: 'auto',
+    marginBottom: 0,
   }),
 };
 
@@ -159,6 +170,9 @@ export default class LaunchScreen extends Component {
   goToLogin = () => this.props.history.push('/login');
 
   render() {
+    // Init fb like button
+    if (window.FB) window.FB.XFBML.parse(document.getElementById('fb-like-home'));
+
     return (
       <MediaQuery minWidth={ 530 }>
         { matches => (
@@ -216,12 +230,24 @@ export default class LaunchScreen extends Component {
                 </div>
               </div>
             </div>
-            <div style={ styles.numUsersContainer }>
-              { this.state.numUsers > 0 && (
-                <span style={ styles.numUsersText(!matches) }>
-                  { `${this.state.numUsers} total users` }
-                </span>
-              ) }
+            <div style={ styles.footer }>
+              <div
+                className="fb-like"
+                id="fb-like-home"
+                style={ styles.fbContainer }
+                data-href="https://www.watsmymajor.com/"
+                data-layout="standard"
+                data-action="like"
+                data-share="true"
+                data-show-faces="true"
+              />
+              <div style={ styles.numUsersContainer }>
+                { this.state.numUsers > 0 && (
+                  <span style={ styles.numUsersText(!matches) }>
+                    { `${this.state.numUsers} total users` }
+                  </span>
+                ) }
+              </div>
             </div>
           </div>
         ) }

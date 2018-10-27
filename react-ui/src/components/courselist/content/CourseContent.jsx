@@ -31,16 +31,21 @@ const styles = {
     flex: 1,
     flexDirection: 'column',
     marginRight: 20,
-    marginBottom: 50,
   },
   leftContainer: (isMobile) => ({
     display: 'flex',
     maxWidth: '100%',
     flexDirection: 'column',
     margin: (isMobile) ? 'auto' : 20,
+    marginTop: 0,
+    marginBottom: 20,
   }),
   treeButton: {
     width: '100%'
+  },
+  fbLikeContainer: {
+    overflow: 'hidden',
+    marginTop: 20,
   },
 }
 
@@ -71,6 +76,11 @@ const CourseContent = ({
     prereqs,
     postreqs,
   } = course;
+
+  // Update the share button
+  setTimeout(() => {
+    if (window.FB) window.FB.XFBML.parse();
+  }, 500);
 
   return (
     <MediaQuery minWidth={ 400 }>
@@ -130,6 +140,15 @@ const CourseContent = ({
               />
             </div>
           </div>
+          <div
+            className="fb-like"
+            style={ styles.fbLikeContainer }
+            data-href={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` }
+            data-layout="standard"
+            data-action="like"
+            data-share="true"
+            data-show-faces="true"
+          />
         </div>
       ) }
     </MediaQuery>
