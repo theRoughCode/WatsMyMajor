@@ -165,14 +165,14 @@ export default class LaunchScreen extends Component {
   async componentDidMount() {
     const numUsers = await fetchNumUsers();
     this.setState({ numUsers });
+
+    // Init fb like button
+    if (window.FB) window.FB.XFBML.parse(document.getElementById('fb-like-home'));
   }
 
   goToLogin = () => this.props.history.push('/login');
 
   render() {
-    // Init fb like button
-    if (window.FB) window.FB.XFBML.parse(document.getElementById('fb-like-home'));
-
     return (
       <MediaQuery minWidth={ 530 }>
         { matches => (
