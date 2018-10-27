@@ -1,5 +1,5 @@
 const StatsRouter = require('express').Router();
-const courses = require('../core/courses');
+const coursesDB = require('../database/courses');
 const statsDB = require('../database/stats');
 const usersDB = require('../database/users');
 
@@ -38,7 +38,7 @@ StatsRouter.get('/course/popular', async function(req, res) {
     const popularCourses = await Promise.all(Object.keys(results).map(async (courseStr) => {
       const [subject, catalogNumber] = courseStr.split("-");
       let course = null;
-      ({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
+      ({ err, course } = await coursesDB.getCourseInfo(subject, catalogNumber))
       if (err) {
         console.error(err);
         res.status(404).send(err.message);
@@ -85,7 +85,7 @@ StatsRouter.get('/course/ratings', async function(req, res) {
     const ratedCourses = await Promise.all(Object.keys(results).map(async (courseStr) => {
       const [subject, catalogNumber] = courseStr.split("-");
       let course = null;
-      ({ err, course } = await courses.getCourseInfo(subject, catalogNumber))
+      ({ err, course } = await coursesDB.getCourseInfo(subject, catalogNumber))
       if (err) {
         console.error(err);
         res.status(404).send(err.message);
