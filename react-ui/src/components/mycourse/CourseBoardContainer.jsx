@@ -377,6 +377,7 @@ class CourseBoardContainer extends Component {
     const { username, courseList } = this.state;
 
     // Dedup courses: remove courses that are duplicates in imported terms
+    // Duplicated course before import takes precedence
     let duplicateCourse = false;
     terms = terms.map(term => {
       term.courses = term.courses.filter(({ subject, catalogNumber }) => {
@@ -388,15 +389,17 @@ class CourseBoardContainer extends Component {
       });
       return term;
     });
+
+    // Alert user that a duplicate course was found and we're removing it
     if (duplicateCourse) this.props.sendDuplicateCourseSnack();
 
     if (courseList.length > 0) {
-      // Merge courses in same term
+      // Merge courses in current course list into new terms (based on same term)
       courseList.forEach((termItem) => {
-        const { term, courses } = termItem;
+        const { term, courses, level } = termItem;
         let isDuplicate = false;
         for (let i = 0; i < terms.length; i++) {
-          if (term === terms[i].term) {
+          if (term === terms[i].term && level === terms[i].level) {
             if (courses != null) terms[i].courses.push(...courses);
             isDuplicate = true;
             break;

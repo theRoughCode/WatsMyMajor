@@ -178,9 +178,9 @@ async function setCoursesPrereqs(courses) {
 // We want to flatten the prereqs of each course and attach them to the course
 // to be used as a course card.
 async function setCourseListPrereqs(courseList) {
-  return await Promise.all(courseList.map(async function({ term, courses }) {
+  return await Promise.all(courseList.map(async function({ term, courses, level }) {
     courses = await setCoursesPrereqs(courses);
-    return { term, courses };
+    return { term, courses, level };
   }));
 }
 
