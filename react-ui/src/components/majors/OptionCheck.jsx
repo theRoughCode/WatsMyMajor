@@ -16,7 +16,6 @@ const styles = {
   checkbox: {
     marginTop: 10,
     width: 'auto',
-    marginLeft: 20,
     textAlign: 'left',
   }
 };
@@ -28,10 +27,17 @@ const hasTakenOption = (option, myCourses) => {
       const { subject, catalogNumber } = option.courses[i];
       if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
     }
+    // Mark as taken
+    for (let i = 0; i < option.courses.length; i++) {
+      const { subject, catalogNumber } = option.courses[i];
+      myCourses[subject][catalogNumber] = true;
+    }
     return true;
   default: {
     const { subject, catalogNumber } = option;
-    return hasTakenCourse(subject, catalogNumber, myCourses);
+    const taken = hasTakenCourse(subject, catalogNumber, myCourses);
+    if (taken) myCourses[subject][catalogNumber] = true;
+    return taken;
   }
   }
 }

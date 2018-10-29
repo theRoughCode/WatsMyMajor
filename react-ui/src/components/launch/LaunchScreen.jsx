@@ -167,7 +167,7 @@ export default class LaunchScreen extends Component {
     this.setState({ numUsers });
 
     // Init fb like button
-    if (window.FB) window.FB.XFBML.parse(document.getElementById('fb-like-home'));
+    if (window.FB) window.FB.XFBML.parse();
   }
 
   goToLogin = () => this.props.history.push('/login');

@@ -24,11 +24,25 @@ const styles = {
   body: {
     width: 'calc(100% - 15px)',
     height: '100%',
+    flexDirection: 'column',
+    paddingLeft: 15,
+  },
+  reqsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: 20,
+  },
+  reqsHeading: {
+    fontSize: 23,
+    textAlign: 'left',
+    margin: 'auto',
+    marginLeft: 20,
+  },
+  reqsSubContainer: {
     display: 'flex',
     flexWrap: 'wrap',
     overflowX: 'hidden',
-    paddingLeft: 15,
-  },
+  }
 };
 
 const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
@@ -57,8 +71,28 @@ const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   }
 };
 
-async function fetchRequirements(key) {
-  const response = await fetch(`/server/majors/get/${key}`, {
+// Renders requisite nodes
+// NOTE: Requisites are "taken" in order.  So, if a course falls under multiple
+// boards, only the first one will take it.
+// Have to take: CourseCheck, OptionCheck
+// WARNING: If a choose one has mutliple possible fulfilled items, they all are
+// marked as taken. This would not allow other requirements to use any of them,
+// which is not the correct intended behaviour.
+const renderRequisites = (reqs, myCourses) => {
+  // Make a copy so we don't change the original
+  const courses = Object.assign({}, myCourses);
+  // Remove prereqs array and set to false instead
+  // TODO: Remove this once myCourses is revamped
+  Object.keys(courses).map(subject =>
+    Object.keys(courses[subject]).map(catalogNumber =>
+      courses[subject][catalogNumber] = false
+    )
+  );
+  return reqs.map((req, index) => renderReqNode(req, index, courses))
+};
+
+async function fetchRequirements(faculty, key) {
+  const response = await fetch(`/server/majors/get/${faculty}/${key}`, {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET
     }
@@ -88,52 +122,72 @@ class MajorsContainer extends Component {
   };
 
   state = {
-    majorsList: [],
-    key: '',
-    name: '',
-    url: '',
+    majorsList: {},
+    faculty: '',
+    key: '',  // key for selected major
+    name: '', // name of selected major
+    url: '',  // url of selected major
     reqs: [],
+    core: [], // list of faculty core courses
   };
 
   async componentDidMount() {
     const majorsList = await fetchList() || [];
-    const { majorKey } = this.props.match.params;
-    this.updateMajors(majorKey, majorsList);
+    const { faculty, majorKey } = this.props.match.params;
+    this.updateMajors(faculty, majorKey, majorsList);
     this.setState({ majorsList });
   }
 
   componentWillReceiveProps(nextProps) {
-    const { majorKey } = nextProps.match.params;
+    const { faculty, majorKey } = nextProps.match.params;
     if (majorKey !== this.props.match.params.majorKey) {
-      this.updateMajors(majorKey, this.state.majorsList);
+      this.updateMajors(faculty, majorKey, this.state.majorsList);
     }
   }
 
   // Update selected major
-  async updateMajors(majorKey, majorsList) {
-    if (majorKey == null) return;
-    if (majorKey === this.state.key) return;
-
-    for (let i = 0; i < majorsList.length; i++) {
-      const { key, name } = majorsList[i];
-      if (key === majorKey) {
-        const { data, url } = await fetchRequirements(key);
-        document.title = `${name} Major | University of Waterloo - WatsMyMajor`;
-        this.setState({ key, name, reqs: data, url });
-        return;
-      }
+  async updateMajors(faculty, majorKey, majorsList) {
+    if (faculty == null && majorKey == null) {
+      this.setState({
+        faculty: '',
+        key: '',  // key for selected major
+        name: '', // name of selected major
+        url: '',  // url of selected major
+        reqs: [],
+        core: [], // list of faculty core courses
+      });
+      return;
     }
+    if (faculty == null || majorKey == null) return;
+    if (majorKey === this.state.key) return;
+    if (!majorsList.hasOwnProperty(faculty)) return;
+
+    const name = majorsList[faculty].majors[majorKey];
+    document.title = `${name} Major | University of Waterloo - WatsMyMajor`;
+    const { data, url } = await fetchRequirements(faculty, majorKey);
+    const core = await fetchRequirements(faculty, 'core');
+    this.setState({
+      key: majorKey,
+      faculty,
+      core: core.data,
+      name,
+      reqs: data,
+      url,
+    });
   }
 
-  // Handle selection of menu item
-  handleChange = async (_, index, key) => {
-    const { data, url } = await fetchRequirements(key);
-    this.props.history.push(`/majors/${key}`);
-    this.setState({ key, name: this.state.majorsList[index].name, reqs: data, url });
+  // Handle selection of major
+  handleMajorChange = async (_, index, key) => {
+    if (key !== this.state.key) this.props.history.push(`/majors/${this.state.faculty}/${key}`);
+  }
+
+  // Handle selection of faculty
+  handleFacultyChange = async(_, index, key) => {
+    if (key !== this.state.faculty) this.setState({ faculty: key });
   }
 
   render() {
-    const { majorsList, name, key, url } = this.state;
+    const { majorsList, name, faculty, key, url, reqs, core } = this.state;
     const { isLoggedIn, history, location } = this.props;
 
     // Notify non-loggedin users that they should login first.
@@ -142,9 +196,11 @@ class MajorsContainer extends Component {
     if (key.length === 0) {
       return (
         <SelectScreen
-          handleChange={ this.handleChange }
+          handleMajorChange={ this.handleMajorChange }
+          handleFacultyChange={ this.handleFacultyChange }
           majorsList={ majorsList }
-          value={ key }
+          faculty={ faculty }
+          major={ key }
         />
       );
     } else {
@@ -154,11 +210,28 @@ class MajorsContainer extends Component {
             majorName={ name }
             majorKey={ key }
             url={ url }
+            faculty={ faculty }
             majorsList={ majorsList }
-            onChange={ this.handleChange }
+            handleMajorChange={ this.handleMajorChange }
+            handleFacultyChange={ this.handleFacultyChange }
           />
           <div style={ styles.body }>
-            { this.state.reqs.map((req, index) => renderReqNode(req, index, this.props.myCourses)) }
+            {
+              (key !== 'core' && core.length > 0) && (
+                <div style={ styles.reqsContainer }>
+                  <span style={ styles.reqsHeading }>Faculty Core Courses</span>
+                  <div style={ styles.reqsSubContainer }>
+                    { renderRequisites(core, this.props.myCourses) }
+                  </div>
+                </div>
+              )
+            }
+            <div style={ styles.reqsContainer }>
+              <span style={ styles.reqsHeading }>Program Courses</span>
+              <div style={ styles.reqsSubContainer }>
+                { renderRequisites(reqs, this.props.myCourses) }
+              </div>
+            </div>
           </div>
         </div>
       );

@@ -6,9 +6,9 @@ const { majorsRef } = require('./index');
  *													*
  ****************************/
 
-async function setMajorRequirements(key, value) {
+async function setMajorRequirements(faculty, key, value) {
   try {
-    await majorsRef.child(key).set(value);
+    await majorsRef.child(`${faculty}/${key}`).set(value);
     return null;
   } catch (err) {
     return err;
@@ -21,23 +21,60 @@ async function setMajorRequirements(key, value) {
   *													*
   ****************************/
 
-async function getMajorRequirements(name) {
+async function getMajorRequirements(faculty, key) {
   try {
-    const snapshot = await majorsRef.child(name).once('value');
-    const data = await snapshot.val();
+    const snapshot = await majorsRef.child(`${faculty}/${key}`).once('value');
+    const data = snapshot.val();
     return { err: null, data };
   } catch (err) {
     return { err, data: null };
   }
 }
 
-async function getList() {
+// Gets list of majors for a certain faculty
+async function getMajorsList(faculty) {
   try {
-    const snapshot = await majorsRef.once('value');
+    const snapshot = await majorsRef.child(faculty).once('value');
+    if (!snapshot.exists()) return { err: 'Faculty does not exist', majors: null };
+
+    const val = snapshot.val();
+    const majors = Object.keys(val).map((key) => ({
+      key,
+      name: val[key].name
+    }));
+    return { err: null, majors };
+  } catch (err) {
+    return { err, majors: null };
+  }
+}
+
+// Gets list of faculties
+async function getFacultiesList() {
+  try {
+    const snapshot = await majorsRef.child('faculties').once('value');
     const val = snapshot.val();
     const list = Object.keys(val).map((key) => ({
       key,
-      name: val[key].name
+      name: val[key]
+    }));
+    return { err: null, list };
+  } catch (err) {
+    return { err, list: null };
+  }
+}
+
+// Gets enture list of faculties and respective majors
+async function getList() {
+  try {
+    const snapshot = await majorsRef.child('faculties').once('value');
+    const val = snapshot.val();
+    const list = {};
+    await Promise.all(Object.keys(val).map(async (faculty) => {
+      const { err, majors } = await getMajorsList(faculty);
+      if (err) return null;
+      list[faculty] = { name: val[faculty], majors: {} };
+      majors.forEach(({ key, name }) => list[faculty].majors[key] = name);
+      return;
     }));
     return { err: null, list };
   } catch (err) {
@@ -48,5 +85,7 @@ async function getList() {
 module.exports = {
   setMajorRequirements,
   getMajorRequirements,
-  getList
+  getMajorsList,
+  getFacultiesList,
+  getList,
 };

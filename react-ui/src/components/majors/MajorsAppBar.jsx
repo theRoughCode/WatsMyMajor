@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
@@ -12,13 +13,15 @@ const styles = {
     position: 'relative',
     width: '100%',
     height: 75,
+    minHeight: 'fit-content',
     zIndex: 1,
     boxShadow: '0 8px 6px -6px #999',
     display: 'flex',
   },
   leftContainer: {
-    height: '100%',
+    height: 'fit-content',
     display: 'flex',
+    margin: 'auto',
     flex: 1,
   },
   titleContainer: {
@@ -36,11 +39,15 @@ const styles = {
     borderRadius: 24,
   },
   rightContainer: {
-    marginRight: 50,
     marginTop: -4,
+    display: 'flex',
+  },
+  selectContainer: {
+    margin: 'auto',
+    marginRight: 10,
   },
   select: {
-    width: 'fit-content',
+    margin: 'auto',
     textAlign: 'left',
   },
 };
@@ -49,7 +56,9 @@ const MajorsAppBar = ({
   majorName,
   majorKey,
   url,
-  onChange,
+  faculty,
+  handleMajorChange,
+  handleFacultyChange,
   majorsList,
 }) => (
   <div style={ styles.container }>
@@ -66,21 +75,49 @@ const MajorsAppBar = ({
         </IconButton>
       </div>
     </div>
-    <div style={ styles.rightContainer }>
-      <SelectField
-        floatingLabelText="Choose a major"
-        onChange={ onChange }
-        style={ styles.select }
-        value={ majorKey }
-        autoWidth
-      >
-        {
-          majorsList.map(({ key, name }, index) => (
-            <MenuItem key={ index } value={ key } primaryText={ name } />
-          ))
-        }
-      </SelectField>
-    </div>
+    <MediaQuery minWidth={ 935 }>
+      <div style={ styles.rightContainer }>
+        <div style={ styles.selectContainer }>
+          <SelectField
+            floatingLabelText="Select a faculty"
+            onChange={ handleFacultyChange }
+            style={ styles.select }
+            value={ faculty }
+            autoWidth
+          >
+            {
+              Object.keys(majorsList).map((faculty, index) => (
+                <MenuItem
+                  key={ index }
+                  value={ faculty }
+                  primaryText={ majorsList[faculty].name }
+                />
+              ))
+            }
+          </SelectField>
+        </div>
+        <div style={ styles.selectContainer }>
+          <SelectField
+            floatingLabelText="Choose a major"
+            onChange={ handleMajorChange }
+            style={ styles.select }
+            value={ majorKey }
+            autoWidth
+            disabled={ !faculty.length }
+          >
+            {
+              faculty.length && Object.keys(majorsList[faculty].majors).map((major, index) => (
+                <MenuItem
+                  key={ index }
+                  value={ major }
+                  primaryText={ majorsList[faculty].majors[major] }
+                />
+              ))
+            }
+          </SelectField>
+        </div>
+      </div>
+    </MediaQuery>
   </div>
 );
 
@@ -88,8 +125,10 @@ MajorsAppBar.propTypes = {
   majorName: PropTypes.string.isRequired,
   majorKey: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  majorsList: PropTypes.array.isRequired,
+  faculty: PropTypes.string.isRequired,
+  handleFacultyChange: PropTypes.func.isRequired,
+  handleMajorChange: PropTypes.func.isRequired,
+  majorsList: PropTypes.object.isRequired,
 };
 
 export default MajorsAppBar;

@@ -14,12 +14,11 @@ const styles = {
   checkbox: {
     marginTop: 10,
     width: 'auto',
-    marginLeft: 20,
     textAlign: 'left',
   },
   indentedChecks: {
     marginTop: 0,
-    marginLeft: 50,
+    marginLeft: 10,
   },
   innerChecks: {
     width: 'auto',
@@ -47,6 +46,8 @@ const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
 
   const catNums = Object.keys(myCourses[subject]);
   return catNums.filter((catNum) => {
+    // Skip courses that have already been used to fulfill another requirement
+    if (myCourses[subject][catNum]) return false;
     const num = Number(catNum.replace(/\D/g,'').trim());
     if (isNaN(num)) {
       console.error(`Catalog number ${num} (${catNum}) is not a number!`);
@@ -57,6 +58,8 @@ const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
     for (let i = 0; i < excluding.length; i++) {
       if (catNum === excluding[i]) return false;
     }
+    // Mark course as taken
+    myCourses[subject][catNum] = true;
     return true;
   });
 }

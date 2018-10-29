@@ -15,7 +15,6 @@ const styles = {
   checkbox: {
     marginTop: 10,
     width: 'auto',
-    marginLeft: 20,
     textAlign: 'left',
   }
 };
@@ -48,7 +47,10 @@ export default class CourseCheck extends Component {
   checkTaken = (subject, catalogNumber, myCourses) => {
     const taken = hasTakenCourse(subject, catalogNumber, myCourses);
     // If course is taken, increment count by 1
-    if (taken) this.props.onCheck(null, true);
+    if (taken) {
+      myCourses[subject][catalogNumber] = true;
+      this.props.onCheck(null, true);
+    }
     this.setState({ taken, isChecked: taken });
   }
 
