@@ -40,7 +40,13 @@ const styles = {
 };
 
 
-const SelectScreen = ({ handleChange, majorsList, value }) => (
+const SelectScreen = ({
+  handleMajorChange,
+  handleFacultyChange,
+  majorsList,
+  faculty,
+  major
+}) => (
   <div style={ styles.container }>
     <div style={ styles.selectScreen }>
       <div style={ styles.header }>
@@ -51,29 +57,57 @@ const SelectScreen = ({ handleChange, majorsList, value }) => (
           </span>
         </div>
       </div>
-      <div>
-        <SelectField
-          floatingLabelText="Choose a major"
-          onChange={ handleChange }
-          style={ styles.select }
-          value={ value }
-          autoWidth
-        >
-          {
-            majorsList.map(({ key, name }, index) => (
-              <MenuItem key={ index } value={ key } primaryText={ name } />
-            ))
-          }
-        </SelectField>
+      <div style={{ display: 'flex' }}>
+        <div style={{ margin: 'auto', marginRight: 10 }}>
+          <SelectField
+            floatingLabelText="Select a faculty"
+            onChange={ handleFacultyChange }
+            style={ styles.select }
+            value={ faculty }
+            autoWidth
+          >
+            {
+              Object.keys(majorsList).map((faculty, index) => (
+                <MenuItem
+                  key={ index }
+                  value={ faculty }
+                  primaryText={ majorsList[faculty].name }
+                />
+              ))
+            }
+          </SelectField>
+        </div>
+        <div>
+          <SelectField
+            floatingLabelText="Choose a major"
+            onChange={ handleMajorChange }
+            style={ styles.select }
+            value={ major }
+            autoWidth
+            disabled={ !faculty.length }
+          >
+            {
+              faculty.length && Object.keys(majorsList[faculty].majors).map((major, index) => (
+                <MenuItem
+                  key={ index }
+                  value={ major }
+                  primaryText={ majorsList[faculty].majors[major] }
+                />
+              ))
+            }
+          </SelectField>
+        </div>
       </div>
     </div>
   </div>
 );
 
 SelectScreen.propTypes = {
-  handleChange: PropTypes.func.isRequired,
-  majorsList: PropTypes.array.isRequired,
-  value: PropTypes.string.isRequired,
+  handleMajorChange: PropTypes.func.isRequired,
+  handleFacultyChange: PropTypes.func.isRequired,
+  majorsList: PropTypes.object.isRequired,
+  faculty: PropTypes.string.isRequired,
+  major: PropTypes.string.isRequired,
 };
 
 export default SelectScreen;

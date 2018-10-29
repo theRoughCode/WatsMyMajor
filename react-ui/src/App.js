@@ -205,7 +205,7 @@ class App extends Component {
                 <Route exact path='/verify-email' component={ VerifyEmail } />
                 <Route exact path='/unwatch-class' component={ UnwatchedClass } />
                 <Route exact path='/settings' render={ this.addRedirect(Settings) } />
-                <Route exact path='/majors/:majorKey?' component={ Majors } />
+                <Route exact path='/majors/:faculty?/:majorKey?' component={ Majors } />
                 <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
                 <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
                 <Route path='/courses/browse' component={ BrowseCourseView } />

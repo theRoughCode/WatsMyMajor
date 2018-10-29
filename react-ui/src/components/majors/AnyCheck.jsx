@@ -14,12 +14,11 @@ const styles = {
   checkbox: {
     marginTop: 10,
     width: 'auto',
-    marginLeft: 20,
     textAlign: 'left',
   },
   indentedChecks: {
     marginTop: 0,
-    marginLeft: 50,
+    marginLeft: 10,
   },
   innerChecks: {
     width: 'auto',
@@ -37,6 +36,8 @@ const getTakenCourses = (myCourses, limit) => {
   let numTaken = 0;
   for (let subject in myCourses) {
     for (let catalogNumber in myCourses[subject]) {
+      // Skip course if already fulfilled
+      if (myCourses[subject][catalogNumber]) continue;
       taken.push({ subject, catalogNumber });
       numTaken++;
       if (numTaken >= limit) return taken;

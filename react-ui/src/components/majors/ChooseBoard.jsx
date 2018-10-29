@@ -12,11 +12,13 @@ import { lightGreen } from '../../constants/Colours';
 const styles = {
   board: (isFulfilled) => ({
     margin: 20,
-    width: 250,
-    height: 'auto',
+    minWidth: 200,
+    width: 'fit-content',
+    minHeight: 'fit-content',
+    fontSize: 14,
     display: 'flex',
     flexDirection: 'column',
-    padding: 10,
+    padding: 15,
     paddingBottom: 20,
     backgroundColor: (isFulfilled) ? lightGreen : 'inherit',
     border: (isFulfilled) ? '1px solid black' : 'inherit',

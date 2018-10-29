@@ -15,12 +15,11 @@ const styles = {
   checkbox: {
     marginTop: 10,
     width: 'auto',
-    marginLeft: 20,
     textAlign: 'left',
   },
   indentedChecks: {
     marginTop: 0,
-    marginLeft: 50,
+    marginLeft: 10,
   },
   innerChecks: {
     width: 'auto',
@@ -68,10 +67,19 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
 
   const takenCourses = [];
   subjectCourses.forEach(({ subject, catNums }) => {
-    catNums.forEach(catNum => takenCourses.push({ subject, catalogNumber: catNum }));
+    catNums.forEach(catNum => {
+      // Skip if course has already fulfilled another requirement
+      if (myCourses[subject][catNum]) return;
+      takenCourses.push({ subject, catalogNumber: catNum });
+    });
   });
   // Just check subject
-  if (level.length === 0) return takenCourses;
+  if (level.length === 0) {
+    // Mark taken courses as fulfilled
+    takenCourses.forEach(({ subject, catalogNumber }) =>
+      myCourses[subject][catalogNumber] = true);
+    return takenCourses;
+  }
 
   // Check level
   level = level.trim();
@@ -83,7 +91,7 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
   const isPlus = level.charAt(level.length - 1) === '+';
 
   // Filter out courses that aren't the right level or is in the exclusion list
-  return takenCourses.filter(({ catalogNumber }) => {
+  return takenCourses.filter(({ subject, catalogNumber }) => {
     const catLevel = Number(catalogNumber.trim().charAt(0));
     if (isNaN(catLevel)) {
       console.error(`Catalog number ${catLevel} (${catalogNumber}) is not a number!`);
@@ -94,6 +102,9 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
     // If it's not a xxx+ level course and the level is higher than the
     // required level, we don't want it
     if (!isPlus && catLevel > levelNum) return false;
+
+    // Otherwise, mark as taken
+    myCourses[subject][catalogNumber] = true;
     return (catLevel >= levelNum) && !excluding.includes(catalogNumber);
   });
 }
