@@ -44,6 +44,7 @@ const SettingsContainer = ({
   username,
   name,
   // email,
+  profileURL,
   isLinked,
   onChangeImage,
   onSaveSettings,
@@ -62,7 +63,7 @@ const SettingsContainer = ({
       onSaveSettings={ onSaveSettings }
       verifyFields={ verifyProfile }
     />
-    <ImageUpload username={ username } onChangeImage={ onChangeImage } />
+    <ImageUpload username={ username } onChangeImage={ onChangeImage } profileURL={ profileURL } />
     <SettingsBoard
       boardName="Password"
       username={ username }
@@ -90,6 +91,7 @@ SettingsContainer.propTypes = {
   username: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   // email: PropTypes.string.isRequired,
+  profileURL: PropTypes.string,
   isLinked: PropTypes.bool.isRequired,
   onChangeImage: PropTypes.func.isRequired,
   onSaveSettings: PropTypes.func.isRequired,
@@ -101,6 +103,7 @@ const mapStateToProps = ({ user }) => ({
   username: user.username,
   name: user.name,
   // email: user.email,
+  profileURL: user.profileURL,
   isLinked: user.facebookID != null && user.facebookID.length > 0,
 });
 
