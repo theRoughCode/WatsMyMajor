@@ -32,6 +32,7 @@ async function removeFacebookUser(facebookID) {
 async function getFacebookUser(facebookID) {
   try {
     const snapshot = await facebookUsersRef.child(facebookID).once('value');
+    if (!snapshot.exists()) return { err: null, user: null };
     return { err: null, user: snapshot.val() };
   } catch (err) {
     console.error(err);

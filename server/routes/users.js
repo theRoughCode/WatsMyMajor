@@ -3,8 +3,8 @@ const { setCourseListPrereqs, setCoursesPrereqs } = require('../core/utils');
 const auth = require('../core/auth');
 const parseSchedule = require('../core/parsers/scheduleParser');
 const users = require('../core/users');
-const images = require('../database/images');
-const facebookUsers = require('../database/facebookUsers');
+const facebookUsersDB = require('../database/facebookUsers');
+const imagesDB = require('../database/images');
 
 // TODO: Find a better way to enforce lower case for username
 
@@ -30,7 +30,7 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
     return res.status(400).send('Missing facebook ID.');
   }
 
-  let { user } = await facebookUsers.getFacebookUser(facebookID);
+  let { user } = await facebookUsersDB.getFacebookUser(facebookID);
   if (user) return res.status(400).send('Facebook ID already linked.');
 
   // Add Facebook ID to user object
@@ -42,16 +42,15 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 
   // Set Facebook picture
   if (hasFBPic) {
-    err = await users.setProfilePicture(username, `https://graph.facebook.com/${facebookID}/picture?type=large`);
+    err = await users.setProfilePictureURL(username, `https://graph.facebook.com/${facebookID}/picture?type=large`);
     if (err) {
       console.error(err);
       return res.status(400).send(err);
     }
   }
 
-
   // Add facebook ID to facebookUser refererence
-  err = await facebookUsers.setFacebookUser(facebookID, username);
+  err = await facebookUsersDB.setFacebookUser(facebookID, username);
   if (err) {
     console.error(err);
     return res.status(400).send(err);
@@ -80,7 +79,7 @@ UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
     await users.updateUser(username, { facebookID: '', profileURL: '' });
 
     // Remove Facebook user
-    await facebookUsers.removeFacebookUser(user.facebookID);
+    await facebookUsersDB.removeFacebookUser(user.facebookID);
 
     user.facebookID = '';
     user.profileURL = '';
@@ -258,7 +257,7 @@ UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
   } else res.status(200).send(`Course list for User ${username} updated successfully.`);
 });
 
-const easterURL = images.getEasterURL();
+const easterURL = imagesDB.getEasterURL();
 UsersRouter.post('/upload/profile/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
@@ -291,14 +290,8 @@ UsersRouter.post('/upload/profile/:username', async function(req, res) {
   if (!base64Str || !contentType) return res.status(400).send('Missing fields');
 
   try {
-    let { err, publicUrl } = await images.setProfilePicture(username, req.body);
-    if (err) {
-      console.error(err);
-      return res.status(400).send(err);
-    }
-
     // Update new profile img url in user object
-    err = await users.setProfilePicture(username, publicUrl);
+    let err = await users.setProfilePicture(username, req.body);
     if (err) {
       console.error(err);
       return res.status(400).send(err);
@@ -316,6 +309,18 @@ UsersRouter.post('/upload/profile/:username', async function(req, res) {
     console.error(err);
     res.status(400).send(err);
   }
+});
+
+UsersRouter.post('/remove/profile/:username', async function (req, res) {
+  const username = req.params.username.toLowerCase();
+  if (req.user !== username) return res.sendStatus(401);
+
+  const err = await users.removeProfilePicture(username);
+  if (err) {
+    console.error(err);
+    return res.status(400).send(err);
+  }
+  res.status(200).send();
 });
 
 module.exports = UsersRouter;

@@ -1,3 +1,4 @@
+const imagesDB = require('../database/images');
 const usersDB = require('../database/users');
 
 function getUser(username) {
@@ -86,12 +87,44 @@ async function setFacebookID(username, facebookID) {
   }
 }
 
-async function setProfilePicture(username, url) {
+async function setProfilePicture(username, image) {
+  try {
+    let { err, publicUrl } = await imagesDB.setProfilePicture(username, image);
+    if (err) return err;
+
+    await usersDB.setField(username, 'profileURL', publicUrl);
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
+async function setProfilePictureURL(username, url) {
   try {
     await usersDB.setField(username, 'profileURL', url);
     return null;
   } catch (err) {
     return err;
+  }
+}
+
+async function removeProfilePicture(username) {
+  let { err, user } = await usersDB.getUser(username);
+  if (err) return err;
+
+  if (user.profileURL != null && user.profileURL.startsWith('https://storage.googleapis.com/')) {
+    const start = user.profileURL.indexOf('profile-pictures/');
+    const end = user.profileURL.indexOf('?alt=media', start);
+    if (start < 0 || end < 0) return {
+      message: 'Invalid profileURL',
+    };
+    const fileName = user.profileURL.slice(start, end);
+    err = await imagesDB.removeProfilePicture(fileName);
+    if (err) return err;
+
+    await setProfilePictureURL(username, '');
+    if (err) return err;
+    return null;
   }
 }
 
@@ -109,4 +142,6 @@ module.exports = {
   removeFromWatchlist,
   setFacebookID,
   setProfilePicture,
+  setProfilePictureURL,
+  removeProfilePicture,
 };
