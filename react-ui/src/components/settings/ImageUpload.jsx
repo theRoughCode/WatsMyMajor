@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AvatarIcon from 'material-ui/svg-icons/action/account-circle';
+import Grid from '@material-ui/core/Grid';
 import { getCookie } from '../../utils/cookies';
 import { lightGreen2, red } from '../../constants/Colours';
 
@@ -39,9 +40,9 @@ const styles = {
     opacity: 0,
   },
   filename: {
-    width: 150,
-    marginLeft: 20,
+    width: 250,
     display: 'inline-block',
+    paddingTop: 10,
     verticalAlign: 'middle',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -183,7 +184,14 @@ export default class ImageUpload extends Component {
       )
       : (
         <div>
-          <div>
+        <div>
+          <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            spacing={8}
+          >
+          <Grid item>
             <RaisedButton
               label="Choose an Image"
               labelPosition="before"
@@ -197,6 +205,20 @@ export default class ImageUpload extends Component {
                 onChange={ this.onUpload }
               />
             </RaisedButton>
+            </Grid>
+            <Grid item>
+            <RaisedButton
+              label="Remove Avatar"
+              backgroundColor={ lightGreen2 }
+              containerElement="label"
+            >
+              <input
+                style={ styles.input }
+                onChange={ this.onUpload }
+              />
+            </RaisedButton>
+            </Grid>
+            </Grid>
             <span style={ styles.filename }>{ this.state.filename }</span>
           </div>
           <span style={ styles.error }>{ this.state.errorMsg }</span>
