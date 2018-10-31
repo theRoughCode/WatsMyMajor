@@ -42,7 +42,7 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
 
   // Set Facebook picture
   if (hasFBPic) {
-    err = await users.setProfilePicture(username, `https://graph.facebook.com/${facebookID}/picture?type=large`);
+    err = await users.setProfilePictureURL(username, `https://graph.facebook.com/${facebookID}/picture?type=large`);
     if (err) {
       console.error(err);
       return res.status(400).send(err);
