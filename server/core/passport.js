@@ -37,6 +37,9 @@ passport.use(new FacebookTokenStrategy({
   clientSecret: process.env.FACEBOOK_APP_SECRET
 }, async function(accessToken, refreshToken, profile, callback) {
   // Check if facebook user is in database and get corresponding username
-  const { err, user } = await facebookUsers.getFacebookUser(profile.id);
+  let { err, user } = await facebookUsers.getFacebookUser(profile.id);
+  // Create new user if hasn't been created yet
+  if (!user) ({ err, user } = await auth.createFBUser(profile));
+
   callback(err, user);
 }));

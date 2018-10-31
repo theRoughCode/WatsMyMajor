@@ -47,13 +47,13 @@ async function setProfilePicture(username, { base64Str, contentType }) {
   });
 }
 
-function removeProfilePicture(fileName, callback) {
-  if (!fileName) return callback(null);
+// Returns err
+async function removeProfilePicture(fileName) {
+  if (!fileName) return;
 
   const file = profilePicBucket.file(fileName);
-  file.delete((err, resp) => {
-    if (err) return callback(err);
-    callback(null);
+  return new Promise((resolve, reject) => {
+    file.delete((err, resp) => resolve(err));
   });
 }
 

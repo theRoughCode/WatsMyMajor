@@ -12,6 +12,13 @@ import logo from '../../images/logo.png';
 import { setUser } from '../../actions';
 import { white, green, grey } from '../../constants/Colours';
 
+
+const ERROR_USERNAME_NOT_FOUND = 101;
+const ERROR_WRONG_PASSWORD = 105;
+const ERROR_USER_NOT_VERIFIED = 107;
+const ERROR_MISSING_FB_EMAIL = 205;
+const ERROR_SERVER_ERROR = 400;
+
 const styles = {
   viewContainer: {
     width: '100%',
@@ -142,10 +149,6 @@ class Login extends Component {
       });
       if (!response.ok) {
         const { code } = await response.json();
-        const ERROR_USERNAME_NOT_FOUND = 101;
-        const ERROR_WRONG_PASSWORD = 105;
-        const ERROR_USER_NOT_VERIFIED = 107;
-        const ERROR_SERVER_ERROR = 400;
 
         switch (code) {
         case ERROR_USERNAME_NOT_FOUND:
@@ -191,9 +194,18 @@ class Login extends Component {
         }
       });
       if (!response.ok) {
-        const err = await response.text();
-        toast.warn('This Facebook account has not been linked yet. Please log in to your WatsMyMajor account (or create one) to link your Facebook account.');
-        console.error(err);
+        const { code, message } = await response.json();
+        switch (code) {
+        case ERROR_MISSING_FB_EMAIL:
+          toast.error(message);
+          return;
+        case ERROR_SERVER_ERROR:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
+        default:
+          toast.error('Failed to create account. Please contact an administrator.');
+          return;
+        }
       } else {
         const { username, user } = await response.json();
         const to = this.props.location.state
