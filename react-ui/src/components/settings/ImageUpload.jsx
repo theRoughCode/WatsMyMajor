@@ -116,6 +116,35 @@ export default class ImageUpload extends Component {
     reader.readAsDataURL(file);
   }
 
+  onDelete = async (_) => {
+    console.log("is this being called?!??");
+    this.setState({ loading: true });
+    try {
+      const response = await fetch(`/server/users/delete/profile/${this.props.username}`, {
+        method: 'POST',
+        headers: {
+          "x-secret": process.env.REACT_APP_SERVER_SECRET,
+          'authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+        }
+      });
+
+      if (!response.ok) {
+        toast.error('Failed to delete image.  Please contact an administrator.');
+        this.setState({ loading: false });
+        return;
+      }
+
+      const user = await response.json();
+      this.props.onChangeImage(this.props.username, user);
+      this.setState({ loading: false });
+      this.closeDialog();
+      toast.success('Successfully removed image!');
+    } catch(err) {
+      console.error(err);
+      this.setState({ loading: false });
+    }
+  }
+
   onSubmit = async (_, isEaster = false) => {
     this.setState({ loading: true });
     const requestBody = (isEaster)
@@ -184,40 +213,37 @@ export default class ImageUpload extends Component {
       )
       : (
         <div>
-        <div>
-          <Grid
-            container
-            direction="row"
-            justify="flex-start"
-            spacing={8}
-          >
-          <Grid item>
-            <RaisedButton
-              label="Choose an Image"
-              labelPosition="before"
-              backgroundColor={ lightGreen2 }
-              containerElement="label"
+          <div>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              spacing={8}
             >
-              <input
-                type="file"
-                accept="image/*"
-                style={ styles.input }
-                onChange={ this.onUpload }
-              />
-            </RaisedButton>
-            </Grid>
-            <Grid item>
-            <RaisedButton
-              label="Remove Avatar"
-              backgroundColor={ lightGreen2 }
-              containerElement="label"
-            >
-              <input
-                style={ styles.input }
-                onChange={ this.onUpload }
-              />
-            </RaisedButton>
-            </Grid>
+              <Grid item>
+                <RaisedButton
+                  label="Choose an Image"
+                  labelPosition="before"
+                  backgroundColor={ lightGreen2 }
+                  containerElement="label"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={ styles.input }
+                    onChange={ this.onUpload }
+                  />
+                </RaisedButton>
+              </Grid>
+              <Grid item>
+                <RaisedButton
+                  label="Remove Avatar"
+                  backgroundColor={ lightGreen2 }
+                  containerElement="label"
+                  onClick={ this.onDelete }
+                >
+                </RaisedButton>
+              </Grid>
             </Grid>
             <span style={ styles.filename }>{ this.state.filename }</span>
           </div>
@@ -241,7 +267,7 @@ export default class ImageUpload extends Component {
           icon={ <AvatarIcon /> }
         />
         <Dialog
-          title="Upload Avatar"
+          title="Change Avatar"
           actions={ actions }
           modal
           open={ this.state.open }
