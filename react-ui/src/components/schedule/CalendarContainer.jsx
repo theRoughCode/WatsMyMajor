@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import MediaQuery from 'react-responsive';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
+import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
-import DatePicker from 'material-ui/DatePicker';
 import RaisedButton from 'material-ui/RaisedButton';
+import DatePicker from 'material-ui/DatePicker';
+import Divider from 'material-ui/Divider';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
 import DownIcon from 'material-ui/svg-icons/navigation/arrow-drop-down';
 import DateIcon from 'material-ui/svg-icons/editor/insert-invitation';
@@ -16,6 +19,7 @@ import DayIcon from 'material-ui/svg-icons/action/view-day';
 import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
 import PublishIcon from 'material-ui/svg-icons/editor/publish';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
+import DotsIcon from 'material-ui/svg-icons/navigation/more-vert';
 import RandomColour from 'randomcolor';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
@@ -181,7 +185,7 @@ export default class CalendarContainer extends Component {
       date: date,
       mode: '3days',
       classes: parseSchedule(props.schedule),
-      isOpen: false,
+      isMenuOpen: false,
       anchorEl: null,
       view: '3 Days',
     };
@@ -228,7 +232,7 @@ export default class CalendarContainer extends Component {
     default:
       view = '3 Days';
     }
-    this.setState({ mode: mode, isOpen: false, view });
+    this.setState({ mode: mode, isMenuOpen: false, view });
   }
 
   getDate() {
@@ -241,11 +245,11 @@ export default class CalendarContainer extends Component {
 
   openMenu(ev) {
     ev.preventDefault();
-    this.setState({ isOpen: !this.state.isOpen, anchorEl: ev.currentTarget });
+    this.setState({ isMenuOpen: !this.state.isMenuOpen, anchorEl: ev.currentTarget });
   }
 
   closeMenu() {
-    this.setState({ isOpen: false });
+    this.setState({ isMenuOpen: false });
   }
 
   openDatePicker() {
@@ -256,7 +260,7 @@ export default class CalendarContainer extends Component {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar
-          style={{ background: 'white', position: 'relative' }}
+          style={{ background: 'white', position: 'relative', zIndex: 900 }}
           titleStyle={{
             color: 'black',
             textAlign: 'left',
@@ -266,74 +270,103 @@ export default class CalendarContainer extends Component {
           iconStyleLeft={ styles.iconContainer }
           iconElementLeft={
             <div>
-              <FlatButton
-                onClick={ this.openMenu }
-                label={ this.state.view }
-                labelPosition="before"
-                labelStyle={ styles.viewLabel }
-                backgroundColor="rgba(0,0,0,0.04)"
-                icon={ <DownIcon style={ styles.downIcon } /> }
-                style={ styles.viewButton }
-              />
-              <Popover
-                open={ this.state.isOpen }
-                anchorEl={ this.state.anchorEl }
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                onRequestClose={ this.closeMenu }
-                animation={ PopoverAnimationVertical }
-              >
-                <Menu>
-                  <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
-                  <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
-                  <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
-                </Menu>
-              </Popover>
-              <FlatButton
-                style={ styles.dateIcon }
-                onClick={ this.openDatePicker }
-              >
-                <DateIcon color='grey' />
-              </FlatButton>
-              <FlatButton
-                label="Today"
-                style={ styles.today }
-                labelStyle={ styles.todayLabel }
-                backgroundColor="rgba(0,0,0,0.04)"
-                onClick={ () => this.setDate(new Date()) }
-              />
-              <FlatButton
-                style={ styles.arrows }
-                onClick={ () => this.onChangeIndex(this.getIndex() - 1) }
-              >
-                <LeftIcon color='grey' style={{ margin: 'auto' }} />
-              </FlatButton>
-              <FlatButton
-                style={ styles.arrows }
-                onClick={ () => this.onChangeIndex(this.getIndex() + 1) }
-              >
-                <RightIcon color='grey' style={{ margin: 'auto' }} />
-              </FlatButton>
+              <MediaQuery minWidth={ 802 }>
+                <FlatButton
+                  onClick={ this.openMenu }
+                  label={ this.state.view }
+                  labelPosition="before"
+                  labelStyle={ styles.viewLabel }
+                  backgroundColor="rgba(0,0,0,0.04)"
+                  icon={ <DownIcon style={ styles.downIcon } /> }
+                  style={ styles.viewButton }
+                />
+                <Popover
+                  open={ this.state.isMenuOpen }
+                  anchorEl={ this.state.anchorEl }
+                  anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                  targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                  onRequestClose={ this.closeMenu }
+                  animation={ PopoverAnimationVertical }
+                >
+                  <Menu>
+                    <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
+                    <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
+                    <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
+                  </Menu>
+                </Popover>
+                <FlatButton
+                  style={ styles.dateIcon }
+                  onClick={ this.openDatePicker }
+                >
+                  <DateIcon color='grey' />
+                </FlatButton>
+                <FlatButton
+                  label="Today"
+                  style={ styles.today }
+                  labelStyle={ styles.todayLabel }
+                  backgroundColor="rgba(0,0,0,0.04)"
+                  onClick={ () => this.setDate(new Date()) }
+                />
+                <FlatButton
+                  style={ styles.arrows }
+                  onClick={ () => this.onChangeIndex(this.getIndex() - 1) }
+                >
+                  <LeftIcon color='grey' style={{ margin: 'auto' }} />
+                </FlatButton>
+                <FlatButton
+                  style={ styles.arrows }
+                  onClick={ () => this.onChangeIndex(this.getIndex() + 1) }
+                >
+                  <RightIcon color='grey' style={{ margin: 'auto' }} />
+                </FlatButton>
+              </MediaQuery>
             </div>
           }
           iconElementRight={
             <div>
-              <RaisedButton
-                label="Import Term"
-                labelPosition="before"
-                primary
-                onClick={ this.props.onImportTerm }
-                icon={ <PublishIcon /> }
-                style={ styles.button }
-              />
-              <RaisedButton
-                label="Clear Schedule"
-                labelPosition="before"
-                backgroundColor={ red }
-                onClick={ this.props.onClearSchedule }
-                icon={ <ClearIcon /> }
-                style={ styles.button }
-              />
+              <MediaQuery minWidth={ 802 }>
+                <RaisedButton
+                  label="Import Term"
+                  labelPosition="before"
+                  primary
+                  onClick={ this.props.onImportTerm }
+                  icon={ <PublishIcon /> }
+                  style={ styles.button }
+                />
+                <RaisedButton
+                  label="Clear Schedule"
+                  labelPosition="before"
+                  backgroundColor={ red }
+                  onClick={ this.props.onClearSchedule }
+                  icon={ <ClearIcon /> }
+                  style={ styles.button }
+                />
+              </MediaQuery>
+              <MediaQuery maxWidth={ 801 }>
+                <IconButton onClick={ this.openDatePicker }>
+                  <DateIcon />
+                </IconButton>
+                <IconButton onClick={ this.openMenu }>
+                  <DotsIcon />
+                </IconButton>
+                <Popover
+                  open={ this.state.isMenuOpen }
+                  anchorEl={ this.state.anchorEl }
+                  anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                  targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                  onRequestClose={ this.closeMenu }
+                  animation={ PopoverAnimationVertical }
+                >
+                  <Menu>
+                    <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
+                    <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
+                    <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
+                    <Divider />
+                    <MenuItem onClick={ this.props.onImportTerm }>Import Term</MenuItem>
+                    <MenuItem onClick={ this.props.onClearSchedule }>Clear Schedule</MenuItem>
+                  </Menu>
+                </Popover>
+              </MediaQuery>
             </div>
           }
         />
