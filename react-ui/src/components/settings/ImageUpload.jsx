@@ -120,7 +120,7 @@ export default class ImageUpload extends Component {
   onDelete = async (_) => {
     this.setState({ loading: true });
     try {
-      const response = await fetch(`/server/users/delete/profile/${this.props.username}`, {
+      const response = await fetch(`/server/users/remove/profile/${this.props.username}`, {
         method: 'POST',
         headers: {
           "x-secret": process.env.REACT_APP_SERVER_SECRET,
