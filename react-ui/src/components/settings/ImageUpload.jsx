@@ -71,6 +71,7 @@ export default class ImageUpload extends Component {
   static propTypes = {
     username: PropTypes.string.isRequired,
     onChangeImage: PropTypes.func.isRequired,
+    profileURL: PropTypes.string,
   };
 
   state = {
@@ -117,7 +118,6 @@ export default class ImageUpload extends Component {
   }
 
   onDelete = async (_) => {
-    console.log("is this being called?!??");
     this.setState({ loading: true });
     try {
       const response = await fetch(`/server/users/delete/profile/${this.props.username}`, {
@@ -218,7 +218,7 @@ export default class ImageUpload extends Component {
               container
               direction="row"
               justify="flex-start"
-              spacing={8}
+              spacing={ 8 }
             >
               <Grid item>
                 <RaisedButton
@@ -241,8 +241,8 @@ export default class ImageUpload extends Component {
                   backgroundColor={ lightGreen2 }
                   containerElement="label"
                   onClick={ this.onDelete }
-                >
-                </RaisedButton>
+                  disabled={ !this.props.profileURL || this.props.profileURL === "" }
+                />
               </Grid>
             </Grid>
             <span style={ styles.filename }>{ this.state.filename }</span>
