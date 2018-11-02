@@ -166,13 +166,15 @@ class ScheduleContainer extends Component {
   // If path starts with 'my-schedule', we are editing our schedule
   updateSchedule = async (username, path) => {
     if (path.startsWith('/schedule')) {
-      document.title = `${username}'s Schedule - WatsMyMajor`;
       this.setState({ isBrowsing: true });
       const schedule = await fetchUserSchedule(username);
       if (schedule == null) {
         toast.error(`Oops!  We could not locate ${username}'s schedule.`);
         this.setState({ loading: false });
-      } else this.setState({ schedule, loading: false });
+      } else {
+        document.title = `${username}'s Schedule - WatsMyMajor`;
+        this.setState({ schedule, loading: false });
+      }
     } else {
       document.title = 'My Schedule - WatsMyMajor';
       this.setState({
