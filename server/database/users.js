@@ -108,18 +108,20 @@ async function getAllUserCourses() {
   }
 }
 
+// Returns { schedule, name, err }
 async function getUserSchedule(username) {
   try {
     const privacySnapshot = await usersRef.child(`${username}/isSchedulePublic`).once('value');
     // Not public
     if (privacySnapshot.exists() && !privacySnapshot.val()) {
-      return { schedule: null, err: null };
+      return { schedule: null, name: null, err: null };
     }
-    const snapshot = await usersRef.child(`${username}/schedule`).once('value');
-    if (!snapshot.exists()) return { schedule: null, err: null };
-    return { schedule: snapshot.val(), err: null };
+    const scheduleSnapshot = await usersRef.child(`${username}/schedule`).once('value');
+    if (!scheduleSnapshot.exists()) return { schedule: null, name: null, err: null };
+    const nameSnapshot = await usersRef.child(`${username}/name`).once('value');
+    return { schedule: scheduleSnapshot.val(), name: nameSnapshot.val(), err: null };
   } catch (err) {
-    return { schedule: null, err };
+    return { schedule: null, name: null, err };
   }
 }
 

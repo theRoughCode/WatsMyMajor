@@ -85,6 +85,12 @@ const styles = {
     marginRight: (isMobile) ? 'auto' : 10,
     width: 'fit-content',
   }),
+  name: {
+    margin: 'auto',
+    marginRight: 10,
+    fontSize: 16,
+    width: 170,
+  },
 };
 
 const parseCourses = (courses) => {
@@ -183,6 +189,7 @@ export default class CalendarContainer extends Component {
     onUpdatePrivacy: PropTypes.func.isRequired,
     schedule: PropTypes.object.isRequired,
     isBrowsing: PropTypes.bool.isRequired,
+    name: PropTypes.string.isRequired,
     isPublic: PropTypes.bool.isRequired,
   };
 
@@ -276,7 +283,19 @@ export default class CalendarContainer extends Component {
             textAlign: 'left',
             marginBottom: 10
           }}
-          title={ `${moment(this.state.date).format('MMM YYYY')}` }
+          title={
+            <MediaQuery minWidth={ 427 }>
+              { matches => (matches)
+                ? `${moment(this.state.date).format('MMM YYYY')}`
+                : (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ lineHeight: 1.6 }}>{ `${moment(this.state.date).format('MMM YYYY')}` }</span>
+                    <span style={{ fontSize: 17, lineHeight: 1, fontWeight: 300 }}>{ `${this.props.name}'s Schedule` }</span>
+                  </div>
+                )
+              }
+            </MediaQuery>
+          }
           iconStyleLeft={ styles.iconContainer }
           iconElementLeft={
             <div>
@@ -333,39 +352,46 @@ export default class CalendarContainer extends Component {
             </div>
           }
           iconElementRight={
-            <div style={{ display: 'flex' }}>
-              { !this.props.isBrowsing && (
-                <MediaQuery minWidth={ 978 }>
-                  <Checkbox
-                    label="Public"
-                    checked={ this.props.isPublic }
-                    onCheck={ this.props.onUpdatePrivacy }
-                    style={ styles.check(false) }
-                    iconStyle={{ left: 0, marginRight: 5 }}
-                  />
-                  <RaisedButton
-                    label="Import"
-                    labelPosition="before"
-                    primary
-                    onClick={ this.props.onImportTerm }
-                    icon={ <PublishIcon /> }
-                    style={ styles.button }
-                  />
-                  <RaisedButton
-                    label="Clear"
-                    labelPosition="before"
-                    backgroundColor={ red }
-                    onClick={ this.props.onClearSchedule }
-                    icon={ <ClearIcon /> }
-                    style={ styles.button }
-                  />
-                </MediaQuery>
-              ) }
+            <div style={{ display: 'flex', height: '100%', marginTop: -8 }}>
+              { (this.props.isBrowsing)
+                ? (
+                  <MediaQuery minWidth={ 427 }>
+                    <span style={ styles.name }>{ `${this.props.name}'s Schedule` }</span>
+                  </MediaQuery>
+                )
+                : (
+                  <MediaQuery minWidth={ 978 }>
+                    <Checkbox
+                      label="Public"
+                      checked={ this.props.isPublic }
+                      onCheck={ this.props.onUpdatePrivacy }
+                      style={ styles.check(false) }
+                      iconStyle={{ left: 0, marginRight: 5 }}
+                    />
+                    <RaisedButton
+                      label="Import"
+                      labelPosition="before"
+                      primary
+                      onClick={ this.props.onImportTerm }
+                      icon={ <PublishIcon /> }
+                      style={ styles.button }
+                    />
+                    <RaisedButton
+                      label="Clear"
+                      labelPosition="before"
+                      backgroundColor={ red }
+                      onClick={ this.props.onClearSchedule }
+                      icon={ <ClearIcon /> }
+                      style={ styles.button }
+                    />
+                  </MediaQuery>
+                )
+              }
               <MediaQuery maxWidth={ 977 }>
-                <IconButton onClick={ this.openDatePicker }>
+                <IconButton onClick={ this.openDatePicker } style={{ margin: 'auto' }}>
                   <DateIcon />
                 </IconButton>
-                <IconButton onClick={ this.openMenu }>
+                <IconButton onClick={ this.openMenu } style={{ margin: 'auto' }}>
                   <DotsIcon />
                 </IconButton>
                 <Popover

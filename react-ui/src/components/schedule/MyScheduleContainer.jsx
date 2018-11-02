@@ -42,8 +42,8 @@ const fetchUserSchedule = async (username) => {
       console.error(response);
       return null;
     }
-    const schedule = await response.json();
-    return schedule;
+    const resp = await response.json();
+    return resp;
   } catch(err) {
     console.error(err);
     return null;
@@ -142,6 +142,7 @@ class ScheduleContainer extends Component {
     importDialogOpen: false,
     loading: true,
     isBrowsing: false,        // true if browsing other schedules
+    name: '',                 // name of schedule owner (used for browsing)
     isPublic: this.props.isPublic,
   };
 
@@ -167,19 +168,21 @@ class ScheduleContainer extends Component {
   updateSchedule = async (username, path) => {
     if (path.startsWith('/schedule')) {
       this.setState({ isBrowsing: true });
-      const schedule = await fetchUserSchedule(username);
-      if (schedule == null) {
+      const resp = await fetchUserSchedule(username);
+      if (resp == null) {
         toast.error(`Oops!  We could not locate ${username}'s schedule.`);
         this.setState({ loading: false });
       } else {
-        document.title = `${username}'s Schedule - WatsMyMajor`;
-        this.setState({ schedule, loading: false });
+        const { schedule, name } = resp;
+        document.title = `${name}'s Schedule - WatsMyMajor`;
+        this.setState({ schedule, name, loading: false });
       }
     } else {
       document.title = 'My Schedule - WatsMyMajor';
       this.setState({
         loading: false,
         schedule: this.props.schedule,
+        name: '',
         isBrowsing: false,
       });
     }
@@ -228,6 +231,7 @@ class ScheduleContainer extends Component {
           onImportTerm={ this.onOpenDialog }
           onUpdatePrivacy={ this.onUpdatePrivacy }
           isBrowsing
+          name={ this.state.name }
           isPublic={ this.state.isPublic }
         />
       );
@@ -256,6 +260,7 @@ class ScheduleContainer extends Component {
             onImportTerm={ this.onOpenDialog }
             onUpdatePrivacy={ this.onUpdatePrivacy }
             isBrowsing={ false }
+            name=""
             isPublic={ this.state.isPublic }
           />
           <Dialog
