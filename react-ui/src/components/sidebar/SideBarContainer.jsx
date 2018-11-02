@@ -171,9 +171,9 @@ class SideBarContainer extends Component {
           />
           <LinkItem
             primaryText="My Schedule"
-            path="schedule"
+            path="my-schedule"
             icon={ <ScheduleIcon color={ white } /> }
-            isSelected={ (pathname === "/schedule") }
+            isSelected={ (pathname === "/my-schedule") }
             onClick={ this.onLoginRequiredClick }
           />
         </List>

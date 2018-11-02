@@ -2,13 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
 import CalendarContainer from './CalendarContainer';
 import ParserInstructions from '../tools/ParserInstructions';
+import LoadingView from '../tools/LoadingView';
 import { addToSchedule, clearSchedule } from '../../actions';
 import { objectEquals } from '../../utils/arrays';
+import { getCookie } from '../../utils/cookies';
 
 const stepContents = [
   {
@@ -25,9 +28,51 @@ const stepContents = [
   },
 ];
 
+const fetchUserSchedule = async (username) => {
+  try {
+    const response = await fetch(`/server/users/schedule/${username}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      }
+    });
+    if (!response.ok) {
+      console.error(response);
+      return null;
+    }
+    const schedule = await response.json();
+    return schedule;
+  } catch(err) {
+    console.error(err);
+    return null;
+  }
+};
+
+// Set privacy of user's schedule
+const setSchedulePrivacy = async (username, isPublic) => {
+  try {
+    const response = await fetch(`/server/users/schedule/privacy/${username}?public=${isPublic}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      }
+    });
+    if (!response.ok) {
+      console.error(response);
+      return false;
+    }
+    await response.text();
+    return true;
+  } catch(err) {
+    console.error(err);
+    return false;
+  }
+};
+
 class ScheduleContainer extends Component {
   static propTypes = {
     username: PropTypes.string.isRequired,
+    isPublic: PropTypes.bool.isRequired,
     schedule: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     onUploadSchedule: PropTypes.func.isRequired,
@@ -36,10 +81,25 @@ class ScheduleContainer extends Component {
 
   state = {
     text: '',
-    schedule: this.props.schedule,
+    schedule: {},
     submitted: false,
     importDialogOpen: false,
+    loading: true,
+    isBrowsing: false,        // true if browsing other schedules
+    isPublic: this.props.isPublic,
   };
+
+  componentDidMount = async () => {
+    const { params, path } = this.props.match;
+    if (path.startsWith('/schedule')) {
+      this.setState({ isBrowsing: true });
+      const schedule = await fetchUserSchedule(params.username);
+      if (schedule == null) {
+        toast.error(`Oops!  We could not locate ${params.username}'s schedule.`);
+        this.setState({ loading: false });
+      } else this.setState({ schedule, loading: false });
+    } else this.setState({ loading: false, schedule: this.props.schedule });
+  }
 
   componentWillReceiveProps = (nextProps) => {
     if (!objectEquals(nextProps.schedule, this.props.schedule)) {
@@ -62,7 +122,17 @@ class ScheduleContainer extends Component {
   onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
   onClearScheduleClick = () => this.props.onClearSchedule(this.props.username);
 
+  onUpdatePrivacy = () => {
+    const isPublic = !this.state.isPublic;
+    if (!setSchedulePrivacy(this.props.username, isPublic)) toast('Failed to update schedule privacy.  Please contact an administrator.');
+    else this.setState({ isPublic });
+  }
+
   render() {
+    if (this.state.loading) {
+      return <LoadingView />;
+    }
+
     const importDialogActions = [
       <FlatButton
         label="Cancel"
@@ -84,6 +154,9 @@ class ScheduleContainer extends Component {
             onClassClick={ this.onClassClick }
             onClearSchedule={ this.onClearScheduleClick }
             onImportTerm={ this.onOpenDialog }
+            onUpdatePrivacy={ this.onUpdatePrivacy }
+            isBrowsing={ this.state.isBrowsing }
+            isPublic={ this.state.isPublic }
           />
           <Dialog
             title="Import Schedule"
@@ -119,6 +192,7 @@ class ScheduleContainer extends Component {
 
 const mapStateToProps = ({ user, mySchedule }) => ({
   username: user.username,
+  isPublic: (user.isSchedulePublic == null) || user.isSchedulePublic,
   schedule: mySchedule,
 });
 

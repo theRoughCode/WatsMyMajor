@@ -37,6 +37,7 @@ const { usersRef } = require('./index');
 //   password: '',
 //   facebookID: '',
 //   profileURL: '',
+//   isSchedulePublic: bool,
 //   cart: [],
 //   schedule: [],
 //   courseList: []
@@ -107,6 +108,21 @@ async function getAllUserCourses() {
   }
 }
 
+async function getUserSchedule(username) {
+  try {
+    const privacySnapshot = await usersRef.child(`${username}/isSchedulePublic`).once('value');
+    // Not public
+    if (privacySnapshot.exists() && !privacySnapshot.val()) {
+      return { schedule: null, err: null };
+    }
+    const snapshot = await usersRef.child(`${username}/schedule`).once('value');
+    if (!snapshot.exists()) return { schedule: null, err: null };
+    return { schedule: snapshot.val(), err: null };
+  } catch (err) {
+    return { schedule: null, err };
+  }
+}
+
 async function userExists(username) {
   const snapshot = await usersRef.child(username).once('value');
   return snapshot.exists();
@@ -130,6 +146,7 @@ module.exports = {
   setField,
   getUser,
   getAllUserCourses,
+  getUserSchedule,
   userExists,
   getNumUsers,
   getUnverifiedUsers,

@@ -198,16 +198,17 @@ class App extends Component {
             <div style={ newStyles(!matches) }>
               <Switch>
                 <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
-                <Route exact path='/privacy-policy' component={ PrivacyPolicy } />
-                <Route exact path='/welcome' render={ this.addUndirect(LaunchScreen) } />
-                <Route exact path='/register' render={ this.addUndirect(Register) } />
-                <Route exact path='/login' render={ this.addUndirect(Login) } />
-                <Route exact path='/verify-email' component={ VerifyEmail } />
-                <Route exact path='/unwatch-class' component={ UnwatchedClass } />
-                <Route exact path='/settings' render={ this.addRedirect(Settings) } />
-                <Route exact path='/majors/:faculty?/:majorKey?' component={ Majors } />
+                <Route path='/privacy-policy' component={ PrivacyPolicy } />
+                <Route path='/welcome' render={ this.addUndirect(LaunchScreen) } />
+                <Route path='/register' render={ this.addUndirect(Register) } />
+                <Route path='/login' render={ this.addUndirect(Login) } />
+                <Route path='/verify-email' component={ VerifyEmail } />
+                <Route path='/unwatch-class' component={ UnwatchedClass } />
+                <Route path='/settings' render={ this.addRedirect(Settings) } />
+                <Route path='/majors/:faculty?/:majorKey?' component={ Majors } />
                 <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
-                <Route path='/schedule' render={ this.addRedirect(MyScheduleView) } />
+                <Route path='/my-schedule' render={ this.addRedirect(MyScheduleView) } />
+                <Route path='/schedule/:username' render={ this.addRedirect(MyScheduleView) } />
                 <Route path='/courses/browse' component={ BrowseCourseView } />
                 <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
               </Switch>

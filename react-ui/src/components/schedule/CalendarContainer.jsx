@@ -8,6 +8,7 @@ import AppBar from 'material-ui/AppBar';
 import IconButton from 'material-ui/IconButton';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
+import Checkbox from 'material-ui/Checkbox';
 import DatePicker from 'material-ui/DatePicker';
 import Divider from 'material-ui/Divider';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
@@ -77,7 +78,12 @@ const styles = {
   button: {
     margin: 'auto 10px',
     marginTop: 5,
-  }
+  },
+  check: {
+    margin: 'auto',
+    marginRight: 10,
+    width: 'fit-content',
+  },
 };
 
 const parseCourses = (courses) => {
@@ -173,7 +179,10 @@ export default class CalendarContainer extends Component {
     onClassClick: PropTypes.func.isRequired,
     onClearSchedule: PropTypes.func.isRequired,
     onImportTerm: PropTypes.func.isRequired,
-    schedule: PropTypes.object.isRequired
+    onUpdatePrivacy: PropTypes.func.isRequired,
+    schedule: PropTypes.object.isRequired,
+    isBrowsing: PropTypes.bool.isRequired,
+    isPublic: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -323,25 +332,33 @@ export default class CalendarContainer extends Component {
             </div>
           }
           iconElementRight={
-            <div>
-              <MediaQuery minWidth={ 802 }>
-                <RaisedButton
-                  label="Import Term"
-                  labelPosition="before"
-                  primary
-                  onClick={ this.props.onImportTerm }
-                  icon={ <PublishIcon /> }
-                  style={ styles.button }
-                />
-                <RaisedButton
-                  label="Clear Schedule"
-                  labelPosition="before"
-                  backgroundColor={ red }
-                  onClick={ this.props.onClearSchedule }
-                  icon={ <ClearIcon /> }
-                  style={ styles.button }
-                />
-              </MediaQuery>
+            <div style={{ display: 'flex' }}>
+              { !this.props.isBrowsing && (
+                <MediaQuery minWidth={ 802 }>
+                  <Checkbox
+                    label="Public"
+                    checked={ this.props.isPublic }
+                    onCheck={ this.props.onUpdatePrivacy }
+                    style={ styles.check }
+                  />
+                  <RaisedButton
+                    label="Import Term"
+                    labelPosition="before"
+                    primary
+                    onClick={ this.props.onImportTerm }
+                    icon={ <PublishIcon /> }
+                    style={ styles.button }
+                  />
+                  <RaisedButton
+                    label="Clear Schedule"
+                    labelPosition="before"
+                    backgroundColor={ red }
+                    onClick={ this.props.onClearSchedule }
+                    icon={ <ClearIcon /> }
+                    style={ styles.button }
+                  />
+                </MediaQuery>
+              ) }
               <MediaQuery maxWidth={ 801 }>
                 <IconButton onClick={ this.openDatePicker }>
                   <DateIcon />
@@ -361,9 +378,13 @@ export default class CalendarContainer extends Component {
                     <MenuItem leftIcon={ <DayIcon /> } onClick={ () => this.changeMode('day') }>Day</MenuItem>
                     <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('3days') }>3 Days</MenuItem>
                     <MenuItem leftIcon={ <MultipleDaysIcon /> } onClick={ () => this.changeMode('week') }>Week</MenuItem>
-                    <Divider />
-                    <MenuItem onClick={ this.props.onImportTerm }>Import Term</MenuItem>
-                    <MenuItem onClick={ this.props.onClearSchedule }>Clear Schedule</MenuItem>
+                    { !this.props.isBrowsing && (
+                      <div>
+                        <Divider />
+                        <MenuItem onClick={ this.props.onImportTerm }>Import Term</MenuItem>
+                        <MenuItem onClick={ this.props.onClearSchedule }>Clear Schedule</MenuItem>
+                      </div>
+                    ) }
                   </Menu>
                 </Popover>
               </MediaQuery>
