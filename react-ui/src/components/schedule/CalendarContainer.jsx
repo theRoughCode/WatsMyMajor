@@ -79,11 +79,12 @@ const styles = {
     margin: 'auto 10px',
     marginTop: 5,
   },
-  check: {
-    margin: 'auto',
-    marginRight: 10,
+  check: (isMobile) => ({
+    margin: (isMobile) ? 10 : 'auto',
+    marginLeft: (isMobile) ? 16 : 'auto',
+    marginRight: (isMobile) ? 'auto' : 10,
     width: 'fit-content',
-  },
+  }),
 };
 
 const parseCourses = (courses) => {
@@ -279,7 +280,7 @@ export default class CalendarContainer extends Component {
           iconStyleLeft={ styles.iconContainer }
           iconElementLeft={
             <div>
-              <MediaQuery minWidth={ 802 }>
+              <MediaQuery minWidth={ 978 }>
                 <FlatButton
                   onClick={ this.openMenu }
                   label={ this.state.view }
@@ -334,15 +335,16 @@ export default class CalendarContainer extends Component {
           iconElementRight={
             <div style={{ display: 'flex' }}>
               { !this.props.isBrowsing && (
-                <MediaQuery minWidth={ 802 }>
+                <MediaQuery minWidth={ 978 }>
                   <Checkbox
                     label="Public"
                     checked={ this.props.isPublic }
                     onCheck={ this.props.onUpdatePrivacy }
-                    style={ styles.check }
+                    style={ styles.check(false) }
+                    iconStyle={{ left: 0, marginRight: 5 }}
                   />
                   <RaisedButton
-                    label="Import Term"
+                    label="Import"
                     labelPosition="before"
                     primary
                     onClick={ this.props.onImportTerm }
@@ -350,7 +352,7 @@ export default class CalendarContainer extends Component {
                     style={ styles.button }
                   />
                   <RaisedButton
-                    label="Clear Schedule"
+                    label="Clear"
                     labelPosition="before"
                     backgroundColor={ red }
                     onClick={ this.props.onClearSchedule }
@@ -359,7 +361,7 @@ export default class CalendarContainer extends Component {
                   />
                 </MediaQuery>
               ) }
-              <MediaQuery maxWidth={ 801 }>
+              <MediaQuery maxWidth={ 977 }>
                 <IconButton onClick={ this.openDatePicker }>
                   <DateIcon />
                 </IconButton>
@@ -381,6 +383,13 @@ export default class CalendarContainer extends Component {
                     { !this.props.isBrowsing && (
                       <div>
                         <Divider />
+                        <Checkbox
+                          label="Public"
+                          checked={ this.props.isPublic }
+                          onCheck={ this.props.onUpdatePrivacy }
+                          style={ styles.check(true) }
+                          iconStyle={{ left: 0, marginRight: 5 }}
+                        />
                         <MenuItem onClick={ this.props.onImportTerm }>Import Term</MenuItem>
                         <MenuItem onClick={ this.props.onClearSchedule }>Clear Schedule</MenuItem>
                       </div>

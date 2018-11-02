@@ -56,7 +56,7 @@ async function setSchedule(username, schedule) {
 }
 
 async function setSchedulePrivacy(username, isPublic) {
-   // in case of malformed input
+  // in case of malformed input
   isPublic = (isPublic === 'true');
   try {
     await usersDB.setField(username, 'isSchedulePublic', isPublic);

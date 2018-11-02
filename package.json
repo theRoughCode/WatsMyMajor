@@ -16,7 +16,6 @@
     "react-ui/node_modules"
   ],
   "dependencies": {
-    "@material-ui/core": "^3.3.2",
     "async": "^2.6.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
@@ -35,7 +34,7 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "raven": "^2.6.3",
-    "request": "^2.86.0",
+    "request": "^2.88.0",
     "uwaterloo-api": "^1.0.2"
   },
   "repository": {

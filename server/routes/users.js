@@ -218,8 +218,7 @@ UsersRouter.get('/schedule/privacy/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
-  const { public } = req.query;
-  const err = await users.setSchedulePrivacy(username, public);
+  const err = await users.setSchedulePrivacy(username, req.query.public);
   if (err) {
     console.error(err);
     res.status(400).send(err);
