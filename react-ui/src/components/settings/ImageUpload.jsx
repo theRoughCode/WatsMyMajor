@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AvatarIcon from 'material-ui/svg-icons/action/account-circle';
+import Grid from '@material-ui/core/Grid';
 import { getCookie } from '../../utils/cookies';
 import { lightGreen2, red } from '../../constants/Colours';
 
@@ -39,9 +40,9 @@ const styles = {
     opacity: 0,
   },
   filename: {
-    width: 150,
-    marginLeft: 20,
+    width: 250,
     display: 'inline-block',
+    paddingTop: 10,
     verticalAlign: 'middle',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
@@ -70,6 +71,7 @@ export default class ImageUpload extends Component {
   static propTypes = {
     username: PropTypes.string.isRequired,
     onChangeImage: PropTypes.func.isRequired,
+    profileURL: PropTypes.string,
   };
 
   state = {
@@ -113,6 +115,34 @@ export default class ImageUpload extends Component {
     // reader.onerror = () => console.log('File upload failed.');
 
     reader.readAsDataURL(file);
+  }
+
+  onDelete = async (_) => {
+    this.setState({ loading: true });
+    try {
+      const response = await fetch(`/server/users/remove/profile/${this.props.username}`, {
+        method: 'POST',
+        headers: {
+          "x-secret": process.env.REACT_APP_SERVER_SECRET,
+          'authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+        }
+      });
+
+      if (!response.ok) {
+        toast.error('Failed to delete image.  Please contact an administrator.');
+        this.setState({ loading: false });
+        return;
+      }
+
+      const user = await response.json();
+      this.props.onChangeImage(this.props.username, user);
+      this.setState({ loading: false });
+      this.closeDialog();
+      toast.success('Successfully removed image!');
+    } catch(err) {
+      console.error(err);
+      this.setState({ loading: false });
+    }
   }
 
   onSubmit = async (_, isEaster = false) => {
@@ -184,19 +214,37 @@ export default class ImageUpload extends Component {
       : (
         <div>
           <div>
-            <RaisedButton
-              label="Choose an Image"
-              labelPosition="before"
-              backgroundColor={ lightGreen2 }
-              containerElement="label"
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              spacing={ 8 }
             >
-              <input
-                type="file"
-                accept="image/*"
-                style={ styles.input }
-                onChange={ this.onUpload }
-              />
-            </RaisedButton>
+              <Grid item>
+                <RaisedButton
+                  label="Choose an Image"
+                  labelPosition="before"
+                  backgroundColor={ lightGreen2 }
+                  containerElement="label"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={ styles.input }
+                    onChange={ this.onUpload }
+                  />
+                </RaisedButton>
+              </Grid>
+              <Grid item>
+                <RaisedButton
+                  label="Remove Avatar"
+                  backgroundColor={ lightGreen2 }
+                  containerElement="label"
+                  onClick={ this.onDelete }
+                  disabled={ !this.props.profileURL || this.props.profileURL === "" }
+                />
+              </Grid>
+            </Grid>
             <span style={ styles.filename }>{ this.state.filename }</span>
           </div>
           <span style={ styles.error }>{ this.state.errorMsg }</span>
@@ -219,7 +267,7 @@ export default class ImageUpload extends Component {
           icon={ <AvatarIcon /> }
         />
         <Dialog
-          title="Upload Avatar"
+          title="Change Avatar"
           actions={ actions }
           modal
           open={ this.state.open }
