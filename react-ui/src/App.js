@@ -160,7 +160,7 @@ class App extends Component {
   }
 
   // Redirects to Login if not logged in
-  addRedirect(Component, redirectUrl = 'login') {
+  addRedirect(Component, redirectUrl = '/login') {
     return (props) => (
       (this.state.isLoggedIn) ? <Component { ...props } /> : <Redirect to={ redirectUrl } />
     );
