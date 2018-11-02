@@ -57,20 +57,6 @@ async function removeProfilePicture(fileName) {
   });
 }
 
-//async function removeUserProfilePictures(username) {
-//  // Delete user's previous images
-//  try {
-//    const err = await profilePicBucket.deleteFiles({ prefix: `profile-pictures/${username}/` });
-//    // Might return an empty array if successfull.
-//    if (Array.isArray(err)) {
-//      if (err.length > 0) return err;
-//    } else if (err) return err;
-//  } catch (err) {
-//    return err;
-//  }
-//  return null;
-//}
-
 module.exports = {
   getEasterURL,
   setProfilePicture,

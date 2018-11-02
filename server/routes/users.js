@@ -335,35 +335,4 @@ UsersRouter.post('/remove/profile/:username', async function (req, res) {
   }
 });
 
-//UsersRouter.post('/delete/profile/:username', async function(req, res) {
-//  const username = req.params.username.toLowerCase();
-//  if (req.user !== username) return res.sendStatus(401);
-//  try {
-//    let err = await images.removeUserProfilePictures(username);
-//    if (err) {
-//      console.error(err);
-//      return res.status(400).send(err);
-//    }
-//
-//    // Remove the profile img url in user object
-//    err = await users.setProfilePicture(username, '');
-//    if (err) {
-//      console.error(err);
-//      return res.status(400).send(err);
-//    }
-//
-//    // Return user object
-//    let user = null;
-//    ({ user, err } = await users.getUser(username));
-//    if (err) {
-//      console.error(err);
-//      return res.status(400).send(err);
-//    }
-//    res.status(200).json(user);
-//  } catch (err) {
-//    console.error(err);
-//    res.status(400).send(err);
-//  }
-//});
-
 module.exports = UsersRouter;
