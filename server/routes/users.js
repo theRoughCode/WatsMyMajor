@@ -20,6 +20,17 @@ UsersRouter.get('/:username', async function(req, res) {
   } else res.json(user);
 });
 
+// Get user schedule
+UsersRouter.get('/schedule/:username', async function(req, res) {
+  const username = req.params.username.toLowerCase();
+  const { schedule, err } = await users.getUserSchedule(username);
+  if (err) {
+    console.error(err);
+    res.status(400).send(err);
+  } else if (schedule == null) res.status(404).send('User schedule not found');
+  else res.json(schedule);
+});
+
 // Link facebook id to user
 UsersRouter.post('/link/facebook/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
@@ -202,6 +213,17 @@ UsersRouter.post('/set/schedule/:username', async function(req, res) {
   }
 });
 
+// Set user schedule privacy
+UsersRouter.get('/schedule/privacy/:username', async function(req, res) {
+  const username = req.params.username.toLowerCase();
+  if (req.user !== username) return res.sendStatus(401);
+
+  const err = await users.setSchedulePrivacy(username, req.query.public);
+  if (err) {
+    console.error(err);
+    res.status(400).send(err);
+  }  else res.status(200).send(`Privacy setting for ${username}'s schedule updated.`);
+});
 
 UsersRouter.post('/add/schedule/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();

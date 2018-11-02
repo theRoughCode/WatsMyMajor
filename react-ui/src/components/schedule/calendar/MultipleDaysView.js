@@ -45,7 +45,7 @@ const styles = {
   headerContainer: {
     height: headerHeight,
     position: 'absolute',
-    right: 19,
+    right: 0,
     left: firstColumnWidth,
     top: '0'
   },

@@ -2,13 +2,19 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import Dialog from 'material-ui/Dialog';
+import CopyIcon from 'material-ui/svg-icons/editor/insert-drive-file';
+import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import CalendarContainer from './CalendarContainer';
 import ParserInstructions from '../tools/ParserInstructions';
+import LoadingView from '../tools/LoadingView';
 import { addToSchedule, clearSchedule } from '../../actions';
 import { objectEquals } from '../../utils/arrays';
+import { getCookie } from '../../utils/cookies';
 
 const stepContents = [
   {
@@ -25,26 +31,152 @@ const stepContents = [
   },
 ];
 
+const fetchUserSchedule = async (username) => {
+  try {
+    const response = await fetch(`/server/schedule/${username}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      }
+    });
+    if (!response.ok) {
+      console.error(response);
+      return null;
+    }
+    const schedule = await response.json();
+    return schedule;
+  } catch(err) {
+    console.error(err);
+    return null;
+  }
+};
+
+// Set privacy of user's schedule
+const setSchedulePrivacy = async (username, isPublic) => {
+  try {
+    const response = await fetch(`/server/users/schedule/privacy/${username}?public=${isPublic}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+      }
+    });
+    if (!response.ok) {
+      console.error(response);
+      return false;
+    }
+    await response.text();
+    return true;
+  } catch(err) {
+    console.error(err);
+    return false;
+  }
+};
+
+class ToastCopy extends Component {
+  static propTypes = {
+    username: PropTypes.string.isRequired,
+  };
+
+  state = {
+    copied: false,
+  };
+
+  handleCopy = () => {
+    if (this.state.copied) return;
+    const linkInput = document.getElementById('schedule-link');
+    linkInput.select();
+    document.execCommand("copy");
+    this.setState({ copied: true });
+  };
+
+  render() {
+    const link = `https://wwww.watsmymajor.com/schedule/${this.props.username}`;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span>Share with your friends!</span>
+        <div style={{ marginTop: 5 }}>
+          <input
+            type="url"
+            id="schedule-link"
+            value={ link }
+            readOnly
+            style={{ verticalAlign: 'middle' }}
+          />
+          <IconButton
+            tooltip={ (this.state.copied) ? "Copied!" : "Copy" }
+            tooltipPosition="top-center"
+            onClick={ this.handleCopy }
+            iconStyle={{ width: 20, height: 20, color: 'white' }}
+            style={{
+              padding: 5,
+              verticalAlign: 'middle',
+              width: 'auto',
+              height: 'auto',
+            }}
+          >
+            { (this.state.copied)
+              ? <CheckIcon color="white" />
+              : <CopyIcon color="white" />
+            }
+          </IconButton>
+        </div>
+      </div>
+    );
+  }
+}
+
 class ScheduleContainer extends Component {
   static propTypes = {
     username: PropTypes.string.isRequired,
+    isPublic: PropTypes.bool.isRequired,
     schedule: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     onUploadSchedule: PropTypes.func.isRequired,
     onClearSchedule: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
   };
 
   state = {
     text: '',
-    schedule: this.props.schedule,
+    schedule: {},
     submitted: false,
     importDialogOpen: false,
+    loading: true,
+    isBrowsing: false,        // true if browsing other schedules
+    isPublic: this.props.isPublic,
   };
 
+  componentDidMount = () => {
+    const { params, path } = this.props.match;
+    this.updateSchedule(params.username, path);
+  }
+
   componentWillReceiveProps = (nextProps) => {
-    if (!objectEquals(nextProps.schedule, this.props.schedule)) {
+    const { params, path } = nextProps.match;
+    if (this.props.match.path !== path ||
+        this.props.match.params.username !== params.username) {
+      this.setState({ loading: true });
+      this.updateSchedule(params.username, path);
+    } else if (!objectEquals(nextProps.schedule, this.props.schedule)) {
       this.setState({ schedule: nextProps.schedule });
     }
+  }
+
+  // Update schedule based on given path
+  // If path starts with 'schedule', we are browsing other schedules
+  // If path starts with 'my-schedule', we are editing our schedule
+  updateSchedule = async (username, path) => {
+    if (path.startsWith('/schedule')) {
+      this.setState({ isBrowsing: true });
+      const schedule = await fetchUserSchedule(username);
+      if (schedule == null) {
+        toast.error(`Oops!  We could not locate ${username}'s schedule.`);
+        this.setState({ loading: false });
+      } else this.setState({ schedule, loading: false });
+    } else this.setState({
+      loading: false,
+      schedule: this.props.schedule,
+      isBrowsing: false,
+    });
   }
 
   onOpenDialog = () => this.setState({ importDialogOpen: true });
@@ -62,7 +194,39 @@ class ScheduleContainer extends Component {
   onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
   onClearScheduleClick = () => this.props.onClearSchedule(this.props.username);
 
+  onUpdatePrivacy = () => {
+    const isPublic = !this.state.isPublic;
+    if (!setSchedulePrivacy(this.props.username, isPublic)) toast('Failed to update schedule privacy.  Please contact an administrator.');
+    else this.setState({ isPublic });
+
+    if (isPublic) toast(<ToastCopy username={ this.props.username } />, {
+      type: 'info',
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: false,
+    });
+  }
+
   render() {
+    if (this.state.loading) {
+      return <LoadingView />;
+    }
+
+    // Browsing other user's schedule
+    if (this.state.isBrowsing) {
+      return (
+        <CalendarContainer
+          schedule={ this.state.schedule }
+          onClassClick={ this.onClassClick }
+          onClearSchedule={ this.onClearScheduleClick }
+          onImportTerm={ this.onOpenDialog }
+          onUpdatePrivacy={ this.onUpdatePrivacy }
+          isBrowsing
+          isPublic={ this.state.isPublic }
+        />
+      );
+    }
+
     const importDialogActions = [
       <FlatButton
         label="Cancel"
@@ -84,6 +248,9 @@ class ScheduleContainer extends Component {
             onClassClick={ this.onClassClick }
             onClearSchedule={ this.onClearScheduleClick }
             onImportTerm={ this.onOpenDialog }
+            onUpdatePrivacy={ this.onUpdatePrivacy }
+            isBrowsing={ false }
+            isPublic={ this.state.isPublic }
           />
           <Dialog
             title="Import Schedule"
@@ -119,6 +286,7 @@ class ScheduleContainer extends Component {
 
 const mapStateToProps = ({ user, mySchedule }) => ({
   username: user.username,
+  isPublic: (user.isSchedulePublic == null) || user.isSchedulePublic,
   schedule: mySchedule,
 });
 

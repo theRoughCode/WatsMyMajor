@@ -21,6 +21,7 @@ router.use('/parse', require('./parse'));
 router.use('/prof', require('./prof'));
 router.use('/ratings/course', require('./courseRatings'));
 router.use('/reqs', require('./reqs'));
+router.use('/schedule', require('./schedule'));
 router.use('/scrape', require('./scrape'));
 router.use('/stats', require('./stats'));
 router.use('/tree', require('./tree'));

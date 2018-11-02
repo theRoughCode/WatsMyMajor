@@ -13,6 +13,10 @@ function getNumUsers() {
   return usersDB.getNumUsers();
 }
 
+function getUserSchedule(username) {
+  return usersDB.getUserSchedule(username);
+}
+
 function getUnverifiedUsers() {
   return usersDB.getUnverifiedUsers();
 }
@@ -45,6 +49,17 @@ async function setCart(username, cart) {
 async function setSchedule(username, schedule) {
   try {
     await usersDB.setField(username, 'schedule', schedule);
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
+async function setSchedulePrivacy(username, isPublic) {
+  // in case of malformed input
+  isPublic = (isPublic === 'true');
+  try {
+    await usersDB.setField(username, 'isSchedulePublic', isPublic);
     return null;
   } catch (err) {
     return err;
@@ -132,11 +147,13 @@ module.exports = {
   getUser,
   setUser,
   getNumUsers,
+  getUserSchedule,
   getUnverifiedUsers,
   updateUser,
   setVerified,
   setCart,
   setSchedule,
+  setSchedulePrivacy,
   setCourseList,
   addToWatchlist,
   removeFromWatchlist,
