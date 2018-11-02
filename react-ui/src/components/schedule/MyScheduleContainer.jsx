@@ -89,7 +89,7 @@ class ToastCopy extends Component {
   };
 
   render() {
-    const link = `https://wwww.watsmymajor.com/schedule/${this.props.username}`;
+    const link = `https://www.watsmymajor.com/schedule/${this.props.username}`;
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>Share with your friends!</span>
