@@ -322,6 +322,7 @@ UsersRouter.post('/remove/profile/:username', async function (req, res) {
   }
 
   // Return user object
+  let user = null;
   try {
     ({ user, err } = await users.getUser(username));
     if (err) {
@@ -330,8 +331,8 @@ UsersRouter.post('/remove/profile/:username', async function (req, res) {
     }
     res.status(200).json(user);
   } catch (err) {
-      console.error(err);
-      res.status(400).send(err);
+    console.error(err);
+    res.status(400).send(err);
   }
 });
 
