@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
@@ -100,49 +100,53 @@ const renderDays = (dates, children) => {
   ));
 }
 
-const MultipleDaysView = ({
-  dates,
-  scrollPosition,
-  onScrollChange,
-  isScrollDisable,
-  children
-}) => (
-  <div style={ styles.container }>
-    <div style={ styles.firstColumn } />
-    <div style={ styles.headerContainer }>
-      {
-        renderDaysHeader(dates)
-      }
-    </div>
-    <div
-      ref={ elem => {
-        if(elem != null) {
-          this.scrollViewer = elem;
-          elem.scrollTop = scrollPosition;
-        }
-      } }
-      onTouchStart={ (e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop), 100) }
-      style={ styles.bodyContainer(isScrollDisable) }>
-      <div style={ styles.hoursContainer }>
-        {
-          verticalHours()
-        }
-      </div>
-      <div style={ styles.daysContainer }>
-        {
-          renderDays(dates, children)
-        }
-      </div>
-    </div>
-  </div>
-);
+export default class MultipleDaysView extends Component {
+  static propTypes = {
+    dates: PropTypes.array.isRequired,
+    scrollPosition: PropTypes.number.isRequired,
+    onScrollChange: PropTypes.func.isRequired,
+    isScrollDisable: PropTypes.bool.isRequired,
+    children: PropTypes.node.isRequired
+  };
 
-MultipleDaysView.propTypes = {
-  dates: PropTypes.array.isRequired,
-  scrollPosition: PropTypes.number.isRequired,
-  onScrollChange: PropTypes.func.isRequired,
-  isScrollDisable: PropTypes.bool.isRequired,
-  children: PropTypes.node.isRequired
-}
+  render() {
+    const {
+      dates,
+      scrollPosition,
+      onScrollChange,
+      isScrollDisable,
+      children
+    } = this.props;
 
-export default MultipleDaysView;
+    return (
+      <div style={ styles.container }>
+        <div style={ styles.firstColumn } />
+        <div style={ styles.headerContainer }>
+          {
+            renderDaysHeader(dates)
+          }
+        </div>
+        <div
+          ref={ elem => {
+            if(elem != null) {
+              this.scrollViewer = elem;
+              elem.scrollTop = scrollPosition;
+            }
+          } }
+          onTouchStart={ (e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop), 100) }
+          style={ styles.bodyContainer(isScrollDisable) }>
+          <div style={ styles.hoursContainer }>
+            {
+              verticalHours()
+            }
+          </div>
+          <div style={ styles.daysContainer }>
+            {
+              renderDays(dates, children)
+            }
+          </div>
+        </div>
+      </div>
+    );
+  }
+};

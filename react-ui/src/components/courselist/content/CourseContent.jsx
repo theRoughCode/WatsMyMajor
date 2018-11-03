@@ -31,6 +31,7 @@ const styles = {
     flex: 1,
     flexDirection: 'column',
     marginRight: 20,
+    marginBottom: 30,
   },
   leftContainer: (isMobile) => ({
     display: 'flex',
