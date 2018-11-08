@@ -45,7 +45,7 @@ const styles = {
   headerContainer: {
     height: headerHeight,
     position: 'absolute',
-    right: 0,
+    right: 20,
     left: firstColumnWidth,
     top: '0'
   },
@@ -149,4 +149,4 @@ export default class MultipleDaysView extends Component {
       </div>
     );
   }
-};
+}

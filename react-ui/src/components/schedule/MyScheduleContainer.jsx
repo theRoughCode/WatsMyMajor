@@ -137,12 +137,13 @@ class ScheduleContainer extends Component {
 
   state = {
     text: '',
-    schedule: {},
+    schedule: this.props.schedule,
+    friendSchedule: {},
+    friendName: '',                 // name of schedule owner (used for browsing)
     submitted: false,
     importDialogOpen: false,
     loading: true,
     isBrowsing: false,        // true if browsing other schedules
-    name: '',                 // name of schedule owner (used for browsing)
     isPublic: this.props.isPublic,
   };
 
@@ -153,11 +154,15 @@ class ScheduleContainer extends Component {
 
   componentWillReceiveProps = (nextProps) => {
     const { params, path } = nextProps.match;
+    // New friend schedulle
     if (this.props.match.path !== path ||
         this.props.match.params.username !== params.username) {
       this.setState({ loading: true });
       this.updateSchedule(params.username, path);
-    } else if (!objectEquals(nextProps.schedule, this.props.schedule)) {
+    }
+
+    // User schedule updated
+    if (!objectEquals(nextProps.schedule, this.props.schedule)) {
       this.setState({ schedule: nextProps.schedule });
     }
   }
@@ -175,14 +180,14 @@ class ScheduleContainer extends Component {
       } else {
         const { schedule, name } = resp;
         document.title = `${name}'s Schedule - WatsMyMajor`;
-        this.setState({ schedule, name, loading: false });
+        this.setState({ friendSchedule: schedule, friendName: name, loading: false });
       }
     } else {
       document.title = 'My Schedule - WatsMyMajor';
       this.setState({
         loading: false,
-        schedule: this.props.schedule,
-        name: '',
+        friendSchedule: {},
+        friendName: '',
         isBrowsing: false,
       });
     }
@@ -231,7 +236,8 @@ class ScheduleContainer extends Component {
           onImportTerm={ this.onOpenDialog }
           onUpdatePrivacy={ this.onUpdatePrivacy }
           isBrowsing
-          name={ this.state.name }
+          friendSchedule={ this.state.friendSchedule }
+          friendName={ this.state.friendName }
           isPublic={ this.state.isPublic }
         />
       );
@@ -260,7 +266,8 @@ class ScheduleContainer extends Component {
             onImportTerm={ this.onOpenDialog }
             onUpdatePrivacy={ this.onUpdatePrivacy }
             isBrowsing={ false }
-            name=""
+            friendSchedule={ this.state.friendSchedule }
+            friendName={ this.state.friendName }
             isPublic={ this.state.isPublic }
           />
           <Dialog
