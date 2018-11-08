@@ -24,7 +24,7 @@ import DotsIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 import { objectEquals } from '../../utils/arrays';
-import { red, lightGreen2, blueGreen, mediumBlue } from '../../constants/Colours';
+import { red, green2, blueGreen, mediumBlue } from '../../constants/Colours';
 
 const referenceDate = new Date(2017, 1, 1);
 
@@ -120,7 +120,7 @@ const parseCourses = (courses, isFriends) => {
       } = arr[1];
 
       let colour = mediumBlue;
-      if (isFriends || type === FRIEND) colour = lightGreen2;
+      if (isFriends || type === FRIEND) colour = green2;
       else if (type === SHARED) colour = blueGreen;
 
       const startDateMoment = moment({
