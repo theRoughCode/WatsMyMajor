@@ -21,11 +21,10 @@ import MultipleDaysIcon from 'material-ui/svg-icons/action/view-week';
 import PublishIcon from 'material-ui/svg-icons/editor/publish';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import DotsIcon from 'material-ui/svg-icons/navigation/more-vert';
-import RandomColour from 'randomcolor';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
 import { objectEquals } from '../../utils/arrays';
-import { red } from '../../constants/Colours';
+import { red, lightGreen2, blueGreen, mediumBlue } from '../../constants/Colours';
 
 const referenceDate = new Date(2017, 1, 1);
 
@@ -93,14 +92,19 @@ const styles = {
   },
 };
 
-const parseCourses = (courses) => {
+
+// Types of calendar events
+const USER = 0;
+const FRIEND = 1;
+const SHARED = 2;
+
+const parseCourses = (courses, isFriends) => {
   const classesArr = [];
 
   courses.forEach(({ subject, catalogNumber, classes }) => {
     if (!classes) return;
-    const colour = RandomColour({ luminosity: 'dark' });
     Object.entries(classes).forEach(arr => {
-      const type = arr[0];
+      const classType = arr[0];
 
       const {
         classNum,
@@ -111,8 +115,13 @@ const parseCourses = (courses) => {
         location,
         instructor,
         startDate,
-        endDate
+        endDate,
+        type
       } = arr[1];
+
+      let colour = mediumBlue;
+      if (isFriends || type === FRIEND) colour = lightGreen2;
+      else if (type === SHARED) colour = blueGreen;
 
       const startDateMoment = moment({
         year: startDate.year,
@@ -149,7 +158,7 @@ const parseCourses = (courses) => {
             classesArr.push({
               subject,
               catalogNumber,
-              type,
+              type: classType,
               colour,
               classNum,
               section,
@@ -169,17 +178,83 @@ const parseCourses = (courses) => {
   return classesArr;
 }
 
-const parseSchedule = (schedule) => {
+const parseSchedule = (schedule, isFriends = false) => {
   const classes = [];
 
   const terms = Object.keys(schedule);
   terms.forEach(term => {
     const courses = schedule[term];
-    const parsedCourses = parseCourses(courses);
+    const parsedCourses = parseCourses(courses, isFriends);
     classes.push(...parsedCourses);
   });
   return classes;
 };
+
+// Combines user schedule with friend's and classifies them as either just
+// user's, just friend's, or shared course
+const combineSchedules = (schedule, friendSchedule) => {
+  if (Object.keys(friendSchedule).length === 0) return {};
+  const mergedSchedule = Object.assign({}, friendSchedule);
+
+  // Init all friend's classes as just friend's
+  for (let term in mergedSchedule) {
+    mergedSchedule[term].forEach(course => {
+      for (let classType in course.classes) {
+        course.classes[classType].type = FRIEND;
+      }
+    });
+  }
+
+
+  for (let term in schedule) {
+    // User and friend shares terms
+    if (mergedSchedule.hasOwnProperty(term)) {
+      schedule[term].forEach(course => {
+        const newCourse = Object.assign({}, course);
+        for (let classType in course.classes) {
+          const userClassNum = course.classes[classType].classNum;
+          let sharedCourseIndex = -1;
+          for (let i = 0; i < mergedSchedule[term].length; i++) {
+            const { subject, catalogNumber } = mergedSchedule[term][i];
+
+            // User and friend shares a course
+            if (subject === course.subject && catalogNumber === course.catalogNumber) {
+              sharedCourseIndex = i;
+              break;
+            }
+          }
+          if (sharedCourseIndex > -1) {
+            const friendClass = mergedSchedule[term][sharedCourseIndex].classes[classType];
+            // If user and friend shares a class, we merge them by labelling as shared
+            if (userClassNum === friendClass.classNum) {
+              mergedSchedule[term][sharedCourseIndex].classes[classType].type = SHARED;
+              delete newCourse.classes[classType];
+            }
+          }
+        }
+
+        // If there are classes for this course that the user does not share with friend,
+        // we label as user's
+        if (newCourse.classes != null && Object.keys(newCourse.classes).length > 0) {
+          for (let classType in newCourse.classes) {
+            newCourse.classes[classType].type = USER;
+          }
+          mergedSchedule[term].push(newCourse);
+        }
+      });
+    } else {
+      // User and friend do not share the same term
+      // Init all user's classes as user's
+      mergedSchedule[term] = schedule[term].map(course => {
+        for (let classType in course.classes) {
+          course.classes[classType].type = USER;
+        }
+        return course;
+      });
+    }
+  }
+  return mergedSchedule;
+}
 
 export default class CalendarContainer extends Component {
   static propTypes = {
@@ -188,56 +263,40 @@ export default class CalendarContainer extends Component {
     onImportTerm: PropTypes.func.isRequired,
     onUpdatePrivacy: PropTypes.func.isRequired,
     schedule: PropTypes.object.isRequired,
+    friendSchedule: PropTypes.object.isRequired,
+    friendName: PropTypes.string.isRequired,
     isBrowsing: PropTypes.bool.isRequired,
-    name: PropTypes.string.isRequired,
     isPublic: PropTypes.bool.isRequired,
   };
 
-  constructor(props) {
-    super(props);
+  state = {
+    date: new Date(),
+    mode: '3days',
+    classes: parseSchedule(this.props.schedule),
+    combinedClasses: parseSchedule(combineSchedules(this.props.schedule, this.props.friendSchedule)),
+    isMenuOpen: false,
+    anchorEl: null,
+    view: '3 Days',
+  };
 
-    const date = new Date();
-
-    this.state = {
-      date: date,
-      mode: '3days',
-      classes: parseSchedule(props.schedule),
-      isMenuOpen: false,
-      anchorEl: null,
-      view: '3 Days',
-    };
-
-    this.setDate = this.setDate.bind(this);
-    this.getDate = this.getDate.bind(this);
-    this.getIndex = this.getIndex.bind(this);
-    this.changeMode = this.changeMode.bind(this);
-    this.openMenu = this.openMenu.bind(this);
-    this.closeMenu = this.closeMenu.bind(this);
-    this.openDatePicker = this.openDatePicker.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps = (nextProps) => {
     if (!objectEquals(nextProps.schedule, this.props.schedule)) {
       const classes = parseSchedule(nextProps.schedule);
       this.setState({ classes });
     }
   }
 
-  setDate(date) {
-    this.setState({ date });
-  }
+  setDate = (date) =>  this.setState({ date });
 
-  onChangeIndex(index) {
+  onChangeIndex = (index) => {
     const date = addDays(referenceDate, index * modeNbOfDaysMap[this.getMode()]);
     this.unControlledDate = date;
     this.setDate(date);
   }
 
-  getMode() {
-    return this.state.mode == null ? 'day' : this.state.mode;
-  }
+  getMode = () => this.state.mode == null ? 'day' : this.state.mode;
 
-  changeMode(mode) {
+  changeMode = (mode) => {
     let view = '3 Days';
     switch (mode) {
     case 'day':
@@ -252,28 +311,24 @@ export default class CalendarContainer extends Component {
     this.setState({ mode: mode, isMenuOpen: false, view });
   }
 
-  getDate() {
-    return this.state.date != null ? this.state.date : this.unControlledDate;
-  }
+  getDate = () => this.state.date != null ? this.state.date : this.unControlledDate;
 
-  getIndex() {
-    return Math.floor(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
-  }
+  getIndex = () => Math.floor(diffDays(startOfDay(this.getDate()), referenceDate) / modeNbOfDaysMap[this.getMode()]);
 
-  openMenu(ev) {
+  openMenu = (ev) => {
     ev.preventDefault();
     this.setState({ isMenuOpen: !this.state.isMenuOpen, anchorEl: ev.currentTarget });
   }
 
-  closeMenu() {
-    this.setState({ isMenuOpen: false });
-  }
+  closeMenu = () => this.setState({ isMenuOpen: false });
 
-  openDatePicker() {
-    this.refs.dp.openDialog();
-  }
+  openDatePicker = () => this.refs.dp.openDialog();
 
   render() {
+    const classes = (!this.props.isBrowsing)
+      ? this.state.classes
+      : this.state.combinedClasses;
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <AppBar
@@ -290,7 +345,7 @@ export default class CalendarContainer extends Component {
                 : (
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ lineHeight: 1.6 }}>{ `${moment(this.state.date).format('MMM YYYY')}` }</span>
-                    <span style={{ fontSize: 17, lineHeight: 1, fontWeight: 300 }}>{ `${this.props.name}'s Schedule` }</span>
+                    <span style={{ fontSize: 17, lineHeight: 1, fontWeight: 300 }}>{ `${this.props.friendName}'s Schedule` }</span>
                   </div>
                 )
               }
@@ -356,7 +411,11 @@ export default class CalendarContainer extends Component {
               { (this.props.isBrowsing)
                 ? (
                   <MediaQuery minWidth={ 427 }>
-                    <span style={ styles.name }>{ `${this.props.name}'s Schedule` }</span>
+                    {
+                      this.props.friendName.length > 0 && (
+                        <span style={ styles.name }>{ `${this.props.friendName}'s Schedule` }</span>
+                      )
+                    }
                   </MediaQuery>
                 )
                 : (
@@ -441,7 +500,7 @@ export default class CalendarContainer extends Component {
           getIndex={ this.getIndex }
         >
           {
-            this.state.classes
+            classes
               .map((classElem, index) => (
                 <Event
                   key={ index }

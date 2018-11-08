@@ -12,7 +12,6 @@
     "cryptiles": "^4.1.2",
     "material-ui": "^0.20.2",
     "material-ui-search-bar": "^0.4.2",
-    "randomcolor": "^0.5.3",
     "rc-progress": "^2.2.6",
     "react": "^16.6.0",
     "react-beautiful-dnd": "^9.0.2",
