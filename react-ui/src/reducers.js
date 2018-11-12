@@ -13,6 +13,7 @@ import {
   CLEAR_USER_SCHEDULE,
   CLEAR_USER_SCHEDULE_FAILURE,
   SET_CART,
+  REORDER_CART,
   SET_CART_PREREQS,
   WATCH_CLASS,
   UNWATCH_CLASS,
@@ -171,6 +172,7 @@ function cart(state = [], action) {
   case LOGOUT_USER:
     return [];
   case SET_CART:
+  case REORDER_CART:
     return action.meta.cart || state;
   case SET_CART_PREREQS:
     return action.payload || state;

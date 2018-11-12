@@ -79,7 +79,7 @@ const styles = {
   }
 };
 
-const getListStyle = (isDraggingOver, isCart) => ({
+const getListStyle = (isDraggingOver) => ({
   padding: space,
   width: stylesConst.width - space * 2,
   maxHeight: '100%',
@@ -322,7 +322,7 @@ export default class TermBoard extends Component {
               { (provided, snapshot) => (
                 <div
                   ref={ provided.innerRef }
-                  style={ getListStyle(snapshot.isDraggingOver, isCart) }
+                  style={ getListStyle(snapshot.isDraggingOver) }
                 >
                   { renderCourses(!isCart && !snapshot.isDraggingOver, courses, this.openAddDialog, snapshot.isDraggingOver) }
                   { provided.placeholder }

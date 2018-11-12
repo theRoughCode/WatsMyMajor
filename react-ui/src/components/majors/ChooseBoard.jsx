@@ -93,8 +93,9 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
 // We need this callback so that set state happens synchonously when updating
 // the numChecked counter
 // https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3
-const incrementChecked = (delta) => ({ numChecked }, { choose }) => {
+const incrementChecked = (delta) => ({ numChecked }, { choose, courses }) => {
   numChecked += delta;
+  if (choose === 0) choose = courses.length;  // Choose all
   const fulfilled = numChecked >= choose;
   return { numChecked, fulfilled };
 };

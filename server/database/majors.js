@@ -1,5 +1,41 @@
 const { majorsRef } = require('./index');
 
+/*  ReqTypes
+  - course:
+    - subject: string
+    - catalogNumber: string
+  - range:
+    - subject: string
+    - from: string
+    - to: string
+    - excluding (optional): [string]
+  - option: (AMATH 242/CS 371)
+    - options: array
+      - subject
+      - catalogNumber
+  - level: (300-level CS course) -> used for specific subject
+    - subject: string
+    - catalogNumber: string (300+ will allow any above)
+    - note: string
+  - subject: (Any math course) -> used for faculty courses
+    - subject: string
+    - note: string
+  - subject-level: (Any 300 or 400 level math course)
+    - subject: string
+    - catalogNumber: string (i.e. 300, 400)
+    - excluding (optional): [string]
+    - note: string
+  - any (any course)
+*/
+
+/*  DATA SCHEMA
+{
+  type: string
+  choose: number      - Choose x from
+  courses: [ReqTypes]
+}
+*/
+
 /****************************
  *													*
  *			S E T T E R S 			*

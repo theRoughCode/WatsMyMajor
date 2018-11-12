@@ -7,6 +7,8 @@ const facebookUsersDB = require('../database/facebookUsers');
 const imagesDB = require('../database/images');
 
 // TODO: Find a better way to enforce lower case for username
+// TODO: Instead of sending over whole courselist, can just send ADD/DELETE/MOVE
+//       with the required data
 
 // Get user
 UsersRouter.get('/:username', async function(req, res) {
