@@ -195,7 +195,7 @@ class CourseBoardContainer extends Component {
     }
     if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
       const cart = await fillCourseTitles(nextProps.cart);
-      this.setState({ cart: nextProps.cart });
+      this.setState({ cart });
     }
     if (nextProps.username !== this.state.username) {
       this.setState({ username: nextProps.username });

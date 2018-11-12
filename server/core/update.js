@@ -224,12 +224,10 @@ async function updateClass(subject, catalogNumber, term) {
       info.catalogNumber = catalogNumber;
       updateWatchlist(term, info);
     }, err => {
-      console.error(err);
       if (err) return err;
       else return null;
     });
   } catch (err) {
-    console.error(err);
     return err;
   }
 }
@@ -251,7 +249,6 @@ function updateAllClasses(term) {
           });
       }, err => {
         if (err) {
-          console.error(err);
           resolve({ err, failedList });
         }
         else resolve({ err: null, failedList });
@@ -265,17 +262,14 @@ function updateAllClasses(term) {
 
 // Update classes for latest term
 async function updateLatestClasses() {
-  return new Promise((resolve, reject) => {
-    waterloo.getTerms(async function({ currentTerm }) {
-      try {
-        await updateAllClasses(currentTerm);
-        resolve(null);
-      } catch (err) {
-        console.error(err);
-        resolve(err);
-      }
-    });
-  });
+  try {
+    const term = process.env.CURRENT_TERM;
+    await updateAllClasses(term);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
 }
 
 
@@ -325,7 +319,7 @@ async function updateWatchlist(term, classInfo) {
       enrollmentTotal === enrollment.enrollmentTotal
   ) {
     /* eslint-disable no-console */
-    console.log(`Skipping class ${classNumber}...`);
+    // console.log(`Skipping class ${classNumber}...`);
     return;
   }
 

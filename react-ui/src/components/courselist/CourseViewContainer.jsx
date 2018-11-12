@@ -111,7 +111,7 @@ class CourseViewContainer extends Component {
     this.state = {
       subject: subject.toUpperCase(),
       catalogNumber,
-      term: '1189',
+      term: process.env.REACT_APP_CURRENT_TERM,
       courseLoading: true,
       classLoading: true,
       error: false,

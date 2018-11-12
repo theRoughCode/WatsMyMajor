@@ -45,6 +45,11 @@ const coreSubjects = {
       'MTHEL', 'PMATH', 'SE', 'STAT'],
     name: 'math',
   },
+  'science': {
+    subjects: ['AVIA', 'BIOL', 'CHEM', 'SCCOM', 'EARTH', 'MNS', 'OPTOM',
+      'PDPHRM', 'PHARM', 'PHYS', 'SCI', 'SCBUS'],
+    name: 'science',
+  },
   'language': {
     subjects: ['ASL', 'CHINA', 'CROAT', 'DUTCH', 'ENGL', 'EMLS', 'FR', 'GER',
       'GRK', 'ITAL', 'JAPAN', 'KOREA', 'LAT', 'PORT', 'RUSS', 'SI', 'SPAN'],
@@ -71,7 +76,9 @@ const getSubjectCourses = (subject, excluding, myCourses) => {
   if (!myCourses.hasOwnProperty(subject)) return [];
 
   // Regular subject (i.e. PMATH, MATH, CS)
-  return [{ subject, catNums: Object.keys(myCourses[subject]) }];
+  let catNums = Object.keys(myCourses[subject]);
+  if (excluding.length > 0) catNums = catNums.filter(n => !excluding.includes(n));
+  return [{ subject, catNums }];
 }
 
 const getTakenCourses = (subject, level, excluding, myCourses) => {

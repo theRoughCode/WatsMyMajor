@@ -13,11 +13,17 @@ const { majorsRef } = require('./index');
     - options: array
       - subject
       - catalogNumber
-  - level: (300-level CS course) -> used for specific subject
+      OR
+      - type: sum
+      - courses: [
+        - subject
+        - catalogNumber
+      ]
+  - level: (300-level CS course)
     - subject: string
     - catalogNumber: string (300+ will allow any above)
     - note: string
-  - subject: (Any math course) -> used for faculty courses
+  - subject: (Any [faculty]/[subject] course)
     - subject: string
     - note: string
   - subject-level: (Any 300 or 400 level math course)
