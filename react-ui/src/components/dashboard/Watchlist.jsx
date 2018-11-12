@@ -8,7 +8,7 @@ import { List, ListItem } from 'material-ui/List';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { arrayEquals } from '../../utils/arrays';
 
-const CURRENT_TERM = '1189';
+const CURRENT_TERM = process.env.REACT_APP_CURRENT_TERM;
 
 const styles = {
   container: {

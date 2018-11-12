@@ -130,20 +130,23 @@ const fillCourseTitles = async (courseList) => {
   if (!courseList) return courseList;
 
   return await Promise.all(courseList.map(async course => {
-    if (course.hasOwnProperty('title')) return course;
-    course = Object.assign({}, course);
-    course.title = await getCourseTitle(course.subject, course.catalogNumber);
-    return course;
+    const newCourse = Object.assign({}, course);
+    if (newCourse.hasOwnProperty('title')) return newCourse;
+    newCourse.title = await getCourseTitle(newCourse.subject, newCourse.catalogNumber);
+    return newCourse;
   }));
 }
 
 // Fill course list with titles
 const fillUserCourses = async (courseList) =>
   await Promise.all(courseList.map(async term => {
-    term = Object.assign({}, term);
-    term.courses = await fillCourseTitles(term.courses);
-    return term;
+    const newTerm = Object.assign({}, term);
+    newTerm.courses = await fillCourseTitles(newTerm.courses);
+    return newTerm;
   }));
+
+// Make call asynchronously (kinda hacky)
+const doAsync = func => setTimeout(func, 1);
 
 class CourseBoardContainer extends Component {
 
@@ -187,10 +190,12 @@ class CourseBoardContainer extends Component {
 
   async componentWillReceiveProps(nextProps) {
     if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
-      this.setState({ courseList: await fillUserCourses(nextProps.courseList) });
+      const courseList = await fillUserCourses(nextProps.courseList);
+      this.setState({ courseList });
     }
     if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
-      this.setState({ cart: await fillCourseTitles(nextProps.cart) });
+      const cart = await fillCourseTitles(nextProps.cart);
+      this.setState({ cart });
     }
     if (nextProps.username !== this.state.username) {
       this.setState({ username: nextProps.username });
@@ -287,14 +292,14 @@ class CourseBoardContainer extends Component {
     switch (id) {
     case 'Cart':
       this.setState({ cart: board });
-      this.props.reorderCartHandler(this.state.username, board);
+      doAsync(() => this.props.reorderCartHandler(this.state.username, board));
       break;
     case 'Trash': break;
     default: {
       const { username, courseList } = this.state;
       courseList[id].courses = board;
       this.setState({ courseList });
-      this.props.reorderCourseHandler(username, courseList);
+      doAsync(() => this.props.reorderCourseHandler(username, courseList));
     }
     }
   }
@@ -314,6 +319,7 @@ class CourseBoardContainer extends Component {
     const destBoard = this.getBoard(dest.droppableId);
     const [removed] = sourceBoard.splice(source.index, 1);
     if (destBoard) destBoard.splice(dest.index, 0, removed);
+    // TODO: Think about not updating twice (2 network requests)
     this.updateBoard(source.droppableId, sourceBoard);
     this.updateBoard(dest.droppableId, destBoard);
   }
@@ -558,7 +564,6 @@ class CourseBoardContainer extends Component {
                   </div>
                 </DragDropContext>
               </MediaQuery>
-              <ReactTooltip id="course-card-title" effect="solid" />
             </div>
           )
         }

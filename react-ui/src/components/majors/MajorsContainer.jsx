@@ -61,7 +61,7 @@ const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
     return (
       <ChooseBoard
         key={ index }
-        choose={ courses.length }
+        choose={ 0 }
         title="Choose all of:"
         courses={ courses }
         myCourses={ myCourses }

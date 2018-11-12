@@ -11,12 +11,15 @@ export const LOGIN_USER = 'LOGIN_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
+export const UPDATE_USER_COURSES_SUCCESS = 'UPDATE_USER_COURSES_SUCCESS';
+export const UPDATE_USER_COURSES_FAILURE = 'UPDATE_USER_COURSES_FAILURE';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
 export const UPDATE_USER_SCHEDULE = 'UPDATE_USER_SCHEDULE';
 export const UPDATE_USER_SCHEDULE_FAILURE = 'UPDATE_USER_SCHEDULE_FAILURE';
 export const CLEAR_USER_SCHEDULE = 'CLEAR_USER_SCHEDULE';
 export const CLEAR_USER_SCHEDULE_FAILURE = 'CLEAR_USER_SCHEDULE_FAILURE';
 export const SET_CART = 'SET_CART';
+export const REORDER_CART = 'REORDER_CART';
 export const SET_CART_PREREQS = 'SET_CART_PREREQS';
 export const WATCH_CLASS = 'WATCH_CLASS';
 export const UNWATCH_CLASS = 'UNWATCH_CLASS';
@@ -116,8 +119,8 @@ export const reorderUserCourses = (username, courseList) => ({
     body: JSON.stringify({ courseList }),
     types: [
       { type: UPDATE_USER_COURSES, meta: { courseList } },
-      '',
-      ''
+      { type: UPDATE_USER_COURSES_SUCCESS },
+      { type: UPDATE_USER_COURSES_FAILURE },
     ]
   }
 });
@@ -209,7 +212,7 @@ export const reorderCart = (username, cart) => ({
       'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     body: JSON.stringify({ cart }),
-    types: [{ type: SET_CART, 	meta: { cart } }, '', '']
+    types: [{ type: REORDER_CART,	meta: { cart } }, '', '']
   }
 });
 

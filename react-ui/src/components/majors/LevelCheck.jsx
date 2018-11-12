@@ -40,15 +40,33 @@ const styles = {
 
 // List of math subjects
 const coreSubjects = {
-  'math': ['ACTSC', 'AMATH', 'CO', 'COMM', 'CS', 'MATH', 'MATBUS',
-    'MTHEL', 'PMATH', 'SE', 'STAT'],
+  'math': {
+    subjects: ['ACTSC', 'AMATH', 'CO', 'COMM', 'CS', 'MATH', 'MATBUS',
+      'MTHEL', 'PMATH', 'SE', 'STAT'],
+    name: 'math',
+  },
+  'science': {
+    subjects: ['AVIA', 'BIOL', 'CHEM', 'SCCOM', 'EARTH', 'MNS', 'OPTOM',
+      'PDPHRM', 'PHARM', 'PHYS', 'SCI', 'SCBUS'],
+    name: 'science',
+  },
+  'language': {
+    subjects: ['ASL', 'CHINA', 'CROAT', 'DUTCH', 'ENGL', 'EMLS', 'FR', 'GER',
+      'GRK', 'ITAL', 'JAPAN', 'KOREA', 'LAT', 'PORT', 'RUSS', 'SI', 'SPAN'],
+    name: 'language',
+  },
+  'language2': {
+    subjects: ['CHINA', 'CROAT', 'DUTCH', 'FR', 'GER', 'GRK', 'ITAL',
+      'JAPAN', 'KOREA', 'LAT', 'PORT', 'RUSS', 'SI', 'SPAN'],
+    name: 'language',
+  },
 };
 
 const getSubjectCourses = (subject, excluding, myCourses) => {
   // If a core subject (i.e. math)
   if (coreSubjects.hasOwnProperty(subject)) {
     // List of subjects
-    const subjects = coreSubjects[subject].filter(s => !excluding.includes(s));
+    const subjects = coreSubjects[subject].subjects.filter(s => !excluding.includes(s));
     return subjects.map(s =>
       (myCourses.hasOwnProperty(s))
         ? ({ subject: s, catNums: Object.keys(myCourses[s]) })
@@ -58,7 +76,9 @@ const getSubjectCourses = (subject, excluding, myCourses) => {
   if (!myCourses.hasOwnProperty(subject)) return [];
 
   // Regular subject (i.e. PMATH, MATH, CS)
-  return [{ subject, catNums: Object.keys(myCourses[subject]) }];
+  let catNums = Object.keys(myCourses[subject]);
+  if (excluding.length > 0) catNums = catNums.filter(n => !excluding.includes(n));
+  return [{ subject, catNums }];
 }
 
 const getTakenCourses = (subject, level, excluding, myCourses) => {
@@ -74,12 +94,7 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
     });
   });
   // Just check subject
-  if (level.length === 0) {
-    // Mark taken courses as fulfilled
-    takenCourses.forEach(({ subject, catalogNumber }) =>
-      myCourses[subject][catalogNumber] = true);
-    return takenCourses;
-  }
+  if (level.length === 0) return takenCourses;
 
   // Check level
   level = level.trim();
@@ -102,9 +117,6 @@ const getTakenCourses = (subject, level, excluding, myCourses) => {
     // If it's not a xxx+ level course and the level is higher than the
     // required level, we don't want it
     if (!isPlus && catLevel > levelNum) return false;
-
-    // Otherwise, mark as taken
-    myCourses[subject][catalogNumber] = true;
     return (catLevel >= levelNum) && !excluding.includes(catalogNumber);
   });
 }
@@ -147,14 +159,20 @@ export default class LevelCheck extends Component {
     }
   }
 
+  // Mark courses as "taken" or fulfilled by this requirement
+  markTaken = (courses) => courses.forEach(({ subject, catalogNumber }) =>
+    this.props.myCourses[subject][catalogNumber] = true
+  );
+
   checkTaken = (subject, level, excluding, children, myCourses) => {
     let takenCourses = getTakenCourses(subject, level, excluding, myCourses);
     if (takenCourses.length === 0) return;
 
     // If course is taken, increment count by 1
-    if (this.props.choose === 1) {
+    if (this.props.choose <= 1) {
       this.props.onCheck(null, true);
       this.setState({ taken: true, isChecked: true });
+      this.markTaken(takenCourses.slice(0, 1));
     } else {
       takenCourses = takenCourses.slice(0, this.props.choose);
       this.props.onCheck(null, true, takenCourses.length);
@@ -162,16 +180,19 @@ export default class LevelCheck extends Component {
         children[index] = { subject, catalogNumber, checked: true, taken: true };
       });
       this.setState({ children });
+      this.markTaken(takenCourses);
     }
   }
 
-  onCheck = (index, ev, isChecked) => {
+  onCheck = (index) => {
     // Toggle main checkbox
     if (index === -1) {
+      const isChecked = !this.state.isChecked;
       this.setState({ isChecked });
-      if (this.state.children.length > 0) this.props.onCheck(null, isChecked);
+      this.props.onCheck(null, isChecked);
     } else {
       const { children } = this.state;
+      const isChecked = !children[index].checked;
       children[index].checked = isChecked;
       this.setState({ children });
       this.props.onCheck(null, isChecked);
@@ -182,10 +203,14 @@ export default class LevelCheck extends Component {
     const { subject, level, excluding, choose, note } = this.props;
     const levelStr = (level.length > 0) ? `${level}-level ` : '';
     const excludingStr = (excluding.length > 0) ? ` (excl. ${excluding.join(',')})` : '';
+    // language2 is not a suitable display name
+    const subjectName = (coreSubjects.hasOwnProperty(subject))
+      ? coreSubjects[subject].name
+      : subject;
     return (
       <div data-tip data-for={ `note-${subject}-${level}-${choose}` }>
         <Checkbox
-          label={ `Any ${levelStr}${subject} course${excludingStr}` }
+          label={ `Any ${levelStr}${subjectName} course${excludingStr}` }
           checked={ this.state.isChecked }
           onCheck={ () => this.onCheck(-1) }
           labelStyle={ styles.labelStyle(this.state.taken) }
@@ -216,7 +241,11 @@ export default class LevelCheck extends Component {
         ) }
         {
           (note.length > 0) && (
-            <ReactTooltip id={ `note-${subject}-${level}-${choose}` } type='info' effect='solid'>
+            <ReactTooltip
+              id={ `note-${subject}-${level}-${choose}` }
+              type='info'
+              effect='solid'
+            >
               <span style={ styles.note }>{ note }</span>
             </ReactTooltip>
           )
