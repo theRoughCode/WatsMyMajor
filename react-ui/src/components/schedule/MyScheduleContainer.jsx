@@ -23,11 +23,26 @@ const stepContents = [
   },
   {
     button: 'Enroll',
-    text: <p>Click on the <b>Course Selection</b> tab and click on <b>View My Class Enrollment Results</b>.</p>
+    text: (
+      <ul style={{ textAlign: 'left' }}>
+        <li>If for Winter 2019:
+          <ol>
+            <li>Click on the <b>Course Selection</b> tab and click on <b>View My Class Enrollment Results</b>.</li>
+            <li>Select the term you want.</li>
+          </ol>
+        </li>
+        <li>Otherwise:
+          <ol>
+            <li>Click on the <b>Enroll</b> tab and select the term you want to add to your schedule.</li>
+            <li>Go to <b>List View</b>.</li>
+          </ol>
+        </li>
+      </ul>
+    )
   },
   {
     button: 'Select all and copy text',
-    text: <p>select the term you want, select all (<i>ctrl-a</i>), and copy EVERYTHING!!</p>
+    text: <p>Select all (<i>ctrl-a</i>), and copy EVERYTHING!!</p>
   },
 ];
 
