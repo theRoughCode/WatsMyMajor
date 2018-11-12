@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { read } = require('./utils');
+const { getClasses } = require('../../database/classes');
 
 // Returns true if start date is before end date using format
 function isBefore(startDate, endDate, format) {
@@ -121,7 +122,7 @@ function parseComponent(arr) {
   };
 }
 
-function parseCourses(textArr) {
+function parseCourses1(textArr) {
   const courses = [];
   let dateFormat = '';
   let index = textArr.findIndex(str => str.includes('Status\t'));
@@ -155,7 +156,8 @@ function parseCourses(textArr) {
   return courses.map(course => formatDates(course, dateFormat));
 }
 
-function parseText(text) {
+// Parse based on class schedule
+function parseSchedule1(text) {
   // We might get instructors separated by commas on different lines. We want
   // to detect any commas followed by a new line and combine them.
   text = text.replace(/,\s*(\r|\n|\r\n)\s*/g, ',');
@@ -165,9 +167,165 @@ function parseText(text) {
   const term = textArr[0].slice(0, textArr[0].indexOf('|') - 1);
   textArr = read(textArr, 'Status\t', 0, -1);
 
-  const courses = parseCourses(textArr);
+  const courses = parseCourses1(textArr);
 
   return { term, courses };
+}
+
+function getTermInfo(termStr) {
+  const termStrArr = termStr.split(" ");
+  // Invalid term
+  if (termStrArr.length !== 2) return process.env.CURRENT_TERM;
+
+  let term = '1' + termStrArr[1].slice(2);
+  const startDate = {
+    day: 1,
+    month: 1,
+    year: 2018
+  };
+  const endDate = {
+    day: 1,
+    month: 1,
+    year: 2018
+  };
+  switch (termStrArr[0]) {
+    case 'Winter':
+      term += '1';
+      startDate.day = 7;
+      startDate.month = 1;
+      startDate.year = termStrArr[1];
+      endDate.day = 5;
+      endDate.month = 4;
+      endDate.year = termStrArr[1];
+      break;
+    case 'Spring':
+      term += '5';
+      startDate.day = 6;
+      startDate.month = 5;
+      startDate.year = termStrArr[1];
+      endDate.day = 30;
+      endDate.month = 7;
+      endDate.year = termStrArr[1];
+      break;
+    default:
+      term += '9';
+      startDate.day = 6;
+      startDate.month = 9;
+      startDate.year = termStrArr[1];
+      endDate.day = 3;
+      endDate.month = 12;
+      endDate.year = termStrArr[1];
+  }
+  return {
+    term,
+    startDate,
+    endDate
+  };
+}
+
+function parseTimeSlot(timeSlot) {
+  let { endTime, instructor, location, startTime, weekdays } = timeSlot;
+  startTime = moment(startTime, "HH:mm");
+  if (!startTime.isValid()) return {};
+  endTime = moment(endTime, "HH:mm");
+  if (!endTime.isValid()) return {};
+  return {
+    days: weekdays,
+    startTime: {
+      hour: startTime.hour(),
+      min: startTime.minute(),
+    },
+    endTime: {
+      hour: endTime.hour(),
+      min: endTime.minute(),
+    },
+    location,
+    instructor
+  };
+}
+
+async function getClass(subject, catalogNumber, section, termInfo) {
+  const { term, startDate, endDate } = termInfo;
+  const classObj = { subject, catalogNumber, term, type: '', classInfo: {} };
+  try {
+    let { err, classes } = await getClasses(subject, catalogNumber, term);
+    if (err) {
+      console.error(err);
+      return classObj;
+    }
+    for (let i = 0; i < classes.length; i++) {
+      const sectionArr = classes[i].section.split(" ");
+      if (sectionArr.length !== 2) return classObj;
+      if (sectionArr[1] !== section) continue;
+      classObj.type = sectionArr[0];
+      const timeSlot = parseTimeSlot(classes[i].classes[0]);
+      if (timeSlot == null) break;
+      classObj.classInfo['classNum'] = classes[i].classNumber;
+      classObj.classInfo['section'] = section;
+      classObj.classInfo['days'] = timeSlot.days;
+      classObj.classInfo['startTime'] = timeSlot.startTime;
+      classObj.classInfo['endTime'] = timeSlot.endTime;
+      classObj.classInfo['location'] = timeSlot.location;
+      classObj.classInfo['instructor'] = timeSlot.instructor;
+      classObj.classInfo['startDate'] = startDate;
+      classObj.classInfo['endDate'] = endDate;
+      break;
+    }
+    return classObj;
+  } catch (e) {
+    console.error(e);
+    return classObj;
+  }
+}
+
+async function parseCourses2(textArr, termInfo) {
+  const courses = [];
+  const promises = [];
+  for (let i = 0; i < textArr.length; i++) {
+    if (textArr[i].startsWith('Unsuccessful')) break;
+    const subject = textArr[i++];
+    const catalogNumber = textArr[i++];
+    const section = textArr[i];
+    promises.push(getClass(subject, catalogNumber, section, termInfo));
+  }
+  const result = await Promise.all(promises);
+  const coursesObj = {};
+  result.forEach(c => {
+    const { subject, catalogNumber,  type, classInfo } = c;
+    if (!coursesObj.hasOwnProperty(subject)) coursesObj[subject] = {};
+    if (!coursesObj[subject].hasOwnProperty(catalogNumber)) coursesObj[subject][catalogNumber] = {
+      classes: {},
+    };
+    coursesObj[subject][catalogNumber].classes[type] = classInfo;
+  });
+  Object.keys(coursesObj).forEach(subject => {
+    Object.keys(coursesObj[subject]).forEach((catalogNumber) => {
+      courses.push({
+        subject,
+        catalogNumber,
+        classes: coursesObj[subject][catalogNumber].classes,
+      });
+    });
+  });
+  return courses;
+}
+
+// Parse based on class schedule
+async function parseSchedule2(text) {
+  let textArr = text.split(/\n/g);
+  textArr = read(textArr, 'My Class Enrollment Results');
+  textArr = read(textArr, 'Groupbox');
+  const term = textArr[1].trim();
+  const termInfo = getTermInfo(term);
+  textArr = read(textArr, 'Section', 0, 1);
+  const courses = await parseCourses2(textArr, termInfo);
+
+  return { term, courses };
+}
+
+async function parseText(text) {
+  if (text.includes('List View')) return parseSchedule1(text);
+  else return parseSchedule2(text);
 }
 
 module.exports = parseText;

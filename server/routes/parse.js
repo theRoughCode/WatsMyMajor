@@ -3,8 +3,8 @@ const parseSchedule = require('../core/parsers/scheduleParser');
 const parseCourses = require('../core/parsers/courseParser');
 const parseTranscript = require('../core/parsers/transcriptParser');
 
-ParseRouter.post('/schedule', function(req, res) {
-  const schedule = parseSchedule(req.body.text);
+ParseRouter.post('/schedule', async function(req, res) {
+  const schedule = await parseSchedule(req.body.text);
   res.json(schedule);
 });
 

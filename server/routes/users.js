@@ -235,7 +235,7 @@ UsersRouter.post('/add/schedule/:username', async function(req, res) {
   if (!text) return res.status(400).send('Missing fields.');
 
   // Parse schedule
-  const { term, courses } = parseSchedule(text);
+  const { term, courses } = await parseSchedule(text);
 
   try {
     let { user, err } = await users.getUser(username);

@@ -23,11 +23,11 @@ const stepContents = [
   },
   {
     button: 'Enroll',
-    text: <p>Click on the <b>Enroll</b> tab and select the term you want to add to your schedule.</p>
+    text: <p>Click on the <b>Course Selection</b> tab and click on <b>View My Class Enrollment Results</b>.</p>
   },
   {
     button: 'Select all and copy text',
-    text: <p>Go to <b>List View</b>, select all (<i>ctrl-a</i>), and copy EVERYTHING!!</p>
+    text: <p>select the term you want, select all (<i>ctrl-a</i>), and copy EVERYTHING!!</p>
   },
 ];
 
