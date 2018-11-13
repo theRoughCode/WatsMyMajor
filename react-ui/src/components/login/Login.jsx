@@ -258,6 +258,8 @@ class Login extends Component {
             <span style={ styles.subtitle }>or</span>
             <FacebookLogin
               appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
+              fields="name,email,picture"
+              disableMobileRedirect
               callback={ this.onFacebookLogin }
               onFailure={ err => console.error(err) }
               render={ renderProps => (
