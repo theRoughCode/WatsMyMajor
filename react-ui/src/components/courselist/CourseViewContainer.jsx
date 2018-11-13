@@ -62,6 +62,14 @@ const defaultClassInfo = {
   lastUpdated: ''
 };
 
+// Duplicated from server/core/scrapers/classes.js
+const createAdmURL = (subject, catalogNumber, term) => {
+  const level = (catalogNumber.length < 3 || (catalogNumber.charAt(0) <= 4)) ? 'under' : 'grad';
+  subject = subject.toUpperCase();
+  catalogNumber = catalogNumber.toUpperCase();
+  return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
+}
+
 const getCourseData = async (subject, catalogNumber) => {
   const response = await fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
     headers: {
@@ -112,6 +120,7 @@ class CourseViewContainer extends Component {
       subject: subject.toUpperCase(),
       catalogNumber,
       term: process.env.REACT_APP_CURRENT_TERM,
+      admURL: '',
       courseLoading: true,
       classLoading: true,
       error: false,
@@ -136,7 +145,9 @@ class CourseViewContainer extends Component {
   }
 
   componentDidMount() {
-    const { subject, catalogNumber } = this.state;
+    const { subject, catalogNumber, term } = this.state;
+    const admURL = createAdmURL(subject, catalogNumber, term);
+    this.setState({ admURL });
     this.updatePageInfo(subject, catalogNumber);
     this.updateWatchlist(this.props.watchlist);
   }
@@ -300,6 +311,7 @@ class CourseViewContainer extends Component {
       catalogNumber,
       course,
       term,
+      admURL,
       classes,
       watchlist,
       taken,
@@ -334,6 +346,7 @@ class CourseViewContainer extends Component {
         <ClassDetails
           classInfo={ classInfo }
           watchlist={ watchlist }
+          admURL={ admURL }
           open={ classModalOpen }
           onClose={ this.closeClassModal }
           onWatch={ this.onWatchClass }

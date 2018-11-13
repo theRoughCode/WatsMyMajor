@@ -200,9 +200,9 @@ async function deleteUser(username) {
     message: 'Username not found',
   };
 
-  if (user.email != null) await emailsDB.deleteEmail(user.email);
-  if (user.facebookID != null) await facebookUsersDB.removeFacebookUser(user.facebookID);
-  if (user.profileURL != null) await users.removeProfilePicture(username);
+  if (user.email != null && user.email != "") await emailsDB.deleteEmail(user.email);
+  if (user.facebookID != null && user.facebookID != "") await facebookUsersDB.removeFacebookUser(user.facebookID);
+  if (user.profileURL != null && user.profileURL != "") await users.removeProfilePicture(username);
   await usersDB.deleteUser(username);
 
   return null;

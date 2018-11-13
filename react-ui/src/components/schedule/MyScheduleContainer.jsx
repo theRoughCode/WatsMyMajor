@@ -158,12 +158,14 @@ class ScheduleContainer extends Component {
     submitted: false,
     importDialogOpen: false,
     loading: true,
-    isBrowsing: false,        // true if browsing other schedules
+    isBrowsing: false,              // true if browsing other schedules,
+    term: '',                       // term to view
     isPublic: this.props.isPublic,
   };
 
   componentDidMount = () => {
     const { params, path } = this.props.match;
+    if (params.term != null) this.setState({ term: params.term });
     this.updateSchedule(params.username, path);
   }
 
@@ -174,6 +176,12 @@ class ScheduleContainer extends Component {
         this.props.match.params.username !== params.username) {
       this.setState({ loading: true });
       this.updateSchedule(params.username, path);
+    }
+
+    // Change viewing term
+    if (this.props.match.params.term !== params.term) {
+      const term = (params.term == null) ? '' : params.term;
+      this.setState({ term });
     }
 
     // User schedule updated
@@ -246,6 +254,7 @@ class ScheduleContainer extends Component {
       return (
         <CalendarContainer
           schedule={ this.state.schedule }
+          term={ this.state.term }
           onClassClick={ this.onClassClick }
           onClearSchedule={ this.onClearScheduleClick }
           onImportTerm={ this.onOpenDialog }
@@ -276,6 +285,7 @@ class ScheduleContainer extends Component {
         <div style={{ height: '100%' }}>
           <CalendarContainer
             schedule={ this.state.schedule }
+            term={ this.state.term }
             onClassClick={ this.onClassClick }
             onClearSchedule={ this.onClearScheduleClick }
             onImportTerm={ this.onOpenDialog }

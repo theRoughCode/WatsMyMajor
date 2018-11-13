@@ -60,6 +60,11 @@ const styles =  {
   actions: {
     paddingTop: 0,
   },
+  admURL: {
+    lineHeight: 0.7,
+    paddingLeft: 2,
+    fontSize: 11,
+  }
 };
 
 async function retrieveProfInfo(instructor) {
@@ -89,6 +94,7 @@ export default class ClassDetailsContainer extends Component {
   static propTypes = {
     classInfo: PropTypes.object.isRequired,
     watchlist: PropTypes.object.isRequired,
+    admURL: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onWatch: PropTypes.func.isRequired,
@@ -137,7 +143,7 @@ export default class ClassDetailsContainer extends Component {
   }
 
   render() {
-    const  { classInfo, watchlist, open, onClose, onWatch, onUnwatch } = this.props;
+    const  { classInfo, watchlist, admURL, open, onClose, onWatch, onUnwatch } = this.props;
     const { instructor, prof, fetchingRMP } = this.state;
     const {
       classNumber,
@@ -197,6 +203,12 @@ export default class ClassDetailsContainer extends Component {
             <div style={ styles.header }>
               <span style={ styles.headerText }>Class Information</span>
               <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+              <span style={ styles.admURL }>
+                Scraped from:
+                <a href={ admURL } target="_blank" rel="noopener noreferrer">
+                  adm.uwaterloo.ca
+                </a>
+              </span>
             </div>
             { watchButton }
           </div>

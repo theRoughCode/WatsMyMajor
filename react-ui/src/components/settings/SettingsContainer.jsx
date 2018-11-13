@@ -9,7 +9,14 @@ import ConfirmIcon from 'material-ui/svg-icons/action/done';
 import SettingsBoard from './SettingsBoard';
 import ImageUpload from './ImageUpload';
 import LinkFacebook from './LinkFacebook';
-import { setUser, editSettings, linkFacebook, unlinkFacebook } from '../../actions';
+import DeleteAccount from './DeleteAccount';
+import {
+  setUser,
+  editSettings,
+  linkFacebook,
+  unlinkFacebook,
+  deleteAccount,
+} from '../../actions';
 import {
   validateName,
   // validateEmail,
@@ -50,6 +57,7 @@ const SettingsContainer = ({
   onSaveSettings,
   onLinkFacebook,
   onUnlinkFacebook,
+  onDeleteAccount,
 }) => (
   <div style={ styles.settingsContainer }>
     <SettingsBoard
@@ -84,6 +92,7 @@ const SettingsContainer = ({
       onLink={ onLinkFacebook }
       onUnlink={ onUnlinkFacebook }
     />
+    <DeleteAccount onDeleteAccount={ () => onDeleteAccount(username) } />
   </div>
 );
 
@@ -97,6 +106,7 @@ SettingsContainer.propTypes = {
   onSaveSettings: PropTypes.func.isRequired,
   onLinkFacebook: PropTypes.func.isRequired,
   onUnlinkFacebook: PropTypes.func.isRequired,
+  onDeleteAccount: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ user }) => ({
@@ -113,6 +123,7 @@ const mapDispatchToProps = dispatch => {
     onSaveSettings: (username, user) => dispatch(editSettings(username, user)),
     onLinkFacebook: (username, facebookID, hasFBPic) => dispatch(linkFacebook(username, facebookID, hasFBPic)),
     onUnlinkFacebook: (username) => dispatch(unlinkFacebook(username)),
+    onDeleteAccount: (username) => dispatch(deleteAccount(username)),
   };
 };
 

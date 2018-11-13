@@ -4,6 +4,7 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
+import { darkRed } from '../../constants/Colours';
 
 const styles = {
   boardContainer: {
@@ -55,7 +56,7 @@ export default class LinkFacebook extends Component {
           label="Unlink Facebook"
           onClick={ this.onFBUnlink }
           labelStyle={ styles.button }
-          backgroundColor="#ff2828"
+          backgroundColor={ darkRed }
           icon={ <FacebookIcon style={ styles.button } /> }
         />
       )
