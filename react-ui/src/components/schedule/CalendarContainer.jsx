@@ -263,6 +263,7 @@ export default class CalendarContainer extends Component {
     onImportTerm: PropTypes.func.isRequired,
     onUpdatePrivacy: PropTypes.func.isRequired,
     schedule: PropTypes.object.isRequired,
+    term: PropTypes.string.isRequired,
     friendSchedule: PropTypes.object.isRequired,
     friendName: PropTypes.string.isRequired,
     isBrowsing: PropTypes.bool.isRequired,
@@ -279,11 +280,28 @@ export default class CalendarContainer extends Component {
     view: '3 Days',
   };
 
+  componentDidMount() {
+    this.updateTerm(this.props.term);
+  }
+
   componentWillReceiveProps = (nextProps) => {
     if (!objectEquals(nextProps.schedule, this.props.schedule)) {
       const classes = parseSchedule(nextProps.schedule);
       this.setState({ classes });
     }
+
+    if (nextProps.term !== this.props.term) this.updateTerm(nextProps.term);
+  }
+
+  updateTerm = (termStr) => {
+    if (termStr == null || termStr.length !== 4) return;
+
+    const year = Number('20' + termStr.slice(1, 3));
+    if (isNaN(year)) return;
+    const month = Number(termStr.slice(3)) - 1;
+    if (isNaN(month)) return;
+    const date = new Date(year, month, 7);
+    this.setDate(date);
   }
 
   setDate = (date) =>  this.setState({ date });
