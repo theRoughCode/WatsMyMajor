@@ -27,6 +27,8 @@ import {
   LINK_FACEBOOK_FAILURE,
   UNLINK_FACEBOOK,
   UNLINK_FACEBOOK_FAILURE,
+  DELETE_ACCOUNT_SUCCESS,
+  DELETE_ACCOUNT_FAILURE,
 } from './actions';
 
 function sideBarOpen(state = false, action) {
@@ -37,6 +39,7 @@ function sideBarOpen(state = false, action) {
   case LOGIN_USER:
     return true;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return false;
   default:
     return state;
@@ -79,6 +82,7 @@ function courseList(state = [], action) {
     if (action.payload == null) return [];
     return action.payload.courseList || state;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return [];
   case UPDATE_USER_COURSES:
     return action.meta.courseList || state;
@@ -126,6 +130,7 @@ function myCourses(state = {}, action) {
     if (action.payload == null) return {};
     return getMyCourses(action.payload.courseList) || state;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return {};
   case UPDATE_USER_COURSES:
     return getMyCourses(action.meta.courseList);
@@ -145,6 +150,7 @@ function mySchedule(state = {}, action) {
     if (action.payload == null) return {};
     return action.payload.schedule || state;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return {};
   case UPDATE_USER_SCHEDULE:
     return action.payload.schedule || state;
@@ -170,6 +176,7 @@ function cart(state = [], action) {
     if (action.payload == null) return [];
     return action.payload.cart || state;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return [];
   case SET_CART:
   case REORDER_CART:
@@ -191,6 +198,7 @@ function watchlist(state = {}, action) {
     if (action.payload == null) return {};
     return action.payload.watchlist || state;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return {};
   case WATCH_CLASS: {
     const watchlist = Object.assign({}, state);
@@ -226,8 +234,12 @@ function user(state = defaultUser, action) {
     return payload || defaultUser;
   }
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     localStorage.removeItem(usernameKey);
     return defaultUser;
+  case DELETE_ACCOUNT_FAILURE:
+    toast.error('Failed to delete account. Please contact an administrator.')
+    return state;
   case EDIT_SETTINGS:
     return Object.assign({}, state, action.meta.user);
   case EDIT_SETTINGS_FAILURE: {
@@ -267,6 +279,7 @@ function isLoggedIn(state = false, action) {
   case LOGIN_USER:
     return true;
   case LOGOUT_USER:
+  case DELETE_ACCOUNT_SUCCESS:
     return false;
   default:
     return state;

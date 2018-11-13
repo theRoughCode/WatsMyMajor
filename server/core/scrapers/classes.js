@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const utils = require('./utils');
 
 async function getClassInfo(subject, catalogNumber, term) {
-  const url = createURL(subject, catalogNumber, 'undergraduate', term);
+  const url = createURL(subject, catalogNumber, term);
   let $ = null;
 
   // Get list of profs
@@ -85,8 +85,8 @@ async function getClassInfo(subject, catalogNumber, term) {
  ****************************/
 
 // Create adm.uwaterloo URL
-const createURL = (subject, catalogNumber, level, term) => {
-  level = (level.includes('under')) ? 'under' : 'grad';
+const createURL = (subject, catalogNumber, term) => {
+  const level = (catalogNumber.length < 3 || (catalogNumber.charAt(0) <= 4)) ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
   return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;

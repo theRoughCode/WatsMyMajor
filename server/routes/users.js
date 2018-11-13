@@ -360,4 +360,22 @@ UsersRouter.post('/remove/profile/:username', async function (req, res) {
   }
 });
 
+// Delete user
+UsersRouter.get('/delete/:username', async function(req, res) {
+  const username = req.params.username.toLowerCase();
+  if (req.user !== username) return res.sendStatus(401);
+
+  try {
+    const err = await auth.deleteUser(username);
+    if (err) {
+      console.error(err);
+      return res.status(400).json(err);
+    }
+    return res.send(`Successfully deleted ${username}`);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json(err);
+  }
+});
+
 module.exports = UsersRouter;

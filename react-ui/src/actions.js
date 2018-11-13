@@ -33,6 +33,8 @@ export const LINK_FACEBOOK = 'LINK_FACEBOOK';
 export const LINK_FACEBOOK_FAILURE = 'LINK_FACEBOOK_FAILURE';
 export const UNLINK_FACEBOOK = 'UNLINK_FACEBOOK';
 export const UNLINK_FACEBOOK_FAILURE = 'UNLINK_FACEBOOK_FAILURE';
+export const DELETE_ACCOUNT_SUCCESS = 'DELETE_ACCOUNT_SUCCESS';
+export const DELETE_ACCOUNT_FAILURE =  'DELETE_ACCOUNT_FAILURE';
 
 /*
  * action creators
@@ -318,6 +320,22 @@ export const unlinkFacebook = (username) => ({
       '',
       { type: UNLINK_FACEBOOK, meta: { username } },
       { type: UNLINK_FACEBOOK_FAILURE },
+    ]
+  }
+});
+
+export const deleteAccount = (username) => ({
+  [RSAA]: {
+    endpoint: `/server/users/delete/${username}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
+    },
+    types: [
+      '',
+      { type: DELETE_ACCOUNT_SUCCESS },
+      { type: DELETE_ACCOUNT_FAILURE },
     ]
   }
 });

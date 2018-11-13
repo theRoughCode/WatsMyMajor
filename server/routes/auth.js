@@ -75,7 +75,7 @@ AuthRouter.get('/facebook', function(req, res) {
   })(req, res);
 });
 
-// Register user
+// Delete user
 AuthRouter.get('/delete/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
 
