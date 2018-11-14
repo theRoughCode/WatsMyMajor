@@ -33,7 +33,7 @@ function setCourse(subject, catalogNumber, title) {
 // Returns course name
 async function getCourseTitle(subject, catalogNumber) {
   if (subject.length > 7 || catalogNumber.length > 7)
-  return { err: `Invalid course: ${subject} ${catalogNumber}`, title: null };
+    return { err: `Invalid course: ${subject} ${catalogNumber}`, title: null };
   try {
     const snapshot = await courseListRef
       .child(`${subject}/${catalogNumber}`)
