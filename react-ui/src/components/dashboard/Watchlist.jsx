@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from 'material-ui/List';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import { termNumToStr } from '../../utils/courses';
 import { arrayEquals } from '../../utils/arrays';
 
 const CURRENT_TERM = process.env.REACT_APP_CURRENT_TERM;
@@ -20,33 +21,31 @@ const styles = {
     fontSize: 20,
     fontWeight: 500,
   },
+  termContainer: {
+    marginTop: 10,
+  },
+  termTitle: {
+    fontSize: 18,
+    textDecoration: 'underline',
+  }
 };
 
 // Gets subject and catalog number for classes in watchlist
-const getWatchlistInfo = async watchlist => {
-  if (Object.keys(watchlist) === 0) return [];
-  if (!watchlist.hasOwnProperty(CURRENT_TERM)) return [];
-  let classes = Object.keys(watchlist[CURRENT_TERM]);
+const getClassInfo = async (classNum, term) => {
+  try {
+    const response = await fetch(`/server/watchlist/info/${term}/${classNum}`, {
+      headers: {
+        'x-secret': process.env.REACT_APP_SERVER_SECRET
+      }
+    });
 
-  classes = await Promise.all(classes.map(async classNum => {
-    try {
-      const response = await fetch(`/server/watchlist/info/${CURRENT_TERM}/${classNum}`, {
-        headers: {
-          'x-secret': process.env.REACT_APP_SERVER_SECRET
-        }
-      });
-
-      if (!response.ok) return { subject: '', catalogNumber: '', classNum };
-
-      const { subject, catalogNumber } = await response.json();
-      return { subject, catalogNumber, classNum };
-    } catch (err) {
-      console.error(err);
-      return { subject: '', catalogNumber: '', classNum };
-    }
-  }));
-
-  return classes;
+    if (!response.ok) return { subject: null, catalogNumber: null, classNum };
+    const { subject, catalogNumber } = await response.json();
+    return { subject, catalogNumber };
+  } catch (err) {
+    console.error(err);
+    return { subject: null, catalogNumber: null };
+  }
 }
 
 // Compares state's watchlist to nextProps'.  Returns true if changed.
@@ -58,6 +57,7 @@ const watchlistChanged = (state, nextProps) => {
 
 const WatchlistItem = ({
   index,
+  term,
   subject,
   catalogNumber,
   classNum,
@@ -65,7 +65,7 @@ const WatchlistItem = ({
   onDeleteClick,
 }) => {
   const classClickHandler = () => onClassClick(subject, catalogNumber);
-  const deleteClickHandler = () => onDeleteClick(index);
+  const deleteClickHandler = () => onDeleteClick(classNum, term);
 
   return (
     <ListItem
@@ -82,6 +82,7 @@ const WatchlistItem = ({
 
 WatchlistItem.propTypes = {
   index: PropTypes.number.isRequired,
+  term: PropTypes.string.isRequired,
   subject: PropTypes.string.isRequired,
   catalogNumber: PropTypes.string.isRequired,
   classNum: PropTypes.string.isRequired,
@@ -97,21 +98,35 @@ class Watchlist extends Component {
   };
 
   state = {
-    watchlist: [],
+    watchlist: {},
     dialogOpen: false,
-    toBeDeleted: -1, // index of class to be deleted
+    toBeDeleted: {}, // index of class to be deleted
   };
 
   async componentDidMount() {
-    const watchlist = await getWatchlistInfo(this.props.watchlist);
+    const watchlist = await this.getWatchlistInfo(this.props.watchlist);
     this.setState({ watchlist });
   }
 
   async componentWillReceiveProps(nextProps) {
     if (watchlistChanged(this.state.watchlist, nextProps.watchlist[CURRENT_TERM])) {
-      const watchlist = await getWatchlistInfo(nextProps.watchlist);
+      const watchlist = await this.getWatchlistInfo(nextProps.watchlist);
       this.setState({ watchlist });
     }
+  }
+
+  getWatchlistInfo = async (watchlist) => {
+    if (Object.keys(watchlist) === 0) return {};
+    const newWatchList = {};
+    for (let term in watchlist) {
+      newWatchList[term] = await Promise.all(
+        Object.keys(watchlist[term]).map(async classNum => {
+          const { subject, catalogNumber } = await getClassInfo(classNum, term);
+          return { subject, catalogNumber, classNum };
+        })
+      )
+    }
+    return newWatchList;
   }
 
   // Navigates to course
@@ -119,16 +134,16 @@ class Watchlist extends Component {
     this.props.history.push(`/courses/${subject}/${catalogNumber}`);
   }
 
-  onDeleteClick = (index) => this.setState({ toBeDeleted: index, dialogOpen: true });
+  onDeleteClick = (classNum, term) =>
+    this.setState({ toBeDeleted: { classNum, term }, dialogOpen: true });
 
   onSubmit = () => {
-    if (this.state.toBeDeleted < 0) return;
-    const selectedClass = this.state.watchlist[this.state.toBeDeleted];
-    this.props.onUnwatch(CURRENT_TERM, selectedClass.classNum);
+    if (Object.keys(this.state.toBeDeleted).length === 0) return;
+    this.props.onUnwatch(this.state.toBeDeleted.classNum, this.state.toBeDeleted.term);
     this.closeDialog();
   }
 
-  closeDialog = () => this.setState({ toBeDeleted: -1, dialogOpen: false });
+  closeDialog = () => this.setState({ toBeDeleted: {}, dialogOpen: false });
 
   render() {
     const { watchlist, toBeDeleted, dialogOpen } = this.state;
@@ -153,16 +168,24 @@ class Watchlist extends Component {
         <List>
           <span style={ styles.header }>Class Watchlist</span>
           {
-            watchlist.map(({ subject, catalogNumber, classNum }, index) => (
-              <WatchlistItem
-                key={ index }
-                index={ index }
-                subject={ subject }
-                catalogNumber={ catalogNumber }
-                classNum={ classNum }
-                onClassClick={ this.onClassClick }
-                onDeleteClick={ this.onDeleteClick }
-              />
+            Object.keys(watchlist).map((term, index) => (
+              <div key={ index } style={ styles.termContainer }>
+                <span style={ styles.termTitle }>{ termNumToStr(term) }</span>
+                {
+                  watchlist[term].map(({ subject, catalogNumber, classNum }, index) => (
+                    <WatchlistItem
+                      key={ index }
+                      index={ index }
+                      term={ term }
+                      subject={ subject }
+                      catalogNumber={ catalogNumber }
+                      classNum={ classNum }
+                      onClassClick={ this.onClassClick }
+                      onDeleteClick={ this.onDeleteClick }
+                    />
+                  ))
+                }
+              </div>
             ))
           }
         </List>

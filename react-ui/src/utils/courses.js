@@ -61,3 +61,23 @@ export const canTakeCourse = (myCourses, prereqs, coreqs, antireqs) => {
 		&& fulfillCoreqs(myCourses, coreqs)
 		&& fulfillPrereqs(myCourses, prereqs);
 }
+
+export const termNumToStr = (term) => {
+  const termRegex = /1([1-2][0-9])(1|5|9)/;
+  const [ year, month ] = term.match(termRegex).slice(1);
+  let season = '';
+  switch (month) {
+  case '1':
+    season = 'Winter';
+    break;
+  case '5':
+    season = 'Spring';
+    break;
+  case '9':
+    season = 'Fall';
+    break;
+  default:
+    season = '';
+  }
+  return `${season} 20${year}`;
+};

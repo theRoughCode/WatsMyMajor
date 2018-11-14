@@ -8,6 +8,7 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import ClassRow from './ClassRow';
+import { termNumToStr } from '../../../utils/courses';
 import { purple } from '../../../constants/Colours';
 
 
@@ -50,26 +51,6 @@ const styles = {
   },
 };
 
-const termStr = (term) => {
-  const termRegex = /1([1-2][0-9])(1|5|9)/;
-  const [ year, month ] = term.match(termRegex).slice(1);
-  let season = '';
-  switch (month) {
-  case '1':
-    season = 'Winter';
-    break;
-  case '5':
-    season = 'Spring';
-    break;
-  case '9':
-    season = 'Fall';
-    break;
-  default:
-    season = '';
-  }
-  return `${season} 20${year}`;
-};
-
 
 const CourseClassList = ({
   expandClass,
@@ -78,7 +59,7 @@ const CourseClassList = ({
 }) => (
   <div style={ styles.container }>
     <div style={ styles.header }>
-      <span>{ termStr(term) }</span>
+      <span>{ termNumToStr(term) }</span>
     </div>
     <Paper zDepth={ 1 } style={ styles.scrollable }>
       <div style={ styles.paper }>

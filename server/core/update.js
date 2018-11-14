@@ -324,7 +324,12 @@ async function updateWatchlist(term, classInfo) {
   }
 
   // Else, update enrollment results
-  await watchlistDB.setEnrollment(term, classNumber, { enrollmentCap, enrollmentTotal });
+  const promises = [
+    watchlistDB.setSubject(term, classNumber, subject),
+    watchlistDB.setCatalogNumber(term, classNumber, catalogNumber),
+    watchlistDB.setEnrollment(term, classNumber, { enrollmentCap, enrollmentTotal }),
+  ];
+  await Promise.all(promises);
 
   // Nothing to compare to
   if (enrollment == null) return;

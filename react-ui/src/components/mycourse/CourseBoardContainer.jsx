@@ -351,7 +351,7 @@ class CourseBoardContainer extends Component {
     this.props.reorderCourseHandler(username, courseList);
   }
 
-  loadCourses = (id, newCourses) => {
+  loadCourses = async (id, newCourses) => {
     const { username, courseList } = this.state;
     let courses = courseList[id].courses || [];
 
@@ -367,6 +367,9 @@ class CourseBoardContainer extends Component {
     if (hasDuplicate) this.props.sendDuplicateCourseSnack();
     if (newCourses.length === 0) return;
 
+    // Fill in course titles
+    newCourses = await fillCourseTitles(newCourses);
+    
     courses = courses.concat(newCourses);
     courseList[id].courses = courses;
 
