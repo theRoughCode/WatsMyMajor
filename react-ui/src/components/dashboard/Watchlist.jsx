@@ -7,9 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from 'material-ui/List';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { termNumToStr } from '../../utils/courses';
-import { arrayEquals } from '../../utils/arrays';
-
-const CURRENT_TERM = process.env.REACT_APP_CURRENT_TERM;
+import { arrayOfObjectEquals } from '../../utils/arrays';
 
 const styles = {
   container: {
@@ -47,13 +45,6 @@ const getClassInfo = async (classNum, term) => {
     return { subject: null, catalogNumber: null };
   }
 }
-
-// Compares state's watchlist to nextProps'.  Returns true if changed.
-const watchlistChanged = (state, nextProps) => {
-  const classNums = state.map(c => c.classNum);
-  if (nextProps == null) return classNums.length > 0;
-  return !arrayEquals(classNums, Object.keys(nextProps));
-};
 
 const WatchlistItem = ({
   index,
@@ -109,7 +100,7 @@ class Watchlist extends Component {
   }
 
   async componentWillReceiveProps(nextProps) {
-    if (watchlistChanged(this.state.watchlist, nextProps.watchlist[CURRENT_TERM])) {
+    if (!arrayOfObjectEquals(this.state.watchlist, nextProps.watchlist)) {
       const watchlist = await this.getWatchlistInfo(nextProps.watchlist);
       this.setState({ watchlist });
     }
@@ -139,7 +130,7 @@ class Watchlist extends Component {
 
   onSubmit = () => {
     if (Object.keys(this.state.toBeDeleted).length === 0) return;
-    this.props.onUnwatch(this.state.toBeDeleted.classNum, this.state.toBeDeleted.term);
+    this.props.onUnwatch(this.state.toBeDeleted.term, this.state.toBeDeleted.classNum);
     this.closeDialog();
   }
 
@@ -147,7 +138,7 @@ class Watchlist extends Component {
 
   render() {
     const { watchlist, toBeDeleted, dialogOpen } = this.state;
-    if (watchlist.length === 0) return null;
+    if (Object.keys(watchlist).length === 0) return null;
 
     const actions = [
       <FlatButton

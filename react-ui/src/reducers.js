@@ -211,6 +211,8 @@ function watchlist(state = {}, action) {
     if (!watchlist.hasOwnProperty(action.meta.term)) return state;
     if (!watchlist[action.meta.term].hasOwnProperty(action.meta.classNum)) return state;
     delete watchlist[action.meta.term][action.meta.classNum];
+    // Delete empty term
+    if (Object.keys(watchlist[action.meta.term]).length === 0) delete watchlist[action.meta.term];
     return watchlist;
   }
   default:
