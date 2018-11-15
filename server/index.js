@@ -23,8 +23,9 @@ if (process.env.NODE_ENV === 'production') {
       // Force HTTPS
       res.redirect(`https://${req.header('host')}${req.url}`);
     } else if (req.get('Host') === 'watsmymajorbeta.herokuapp.com') {
-      // Redirectif using heroku domain
-      res.redirect(301, 'https://www.watsmymajor.com/' + req.originalUrl);
+      // Redirect if using heroku domain
+      const url = (req.originalUrl === '/') ? '' : req.originalUrl;
+      res.redirect(301, 'https://www.watsmymajor.com' + url);
     } else next();
   });
 }
