@@ -17,11 +17,14 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit:'10mb' }));
 app.use(bodyParser.urlencoded({ extended: false, limit:'10mb' }));
 
-// Force use of HTTPS in production
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     if (req.header('x-forwarded-proto') !== 'https') {
+      // Force HTTPS
       res.redirect(`https://${req.header('host')}${req.url}`);
+    } else if (req.get('Host') === 'watsmymajorbeta.herokuapp.com') {
+      // Redirectif using heroku domain
+      res.redirect(301, 'https://www.watsmymajor.com/' + req.originalUrl);
     } else next();
   });
 }
