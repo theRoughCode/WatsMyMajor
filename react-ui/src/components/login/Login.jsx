@@ -16,6 +16,7 @@ import { white, green, grey } from '../../constants/Colours';
 const ERROR_USERNAME_NOT_FOUND = 101;
 const ERROR_WRONG_PASSWORD = 105;
 const ERROR_USER_NOT_VERIFIED = 107;
+const ERROR_EMAIL_EXISTS = 200;
 const ERROR_MISSING_FB_EMAIL = 205;
 const ERROR_SERVER_ERROR = 400;
 
@@ -196,6 +197,9 @@ class Login extends Component {
       if (!response.ok) {
         const { code, message } = await response.json();
         switch (code) {
+        case ERROR_EMAIL_EXISTS:
+          toast.error(message);
+          return;
         case ERROR_MISSING_FB_EMAIL:
           toast.error(message);
           return;
