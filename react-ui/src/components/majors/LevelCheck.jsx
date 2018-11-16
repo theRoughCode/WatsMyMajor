@@ -184,15 +184,13 @@ export default class LevelCheck extends Component {
     }
   }
 
-  onCheck = (index) => {
+  onCheck = (index, isChecked) => {
     // Toggle main checkbox
     if (index === -1) {
-      const isChecked = !this.state.isChecked;
       this.setState({ isChecked });
       this.props.onCheck(null, isChecked);
     } else {
       const { children } = this.state;
-      const isChecked = !children[index].checked;
       children[index].checked = isChecked;
       this.setState({ children });
       this.props.onCheck(null, isChecked);
@@ -212,7 +210,7 @@ export default class LevelCheck extends Component {
         <Checkbox
           label={ `Any ${levelStr}${subjectName} course${excludingStr}` }
           checked={ this.state.isChecked }
-          onCheck={ () => this.onCheck(-1) }
+          onCheck={ (_, isChecked) => this.onCheck(-1, isChecked) }
           labelStyle={ styles.labelStyle(this.state.taken) }
           iconStyle={ styles.iconStyle }
           style={ styles.checkbox }
@@ -229,7 +227,7 @@ export default class LevelCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ () => this.onCheck(index) }
+                    onCheck={ (_, isChecked) => this.onCheck(index, isChecked) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }

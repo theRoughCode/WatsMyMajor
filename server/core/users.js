@@ -1,12 +1,23 @@
 const imagesDB = require('../database/images');
 const usersDB = require('../database/users');
+const {
+  fillCourseListMetadata,
+  fillCartMetadata,
+  stripCourseListMetadata,
+  stripCartMetadata,
+} = require('../core/utils');
 
-function getUser(username) {
-  return usersDB.getUser(username);
+async function getUser(username) {
+  const { user, err } = await usersDB.getUser(username);
+  if (err) return { user: null, err };
+
+  user.cart = await fillCartMetadata(user.cart);
+  user.courseList = await fillCourseListMetadata(user.courseList);
+  return { user, err: null };
 }
 
-function setUser(username) {
-  return usersDB.setUser(username);
+function setUser(username, user) {
+  return usersDB.setUser(username, user);
 }
 
 function getNumUsers() {
@@ -39,10 +50,12 @@ async function setVerified(username, isVerified) {
 
 async function setCart(username, cart) {
   try {
-    await usersDB.setField(username, 'cart', cart);
-    return null;
+    const strippedCart = stripCartMetadata(cart);
+    await usersDB.setField(username, 'cart', strippedCart);
+    cart = await fillCartMetadata(cart);
+    return { cart, err: null };
   } catch (err) {
-    return err;
+    return { cart: null, err };
   }
 }
 
@@ -68,10 +81,12 @@ async function setSchedulePrivacy(username, isPublic) {
 
 async function setCourseList(username, courseList) {
   try {
-    await usersDB.setField(username, 'courseList', courseList);
-    return null;
+    const strippedCourseList = stripCourseListMetadata(courseList);
+    await usersDB.setField(username, 'courseList', strippedCourseList);
+    courseList = await fillCourseListMetadata(courseList);
+    return { courseList, err: null };
   } catch (err) {
-    return err;
+    return { courseList: null, err };
   }
 }
 

@@ -36,7 +36,7 @@ async function createUser(username, email, name, password) {
   try {
     const hash = await bcrypt.hash(password, saltRounds);
     const user = { name, password: hash, email, verified: false };
-    await usersDB.setUser(username, user);
+    await users.setUser(username, user);
     await emailsDB.setEmail(username, email);
     return { err: null, user };
   } catch (err) {
@@ -86,7 +86,7 @@ async function createFBUser(profile) {
       password,
       verified: true,
     };
-    await usersDB.setUser(username, user);      // Set user
+    await users.setUser(username, user);      // Set user
     await emailsDB.setEmail(username, email);   // Set email
 
     // Link Facebook account to user

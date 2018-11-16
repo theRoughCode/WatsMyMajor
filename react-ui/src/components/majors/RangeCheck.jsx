@@ -115,15 +115,16 @@ export default class RangeCheck extends Component {
     }
   }
 
-  onCheck = (index, ev, isChecked) => {
+  onCheck = (index, isChecked) => {
     // Toggle main checkbox
     if (index === -1) {
       this.setState({ isChecked });
+      this.props.onCheck(null, isChecked);
     } else {
       const { children } = this.state;
       children[index].checked = isChecked;
       this.setState({ children });
-      this.props.onCheck(ev, isChecked);
+      this.props.onCheck(null, isChecked);
     }
   }
 
@@ -135,7 +136,7 @@ export default class RangeCheck extends Component {
         <Checkbox
           label={ `${subject} ${from} - ${subject} ${to}${excludingStr}` }
           checked={ this.state.isChecked }
-          onCheck={ () => this.onCheck(-1) }
+          onCheck={ (_, isChecked) => this.onCheck(-1, isChecked) }
           iconStyle={ styles.iconStyle }
           labelStyle={ styles.labelStyle(this.state.taken) }
           style={ styles.checkbox }
@@ -152,7 +153,7 @@ export default class RangeCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ () => this.onCheck(index) }
+                    onCheck={ (_, isChecked) => this.onCheck(index, isChecked) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }

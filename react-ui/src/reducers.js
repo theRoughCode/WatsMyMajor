@@ -86,6 +86,8 @@ function courseList(state = [], action) {
     return [];
   case UPDATE_USER_COURSES:
     return action.meta.courseList || state;
+  case UPDATE_USER_COURSES_PREREQS:
+    return action.payload || state;
   default:
     return state;
   }
@@ -120,7 +122,16 @@ function getMyCourses(courseList) {
   return courseMap;
 }
 
-// List of courses in My Courses
+// Object of courses in My Courses
+// Used for determining if user has taken a certain course (hashmap)
+// Format:
+/*
+	{
+		subject: {
+			catalogNumber: [prereqs]
+		}
+	}
+*/
 function myCourses(state = {}, action) {
   switch (action.type) {
   case SET_USER:

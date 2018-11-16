@@ -1,3 +1,4 @@
+const { getCourseTitle } = require('../database/courseList');
 const { getPrereqs } = require('../database/requisites');
 
 /*
@@ -156,40 +157,80 @@ function flattenPrereqs(prereqs) {
   return [];
 }
 
-// Set prereqs for input courses
-async function setCoursesPrereqs(courses) {
-  if (!courses) return [];
+// Used when setting user's courselist/cart
+async function fillCoursesMetadata(courses) {
+  if (!courses) return courses;
+
   return await Promise.all(courses.map(async function(course) {
-    let { subject, catalogNumber, prereqs } = course;
-    if (prereqs != null) return course;
+    let { subject, catalogNumber, prereqs, title } = course;
+    let err = null;
 
-    const { err, reqs } = await getPrereqs(subject, catalogNumber);
-    if (err) {
-      console.error(err);
-      return course;
-    } else {
+    // Fill prereqs
+    if (prereqs == null || prereqs.length === 0) {
+      let reqs = {};
+      ({ err, reqs } = await getPrereqs(subject, catalogNumber));
+      if (err) {
+        console.error(err);
+        return course;
+      }
+      // We want to flatten the prereqs of each course and attach them to the course
+      // to be used as a course card.
       prereqs = flattenPrereqs(reqs);
-      return { subject, catalogNumber, prereqs };
     }
+
+    // Fill course title
+    if (title == null || title === '') {
+      ({ err, title } = await getCourseTitle(subject, catalogNumber));
+      if (err) {
+        console.error(err);
+        return course;
+      }
+    }
+
+    return { subject, catalogNumber, title, prereqs };
   }));
 }
 
-// Used when updating user's courselist/cart
-// We want to flatten the prereqs of each course and attach them to the course
-// to be used as a course card.
-async function setCourseListPrereqs(courseList) {
-  return await Promise.all(courseList.map(async function({ term, courses, level }) {
-    courses = await setCoursesPrereqs(courses);
-    return { term, courses, level };
+async function fillCourseListMetadata(courseList) {
+  if (courseList == null) return null;
+  return await Promise.all(courseList.map(async ({ term, level, courses }) => {
+    courses = await fillCoursesMetadata(courses);
+    return { term, level, courses };
   }));
 }
 
+async function fillCartMetadata(cart) {
+  if (cart == null) return null;
+  return await fillCoursesMetadata(cart);
+}
+
+function stripCoursesMetadata(courses) {
+  if (!courses) return courses;
+  return courses.map(({ subject, catalogNumber }) => {
+    return { subject, catalogNumber };
+  });
+}
+
+function stripCourseListMetadata(courseList) {
+  if (courseList == null) return null;
+  return courseList.map(({ term, level, courses }) => {
+    courses = stripCoursesMetadata(courses);
+    return { term, level, courses };
+  });
+}
+
+function stripCartMetadata(cart) {
+  if (cart == null) return null;
+  return stripCoursesMetadata(cart);
+}
 
 module.exports = {
   parseCourse,
   nestReqs,
   parseReqs,
   unpick,
-  setCoursesPrereqs,
-  setCourseListPrereqs
+  fillCourseListMetadata,
+  fillCartMetadata,
+  stripCourseListMetadata,
+  stripCartMetadata,
 };
