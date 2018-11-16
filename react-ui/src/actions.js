@@ -11,8 +11,6 @@ export const LOGIN_USER = 'LOGIN_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
-export const UPDATE_USER_COURSES_SUCCESS = 'UPDATE_USER_COURSES_SUCCESS';
-export const UPDATE_USER_COURSES_FAILURE = 'UPDATE_USER_COURSES_FAILURE';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
 export const UPDATE_USER_SCHEDULE = 'UPDATE_USER_SCHEDULE';
 export const UPDATE_USER_SCHEDULE_FAILURE = 'UPDATE_USER_SCHEDULE_FAILURE';
@@ -87,8 +85,7 @@ export const createSnack = (
 
 
 // TODO: Change approach to update immediately and then fallback on failure
-// Used when adding to courses
-// Updates course list.  Use this when adding new courses.
+// Updates course list
 export const updateUserCourses = (username, courseList) => ({
   [RSAA]: {
     endpoint: `/server/users/set/courselist/${username}`,
@@ -103,26 +100,6 @@ export const updateUserCourses = (username, courseList) => ({
       { type: UPDATE_USER_COURSES, meta: { courseList } },
       { type: UPDATE_USER_COURSES_PREREQS },
       ''
-    ]
-  }
-});
-
-// Reorders course list.  Does not create prereqs.  Do not call this function
-// if there are new courses added.
-export const reorderUserCourses = (username, courseList) => ({
-  [RSAA]: {
-    endpoint: `/server/users/reorder/courselist/${username}`,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-    },
-    body: JSON.stringify({ courseList }),
-    types: [
-      { type: UPDATE_USER_COURSES, meta: { courseList } },
-      { type: UPDATE_USER_COURSES_SUCCESS },
-      { type: UPDATE_USER_COURSES_FAILURE },
     ]
   }
 });
@@ -204,9 +181,9 @@ export const removeFromCart = (subject, catalogNumber, username, cart) => {
   };
 }
 
-export const reorderCart = (username, cart) => ({
+export const setCart = (username, cart) => ({
   [RSAA]: {
-    endpoint: `/server/users/reorder/cart/${username}`,
+    endpoint: `/server/users/set/cart/${username}`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

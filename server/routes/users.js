@@ -1,5 +1,4 @@
 const UsersRouter = require('express').Router();
-const { setCourseListPrereqs, setCoursesPrereqs } = require('../core/utils');
 const auth = require('../core/auth');
 const parseSchedule = require('../core/parsers/scheduleParser');
 const users = require('../core/users');
@@ -174,23 +173,11 @@ UsersRouter.post('/set/cart/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
-  const cart = await setCoursesPrereqs(req.body.cart);
-  const err = await users.setCart(username, cart);
+  const { cart, err } = await users.setCart(username, req.body.cart);
   if (err) {
     console.error(err);
     res.status(400).send(err);
   } else res.json(cart);
-});
-
-UsersRouter.post('/reorder/cart/:username', async function(req, res) {
-  const username = req.params.username.toLowerCase();
-  if (req.user !== username) return res.sendStatus(401);
-
-  const err = await users.setCart(username, req.body.cart);
-  if (err) {
-    console.error(err);
-    res.status(400).send(err);
-  } else res.status(200).send(`Cart for User ${username} updated successfully.`);
 });
 
 // Set schedule
@@ -262,23 +249,11 @@ UsersRouter.post('/set/courselist/:username', async function(req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
-  const courseList = await setCourseListPrereqs(req.body.courseList);
-  const err = await users.setCourseList(username, courseList);
+  const { err, courseList } = await users.setCourseList(username, req.body.courseList);
   if (err) {
     console.error(err);
     res.status(400).send(err);
   } else res.json(courseList);
-});
-
-UsersRouter.post('/reorder/courselist/:username', async function(req, res) {
-  const username = req.params.username.toLowerCase();
-  if (req.user !== username) return res.sendStatus(401);
-
-  const err = await users.setCourseList(username, req.body.courseList);
-  if (err) {
-    console.error(err);
-    res.status(400).send(err);
-  } else res.status(200).send(`Course list for User ${username} updated successfully.`);
 });
 
 const easterURL = imagesDB.getEasterURL();

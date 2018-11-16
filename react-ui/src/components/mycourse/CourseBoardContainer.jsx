@@ -14,9 +14,8 @@ import { arrayOfObjectEquals } from '../../utils/arrays';
 import { hasTakenCourse, isInCart } from '../../utils/courses';
 import emptyBoardImage from '../../images/empty_board.png';
 import {
-  reorderUserCourses,
   updateUserCourses,
-  reorderCart,
+  setCart,
   unhighlightPrereqs,
   highlightPrereqs,
   createSnack
@@ -105,46 +104,6 @@ const mobileStyles = {
   },
 };
 
-const getCourseTitle = async (subject, catalogNumber) => {
-  try {
-    const response = await fetch(`/server/courses/title/${subject}/${catalogNumber}`, {
-      headers: {
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
-      }
-    });
-
-    if (!response.ok) {
-      console.error("Failed to get course")
-      return "";
-    }
-
-    return response.text();
-  } catch (err) {
-    console.error(err);
-    return "";
-  }
-}
-
-// Fill course list with titles
-const fillCourseTitles = async (courseList) => {
-  if (!courseList) return courseList;
-
-  return await Promise.all(courseList.map(async course => {
-    const newCourse = Object.assign({}, course);
-    if (newCourse.hasOwnProperty('title')) return newCourse;
-    newCourse.title = await getCourseTitle(newCourse.subject, newCourse.catalogNumber);
-    return newCourse;
-  }));
-}
-
-// Fill course list with titles
-const fillUserCourses = async (courseList) =>
-  await Promise.all(courseList.map(async term => {
-    const newTerm = Object.assign({}, term);
-    newTerm.courses = await fillCourseTitles(newTerm.courses);
-    return newTerm;
-  }));
-
 // Make call asynchronously (kinda hacky)
 const doAsync = func => setTimeout(func, 1);
 
@@ -156,8 +115,7 @@ class CourseBoardContainer extends Component {
     cart: PropTypes.array.isRequired,
     username: PropTypes.string.isRequired,
     updateCourseHandler: PropTypes.func.isRequired,
-    reorderCourseHandler: PropTypes.func.isRequired,
-    reorderCartHandler: PropTypes.func.isRequired,
+    setCartHandler: PropTypes.func.isRequired,
     deselectCourseHandler: PropTypes.func.isRequired,
     highlightPrereqsHandler: PropTypes.func.isRequired,
     sendDuplicateCourseSnack: PropTypes.func.isRequired,
@@ -178,24 +136,23 @@ class CourseBoardContainer extends Component {
   }
 
   async componentDidMount() {
-    const courseList = await fillUserCourses(this.props.courseList);
-    const cart = await fillCourseTitles(this.props.cart);
-
     this.setState({
-      courseList,
-      cart,
+      courseList: this.props.courseList,
+      cart: this.props.cart,
       loading: false,
     });
   }
 
+  componentDidUpdate() {
+    ReactTooltip.rebuild();
+  }
+
   async componentWillReceiveProps(nextProps) {
     if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
-      const courseList = await fillUserCourses(nextProps.courseList);
-      this.setState({ courseList });
+      this.setState({ courseList: nextProps.courseList });
     }
     if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
-      const cart = await fillCourseTitles(nextProps.cart);
-      this.setState({ cart });
+      this.setState({ cart: nextProps.cart });
     }
     if (nextProps.username !== this.state.username) {
       this.setState({ username: nextProps.username });
@@ -263,7 +220,7 @@ class CourseBoardContainer extends Component {
     const [removed] = courseList.splice(fromIndex, 1);
     courseList.splice(toIndex, 0, removed);
     this.setState({ courseList });
-    this.props.reorderCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
   // Called when a course is being dragged
@@ -292,14 +249,14 @@ class CourseBoardContainer extends Component {
     switch (id) {
     case 'Cart':
       this.setState({ cart: board });
-      doAsync(() => this.props.reorderCartHandler(this.state.username, board));
+      doAsync(() => this.props.setCartHandler(this.state.username, board));
       break;
     case 'Trash': break;
     default: {
       const { username, courseList } = this.state;
       courseList[id].courses = board;
       this.setState({ courseList });
-      doAsync(() => this.props.reorderCourseHandler(username, courseList));
+      doAsync(() => this.props.updateCourseHandler(username, courseList));
     }
     }
   }
@@ -329,26 +286,26 @@ class CourseBoardContainer extends Component {
     courseList[id].term = name;
     courseList[id].level = level;
     this.setState({ courseList });
-    this.props.reorderCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
   clearBoard = (id) => {
     const { username, courseList } = this.state;
     courseList[id].courses = [];
     this.setState({ courseList });
-    this.props.reorderCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
   clearCart = () => {
     this.setState({ cart: [] });
-    this.props.reorderCartHandler(this.state.username, []);
+    this.props.setCartHandler(this.state.username, []);
   }
 
   addBoard = (term, level) => {
     const { username, courseList } = this.state;
     courseList.push({ term, level, courses: [] });
     this.setState({ courseList });
-    this.props.reorderCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
   loadCourses = async (id, newCourses) => {
@@ -367,11 +324,7 @@ class CourseBoardContainer extends Component {
     if (hasDuplicate) this.props.sendDuplicateCourseSnack();
     if (newCourses.length === 0) return;
 
-    // Fill in course titles
-    newCourses = await fillCourseTitles(newCourses);
-    
-    courses = courses.concat(newCourses);
-    courseList[id].courses = courses;
+    courseList[id].courses = courses.concat(newCourses);
 
     this.setState({ courseList });
     this.props.updateCourseHandler(username, courseList);
@@ -427,7 +380,7 @@ class CourseBoardContainer extends Component {
     const { username, courseList } = this.state;
     courseList.splice(id, 1);
     this.setState({ courseList });
-    this.props.reorderCourseHandler(username, courseList);
+    this.props.updateCourseHandler(username, courseList);
   }
 
   renderBoard = (numPerRow) => {
@@ -585,11 +538,8 @@ const mapDispatchToProps = dispatch => {
     updateCourseHandler: (username, courseList) => {
       dispatch(updateUserCourses(username, courseList));
     },
-    reorderCourseHandler: (username, courseList) => {
-      dispatch(reorderUserCourses(username, courseList));
-    },
-    reorderCartHandler: (username, cart) => {
-      dispatch(reorderCart(username, cart));
+    setCartHandler: (username, cart) => {
+      dispatch(setCart(username, cart));
     },
     deselectCourseHandler: () => {
       dispatch(unhighlightPrereqs());

@@ -85,7 +85,7 @@ export default class AnyCheck extends Component {
     }
   }
 
-  onCheck = (index, ev, isChecked) => {
+  onCheck = (index, isChecked) => {
     // Toggle main checkbox
     if (index === -1) {
       this.setState({ isChecked });
@@ -93,19 +93,19 @@ export default class AnyCheck extends Component {
       const { children } = this.state;
       children[index].checked = isChecked;
       this.setState({ children });
-      this.props.onCheck(ev, isChecked);
+      this.props.onCheck(null, isChecked);
     }
   }
 
   render() {
-    const { choose, onCheck } = this.props;
+    const { choose } = this.props;
 
     return (
       <div>
         <Checkbox
           label="Any course"
           checked={ this.state.isChecked }
-          onCheck={ onCheck }
+          onCheck={ (_, isChecked) => this.onCheck(-1, isChecked) }
           iconStyle={ styles.iconStyle }
           labelStyle={ styles.labelStyle(this.state.taken) }
           style={ styles.checkbox }
@@ -122,7 +122,7 @@ export default class AnyCheck extends Component {
                     label={ label }
                     checked={ checked }
                     disabled={ taken }
-                    onCheck={ () => this.onCheck(index) }
+                    onCheck={ (_, isChecked) => this.onCheck(index, isChecked) }
                     labelStyle={ styles.labelStyle(taken) }
                     iconStyle={ styles.innerIcon }
                     style={ styles.innerChecks }
