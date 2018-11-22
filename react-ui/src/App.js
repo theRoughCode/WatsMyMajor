@@ -207,7 +207,7 @@ class App extends Component {
                 <Route path='/settings' render={ this.addRedirect(Settings) } />
                 <Route path='/majors/:faculty?/:majorKey?' component={ Majors } />
                 <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
-                <Route path='/my-schedule' render={ this.addRedirect(MyScheduleView) } />
+                <Route path='/my-schedule/:term?' render={ this.addRedirect(MyScheduleView) } />
                 <Route path='/schedule/:username/:term?' component={ MyScheduleView } />
                 <Route path='/courses/browse' component={ BrowseCourseView } />
                 <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />

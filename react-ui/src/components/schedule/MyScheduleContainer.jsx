@@ -24,20 +24,11 @@ const stepContents = [
   {
     button: 'Enroll',
     text: (
-      <ul style={{ textAlign: 'left' }}>
-        <li>If for Winter 2019:
-          <ol>
-            <li>Click on the <b>Course Selection</b> tab and click on <b>View My Class Enrollment Results</b>.</li>
-            <li>Select the term you want.</li>
-          </ol>
-        </li>
-        <li>Otherwise:
-          <ol>
-            <li>Click on the <b>Enroll</b> tab and select the term you want to add to your schedule.</li>
-            <li>Go to <b>List View</b>.</li>
-          </ol>
-        </li>
-      </ul>
+      <ol style={{ textAlign: 'left' }}>
+        <li>Click on the <b>Enroll</b> tab.</li>
+        <li>Select <b>My Class Schedule</b></li>
+        <li>Go to <b>List View</b>.</li>
+      </ol>
     )
   },
   {

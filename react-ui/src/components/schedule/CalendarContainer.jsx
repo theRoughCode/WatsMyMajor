@@ -358,7 +358,7 @@ export default class CalendarContainer extends Component {
           }}
           title={
             <MediaQuery minWidth={ 427 }>
-              { matches => (matches)
+              { matches => (matches || !this.props.isBrowsing || !this.props.friendName.length)
                 ? `${moment(this.state.date).format('MMM YYYY')}`
                 : (
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
