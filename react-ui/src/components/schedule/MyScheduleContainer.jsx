@@ -268,6 +268,7 @@ class ScheduleContainer extends Component {
         label="Submit"
         primary
         onClick={ this.onSubmit }
+        disabled={ this.state.text.length === 0 }
       />,
     ];
 
