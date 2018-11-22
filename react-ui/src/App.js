@@ -98,7 +98,7 @@ class App extends Component {
     // Check localStorage if username is not set
     const cachedUsername = localStorage.getItem('wat-username');
     if (cachedUsername) {
-      this.setState({ username: cachedUsername });
+      this.setState({ username: cachedUsername, isLoggedIn: true });
       this.onLogin(cachedUsername);
     } else this.setState({ loading: false });
 
