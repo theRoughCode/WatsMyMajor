@@ -36,6 +36,7 @@ async function createUser(username, email, name, password) {
   try {
     const hash = await bcrypt.hash(password, saltRounds);
     const user = { name, password: hash, email, verified: false };
+    if (process.env.TESTING) user.verified = true; // Used for testing
     await users.setUser(username, user);
     await emailsDB.setEmail(username, email);
     return { err: null, user };

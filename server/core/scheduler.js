@@ -17,6 +17,30 @@ schedule.scheduleJob('0 0 0 * * *', fireDate => {
   update.updateCourseRatings();
 });
 
+// Update course information
+// Runs every month
+schedule.scheduleJob('0 0 0 1 * *', fireDate => {
+  /* eslint-disable no-console */
+  console.log(`Running monthly cron job for updating course information at: ${fireDate}`);
+  update.updateAllCourses();
+});
+
+// Update course list
+// Runs every month
+schedule.scheduleJob('0 0 0 1 * *', fireDate => {
+  /* eslint-disable no-console */
+  console.log(`Running monthly cron job for updating course list at: ${fireDate}`);
+  update.updateCourseList();
+});
+
+// Update course requisites
+// Runs every month
+schedule.scheduleJob('0 0 0 1 * *', fireDate => {
+  /* eslint-disable no-console */
+  console.log(`Running monthly cron job for updating course requisites at: ${fireDate}`);
+  update.updateAllRequisites();
+});
+
 // Update class info for all courses
 // Runs every half an hour
 schedule.scheduleJob('0 */30 * * * *', fireDate => {

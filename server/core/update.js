@@ -28,6 +28,8 @@ function updateCourseList() {
       await Promise.all(data.map(async ({ subject, catalog_number, title }) => {
         await courseListDB.setCourse(subject, catalog_number, title);
       }));
+      /* eslint-disable no-console */
+      console.log(`Finished updating course list at ${new Date()}`);
       resolve(null);
     });
   });
@@ -69,9 +71,12 @@ function updateAllCourses() {
             callback();
           });
       }, err => {
-        console.error(err);
-        if (err) resolve({ err, failedList });
-        else resolve();
+        /* eslint-disable no-console */
+        console.log(`Finished updating all course information at ${new Date()}`);
+        if (err) {
+          console.error(err);
+          resolve({ err, failedList });
+        } else resolve();
       });
     });
   });
@@ -148,6 +153,8 @@ async function updateAllRequisites() {
             callback();
           });
       }, err => {
+        /* eslint-disable no-console */
+        console.log(`Finished updating all course requisites at ${new Date()}`);
         if (err) {
           console.error('\n\n\n\n', err);
           resolve({ err, failedList: null });

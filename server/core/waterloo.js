@@ -144,9 +144,12 @@ function getReqs(subject, catalogNumber, callback) {
       if (coreqs) {
         try {
           // Edge case of "One of" or "or"
-          if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + catalogNumber))
+          if (!Array.isArray(coreqs) && !coreqExceptions.includes(subject + catalogNumber)) {
             coreqs = coreqs.replace('Coreq:', '');
-          coreqs = utils.unpick(coreqs);
+          }
+
+          if (coreqs.endsWith('only')) coreqs = [];
+          else coreqs = utils.unpick(coreqs);
 
           if (coreqs.hasOwnProperty('choose')) {
             coreqs.reqs = utils.parseReqs(coreqs.reqs);
