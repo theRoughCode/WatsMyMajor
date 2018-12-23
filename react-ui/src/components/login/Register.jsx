@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import CircularProgress from 'material-ui/CircularProgress';
 import EmailSent from '../email/EmailSent';
 import {
   validateUsername,
@@ -56,8 +57,7 @@ const styles = {
     flex: 1,
   },
   registerButton: {
-    width: '100%',
-    marginTop: 20,
+    width: '100%'
   },
   registerText: {
     color: 'white',
@@ -70,6 +70,18 @@ const styles = {
   footer: {
     marginTop: 40,
     marginBottom: 20,
+  },
+  loadingIcon: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  },
+  registerButtonWrapper: {
+    marginTop: 20,
+    position: 'relative'
   }
 };
 
@@ -77,6 +89,7 @@ export default class Register extends Component {
 
   state = {
     registered: false,
+    loading: false,
     usernameError: '',
     nameError: '',
     emailError: '',
@@ -116,6 +129,10 @@ export default class Register extends Component {
       }
     }
 
+    this.setState({
+      loading: true
+    });
+
     try {
       const response = await fetch('/server/auth/register', {
         method: 'POST',
@@ -153,7 +170,7 @@ export default class Register extends Component {
           return;
         }
       } else {
-        this.setState({ registered: true });
+        this.setState({ registered: true, loading: false });
       }
     } catch (err) {
       toast.error('Failed to create account. Please contact an administrator.');
@@ -210,14 +227,20 @@ export default class Register extends Component {
                 onChange={ this.removeErrors }
                 ref="confirmPassword"
               /><br />
-              <RaisedButton
-                label="Sign up"
-                backgroundColor={  green  }
-                style={ styles.registerButton }
-                labelStyle={ styles.registerText }
-                onClick={ this.onRegister }
-                type="submit"
-              />
+              <div style={ styles.registerButtonWrapper }>
+                <RaisedButton
+                  label="Sign up"
+                  backgroundColor={  green  }
+                  style={ styles.registerButton }
+                  labelStyle={ styles.registerText }
+                  onClick={ this.onRegister }
+                  disabled={ this.state.loading }
+                  type="submit"
+                />
+                {this.state.loading && 
+                  <CircularProgress size={ 24 } style={ styles.loadingIcon } />
+                }
+              </div>
             </form>
           </Paper>
           <div style={ styles.privacy }>
