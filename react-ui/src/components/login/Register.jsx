@@ -155,6 +155,8 @@ export default class Register extends Component {
         const ERROR_EMAIL_EXISTS = 200;
         const ERROR_SERVER_ERROR = 400;
 
+        this.setState({ loading: false });
+
         switch (code) {
         case ERROR_USERNAME_EXISTS:
           this.setState({ usernameError: 'Username already exists' });
@@ -237,7 +239,7 @@ export default class Register extends Component {
                   disabled={ this.state.loading }
                   type="submit"
                 />
-                {this.state.loading && 
+                {this.state.loading &&
                   <CircularProgress size={ 24 } style={ styles.loadingIcon } />
                 }
               </div>
