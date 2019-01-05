@@ -8,8 +8,33 @@ import DayView from './DayView';
 import MultipleDaysView from './MultipleDaysView';
 import { addDays } from './dateUtils';
 import { arrayEquals } from '../../../utils/arrays';
+// TODO: set 'NODE_PATH=src/' in .env file to get below to work, (and then refactor a bunch of files):
+// import { arrayEquals } from 'utils/arrays';
+
+// TODO: move these to external consts folder, update CalendarContainer as well.
+const MODE_DAY = 'day';
+const MODE_WEEK = 'week';
+const MODE_MOVE = 'move';
+const DAYS_IN_WEEK = 7;
+const DAYS_IN_THREE_DAYS = 3;
 
 const VirtualizeSwipeableViews = virtualize(SwipeableViews);
+
+const styles = {
+  container: {
+    height: '100%',
+    willChange: 'transform',
+  },
+  slide: {
+    height: '100%'
+  },
+  slideContainer: {
+    position: 'relative',
+    height: '100%',
+    width: '100%',
+  }
+
+};
 
 function getEventsFromChildren(children) {
   if(children == null) {
@@ -44,8 +69,6 @@ class Calendar extends Component {
       scrollPosition: 630,
       isSwiping: false,
       referenceDate: props.referenceDate,
-      getIndex: props.getIndex,
-      mode: props.mode
     };
   }
 
@@ -57,80 +80,74 @@ class Calendar extends Component {
       || !arrayEquals(nextProps.children, this.props.children);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.state.mode !== nextProps.mode) {
-      this.setState({ mode: nextProps.mode });
-    }
-  }
-
-  onSwitching = (index, mode: 'move' | 'end') => {
+  onSwitching = (_, mode) => {
     this.setState({
-      isSwiping: mode === 'move'
+      isSwiping: mode === MODE_MOVE
     });
   }
 
   slideRenderer = (slide) => {
-    if(this.state.mode === 'day') {
-      return (
-        <div key={ slide.key } style={{ position: 'relative', height: '100%', width: '100%' }}>
-          <DayView
-            onScrollChange={ this.onScrollChange }
-            scrollPosition={ this.state.scrollPosition }
-            date={ addDays(this.state.referenceDate, slide.index) }
-            isScrollDisable={ this.state.isSwiping }
-            children={ getEventsFromChildren(this.props.children) }
-          />
-        </div>
-      );
-    }
+    const { scrollPosition, referenceDate, isSwiping } = this.state;
+    const { mode, children } = this.props;
 
     return (
-      <div key={ slide.key } style={{ position: 'relative', height: '100%', width: '100%' }}>
-        <MultipleDaysView
-          onScrollChange={ this.onScrollChange }
-          scrollPosition={ this.state.scrollPosition }
-          dates={ this.state.mode === 'week' ? this.getWeekDates(slide.index) : this.getThreeDaysDates(slide.index) }
-          isScrollDisable={ this.state.isSwiping }
-          children={ getEventsFromChildren(this.props.children) }
-        />
+      <div key={ slide.key } style={ styles.slideContainer }>
+        {
+          mode === MODE_DAY
+            ? <DayView
+              onScrollChange={ this.onScrollChange }
+              scrollPosition={ scrollPosition }
+              date={ addDays(referenceDate, slide.index) }
+              isScrollDisable={ isSwiping }
+              children={ getEventsFromChildren(children) }
+            />
+            : <MultipleDaysView
+              onScrollChange={ this.onScrollChange }
+              scrollPosition={ scrollPosition }
+              dates={
+                mode === MODE_WEEK
+                  ? this.getWeekDates(slide.index)
+                  : this.getThreeDaysDates(slide.index)
+              }
+              isScrollDisable={ isSwiping }
+              children={ getEventsFromChildren(children) }
+            />
+        }
       </div>
     );
   }
 
   getWeekDates = (index) => {
-    const currentDay = addDays(this.state.referenceDate, index * 7);
-    const dates = [];
-    for(var i = 0; i < 7; i++) {
-      dates.push(addDays(currentDay, i - currentDay.getDay()));
-    }
-    return dates;
+    const currentDay = addDays(this.state.referenceDate, index * DAYS_IN_WEEK);
+    return [
+      ...Array(DAYS_IN_WEEK)
+    ].map((_, i) => addDays(currentDay, i - currentDay.getDay()));
   }
 
   getThreeDaysDates = (index) => {
-    const currentDay = addDays(this.state.referenceDate, index * 3);
-    const dates = [];
-    for(var i = 0; i < 3; i++) {
-      dates.push(addDays(currentDay, i));
-    }
-    return dates;
+    const currentDay = addDays(this.state.referenceDate, index * DAYS_IN_THREE_DAYS);
+    return [
+      ...Array(DAYS_IN_THREE_DAYS)
+    ].map((_, i) => addDays(currentDay, i));
   }
 
   onScrollChange = (scrollPosition) => {
-    this.setState({ scrollPosition: scrollPosition });
+    this.setState({ scrollPosition });
   }
 
   render() {
+    const index = this.props.getIndex();
+
     return (
       <VirtualizeSwipeableViews
-        key={ this.state.mode }
+        key={ this.props.mode }
         style={ this.props.style }
-        slideStyle={{ height: '100%' }}
-        containerStyle={{ height: '100%', willChange: 'transform' }}
-        index={ this.state.getIndex() }
+        slideStyle={ styles.slide }
+        containerStyle={ styles.container }
+        index={ index }
         overscanSlideAfter={ 1 }
         overscanSlideBefore={ 1 }
         slideRenderer={ this.slideRenderer }
-        onChangeIndex={ this.onChangeIndex }
         onSwitching={ this.onSwitching }
       />
     )

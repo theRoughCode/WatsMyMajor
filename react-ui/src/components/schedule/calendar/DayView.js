@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
@@ -21,11 +21,15 @@ const styles = {
     background: 'white',
     boxShadow: '0 14px 28px rgba(255,255,255,0.60), 0 10px 10px rgba(255,255,255,0.80)'
   },
-  hoursContainer: (isScrollDisable) => ({
+  bodyContainer: (isScrollDisable) => ({
     height: '100%',
     position: 'relative',
     overflowY: isScrollDisable ? 'hidden' : 'auto'
   }),
+  hoursContainer: {
+    height,
+    position: 'absolute'
+  },
   daysContainer: {
     height,
     position: 'absolute',
@@ -34,52 +38,63 @@ const styles = {
   }
 }
 
-const DayView = ({
-  date,
-  scrollPosition,
-  onScrollChange,
-  children,
-  isScrollDisable
-}) => (
-  <div style={ styles.container }>
-    <div
-      ref={ elem => {
-        if (elem != null) {
-          this.scrollViewer = elem;
-          elem.scrollTop = scrollPosition;
-        }
-      } }
-      onTouchStart={ (e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop), 100) }
-      style={ styles.hoursContainer(isScrollDisable) }>
-      <div style={{ position: 'absolute', height: height + 'px' }}>
-        {
-          verticalHours()
-        }
-      </div>
-      <div
-        key="eventsContainer"
-        style={ styles.daysContainer }>
-        {
-          renderDayEvents({
-            events: children,
-            date
-          })
-        }
-      </div>
-    </div>
-    <DayHeader
-      style={ styles.dayHeader }
-      date={ date }
-    />
-  </div>
-);
+export default class DayView extends PureComponent {
+  static propTypes = {
+    date: PropTypes.object.isRequired,
+    scrollPosition: PropTypes.number.isRequired,
+    onScrollChange: PropTypes.func.isRequired,
+    children: PropTypes.array.isRequired,
+    isScrollDisable: PropTypes.bool.isRequired,
+  };
 
-DayView.propTypes = {
-  date: PropTypes.object.isRequired,
-  scrollPosition: PropTypes.number.isRequired,
-  onScrollChange: PropTypes.func.isRequired,
-  children: PropTypes.array.isRequired,
-  isScrollDisable: PropTypes.bool.isRequired,
+  constructor(props) {
+    super(props);
+    this.scrollViewer = React.createRef();
+  }
+
+  componentDidMount = () => {
+    this.scrollViewer.current.scrollTop = this.props.scrollPosition;
+  }
+
+  onScroll = () => {
+    const scrollPosition = this.scrollViewer.current.scrollTop;
+    this.props.onScrollChange(scrollPosition);
+  }
+
+  render() {
+    const {
+      date,
+      children,
+      isScrollDisable
+    } = this.props;
+
+    return (
+      <div style={ styles.container }>
+        <div
+          ref={ this.scrollViewer }
+          onScroll={ this.onScroll }
+          style={ styles.bodyContainer(isScrollDisable) }>
+          <div style={ styles.hoursContainer }>
+            {
+              verticalHours()
+            }
+          </div>
+          <div
+            key="eventsContainer"
+            style={ styles.daysContainer }>
+            {
+              renderDayEvents({
+                events: children,
+                date
+              })
+            }
+          </div>
+        </div>
+        <DayHeader
+          style={ styles.dayHeader }
+          date={ date }
+        />
+      </div>
+    );
+  }
 }
-
-export default DayView;
