@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import verticalHours from './verticalHours';
 import renderDayEvents from './DayEvents';
@@ -100,7 +100,7 @@ const renderDays = (dates, children) => {
   ));
 }
 
-export default class MultipleDaysView extends Component {
+export default class MultipleDaysView extends PureComponent {
   static propTypes = {
     dates: PropTypes.array.isRequired,
     scrollPosition: PropTypes.number.isRequired,
@@ -109,11 +109,23 @@ export default class MultipleDaysView extends Component {
     children: PropTypes.node.isRequired
   };
 
+  constructor(props) {
+    super(props);
+    this.scrollViewer = React.createRef();
+  }
+
+  componentDidMount = () => {
+    this.scrollViewer.current.scrollTop = this.props.scrollPosition;
+  }
+
+  onScroll = () => {
+    const scrollPosition = this.scrollViewer.current.scrollTop;
+    this.props.onScrollChange(scrollPosition);
+  }
+
   render() {
     const {
       dates,
-      scrollPosition,
-      onScrollChange,
       isScrollDisable,
       children
     } = this.props;
@@ -127,13 +139,8 @@ export default class MultipleDaysView extends Component {
           }
         </div>
         <div
-          ref={ elem => {
-            if(elem != null) {
-              this.scrollViewer = elem;
-              elem.scrollTop = scrollPosition;
-            }
-          } }
-          onTouchStart={ (e) => setTimeout(() => onScrollChange(this.scrollViewer.scrollTop), 100) }
+          ref={ this.scrollViewer }
+          onScroll={ this.onScroll }
           style={ styles.bodyContainer(isScrollDisable) }>
           <div style={ styles.hoursContainer }>
             {
