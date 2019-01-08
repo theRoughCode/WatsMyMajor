@@ -7,9 +7,9 @@ import WatchIcon from 'material-ui/svg-icons/action/visibility';
 import UnwatchIcon from 'material-ui/svg-icons/action/visibility-off';
 import ClassInfo from './ClassInfo';
 import ClassProf from './ClassProf';
-import { objectEquals } from '../../../utils/arrays';
-import '../../../stylesheets/ClassDetails.css';
-import { darkRed } from '../../../constants/Colours';
+import { objectEquals } from 'utils/arrays';
+import 'stylesheets/ClassDetails.css';
+import { darkRed } from 'constants/Colours';
 
 const styles =  {
   titleContainer: {

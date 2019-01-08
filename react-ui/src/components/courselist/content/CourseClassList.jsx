@@ -8,8 +8,8 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 import ClassRow from './ClassRow';
-import { termNumToStr } from '../../../utils/courses';
-import { purple } from '../../../constants/Colours';
+import { termNumToStr } from 'utils/courses';
+import { purple } from 'constants/Colours';
 
 
 const styles = {

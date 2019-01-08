@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
 import FontIcon from 'material-ui/FontIcon';
 import { Droppable } from 'react-beautiful-dnd';
-import { DragTypes } from '../../constants/DragTypes';
-import { red, white } from '../../constants/Colours';
+import { DragTypes } from 'constants/DragTypes';
+import { red, white } from 'constants/Colours';
 
 const width = 200;
 

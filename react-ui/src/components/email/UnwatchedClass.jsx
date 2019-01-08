@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import logo from '../../images/logo.png';
+import logo from 'images/logo.png';
 
 const styles = {
   bigContainer: {

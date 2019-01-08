@@ -7,7 +7,7 @@ import {
 } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import '../../stylesheets/InstructionsView.css';
+import 'stylesheets/InstructionsView.css';
 
 const styles = {
   stepperInfo: {

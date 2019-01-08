@@ -9,16 +9,16 @@ import PrereqsTree from './tree/PrerequisitesTreeContainer';
 import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
-import { objectEquals, arrayOfObjectEquals } from '../../utils/arrays';
-import { hasTakenCourse, isInCart, canTakeCourse } from '../../utils/courses';
+import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
+import { hasTakenCourse, isInCart, canTakeCourse } from 'utils/courses';
 import {
   createSnack,
   addToCart,
   removeFromCart,
   watchClass,
   unwatchClass,
-} from '../../actions';
-import '../../stylesheets/CourseView.css';
+} from 'actions';
+import 'stylesheets/CourseView.css';
 
 const styles = {
   courseView: {

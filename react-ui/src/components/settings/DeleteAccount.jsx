@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Dialog from 'material-ui/Dialog';
-import { darkRed } from '../../constants/Colours';
+import { darkRed } from 'constants/Colours';
 
 const styles = {
   container: {

@@ -6,7 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import SaveIcon from 'material-ui/svg-icons/content/save';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
-import { red } from '../../constants/Colours';
+import { red } from 'constants/Colours';
 
 const styles = {
   boardContainer: {

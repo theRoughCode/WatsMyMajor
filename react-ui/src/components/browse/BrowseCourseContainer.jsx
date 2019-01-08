@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CourseCard from './CourseCard';
-import { hasTakenCourse, isInCart } from '../../utils/courses';
-import { createSnack, addToCart, removeFromCart } from '../../actions';
-import '../../stylesheets/CourseView.css';
+import { hasTakenCourse, isInCart } from 'utils/courses';
+import { createSnack, addToCart, removeFromCart } from 'actions';
+import 'stylesheets/CourseView.css';
 
 const styles = {
   container: {

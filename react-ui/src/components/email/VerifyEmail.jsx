@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
-import logo from '../../images/logo.png';
-import { grey } from '../../constants/Colours';
-import { logoutUser } from '../../actions';
+import logo from 'images/logo.png';
+import { grey } from 'constants/Colours';
+import { logoutUser } from 'actions';
 
 const styles = {
   bigContainer: {

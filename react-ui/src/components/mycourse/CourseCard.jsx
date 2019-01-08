@@ -7,7 +7,7 @@ import {
   yellow,
   lightGreen,
   whiteGrey,
-} from '../../constants/Colours';
+} from 'constants/Colours';
 
 const space = 8;
 const styles = {

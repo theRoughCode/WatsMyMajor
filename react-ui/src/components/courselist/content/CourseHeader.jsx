@@ -6,7 +6,7 @@ import CartIcon from 'material-ui/svg-icons/maps/local-grocery-store';
 import RemoveCartIcon from 'material-ui/svg-icons/action/remove-shopping-cart';
 import CheckIcon from 'material-ui/svg-icons/action/check-circle';
 import CourseRatings from './CourseRatings';
-import { lightGreen2, green, red } from '../../../constants/Colours';
+import { lightGreen2, green, red } from 'constants/Colours';
 
 const styles = {
   container: {

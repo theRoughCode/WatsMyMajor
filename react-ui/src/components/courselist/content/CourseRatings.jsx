@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import StarRatings from 'react-star-ratings';
-import { red, yellow, grey } from '../../../constants/Colours';
+import { red, yellow, grey } from 'constants/Colours';
 
 const styles = {
   container: {

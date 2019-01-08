@@ -23,8 +23,8 @@ import ClearIcon from 'material-ui/svg-icons/content/clear';
 import DotsIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { Calendar, Event } from './calendar';
 import { addDays, diffDays, startOfDay } from './calendar/dateUtils';
-import { objectEquals } from '../../utils/arrays';
-import { red, green2, blueGreen, mediumBlue } from '../../constants/Colours';
+import { objectEquals } from 'utils/arrays';
+import { red, green2, blueGreen, mediumBlue } from 'constants/Colours';
 
 const referenceDate = new Date(2017, 1, 1);
 

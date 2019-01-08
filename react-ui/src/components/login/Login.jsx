@@ -8,9 +8,9 @@ import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
-import logo from '../../images/logo.png';
-import { setUser } from '../../actions';
-import { white, green, grey } from '../../constants/Colours';
+import logo from 'images/logo.png';
+import { setUser } from 'actions';
+import { white, green, grey } from 'constants/Colours';
 
 
 const ERROR_USERNAME_NOT_FOUND = 101;

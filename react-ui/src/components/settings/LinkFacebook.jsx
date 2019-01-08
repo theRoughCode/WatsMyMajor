@@ -4,7 +4,7 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
-import { darkRed } from '../../constants/Colours';
+import { darkRed } from 'constants/Colours';
 
 const styles = {
   boardContainer: {

@@ -16,13 +16,13 @@ import {
   linkFacebook,
   unlinkFacebook,
   deleteAccount,
-} from '../../actions';
+} from 'actions';
 import {
   validateName,
   // validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from '../../utils/validation';
+} from 'utils/validation';
 
 const styles = {
   settingsContainer: {

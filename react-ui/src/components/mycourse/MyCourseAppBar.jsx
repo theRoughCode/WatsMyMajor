@@ -17,7 +17,7 @@ import {
   skyBlue,
   red,
   lightGreen2,
-} from '../../constants/Colours';
+} from 'constants/Colours';
 
 const styles = {
   container: {

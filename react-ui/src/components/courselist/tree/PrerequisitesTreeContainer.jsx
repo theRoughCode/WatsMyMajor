@@ -7,9 +7,9 @@ import FlatButton from 'material-ui/FlatButton';
 import Toggle from 'material-ui/Toggle';
 import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import Tree from './PrerequisitesTree';
-import { hasTakenCourse } from '../../../utils/courses';
-import { objectEquals } from '../../../utils/arrays';
-import '../../../stylesheets/Tree.css';
+import { hasTakenCourse } from 'utils/courses';
+import { objectEquals } from 'utils/arrays';
+import 'stylesheets/Tree.css';
 
 // Depth of tree to leave open.
 const INITIAL_DEPTH = 2;

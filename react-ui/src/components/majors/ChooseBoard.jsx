@@ -6,8 +6,8 @@ import RangeCheck from './RangeCheck';
 import LevelCheck from './LevelCheck';
 import OptionCheck from './OptionCheck';
 import AnyCheck from './AnyCheck';
-import { arrayOfObjectEquals } from '../../utils/arrays';
-import { lightGreen } from '../../constants/Colours';
+import { arrayOfObjectEquals } from 'utils/arrays';
+import { lightGreen } from 'constants/Colours';
 
 const styles = {
   board: (isFulfilled) => ({

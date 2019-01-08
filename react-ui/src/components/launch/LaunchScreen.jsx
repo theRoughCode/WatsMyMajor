@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
 import RaisedButton from 'material-ui/RaisedButton';
 import ReactTooltip from 'react-tooltip';
-import WatermanImage from '../../images/waterman.png';
-import CalendarIcon from '../../images/calendar_icon.png';
-import MortarBoardIcon from '../../images/mortar_board_icon.png';
-import SearchIcon from '../../images/search_icon.png';
-import WatchingIcon from '../../images/watching_icon.png';
-import { green, white, darkGrey } from '../../constants/Colours';
+import WatermanImage from 'images/waterman.png';
+import CalendarIcon from 'images/calendar_icon.png';
+import MortarBoardIcon from 'images/mortar_board_icon.png';
+import SearchIcon from 'images/search_icon.png';
+import WatchingIcon from 'images/watching_icon.png';
+import { green, white, darkGrey } from 'constants/Colours';
 
 const styles = {
   container: {

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
-import { arrayOfObjectEquals } from '../../utils/arrays';
-import { hasTakenCourse } from '../../utils/courses';
-import { green2 } from '../../constants/Colours';
+import { arrayOfObjectEquals } from 'utils/arrays';
+import { hasTakenCourse } from 'utils/courses';
+import { green2 } from 'constants/Colours';
 
 const styles = {
   iconStyle: {

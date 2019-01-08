@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Checkbox from 'material-ui/Checkbox';
-import { green2 } from '../../constants/Colours';
+import { green2 } from 'constants/Colours';
 
 const styles = {
   iconStyle: {

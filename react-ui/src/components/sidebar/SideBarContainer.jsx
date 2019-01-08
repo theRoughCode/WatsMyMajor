@@ -19,7 +19,7 @@ import {
   lightGrey,
   green,
   white
-} from '../../constants/Colours';
+} from 'constants/Colours';
 
 const styles = {
   drawer: {

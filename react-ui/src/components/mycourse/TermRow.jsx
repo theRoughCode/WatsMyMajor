@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { DragTypes } from '../../constants/DragTypes';
+import { DragTypes } from 'constants/DragTypes';
 import TermBoard from './TermBoard';
 
 const NUM_PER_ROW = 3;

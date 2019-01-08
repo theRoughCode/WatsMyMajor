@@ -5,7 +5,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 import OpenIcon from 'material-ui/svg-icons/action/open-in-new';
-import { whiteGrey } from '../../constants/Colours';
+import { whiteGrey } from 'constants/Colours';
 
 const styles = {
   container: {

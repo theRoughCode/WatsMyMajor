@@ -6,8 +6,8 @@ import Paper from 'material-ui/Paper';
 import PopularCourseGraph from './PopularCourseGraph';
 import UserCoursesGraph from './UserCoursesGraph';
 import Watchlist from './Watchlist';
-import { unwatchClass } from '../../actions';
-import { white } from '../../constants/Colours';
+import { unwatchClass } from 'actions';
+import { white } from 'constants/Colours';
 
 const styles = {
   container: {

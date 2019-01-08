@@ -12,9 +12,9 @@ import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import CalendarContainer from './CalendarContainer';
 import ParserInstructions from '../tools/ParserInstructions';
 import LoadingView from '../tools/LoadingView';
-import { addToSchedule, clearSchedule } from '../../actions';
-import { objectEquals } from '../../utils/arrays';
-import { getCookie } from '../../utils/cookies';
+import { addToSchedule, clearSchedule } from 'actions';
+import { objectEquals } from 'utils/arrays';
+import { getCookie } from 'utils/cookies';
 
 const stepContents = [
   {

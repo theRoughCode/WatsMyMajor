@@ -9,17 +9,17 @@ import MyCourseSideBar from './MyCourseSideBar';
 import MyCourseAppBar from './MyCourseAppBar';
 import TermRow from './TermRow';
 import LoadingView from '../tools/LoadingView';
-import { DragTypes } from '../../constants/DragTypes';
-import { arrayOfObjectEquals } from '../../utils/arrays';
-import { hasTakenCourse, isInCart } from '../../utils/courses';
-import emptyBoardImage from '../../images/empty_board.png';
+import { DragTypes } from 'constants/DragTypes';
+import { arrayOfObjectEquals } from 'utils/arrays';
+import { hasTakenCourse, isInCart } from 'utils/courses';
+import emptyBoardImage from 'images/empty_board.png';
 import {
   updateUserCourses,
   setCart,
   unhighlightPrereqs,
   highlightPrereqs,
   createSnack
-} from '../../actions';
+} from 'actions';
 
 const styles = {
   container: {

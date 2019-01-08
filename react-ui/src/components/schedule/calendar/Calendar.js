@@ -7,11 +7,8 @@ import { virtualize } from 'react-swipeable-views-utils';
 import DayView from './DayView';
 import MultipleDaysView from './MultipleDaysView';
 import { addDays } from './dateUtils';
-import { arrayEquals } from '../../../utils/arrays';
-// TODO: set 'NODE_PATH=src/' in .env file to get below to work, (and then refactor a bunch of files):
-// import { arrayEquals } from 'utils/arrays';
+import { arrayEquals } from 'utils/arrays';
 
-// TODO: move these to external consts folder, update CalendarContainer as well.
 const MODE_DAY = 'day';
 const MODE_WEEK = 'week';
 const MODE_MOVE = 'move';

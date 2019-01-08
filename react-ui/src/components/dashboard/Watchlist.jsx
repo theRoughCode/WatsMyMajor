@@ -6,8 +6,8 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from 'material-ui/List';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { termNumToStr } from '../../utils/courses';
-import { arrayOfObjectEquals } from '../../utils/arrays';
+import { termNumToStr } from 'utils/courses';
+import { arrayOfObjectEquals } from 'utils/arrays';
 
 const styles = {
   container: {

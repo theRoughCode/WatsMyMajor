@@ -6,7 +6,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import FontAwesome from 'react-fontawesome';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
-import { lightGreen2, yellow, red } from '../../../constants/Colours';
+import { lightGreen2, yellow, red } from 'constants/Colours';
 
 const styles = {
   container: {

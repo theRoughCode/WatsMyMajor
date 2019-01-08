@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
-import { hasTakenCourse } from '../../../utils/courses';
+import { hasTakenCourse } from 'utils/courses';
 import ChooseReqs from './ChooseReqs';
-import { green, mustard, purple } from '../../../constants/Colours';
+import { green, mustard, purple } from 'constants/Colours';
 
 const styles = {
   container: {

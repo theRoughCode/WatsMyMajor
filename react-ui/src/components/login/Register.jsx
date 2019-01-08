@@ -12,9 +12,9 @@ import {
   validateEmail,
   validatePassword,
   validateConfirmPassword,
-} from '../../utils/validation';
-import logo from '../../images/logo.png';
-import { green, grey } from '../../constants/Colours';
+} from 'utils/validation';
+import logo from 'images/logo.png';
+import { green, grey } from 'constants/Colours';
 
 const styles = {
   viewContainer: {

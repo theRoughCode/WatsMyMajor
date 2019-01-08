@@ -15,12 +15,12 @@ import CourseCard from './CourseCard';
 import Parser from './ParseCourses';
 import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { DragTypes } from '../../constants/DragTypes';
+import { DragTypes } from 'constants/DragTypes';
 import {
   purple,
   lightPurple,
   lightGreen
-} from '../../constants/Colours';
+} from 'constants/Colours';
 
 const space = 8;
 const stylesConst = {
