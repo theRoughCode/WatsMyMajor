@@ -9,6 +9,7 @@
   "dependencies": {
     "@material-ui/core": "^3.3.2",
     "classnames": "^2.2.6",
+    "cross-env": "^5.2.0",
     "cryptiles": "^4.1.2",
     "material-ui": "^0.20.2",
     "material-ui-search-bar": "^0.4.2",
@@ -32,10 +33,10 @@
     "victory": "^30.6.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "cross-env NODE_PATH=./src react-scripts start",
+    "build": "cross-env NODE_PATH=./src react-scripts build",
+    "test": "cross-env NODE_PATH=./src react-scripts test --env=jsdom",
+    "eject": "cross-env NODE_PATH=./src react-scripts eject"
   },
   "proxy": "http://localhost:5000",
   "browserslist": [
