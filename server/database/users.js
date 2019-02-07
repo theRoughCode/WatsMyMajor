@@ -1,4 +1,5 @@
 const { usersRef } = require('./index');
+const { emailsRef } = require('./index');
 
 /* A list of the courses available
     {
@@ -85,6 +86,31 @@ async function getUser(username) {
   }
 }
 
+async function getUserByEmail(email) {
+  try {
+    // TODO: get this to work in a single query... so we can get rid of the emailsRef
+    const emailSnapshot = await emailsRef.child(email).once('value');
+    const username = emailSnapshot.val();
+    const snapshot = await usersRef.child(username).once('value');
+    return { user: { ... snapshot.val(), username }, err: null };
+  } catch (err) {
+    return { user: null, err };
+  }
+}
+
+async function getUserByResetToken(token) {
+  try {
+    const snapshot = await usersRef.orderByChild('resetPasswordToken').equalTo(token).once('value');
+    const snapshotVal = snapshot.val();
+    if (!snapshotVal) { return { user: null, err: "Token does not exist" }; }
+    const username = Object.keys(snapshotVal)[0];
+    const user = { ...snapshotVal[username], username };
+    return { user, err: null };
+  } catch (err) {
+    return { user: null, err };
+  }
+}
+
 async function getAllUserCourses() {
   try {
     const snapshot = await usersRef.once('value');
@@ -147,6 +173,8 @@ module.exports = {
   deleteUser,
   setField,
   getUser,
+  getUserByEmail,
+  getUserByResetToken,
   getAllUserCourses,
   getUserSchedule,
   userExists,

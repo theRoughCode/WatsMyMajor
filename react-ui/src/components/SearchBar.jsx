@@ -94,6 +94,7 @@ class AppSearchBar extends Component {
       <SearchBar
         ref={ (input) => this.searchBar = input }
         hintText=""
+        name="searchCourses"
         placeholder="Search for courses"
         dataSource={ this.state.dataSource }
         filter={ (searchValue, key) => searchValue.length }

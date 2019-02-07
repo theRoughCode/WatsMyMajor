@@ -232,7 +232,7 @@ export default class Register extends Component {
               <div style={ styles.registerButtonWrapper }>
                 <RaisedButton
                   label="Sign up"
-                  backgroundColor={  green  }
+                  backgroundColor={ green }
                   style={ styles.registerButton }
                   labelStyle={ styles.registerText }
                   onClick={ this.onRegister }

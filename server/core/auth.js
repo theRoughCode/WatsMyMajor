@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const users = require('./users');
 const emailsDB = require('../database/emails');
 const facebookUsersDB = require('../database/facebookUsers');
@@ -10,10 +11,17 @@ const ERROR_USERNAME_NOT_FOUND = 101;
 const ERROR_WRONG_PASSWORD = 105;
 const ERROR_USER_NOT_VERIFIED = 107;
 const ERROR_EMAIL_EXISTS = 200;
+const ERROR_EMAIL_NOT_FOUND = 201;
+const ERROR_RESET_PASSWORD_TOKEN = 202; // "Token not found or expired";
+const ERROR_SAME_PASSWORD = 203; // "Can't use original password";
 const ERROR_MISSING_FB_EMAIL = 205;
 const ERROR_SERVER_ERROR = 400;
 
-const saltRounds = 10;
+// ERROR MSGS
+const ERROR_RESET_PASSWORD_TOKEN_MSG = "Token not found or expired";
+const ERROR_SAME_PASSWORD_MSG = "Must use new password";
+
+const SALT_ROUNDS = 10;
 const BYPASS = process.env.AUTH_BYPASS;
 
 // Returns { err, user }
@@ -34,7 +42,7 @@ async function createUser(username, email, name, password) {
   };
 
   try {
-    const hash = await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
     const user = { name, password: hash, email, verified: false };
     if (process.env.TESTING) user.verified = true; // Used for testing
     await users.setUser(username, user);
@@ -79,7 +87,7 @@ async function createFBUser(profile) {
     };
 
     const randomString = Math.random().toString(36).substring(7);
-    const password = await bcrypt.hash(randomString, saltRounds);
+    const password = await bcrypt.hash(randomString, SALT_ROUNDS);
 
     let user = {
       name: displayName,
@@ -103,6 +111,90 @@ async function createFBUser(profile) {
     return { err: null, user: username };
   } catch (err) {
     console.error(err);
+    return {
+      err: { code: ERROR_SERVER_ERROR, message: err.message },
+      user: null,
+    };
+  }
+}
+
+// Returns { err, user }
+async function forgotUserPassword(email) {
+  email = email.toLowerCase();
+  try {
+    // check if email exists
+    const emailExists = await emailsDB.emailExists(email);
+    if (!emailExists) {
+      return {
+        err: { code: ERROR_EMAIL_NOT_FOUND, message: 'Email does not exist' },
+        user: null,
+      };
+    }
+
+    // get user using email
+    const { err, user } = await usersDB.getUserByEmail(email.replace(/\./g, ","));
+    if (err) { return { err, user: null }; }
+
+    // generate token and expiration
+    const resetPasswordToken = crypto.randomBytes(20).toString('hex');
+    const resetPasswordExpiration = Math.floor(Date.now() / 1000) + (60 * 60);
+    
+    // update user
+    const { username } = user;
+    await users.updateUser(username, { resetPasswordToken, resetPasswordExpiration });
+    const userWithResetPassword = { ...user, resetPasswordToken, resetPasswordExpiration };
+    return { err: null, user: userWithResetPassword };
+  } catch (err) {
+    return {
+      err: { code: ERROR_SERVER_ERROR, message: err.message },
+      user: null,
+    };
+  }
+}
+
+async function resetPassword(token, password) {
+  try {
+    // get user using token
+    const { user, err } = await usersDB.getUserByResetToken(token);
+    if (err) { return { err: { code: ERROR_RESET_PASSWORD_TOKEN, message: ERROR_RESET_PASSWORD_TOKEN_MSG }, user: null }; }
+
+    // check if expired
+    const currentTimeStamp = Math.floor(Date.now() / 1000);
+    const tokenIsExpired = user.resetPasswordExpiration < currentTimeStamp;
+    if (tokenIsExpired) {
+      return {
+        err: {
+          code: ERROR_RESET_PASSWORD_TOKEN,
+          message: ERROR_RESET_PASSWORD_TOKEN_MSG
+        },
+        user: null
+      };
+    }
+    
+    // check if using last password
+    const isSameAsBefore = await bcrypt.compare(password, user.password);
+    if (isSameAsBefore) {
+      return {
+        err: {
+          code: ERROR_SAME_PASSWORD,
+          message: ERROR_SAME_PASSWORD_MSG
+        },
+        user: null
+      };
+    }
+
+    // hash and update password
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    const userAfterPasswordReset = {
+      password: passwordHash,
+      // remove resetPassword fields
+      resetPasswordToken: null,
+      resetPasswordExpiration: null,
+    };
+    await usersDB.updateUser(user.username, userAfterPasswordReset);
+
+    return { err: null, user };
+  } catch (err) {
     return {
       err: { code: ERROR_SERVER_ERROR, message: err.message },
       user: null,
@@ -179,7 +271,7 @@ async function updateUserSettings(username, user) {
     delete user.oldPassword;
 
     // Hash new password
-    const hash = await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
     user.password = hash;
     await usersDB.updateUser(username, user);
     return null;
@@ -212,6 +304,8 @@ async function deleteUser(username) {
 module.exports = {
   createUser,
   createFBUser,
+  forgotUserPassword,
+  resetPassword,
   verifyUser,
   updateUserSettings,
   deleteUser,

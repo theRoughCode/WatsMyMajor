@@ -15,9 +15,7 @@ const getToken = (username) => {
 // Register user
 AuthRouter.post('/register', async function(req, res) {
   const username = req.body.username.toLowerCase();
-  const name = req.body.name;
-  const userEmail = req.body.email;
-  const password = req.body.password;
+  const { name, email: userEmail, password } = req.body;
 
   try {
     const { err, user } = await auth.createUser(username, userEmail, name, password);
@@ -73,6 +71,22 @@ AuthRouter.get('/facebook', function(req, res) {
       res.status(400).send(err);
     }
   })(req, res);
+});
+
+// Forgot user
+AuthRouter.post('/forgot', async function(req, res) {
+  const { email: userEmail } = req.body;
+
+  try {
+    const { err, user } = await auth.forgotUserPassword(userEmail);
+    if (err) { return res.status(400).send(err); }
+    
+    res.status(200).json();
+    await email.sendResetPasswordEmail(userEmail, user);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).send(err);
+  }
 });
 
 // Delete user

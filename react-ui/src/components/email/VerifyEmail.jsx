@@ -5,6 +5,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 import logo from 'images/logo.png';
 import { grey } from 'constants/Colours';
 import { logoutUser } from 'actions';
+import { getVerificationToken } from 'utils/strings';
 
 const styles = {
   bigContainer: {
@@ -65,12 +66,8 @@ class VerifyEmail extends Component {
   };
 
   async componentDidMount() {
-    const { search } = this.props.location;
-    /* eslint-disable no-useless-escape */
-    const tokenRegex = /.*(\?|\&)token=([^&]*)(\&.*|$)/;
-    const matchArr = search.match(tokenRegex);
-    if (matchArr == null || matchArr.length < 3) return;
-    const token = matchArr[2];
+    const { search: queryString } = this.props.location;
+    const token = getVerificationToken(queryString);
 
     const response = await fetch(`/server/email/verify/user?token=${token}`, {
       headers: {

@@ -15,14 +15,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const emailStyles = `
+  <style>
+    #button {
+      display: inline-block;
+      width: 200px;
+      background-color: #414EF9;
+      border-radius: 3px;
+      color: white;
+      font-size: 15px;
+      line-height: 45px;
+      text-align: center;
+      text-decoration: none;
+      -webkit-text-size-adjust: none;
+      mso-hide: all;
+    }
+  </style>
+`;
+
 // Returns err
 async function createEmail(username, email) {
   username = username.toLowerCase();
   email = email.toLowerCase();
 
   /* eslint-disable no-useless-escape */
-  const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (!emailRegex.test(email)) return 'Invalid email';
+  const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!EMAIL_REGEX.test(email)) return 'Invalid email';
 
   // Check if email already exists
   const emailExists = await emailsDB.emailExists(email);
@@ -52,21 +70,7 @@ async function sendVerificationEmail(email, username) {
   const subject = 'Verify Your Email!';
   const url = `https://www.watsmymajor.com/verify-email?token=${token}`;
   const html = `
-    <style>
-      #button {
-        display: inline-block;
-        width: 200px;
-        background-color: #414EF9;
-        border-radius: 3px;
-        color: white;
-        font-size: 15px;
-        line-height: 45px;
-        text-align: center;
-        text-decoration: none;
-        -webkit-text-size-adjust: none;
-        mso-hide: all;
-      }
-    </style>
+    ${emailStyles}
     <h1>Verify your email address</h1>
     <p>
       Thanks for signing up for WatsMyMajor! We're excited to have you as an early user.
@@ -77,6 +81,45 @@ async function sendVerificationEmail(email, username) {
       If you’re having trouble clicking the button, copy and paste the URL below into your web browser.
     </p>
     <a href="${url}">${url}</a>
+  `;
+
+  return await sendMail(email, subject, html);
+}
+
+async function sendResetPasswordEmail(email, user) {
+  const { username, resetPasswordToken: token } = user;
+  const subject = 'Reset Password Request';
+  const url = `https://www.watsmymajor.com/reset-password?token=${token}`;
+  const html = `
+  ${emailStyles}
+    <h2>Hi ${username},</h2>
+    <p>
+      We received a request to reset your WatsMyMajor account password.
+    </p>
+    <a href="${url}" id="button">Reset Password</a>
+    <p>
+      If you’re having trouble clicking the button, copy and paste the URL below into your web browser.
+    </p>
+    <a href="${url}">${url}</a>
+    <p>
+      If you didn't request a password reset, please ignore this email or let us know <a href="https://github.com/theRoughCode/watsmymajor/issues">here</a>.
+    </p>
+  `;
+
+  return await sendMail(email, subject, html);
+}
+
+async function sendResetPasswordSuccess(email, username) {
+  const subject = 'Reset Password Successful';
+  const html = `
+  ${emailStyles}
+    <h2>Hi ${username},</h2>
+    <p>
+      This is to confirm that your password was updated successfully.
+    </p>
+    <p>
+      If you didn't request a password reset, contact us <a href="https://github.com/theRoughCode/watsmymajor/issues">here</a>.
+    </p>
   `;
 
   return await sendMail(email, subject, html);
@@ -113,21 +156,7 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
     : `There are ${numSeats} seats left.`;
 
   const html = `
-    <style>
-      #button {
-        display: inline-block;
-        width: 200px;
-        background-color: #414EF9;
-        border-radius: 3px;
-        color: white;
-        font-size: 15px;
-        line-height: 45px;
-        text-align: center;
-        text-decoration: none;
-        -webkit-text-size-adjust: none;
-        mso-hide: all;
-      }
-    </style>
+  ${emailStyles}
     <h2>Hey ${name}, there has been an opening for class ${classNum}!</h2>
     <h3>${numSeatsText}</h3>
     <p>
@@ -161,6 +190,8 @@ module.exports = {
   deleteEmail,
   sendMail,
   sendVerificationEmail,
+  sendResetPasswordEmail,
+  sendResetPasswordSuccess,
   verifyEmailToken,
   sendClassUpdateEmail,
   verifyUnwatchToken,
