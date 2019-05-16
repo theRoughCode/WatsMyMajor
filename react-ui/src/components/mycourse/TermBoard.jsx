@@ -158,7 +158,7 @@ export default class TermBoard extends Component {
     importDialogOpen: false,
     addDialogOpen: false,
     settingsOpen: false,
-    relevel: '1A',
+    relevel: this.props.level,
     rename: this.props.term,
     renameError: '',
     importText: ''
