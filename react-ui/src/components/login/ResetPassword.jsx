@@ -74,7 +74,12 @@ const styles = {
     marginBottom: 50,
   },
 };
-const defaultErrorState = { passwordError: '', confirmPasswordError: '', isPasswordError: false, isConfirmPasswordError: false, };
+const defaultErrorState = {
+  passwordError: '',
+  confirmPasswordError: '',
+  isPasswordError: false,
+  isConfirmPasswordError: false,
+};
 
 class ResetPassword extends Component {
   static propTypes = {
@@ -170,7 +175,14 @@ class ResetPassword extends Component {
   }
 
   renderResetPasswordForm = () => {
-    const { password, confirmPassword, passwordError, confirmPasswordError, isPasswordError, isConfirmPasswordError } = this.state;
+    const {
+      password,
+      confirmPassword,
+      passwordError,
+      confirmPasswordError,
+      isPasswordError,
+      isConfirmPasswordError,
+    } = this.state;
     return (
       <>
         <div style={ styles.header }>

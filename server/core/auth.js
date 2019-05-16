@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
+const emails = require('./email');
 const users = require('./users');
 const emailsDB = require('../database/emails');
 const facebookUsersDB = require('../database/facebookUsers');
@@ -135,15 +135,9 @@ async function forgotUserPassword(email) {
     const { err, user } = await usersDB.getUserByEmail(email.replace(/\./g, ","));
     if (err) { return { err, user: null }; }
 
-    // generate token and expiration
-    const resetPasswordToken = crypto.randomBytes(20).toString('hex');
-    const resetPasswordExpiration = Math.floor(Date.now() / 1000) + (60 * 60);
-    
-    // update user
-    const { username } = user;
-    await users.updateUser(username, { resetPasswordToken, resetPasswordExpiration });
-    const userWithResetPassword = { ...user, resetPasswordToken, resetPasswordExpiration };
-    return { err: null, user: userWithResetPassword };
+    const resetPasswordToken = await bcrypt.hash(user.password, SALT_ROUNDS);
+
+    return { err: null, user: { ...user, resetPasswordToken } };
   } catch (err) {
     return {
       err: { code: ERROR_SERVER_ERROR, message: err.message },
@@ -154,14 +148,9 @@ async function forgotUserPassword(email) {
 
 async function resetPassword(token, password) {
   try {
-    // get user using token
-    const { user, err } = await usersDB.getUserByResetToken(token);
-    if (err) { return { err: { code: ERROR_RESET_PASSWORD_TOKEN, message: ERROR_RESET_PASSWORD_TOKEN_MSG }, user: null }; }
-
-    // check if expired
-    const currentTimeStamp = Math.floor(Date.now() / 1000);
-    const tokenIsExpired = user.resetPasswordExpiration < currentTimeStamp;
-    if (tokenIsExpired) {
+    const { username, resetPasswordToken } = await emails.verifyResetPasswordToken(token);
+    const { user, err } = await usersDB.getUser(username);
+    if (err) {
       return {
         err: {
           code: ERROR_RESET_PASSWORD_TOKEN,
@@ -170,7 +159,19 @@ async function resetPassword(token, password) {
         user: null
       };
     }
-    
+    user.username = username;
+
+    const isValidPasswordHashToken = await bcrypt.compare(user.password, resetPasswordToken);
+    if (!isValidPasswordHashToken) {
+      return {
+        err: {
+          code: ERROR_RESET_PASSWORD_TOKEN,
+          message: ERROR_RESET_PASSWORD_TOKEN_MSG
+        },
+        user: null
+      };
+    }
+
     // check if using last password
     const isSameAsBefore = await bcrypt.compare(password, user.password);
     if (isSameAsBefore) {
@@ -185,12 +186,7 @@ async function resetPassword(token, password) {
 
     // hash and update password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const userAfterPasswordReset = {
-      password: passwordHash,
-      // remove resetPassword fields
-      resetPasswordToken: null,
-      resetPasswordExpiration: null,
-    };
+    const userAfterPasswordReset = { password: passwordHash };
     await usersDB.updateUser(user.username, userAfterPasswordReset);
 
     return { err: null, user };

@@ -68,9 +68,8 @@ const styles = {
     flexDirection: 'column',
   }
 };
-const defaultErrorState = { emailError: '', isEmailError: false };
-// const defaultErrorState = { emailError: 'error idk', isEmailError: true };
 
+const defaultErrorState = { emailError: '', isEmailError: false };
 const emailSentMessage = `You should soon receive instructions to reset your password at the email you provided.`
 
 class ForgotPassword extends Component {
