@@ -73,7 +73,7 @@ AuthRouter.get('/facebook', function(req, res) {
   })(req, res);
 });
 
-// Forgot user
+// Forgot password
 AuthRouter.post('/forgot', async function(req, res) {
   const { email: userEmail } = req.body;
 

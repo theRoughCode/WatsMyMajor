@@ -6,6 +6,7 @@ const usersDB = require('../database/users');
 
 require('dotenv').config();
 const JWT_SECRET = process.env.SERVER_SECRET;
+const RESET_PASSWORD_EXPIRATION = "1h";
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -87,22 +88,28 @@ async function sendVerificationEmail(email, username) {
 }
 
 async function sendResetPasswordEmail(email, user) {
-  const { username, resetPasswordToken: token } = user;
+  const { username, resetPasswordToken } = user;
+  const token = jwt.sign(
+    { username, resetPasswordToken }, // payload
+    JWT_SECRET, // secret
+    { expiresIn: RESET_PASSWORD_EXPIRATION } // options
+  );
+
   const subject = 'Reset Password Request';
   const url = `https://www.watsmymajor.com/reset-password?token=${token}`;
   const html = `
   ${emailStyles}
     <h2>Hi ${username},</h2>
-    <p>
+    <h3>
       We received a request to reset your WatsMyMajor account password.
-    </p>
+    </h3>
     <a href="${url}" id="button">Reset Password</a>
     <p>
       If you’re having trouble clicking the button, copy and paste the URL below into your web browser.
     </p>
     <a href="${url}">${url}</a>
     <p>
-      If you didn't request a password reset, please ignore this email or let us know <a href="https://github.com/theRoughCode/watsmymajor/issues">here</a>.
+      If you didn't request a password reset, please ignore this email or <a href="https://github.com/theRoughCode/watsmymajor/issues">let us know</a>.
     </p>
   `;
 
@@ -112,17 +119,28 @@ async function sendResetPasswordEmail(email, user) {
 async function sendResetPasswordSuccess(email, username) {
   const subject = 'Reset Password Successful';
   const html = `
-  ${emailStyles}
     <h2>Hi ${username},</h2>
+    <h3>
+      Your password was successfully updated!
+    </h3>
     <p>
-      This is to confirm that your password was updated successfully.
-    </p>
-    <p>
-      If you didn't request a password reset, contact us <a href="https://github.com/theRoughCode/watsmymajor/issues">here</a>.
+      If you didn't request a password reset, <a href="https://github.com/theRoughCode/watsmymajor/issues">contact us</a>.
     </p>
   `;
 
   return await sendMail(email, subject, html);
+}
+
+// Verify email token to verify user's email
+// Returns { err, username, resetPasswordToken }
+async function verifyResetPasswordToken(token) {
+  try {
+    const { username, resetPasswordToken } = jwt.verify(token, JWT_SECRET);
+    return { err: null, username, resetPasswordToken };
+  } catch (err) {
+    console.error(err);
+    return { err, username: null };
+  }
 }
 
 // Verify email token to verify user's email
@@ -147,7 +165,7 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
     return err;
   }
 
-  const  { name, email } = user;
+  const { name, email } = user;
   const token = jwt.sign({ username, term, classNum, subject, catalogNumber }, JWT_SECRET);
   const url = `https://www.watsmymajor.com/unwatch-class?token=${token}`;
 
@@ -195,4 +213,5 @@ module.exports = {
   verifyEmailToken,
   sendClassUpdateEmail,
   verifyUnwatchToken,
+  verifyResetPasswordToken,
 };
