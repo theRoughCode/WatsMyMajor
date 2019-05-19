@@ -1,4 +1,5 @@
 const { usersRef } = require('./index');
+const { emailsRef } = require('./index');
 
 /* A list of the courses available
     {
@@ -85,6 +86,17 @@ async function getUser(username) {
   }
 }
 
+async function getUserByEmail(email) {
+  try {
+    const emailSnapshot = await emailsRef.child(email).once('value');
+    const username = emailSnapshot.val();
+    const snapshot = await usersRef.child(username).once('value');
+    return { user: { ... snapshot.val(), username }, err: null };
+  } catch (err) {
+    return { user: null, err };
+  }
+}
+
 async function getAllUserCourses() {
   try {
     const snapshot = await usersRef.once('value');
@@ -147,6 +159,7 @@ module.exports = {
   deleteUser,
   setField,
   getUser,
+  getUserByEmail,
   getAllUserCourses,
   getUserSchedule,
   userExists,

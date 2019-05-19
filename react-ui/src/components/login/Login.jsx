@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
+import TextField from '@material-ui/core/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import FacebookIcon from '../tools/FacebookIcon';
 import logo from 'images/logo.png';
@@ -55,6 +55,7 @@ const styles = {
     paddingRight: 50,
     paddingTop: 10,
     paddingBottom: 40,
+    width: 356,
   },
   body: {
     width: '100%',
@@ -109,21 +110,22 @@ class Login extends Component {
 
     this.state = {
       usernameError: '',
-      passwordError: ''
+      passwordError: '',
+      password: '',
+      username: '',
     }
 
-    this.onLogin = this.onLogin.bind(this);
-    this.onFacebookLogin = this.onFacebookLogin.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
+    this.handleFacebookLogin = this.handleFacebookLogin.bind(this);
   }
 
   removeErrors() {
     this.setState({ usernameError: '', passwordError: '' });
   }
 
-  async onLogin(ev) {
+  async handleLogin(ev) {
     ev.preventDefault();
-    const username = this.refs.username.getValue();
-    const password = this.refs.password.getValue();
+    const { username, password } = this.state;
 
     if (!username || !password) {
       const errMessage = 'This field is required';
@@ -182,7 +184,7 @@ class Login extends Component {
     }
   }
 
-  async onFacebookLogin(response) {
+  async handleFacebookLogin(response) {
     const { accessToken } = response;
 
     try {
@@ -224,7 +226,21 @@ class Login extends Component {
     }
   }
 
+  handleInputChange = (e) => {
+    const { value, name } = e.target;
+
+    this.setState({
+      [name]: value
+    });
+    this.removeErrors();
+  }
+
   render() {
+
+    const { username, password, usernameError, passwordError } = this.state;
+    const isUsernameError = usernameError !== '';
+    const isPasswordError = passwordError !== '';
+
     return  (
       <div style={ styles.viewContainer }>
         <div style={ styles.container }>
@@ -236,24 +252,34 @@ class Login extends Component {
           <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
             <form style={ styles.body }>
               <TextField
-                hintText="e.g. Ferigoose123"
-                floatingLabelText="Username"
-                errorText={ this.state.usernameError }
-                ref="username"
+                name="username"
+                value={ username }
+                placeholder="e.g. Ferigoose123"
+                label="Username"
+                error={ isUsernameError }
+                fullWidth
+                margin="normal"
+                helperText={ usernameError }
+                onChange={ this.handleInputChange }
               /><br />
               <TextField
-                hintText="*********"
-                floatingLabelText="Password"
+                name="password"
+                value={ password }
+                placeholder="*********"
+                label="Password"
                 type="password"
-                errorText={ this.state.passwordError }
-                ref="password"
+                fullWidth
+                margin="normal"
+                error={ isPasswordError }
+                helperText={ passwordError ? passwordError : <Link to="/forgot-password">Forgot Password?</Link> }
+                onChange={ this.handleInputChange }
               /><br />
               <RaisedButton
                 label="Sign in"
-                backgroundColor={ green  }
+                backgroundColor={ green }
                 style={ styles.loginButton }
                 labelStyle={ styles.loginText }
-                onClick={ this.onLogin }
+                onClick={ this.handleLogin }
                 type="submit"
               />
             </form>
@@ -264,7 +290,7 @@ class Login extends Component {
               appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
               fields="name,email,picture"
               disableMobileRedirect
-              callback={ this.onFacebookLogin }
+              callback={ this.handleFacebookLogin }
               onFailure={ err => console.error(err) }
               render={ renderProps => (
                 <RaisedButton

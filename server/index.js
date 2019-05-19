@@ -7,7 +7,6 @@ const cookieParser = require('cookie-parser');
 const router = require('./router');
 // This starts our cron jobs
 // eslint-disable-next-line no-unused-vars
-const scheduler = require('./core/scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

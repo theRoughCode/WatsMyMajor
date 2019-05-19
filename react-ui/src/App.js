@@ -10,22 +10,24 @@ import {
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Snackbar from 'material-ui/Snackbar';
-import AppBar from './components/AppBar';
-import SideBar from './components/sidebar/SideBarContainer';
-import PrivacyPolicy from './components/privacy/PrivacyPolicy';
-import Dashboard from './components/dashboard/Dashboard';
-import LaunchScreen from './components/launch/LaunchScreen';
-import Login from './components/login/Login';
-import Register from './components/login/Register';
-import VerifyEmail from './components/email/VerifyEmail';
-import UnwatchedClass from './components/email/UnwatchedClass';
-import Settings from './components/settings/SettingsContainer';
-import Majors from './components/majors/MajorsContainer';
-import BrowseCourseView from './components/browse/BrowseCourseContainer';
-import MyCourseView from './components/mycourse/CourseBoardContainer';
-import MyScheduleView from './components/schedule/MyScheduleContainer';
-import CourseView from './components/courselist/CourseViewContainer';
-import LoadingView from './components/tools/LoadingView';
+import AppBar from 'components/AppBar';
+import SideBar from 'components/sidebar/SideBarContainer';
+import PrivacyPolicy from 'components/privacy/PrivacyPolicy';
+import Dashboard from 'components/dashboard/Dashboard';
+import LaunchScreen from 'components/launch/LaunchScreen';
+
+// TODO: rename 'login' to 'account', leaving it for now to preserve git diff
+import { Login, Register, ResetPassword, ForgotPassword } from 'components/login';
+
+import VerifyEmail from 'components/email/VerifyEmail';
+import UnwatchedClass from 'components/email/UnwatchedClass';
+import Settings from 'components/settings/SettingsContainer';
+import Majors from 'components/majors/MajorsContainer';
+import BrowseCourseView from 'components/browse/BrowseCourseContainer';
+import MyCourseView from 'components/mycourse/CourseBoardContainer';
+import MyScheduleView from 'components/schedule/MyScheduleContainer';
+import CourseView from 'components/courselist/CourseViewContainer';
+import LoadingView from 'components/tools/LoadingView';
 import {
   toggleSideBar,
   createSnack,
@@ -202,6 +204,8 @@ class App extends Component {
                 <Route path='/welcome' render={ this.addUndirect(LaunchScreen) } />
                 <Route path='/register' render={ this.addUndirect(Register) } />
                 <Route path='/login' render={ this.addUndirect(Login) } />
+                <Route path='/forgot-password' render={ this.addUndirect(ForgotPassword) } />
+                <Route path='/reset-password' render={ this.addUndirect(ResetPassword) } />
                 <Route path='/verify-email' component={ VerifyEmail } />
                 <Route path='/unwatch-class' component={ UnwatchedClass } />
                 <Route path='/settings' render={ this.addRedirect(Settings) } />
