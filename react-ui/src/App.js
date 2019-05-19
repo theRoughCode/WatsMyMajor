@@ -15,10 +15,7 @@ import SideBar from 'components/sidebar/SideBarContainer';
 import PrivacyPolicy from 'components/privacy/PrivacyPolicy';
 import Dashboard from 'components/dashboard/Dashboard';
 import LaunchScreen from 'components/launch/LaunchScreen';
-
-// TODO: rename 'login' to 'account', leaving it for now to preserve git diff
-import { Login, Register, ResetPassword, ForgotPassword } from 'components/login';
-
+import { Login, Register, ResetPassword, ForgotPassword } from 'components/account';
 import VerifyEmail from 'components/email/VerifyEmail';
 import UnwatchedClass from 'components/email/UnwatchedClass';
 import Settings from 'components/settings/SettingsContainer';
