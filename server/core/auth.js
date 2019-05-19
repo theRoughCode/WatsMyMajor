@@ -148,9 +148,9 @@ async function forgotUserPassword(email) {
 
 async function resetPassword(token, password) {
   try {
-    const { username, resetPasswordToken } = await emails.verifyResetPasswordToken(token);
+    const { err: verifyErr, username, resetPasswordToken } = await emails.verifyResetPasswordToken(token);
     const { user, err } = await usersDB.getUser(username);
-    if (err) {
+    if (err || verifyErr) {
       return {
         err: {
           code: ERROR_RESET_PASSWORD_TOKEN,
