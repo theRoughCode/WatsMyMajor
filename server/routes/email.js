@@ -19,7 +19,7 @@ EmailRouter.post('/reset/password', async function(req, res) {
   const { err, user } = await auth.resetPassword(token, password);
   if (err) { return res.status(400).send(err); }
 
-  res.status(200).json();
+  res.status(200).send();
   const { email, username } = user;
   await emails.sendResetPasswordSuccess(email, username);
 });

@@ -81,7 +81,7 @@ AuthRouter.post('/forgot', async function(req, res) {
     const { err, user } = await auth.forgotUserPassword(userEmail);
     if (err) { return res.status(400).send(err); }
     
-    res.status(200).json();
+    res.status(200).send();
     await email.sendResetPasswordEmail(userEmail, user);
   } catch (err) {
     console.error(err);

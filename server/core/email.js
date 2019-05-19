@@ -139,7 +139,7 @@ async function verifyResetPasswordToken(token) {
     return { err: null, username, resetPasswordToken };
   } catch (err) {
     console.error(err);
-    return { err, username: null };
+    return { err, username: null, resetPasswordToken: null };
   }
 }
 
