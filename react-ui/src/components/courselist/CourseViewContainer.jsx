@@ -77,6 +77,7 @@ class CourseViewContainer extends Component {
 
   static propTypes = {
     courseMetadata: PropTypes.object.isRequired,
+    courseClasses: PropTypes.array.isRequired,
     myCourses: PropTypes.object.isRequired,
     cart: PropTypes.array.isRequired,
     watchlist: PropTypes.object.isRequired,
@@ -87,6 +88,7 @@ class CourseViewContainer extends Component {
     watchClassHandler: PropTypes.func.isRequired,
     unwatchClassHandler: PropTypes.func.isRequired,
     updateMetadataHandler: PropTypes.func.isRequired,
+    updateClassesHandler: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -220,7 +222,6 @@ class CourseViewContainer extends Component {
     } = metadata;
 
     // Update page title
-    document.title = `${subject} ${catalogNumber} | ${title} | University of Waterloo - WatsMyMajor`;
     const course = {
       title,
       description,
@@ -330,11 +331,11 @@ class CourseViewContainer extends Component {
 
     const courseView = (error)
       ? (
-          <ErrorView
-            msgHeader={ "Oops!" }
-            msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
-          />
-        )
+        <ErrorView
+          msgHeader={ "Oops!" }
+          msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
+        />
+      )
       : renderedCourseView;
 
     const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;

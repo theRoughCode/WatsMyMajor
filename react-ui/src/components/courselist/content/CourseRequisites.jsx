@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import { Tabs, Tab } from 'material-ui/Tabs';
 import SwipeableViews from 'react-swipeable-views';
 import { hasTakenCourse } from 'utils/courses';
+import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
 import ChooseReqs from './ChooseReqs';
 import { green, mustard, purple } from 'constants/Colours';
 
@@ -75,6 +76,21 @@ class CourseRequisites extends Component {
       antireqs: antireqs.map(this.formatReqs),
       postreqs: postreqs.map(this.formatReqs),
     };
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const updatedState = {};
+
+    if (!objectEquals(this.props.prereqs, nextProps.prereqs))
+      updatedState.prereqs =  this.formatReqs(nextProps.prereqs);
+    if (!arrayOfObjectEquals(this.props.coreqs, nextProps.coreqs))
+      updatedState.coreqs = nextProps.coreqs.map(this.formatReqs);
+    if (!arrayOfObjectEquals(this.props.antireqs, nextProps.antireqs))
+      updatedState.antireqs = nextProps.coreqs.map(this.formatReqs);
+    if (!arrayOfObjectEquals(this.props.postreqs, nextProps.postreqs))
+      updatedState.postreqs = nextProps.postreqs.map(this.formatReqs);
+
+    this.setState(updatedState);
   }
 
   handleChange = (value) => {

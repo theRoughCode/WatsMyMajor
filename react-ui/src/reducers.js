@@ -309,19 +309,19 @@ function courseCardPrereqs(state = [], action) {
 
 function courseMetadata(state = {}, action) {
   switch (action.type) {
-    case UPDATE_COURSE_METADATA:
-      return action.payload || state;
-    default:
-      return state;
+  case UPDATE_COURSE_METADATA:
+    return action.payload || state;
+  default:
+    return state;
   }
 }
 
 function courseClasses(state = [], action) {
   switch (action.type) {
-    case UPDATE_COURSE_CLASSES:
-      return action.payload || state;
-    default:
-      return state;
+  case UPDATE_COURSE_CLASSES:
+    return action.payload || state;
+  default:
+    return state;
   }
 }
 

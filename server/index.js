@@ -10,11 +10,11 @@ require('@babel/register')({
 
 // Prevent undefined window error
 if (typeof window === 'undefined') {
-    global.window = {
-      location: {},
-      navigator: {},
-      isServer: true,
-    };
+  global.window = {
+    location: {},
+    navigator: {},
+    isServer: true,
+  };
 }
 
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the

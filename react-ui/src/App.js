@@ -8,6 +8,7 @@ import {
   Redirect,
   withRouter
 } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { ToastContainer } from 'react-toastify';
 import Snackbar from 'material-ui/Snackbar';
 import AppBar from 'components/AppBar';
@@ -50,7 +51,8 @@ class App extends Component {
     onToggleSideBar: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
-    onUndoSnack: PropTypes.func.isRequired
+    onUndoSnack: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -178,6 +180,17 @@ class App extends Component {
       <MediaQuery minWidth={ 475 }>
         { matches => (
           <div className="App">
+            <Helmet>
+              <title>WatsMyMajor</title>
+              <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
+              This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
+              <meta name="keywords" content="uw, uwaterloo, watsmymajor, course, cs, cs246" />
+              <meta property="og:url"           content="https://www.watsmymajor.com" />
+              <meta property="og:type"          content="website" />
+              <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
+              <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
+              <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
+            </Helmet>
             <AppBar
               toggleSideBar={ this.onToggleSideBar }
               onLogout={ this.onLogout }

@@ -2,7 +2,6 @@ const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
 const FacebookTokenStrategy = require('passport-facebook-token');
 const auth = require('./auth');
 const facebookUsers = require('../database/facebookUsers');

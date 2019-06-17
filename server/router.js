@@ -1,17 +1,17 @@
-const router = require('express').Router();
-const path = require('path');
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
-
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { matchPath } from 'react-router-dom';
+import Helmet from 'react-helmet';
 import { createStore, applyMiddleware } from 'redux';
 import { apiMiddleware } from 'redux-api-middleware';
 import StaticWrapper from '../react-ui/src/StaticWrapper';
 import routes from './uiRoutes';
 import { loginUser } from 'actions';
 import reducers from 'reducers';
+
+const router = require('express').Router();
+const path = require('path');
+const fs = require('fs');
 
 // Server endpoint routes requests to backend server
 router.use('/server', require('./routes'));
@@ -58,21 +58,27 @@ router.use('*', function(req, res) {
           context={ context }
         />
       );
+      const helmet = Helmet.renderStatic();
 
       // context.url will contain the URL to redirect to if a <Redirect> was used
-      if (context.url) redirect(301, context.url);
+      if (context.url) res.redirect(301, context.url);
       else {
         res.writeHead(200, { "Content-Type": "text/html" });
         res.end(
-          data.replace(
-            '<div id="root"></div>',
-            `<div id="root">${ renderToString(jsx) }</div>
-             <script>window.REDUX_DATA = ${ JSON.stringify(store.getState()) }</script>`
-          )
+          data
+            .replace(
+              '</head>',
+              `${helmet.title.toString()} ${helmet.meta.toString()}</head>`
+            )
+            .replace(
+              '<div id="root"></div>',
+              `<div id="root">${ renderToString(jsx) }</div>
+               <script>window.REDUX_DATA = ${ JSON.stringify(store.getState()) }</script>`
+            )
         );
       }
     }).catch(err => {
-      console.log(err);
+      console.error(err);
       res.status(500).send('An error occurred');
     });
   });
