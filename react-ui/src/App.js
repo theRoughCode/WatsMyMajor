@@ -24,14 +24,13 @@ import BrowseCourseView from 'components/browse/BrowseCourseContainer';
 import MyCourseView from 'components/mycourse/CourseBoardContainer';
 import MyScheduleView from 'components/schedule/MyScheduleContainer';
 import CourseView from 'components/courselist/CourseViewContainer';
-import LoadingView from 'components/tools/LoadingView';
 import {
   toggleSideBar,
   createSnack,
   loginUser,
   logoutUser,
-} from './actions';
-import './stylesheets/App.css';
+} from 'actions';
+import 'stylesheets/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const styles = {
@@ -80,7 +79,6 @@ class App extends Component {
       snackOpen: false,
       snack,
       isLoggedIn,
-      loading: true,
     };
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -94,12 +92,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // Check localStorage if username is not set
-    const cachedUsername = localStorage.getItem('wat-username');
-    if (cachedUsername) {
-      this.setState({ isLoggedIn: true });
-      this.onLogin(cachedUsername);
-    } else this.setState({ loading: false });
+    // Check if user is already logged in (in cookies)
+    const match = document.cookie.match(new RegExp('(^| )watsmymajor_jwt=([^;]+)'));
+    if (match) this.onLogin();
 
     // Listen for route change
     this.props.history.listen(this.handleRouteChange);
@@ -119,11 +114,10 @@ class App extends Component {
 
     if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
       this.setState({ isLoggedIn: nextProps.isLoggedIn });
-      if (this.state.loading) this.setState({ loading: false });
     }
 
     if (nextProps.username !== this.state.username) {
-      this.setState({ loading: false, username: nextProps.username });
+      this.setState({ username: nextProps.username });
     }
   }
 
@@ -180,10 +174,6 @@ class App extends Component {
         : 'all 0.225s ease-out'
     });
 
-    if (this.state.loading) {
-      return <LoadingView />;
-    }
-
     return (
       <MediaQuery minWidth={ 475 }>
         { matches => (
@@ -238,7 +228,7 @@ const mapDispatchToProps = dispatch => {
   return {
     onToggleSideBar: () => dispatch(toggleSideBar()),
     onUndoSnack: (msg) =>  dispatch(createSnack(msg)),
-    onLogin: (username) => dispatch(loginUser(username)),
+    onLogin: () => dispatch(loginUser()),
     onLogout: () => dispatch(logoutUser()),
   }
 };

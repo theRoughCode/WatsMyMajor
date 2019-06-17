@@ -8,7 +8,7 @@ const auth = require('./auth');
 const facebookUsers = require('../database/facebookUsers');
 
 const opt = {
-  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: (req) => req.cookies['watsmymajor_jwt'],
   secretOrKey:  process.env.SERVER_SECRET
 };
 

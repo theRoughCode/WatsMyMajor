@@ -7,7 +7,6 @@ import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AvatarIcon from 'material-ui/svg-icons/action/account-circle';
 import Grid from '@material-ui/core/Grid';
-import { getCookie } from 'utils/cookies';
 import { lightGreen2, red } from 'constants/Colours';
 
 const maxFileSize = 5242880; // %MB
@@ -124,7 +123,6 @@ export default class ImageUpload extends Component {
         method: 'POST',
         headers: {
           "x-secret": process.env.REACT_APP_SERVER_SECRET,
-          'authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
         }
       });
 
@@ -157,7 +155,6 @@ export default class ImageUpload extends Component {
         headers: {
           'content-type': 'application/json',
           "x-secret": process.env.REACT_APP_SERVER_SECRET,
-          'authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
         }
       });
 

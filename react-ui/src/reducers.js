@@ -29,6 +29,9 @@ import {
   UNLINK_FACEBOOK_FAILURE,
   DELETE_ACCOUNT_SUCCESS,
   DELETE_ACCOUNT_FAILURE,
+  UPDATE_COURSE_CLASSES,
+  // Prefetch data
+  UPDATE_COURSE_METADATA,
 } from './actions';
 
 function sideBarOpen(state = false, action) {
@@ -232,23 +235,17 @@ function watchlist(state = {}, action) {
 }
 
 const defaultUser = { username: '', name: '' };
-const usernameKey = 'wat-username';  // Used to cache user's session
 
 function user(state = defaultUser, action) {
   switch (action.type) {
   case SET_USER:
-    localStorage.setItem(usernameKey, action.username);
     action.user.username = action.username;
     return action.user || defaultUser;
-  case LOGIN_USER: {
-    const { meta, payload } = action;
-    localStorage.setItem(usernameKey, meta.username);
-    payload.username = meta.username;
-    return payload || defaultUser;
-  }
+  case LOGIN_USER:
+    return action.payload || defaultUser;
   case LOGOUT_USER:
   case DELETE_ACCOUNT_SUCCESS:
-    localStorage.removeItem(usernameKey);
+    if (!window.hasOwnProperty('isServer')) document.cookie = 'watsmymajor_jwt=; expires = Thu, 01 Jan 1970 00:00:00 GMT';
     return defaultUser;
   case DELETE_ACCOUNT_FAILURE:
     toast.error('Failed to delete account. Please contact an administrator.')
@@ -310,6 +307,24 @@ function courseCardPrereqs(state = [], action) {
   }
 }
 
+function courseMetadata(state = {}, action) {
+  switch (action.type) {
+    case UPDATE_COURSE_METADATA:
+      return action.payload || state;
+    default:
+      return state;
+  }
+}
+
+function courseClasses(state = [], action) {
+  switch (action.type) {
+    case UPDATE_COURSE_CLASSES:
+      return action.payload || state;
+    default:
+      return state;
+  }
+}
+
 const reducers = combineReducers({
   sideBarOpen,
   snack,
@@ -321,6 +336,8 @@ const reducers = combineReducers({
   user,
   isLoggedIn,
   courseCardPrereqs,
+  courseMetadata,
+  courseClasses,
 });
 
 export default reducers;

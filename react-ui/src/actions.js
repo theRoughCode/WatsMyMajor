@@ -1,5 +1,4 @@
 import { RSAA } from 'redux-api-middleware';
-import { getCookie, deleteCookie } from './utils/cookies';
 
 /*
  * action types
@@ -33,6 +32,10 @@ export const UNLINK_FACEBOOK = 'UNLINK_FACEBOOK';
 export const UNLINK_FACEBOOK_FAILURE = 'UNLINK_FACEBOOK_FAILURE';
 export const DELETE_ACCOUNT_SUCCESS = 'DELETE_ACCOUNT_SUCCESS';
 export const DELETE_ACCOUNT_FAILURE =  'DELETE_ACCOUNT_FAILURE';
+export const UPDATE_COURSE_CLASSES = 'UPDATE_COURSE_CLASSES';
+
+// For prefetching data
+export const UPDATE_COURSE_METADATA = 'UPDATE_COURSE_METADATA';
 
 /*
  * action creators
@@ -46,29 +49,18 @@ export const setUser = (username, user) => ({
   user
 });
 
-export const loginUser = (username) => {
-  if (!username) {
-    console.error('Username is undefined. ' + username);
-    return {};
+export const loginUser = () => ({
+  [RSAA]: {
+    endpoint: '/server/users/login',
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
+    },
+    types: ['', { type: LOGIN_USER }, { type: LOGOUT_USER }]
   }
+});
 
-  return {
-    [RSAA]: {
-      endpoint: `/server/users/${username}`,
-      method: 'GET',
-      headers: {
-        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
-      },
-      types: ['', { type: LOGIN_USER, meta: { username } }, { type: LOGOUT_USER }]
-    }
-  }
-};
-
-export const logoutUser = () => {
-  deleteCookie('watsmymajor_jwt');
-  return { type: LOGOUT_USER };
-};
+export const logoutUser = () => ({ type: LOGOUT_USER });
 
 export const createSnack = (
   msg,
@@ -93,7 +85,6 @@ export const updateUserCourses = (username, courseList) => ({
     headers: {
       'Content-Type': 'application/json',
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     body: JSON.stringify({ courseList }),
     types: [
@@ -111,7 +102,6 @@ export const addToSchedule = (username, text) => ({
     headers: {
       'Content-Type': 'application/json',
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     body: JSON.stringify({ text }),
     types: [
@@ -129,7 +119,6 @@ export const clearSchedule = (username) => ({
     headers: {
       'Content-Type': 'application/json',
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     body: JSON.stringify({ schedule: {} }),
     types: [
@@ -149,7 +138,6 @@ export const addToCart = (subject, catalogNumber, username, cart) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
       },
       body: JSON.stringify({ cart }),
       types: [
@@ -173,7 +161,6 @@ export const removeFromCart = (subject, catalogNumber, username, cart) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
       },
       body: JSON.stringify({ cart }),
       types: [{ type: SET_CART, meta: { cart } }, '', '']
@@ -188,7 +175,6 @@ export const setCart = (username, cart) => ({
     headers: {
       'Content-Type': 'application/json',
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     body: JSON.stringify({ cart }),
     types: [{ type: REORDER_CART,	meta: { cart } }, '', '']
@@ -248,7 +234,6 @@ export const editSettings = (username, user) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
       },
       body: JSON.stringify(user),
       types: [
@@ -273,7 +258,6 @@ export const linkFacebook = (username, facebookID, hasFBPic) => {
       headers: {
         'Content-Type': 'application/json',
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
       },
       body: JSON.stringify({ facebookID, hasFBPic }),
       types: [
@@ -291,7 +275,6 @@ export const unlinkFacebook = (username) => ({
     method: 'GET',
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     types: [
       '',
@@ -307,12 +290,41 @@ export const deleteAccount = (username) => ({
     method: 'GET',
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-      'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
     },
     types: [
       '',
       { type: DELETE_ACCOUNT_SUCCESS },
       { type: DELETE_ACCOUNT_FAILURE },
+    ]
+  }
+});
+
+export const getCourseMetadata = (subject, catalogNumber, baseUrl = '') => ({
+  [RSAA]: {
+    endpoint: `${baseUrl}/server/courses/info/${subject}/${catalogNumber}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
+    },
+    types: [
+      '',
+      { type: UPDATE_COURSE_METADATA },
+      '',
+    ]
+  }
+});
+
+export const getCourseClasses = (subject, catalogNumber, term) => ({
+  [RSAA]: {
+    endpoint: `/server/courses/classes/${term}/${subject}/${catalogNumber}`,
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+    },
+    types: [
+      '',
+      { type: UPDATE_COURSE_CLASSES },
+      '',
     ]
   }
 });

@@ -58,6 +58,10 @@ class CourseRatings extends Component {
     };
   }
 
+  componentWillReceiveProps({ avgRating, numRatings }) {
+    this.setState({ avgRating, numRatings });
+  }
+
   onChangeRating = async (rating) => {
     const { username, subject, catalogNumber } = this.props;
     const updatedRatings = await updateUserRating(username, subject, catalogNumber, rating);
