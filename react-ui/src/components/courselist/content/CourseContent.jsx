@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import RaisedButton from 'material-ui/RaisedButton';
 import CourseHeader from './CourseHeader';
 import CourseDescription from './CourseDescription';
@@ -83,10 +84,25 @@ const CourseContent = ({
     if (window.FB) window.FB.XFBML.parse();
   }, 500);
 
+  const pageTitle = `${subject} ${catalogNumber} - ${title} | University of Waterloo - WatsMyMajor`;
+  const pageDescription = `${subject} ${catalogNumber} - ${title}: ${description}`;
+  const pageKeywords = ['uw', 'uwaterloo', 'waterloo', 'course', subject, catalogNumber, `${subject} ${catalogNumber}`,
+    `${subject+catalogNumber}`, `${title}`, ...title.split(' ')].join(', ');
+
   return (
     <MediaQuery minWidth={ 400 }>
       { matches => (
         <div style={ styles.courseContent(!matches) }>
+          <Helmet>
+            <title>{ pageTitle }</title>
+            <meta name="description" content={ pageDescription } />
+            <meta name="keywords" content={ pageKeywords } />
+            <meta property="og:url"           content={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` } />
+            <meta property="og:type"          content="website" />
+            <meta property="og:title"         content={ pageTitle } />
+            <meta property="og:description"   content={ pageDescription } />
+            <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png" />
+          </Helmet>
           <CourseHeader
             subject={ subject }
             catalogNumber={ catalogNumber }

@@ -8,6 +8,7 @@ import {
   Redirect,
   withRouter
 } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { ToastContainer } from 'react-toastify';
 import Snackbar from 'material-ui/Snackbar';
 import AppBar from 'components/AppBar';
@@ -24,14 +25,13 @@ import BrowseCourseView from 'components/browse/BrowseCourseContainer';
 import MyCourseView from 'components/mycourse/CourseBoardContainer';
 import MyScheduleView from 'components/schedule/MyScheduleContainer';
 import CourseView from 'components/courselist/CourseViewContainer';
-import LoadingView from 'components/tools/LoadingView';
 import {
   toggleSideBar,
   createSnack,
   loginUser,
   logoutUser,
-} from './actions';
-import './stylesheets/App.css';
+} from 'actions';
+import 'stylesheets/App.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 const styles = {
@@ -51,7 +51,8 @@ class App extends Component {
     onToggleSideBar: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
-    onUndoSnack: PropTypes.func.isRequired
+    onUndoSnack: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -80,7 +81,6 @@ class App extends Component {
       snackOpen: false,
       snack,
       isLoggedIn,
-      loading: true,
     };
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -94,12 +94,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    // Check localStorage if username is not set
-    const cachedUsername = localStorage.getItem('wat-username');
-    if (cachedUsername) {
-      this.setState({ isLoggedIn: true });
-      this.onLogin(cachedUsername);
-    } else this.setState({ loading: false });
+    // Check if user is already logged in (in cookies)
+    const match = document.cookie.match(new RegExp('(^| )watsmymajor_jwt=([^;]+)'));
+    if (match) this.onLogin();
 
     // Listen for route change
     this.props.history.listen(this.handleRouteChange);
@@ -119,11 +116,10 @@ class App extends Component {
 
     if (nextProps.isLoggedIn !== this.state.isLoggedIn) {
       this.setState({ isLoggedIn: nextProps.isLoggedIn });
-      if (this.state.loading) this.setState({ loading: false });
     }
 
     if (nextProps.username !== this.state.username) {
-      this.setState({ loading: false, username: nextProps.username });
+      this.setState({ username: nextProps.username });
     }
   }
 
@@ -180,14 +176,21 @@ class App extends Component {
         : 'all 0.225s ease-out'
     });
 
-    if (this.state.loading) {
-      return <LoadingView />;
-    }
-
     return (
       <MediaQuery minWidth={ 475 }>
         { matches => (
           <div className="App">
+            <Helmet>
+              <title>WatsMyMajor</title>
+              <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
+              This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
+              <meta name="keywords" content="uw, uwaterloo, watsmymajor, course, cs, cs246" />
+              <meta property="og:url"           content="https://www.watsmymajor.com" />
+              <meta property="og:type"          content="website" />
+              <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
+              <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
+              <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
+            </Helmet>
             <AppBar
               toggleSideBar={ this.onToggleSideBar }
               onLogout={ this.onLogout }
@@ -238,7 +241,7 @@ const mapDispatchToProps = dispatch => {
   return {
     onToggleSideBar: () => dispatch(toggleSideBar()),
     onUndoSnack: (msg) =>  dispatch(createSnack(msg)),
-    onLogin: (username) => dispatch(loginUser(username)),
+    onLogin: () => dispatch(loginUser()),
     onLogout: () => dispatch(logoutUser()),
   }
 };

@@ -25,7 +25,7 @@ WatsMyMajor's code base is divided up into 2 directories:
 
 _NOTE:_
 Before beginning development, send me a message at raph[dot]koh[at]gmail[dot]com. I will set you up with the development environment required to get started!
-#### Run the API Server
+#### Run the Server
 
 In a terminal:
 
@@ -36,6 +36,7 @@ npm install
 # Start the server
 npm start
 ```
+If you want to be able to view the server-side rendered page, you have to run `npm run build`.  Once done, go to http://localhost:5000 to view the server-side rendered page.  _For development, I recommend running the React UI as it includes error checks, debugging tools, and hot reloading.  Steps are shown below._
 
 
 #### Run the React UI

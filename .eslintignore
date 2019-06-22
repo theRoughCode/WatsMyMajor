@@ -1,5 +1,7 @@
 # Node modules
 node_modules/
 
+build/
+
 # Test files
 *.test.js

@@ -2,11 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route, withRouter } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import CourseContent from './content/CourseContent';
 import ClassDetails from './classes/ClassDetailsContainer';
 import PrereqsTree from './tree/PrerequisitesTreeContainer';
-import LoadingView from '../tools/LoadingView';
 import ErrorView from '../tools/ErrorView';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
 import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
@@ -17,6 +15,8 @@ import {
   removeFromCart,
   watchClass,
   unwatchClass,
+  getCourseMetadata,
+  getCourseClasses,
 } from 'actions';
 import 'stylesheets/CourseView.css';
 
@@ -30,7 +30,10 @@ const styles = {
 const defaultCourse = {
   title: '',
   description: '',
-  rating: 0,
+  rating: {
+    avgRating: 0,
+    numRatings: 0,
+  },
   url: '',
   termsOffered: [],
   crosslistings: '',
@@ -38,7 +41,7 @@ const defaultCourse = {
   coreqs: [],
   prereqs: {},
   postreqs: [],
-  term: '',
+  terms: [],
 };
 
 const defaultClassInfo = {
@@ -70,33 +73,11 @@ const createAdmURL = (subject, catalogNumber, term) => {
   return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
 }
 
-const getCourseData = async (subject, catalogNumber) => {
-  const response = await fetch(`/server/courses/info/${subject}/${catalogNumber}`, {
-    headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
-    }
-  });
-  if (!response.ok) {
-    throw new Error(`status ${response.status}`);
-  }
-  return await response.json();
-};
-
-const getCourseClasses = async (subject, catalogNumber, term) => {
-  const response = await fetch(`/server/courses/classes/${term}/${subject}/${catalogNumber}`, {
-    headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
-    }
-  });
-  if (!response.ok) {
-    throw new Error(`status ${response.status}`);
-  }
-  return await response.json();
-};
-
 class CourseViewContainer extends Component {
 
   static propTypes = {
+    courseMetadata: PropTypes.object.isRequired,
+    courseClasses: PropTypes.array.isRequired,
     myCourses: PropTypes.object.isRequired,
     cart: PropTypes.array.isRequired,
     watchlist: PropTypes.object.isRequired,
@@ -106,9 +87,17 @@ class CourseViewContainer extends Component {
     removeFromCartHandler: PropTypes.func.isRequired,
     watchClassHandler: PropTypes.func.isRequired,
     unwatchClassHandler: PropTypes.func.isRequired,
+    updateMetadataHandler: PropTypes.func.isRequired,
+    updateClassesHandler: PropTypes.func.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
+  };
+
+  static loadData = (match, req) => {
+    const { subject, catalogNumber } = match.params;
+    const baseUrl = `${req.protocol}://${req.get('Host')}`;
+    return getCourseMetadata(subject, catalogNumber, baseUrl);
   };
 
   constructor(props) {
@@ -121,19 +110,18 @@ class CourseViewContainer extends Component {
       catalogNumber,
       term: process.env.REACT_APP_CURRENT_TERM,
       admURL: '',
-      courseLoading: true,
-      classLoading: true,
       error: false,
       classModalOpen: false,
       taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
       inCart: isInCart(subject, catalogNumber, props.cart),
       eligible: false,
-      course: defaultCourse,
+      course: (Object.keys(props.courseMetadata).length > 0) ? props.courseMetadata : defaultCourse,
       classes: [],
       classInfo: defaultClassInfo,
       watchlist: {},
     }
 
+    this.updateMetadata = this.updateMetadata.bind(this);
     this.onExpandClass = this.onExpandClass.bind(this);
     this.closeClassModal = this.closeClassModal.bind(this);
     this.updatePageInfo = this.updatePageInfo.bind(this);
@@ -148,14 +136,17 @@ class CourseViewContainer extends Component {
     const { subject, catalogNumber, term } = this.state;
     const admURL = createAdmURL(subject, catalogNumber, term);
     this.setState({ admURL });
-    this.updatePageInfo(subject, catalogNumber);
+    if (Object.keys(this.props.courseMetadata).length === 0) this.props.updateMetadataHandler(subject, catalogNumber);
     this.updateWatchlist(this.props.watchlist);
+    this.props.updateClassesHandler(subject, catalogNumber, this.state.term);
   }
 
   componentWillReceiveProps(nextProps) {
     const { subject, catalogNumber } = this.props.match.params;
     const nextSubject = nextProps.match.params.subject;
     const nextCatNum = nextProps.match.params.catalogNumber;
+    const updatedMetadata = !objectEquals(this.state.course, nextProps.courseMetadata);
+    const updatedClasses = !arrayOfObjectEquals(this.state.classes, nextProps.courseClasses);
     const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
     const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
     const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
@@ -169,9 +160,12 @@ class CourseViewContainer extends Component {
       const { myCourses, cart } = nextProps;
       const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
       const inCart = isInCart(nextSubject, nextCatNum, cart);
-      this.setState({ courseLoading: true, classLoading: true, taken, inCart });
+      this.setState({ taken, inCart });
       this.updatePageInfo(nextSubject, nextCatNum);
     }
+
+    if (updatedMetadata) this.updateMetadata(nextSubject, nextCatNum, nextProps.courseMetadata);
+    if (updatedClasses) this.setState({ classes: nextProps.courseClasses });
 
     // User courses are updated
     if (updatedUserCourses) {
@@ -197,74 +191,54 @@ class CourseViewContainer extends Component {
     this.setState({ watchlist });
   }
 
-  async updatePageInfo(subject, catalogNumber) {
+  updatePageInfo(subject, catalogNumber) {
     this.setState({ subject, catalogNumber });
     if (!subject || !catalogNumber) {
-      this.setState({
-        courseLoading: false,
-        classLoading: false,
-        error: 'Invalid course name',
-      });
+      this.setState({ error: 'Invalid course name' });
       return;
     }
 
-    this.fetchCourseData(subject, catalogNumber);
-    this.fetchClasses(subject, catalogNumber);
+    this.props.updateMetadataHandler(subject, catalogNumber);
+    this.props.updateClassesHandler(subject, catalogNumber, this.state.term);
   }
 
-  async fetchCourseData(subject, catalogNumber) {
-    try {
-      const json = await getCourseData(subject, catalogNumber);
-      let {
-        description,
-        crosslistings,
-        notes,
-        terms,
-        title,
-        units,
-        url,
-        rating,
-        prereqs,
-        coreqs,
-        antireqs,
-        postreqs,
-      } = json;
+  updateMetadata(subject, catalogNumber, metadata) {
+    if (metadata == null || Object.keys(metadata).length === 0) return;
+    subject = subject.toUpperCase();
 
-      // Update page title
-      document.title = `${subject} ${catalogNumber} | ${title} | University of Waterloo - WatsMyMajor`;
-      const course = {
-        title,
-        description,
-        rating,
-        url,
-        notes,
-        units,
-        terms,
-        crosslistings,
-        antireqs,
-        coreqs,
-        prereqs,
-        postreqs,
-      };
+    let {
+      description,
+      crosslistings,
+      notes,
+      terms,
+      title,
+      units,
+      url,
+      rating,
+      prereqs,
+      coreqs,
+      antireqs,
+      postreqs,
+    } = metadata;
 
-      const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
+    // Update page title
+    const course = {
+      title,
+      description,
+      rating,
+      url,
+      notes,
+      units,
+      terms,
+      crosslistings,
+      antireqs,
+      coreqs,
+      prereqs,
+      postreqs,
+    };
 
-      this.setState({ courseLoading: false, course, eligible });
-    } catch(error) {
-      console.error(`ERROR: ${error}`);
-      this.setState({ courseLoading: false, error });
-    }
-  }
-
-  async fetchClasses(subject, catalogNumber) {
-    try {
-      const classes = await getCourseClasses(subject, catalogNumber, this.state.term) || [];
-      this.setState({ classLoading: false, classes });
-    } catch (error) {
-      console.error(`ERROR: ${error}`);
-      this.setState({ classLoading: false });
-      toast.error('Failed to load classes.');
-    }
+    const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
+    this.setState({ course, eligible });
   }
 
   viewCart() {
@@ -319,9 +293,9 @@ class CourseViewContainer extends Component {
       eligible,
       classInfo,
       classModalOpen,
-      courseLoading,
       error
     } = this.state;
+
     if (!this.props.isLoggedIn) {
       taken = false;
       inCart = false;
@@ -355,16 +329,14 @@ class CourseViewContainer extends Component {
       </div>
     );
 
-    const courseView = (courseLoading)
-      ? <LoadingView />
-      : (error)
-        ? (
-          <ErrorView
-            msgHeader={ "Oops!" }
-            msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
-          />
-        )
-        : renderedCourseView;
+    const courseView = (error)
+      ? (
+        <ErrorView
+          msgHeader={ "Oops!" }
+          msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
+        />
+      )
+      : renderedCourseView;
 
     const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;
 
@@ -385,12 +357,22 @@ class CourseViewContainer extends Component {
 
 }
 
-const mapStateToProps = ({ myCourses, cart, watchlist, user, isLoggedIn }) => ({
+const mapStateToProps = ({
+  myCourses,
+  cart,
+  watchlist,
+  user,
+  isLoggedIn,
+  courseMetadata,
+  courseClasses,
+}) => ({
   myCourses,
   cart,
   watchlist,
   username: user.username,
   isLoggedIn,
+  courseMetadata,
+  courseClasses,
 });
 
 const mapDispatchToProps = dispatch => {
@@ -416,6 +398,8 @@ const mapDispatchToProps = dispatch => {
     },
     watchClassHandler: (username, term, classNum) => dispatch(watchClass(username, term, classNum)),
     unwatchClassHandler: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
+    updateMetadataHandler: (subject, catalogNumber) => dispatch(getCourseMetadata(subject, catalogNumber)),
+    updateClassesHandler: (subject, catalogNumber, term) => dispatch(getCourseClasses(subject, catalogNumber, term)),
   };
 };
 

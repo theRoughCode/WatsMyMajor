@@ -87,6 +87,7 @@ const CourseCard = ({
 CourseCard.propTypes = {
   course: PropTypes.object.isRequired,
   highlightBackground: PropTypes.bool.isRequired,
+  history: PropTypes.object.isRequired,
 
   // Redux
   courseCardPrereqs: PropTypes.array.isRequired,

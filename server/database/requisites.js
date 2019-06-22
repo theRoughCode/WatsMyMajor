@@ -13,6 +13,9 @@ const { reqsRef } = require('./index');
     }
 */
 
+// Remove alphanumeric symbols from catalog number because UW API is bad
+const removeAlphaNumeric = course => course.catalogNumber = course.catalogNumber.replace(/[^a-z0-9+]+/gi, '');
+
 
 /****************************
  *                          *
@@ -21,22 +24,25 @@ const { reqsRef } = require('./index');
  ****************************/
 
 function setPrereqs(subject, catalogNumber, prereqs) {
+  if (prereqs.hasOwnProperty('reqs')) prereqs.reqs.map(removeAlphaNumeric);
   return reqsRef.child(`${subject}/${catalogNumber}/prereqs`).set(prereqs);
 }
 
 function setCoreqs(subject, catalogNumber, coreqs) {
+  coreqs.map(removeAlphaNumeric);
   return reqsRef.child(`${subject}/${catalogNumber}/coreqs`).set(coreqs);
 }
 
 function setAntireqs(subject, catalogNumber, antireqs) {
+  antireqs.map(removeAlphaNumeric);
   return reqsRef.child(`${subject}/${catalogNumber}/antireqs`).set(antireqs);
 }
 
 function setPostreq(subject, catalogNumber, postreq, choose, alternatives) {
+  catalogNumber = catalogNumber.replace(/[^a-z0-9+]+/gi, '');
   return reqsRef
     .child(`${subject}/${catalogNumber}/postreqs/${postreq.subject}/${postreq.catalogNumber}`)
     .set({ choose, alternatives });
-  // return reqsRef.child(`${subject}/${catalogNumber}/postreqs`).set(postreqs);
 }
 
 

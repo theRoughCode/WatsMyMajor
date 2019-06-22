@@ -10,10 +10,8 @@ const imagesDB = require('../database/images');
 //       with the required data
 
 // Get user
-UsersRouter.get('/:username', async function(req, res) {
-  const username = req.params.username.toLowerCase();
-  if (req.user !== username) return res.sendStatus(401);
-
+UsersRouter.get('/login', async function(req, res) {
+  const username = req.user.toLowerCase();
   const { user, err } = await users.getUser(username);
   if (err) {
     console.error(err);

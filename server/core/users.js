@@ -11,6 +11,7 @@ async function getUser(username) {
   const { user, err } = await usersDB.getUser(username);
   if (err) return { user: null, err };
 
+  user.username = username;
   user.cart = await fillCartMetadata(user.cart);
   user.courseList = await fillCourseListMetadata(user.courseList);
   return { user, err: null };

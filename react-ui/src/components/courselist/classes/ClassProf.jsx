@@ -90,6 +90,16 @@ const ProfHeader = ({ name, stars }) => (
   </div>
 );
 
+ProfHeader.propTypes = {
+  name: PropTypes.string,
+  stars: PropTypes.number,
+};
+
+ProfHeader.defaultProps = {
+  name: '',
+  stars: 0,
+};
+
 // Display ratings of professor taken from RateMyProfessor.com
 const Rating = ({ difficulty, tags }) => {
   const percentage = (Number(difficulty) / 5.0) * 100;

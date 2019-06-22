@@ -7,19 +7,23 @@ import { apiMiddleware } from 'redux-api-middleware';
 import logger from 'redux-logger'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './App';
-import './stylesheets/index.css';
-import reducers from './reducers';
+import 'stylesheets/index.css';
+import reducers from 'reducers';
 
 const middlewares = [apiMiddleware];
 if (process.env.NODE_ENV !== 'production') middlewares.push(logger);
 
-
+// Grab state from var injected into server-generated HTML
 const store = createStore(
   reducers,
+  window.REDUX_DATA,
   applyMiddleware(...middlewares)
 );
 
-const Wrapper = () => (
+// Allow preloaded redux data to be garbage collected
+delete window.REDUX_DATA;
+
+const jsx = (
   <Provider store={ store }>
     <MuiThemeProvider>
       <Router>
@@ -29,7 +33,7 @@ const Wrapper = () => (
   </Provider>
 );
 
-ReactDOM.render(
-  <Wrapper />,
+ReactDOM.hydrate(
+  jsx,
   document.getElementById('root')
 );

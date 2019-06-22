@@ -71,6 +71,18 @@ const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   }
 };
 
+renderReqNode.propTypes = {
+  type: PropTypes.string,
+  choose: PropTypes.number,
+  courses: PropTypes.array,
+};
+
+renderReqNode.defaultProps = {
+  type: '',
+  choose: 0,
+  courses: [],
+};
+
 // Renders requisite nodes
 // NOTE: Requisites are "taken" in order.  So, if a course falls under multiple
 // boards, only the first one will take it.

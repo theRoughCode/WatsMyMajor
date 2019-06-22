@@ -14,7 +14,6 @@ import ParserInstructions from '../tools/ParserInstructions';
 import LoadingView from '../tools/LoadingView';
 import { addToSchedule, clearSchedule } from 'actions';
 import { objectEquals } from 'utils/arrays';
-import { getCookie } from 'utils/cookies';
 
 const stepContents = [
   {
@@ -62,7 +61,6 @@ const setSchedulePrivacy = async (username, isPublic) => {
     const response = await fetch(`/server/users/schedule/privacy/${username}?public=${isPublic}`, {
       headers: {
         'x-secret': process.env.REACT_APP_SERVER_SECRET,
-        'Authorization': `Bearer ${getCookie('watsmymajor_jwt')}`
       }
     });
     if (!response.ok) {
