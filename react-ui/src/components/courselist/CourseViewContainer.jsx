@@ -94,10 +94,9 @@ class CourseViewContainer extends Component {
     location: PropTypes.object.isRequired,
   };
 
-  static loadData = (match, req) => {
+  static loadData = (match) => {
     const { subject, catalogNumber } = match.params;
-    const baseUrl = `${req.protocol}://${req.get('Host')}`;
-    return getCourseMetadata(subject, catalogNumber, baseUrl);
+    return getCourseMetadata(subject, catalogNumber);
   };
 
   constructor(props) {
@@ -108,7 +107,7 @@ class CourseViewContainer extends Component {
     this.state = {
       subject: subject.toUpperCase(),
       catalogNumber,
-      term: process.env.REACT_APP_CURRENT_TERM,
+      term: process.env.REACT_APP_CURRENT_TERM || process.env.CURRENT_TERM,
       admURL: '',
       error: false,
       classModalOpen: false,

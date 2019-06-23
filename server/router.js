@@ -18,6 +18,9 @@ router.use('/server', require('./routes'));
 
 // All remaining requests return the React app, so it can handle routing.
 router.use('*', function(req, res) {
+  // TODO: Find out why [object%20object] is replacing the last parameter
+  if (req.originalUrl.includes('object%20')) return res.send();
+
   fs.readFile(path.resolve('./react-ui/build/index.html'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -25,13 +28,16 @@ router.use('*', function(req, res) {
     }
 
     const context = {};
-    const store = createStore(reducers, applyMiddleware(apiMiddleware));
+    const store = createStore(reducers, undefined, applyMiddleware(apiMiddleware));
 
     // Determine what data is needed to be pre-fetched
     const dataToFetch = [];
 
     // Set cookies
     global.cookie = req.cookies;
+
+    // Set base url
+    global.baseUrl = `${req.protocol}://${req.get('Host')}`;
 
     // Check if user is logged in
     if (req.cookies.watsmymajor_jwt != null) {
@@ -44,17 +50,17 @@ router.use('*', function(req, res) {
 
       // If component has loadData property, dispatch the data requirement
       if (match && 'loadData' in route.component) {
-        dataToFetch.push(store.dispatch(route.component.loadData(match, req)));
+        dataToFetch.push(store.dispatch(route.component.loadData(match)));
       }
       return match;
     });
 
     // Render HTML
     Promise.all(dataToFetch).then(() => {
-      const jsx = (
+      const jsx = renderToString(
         <StaticWrapper
           store={ store }
-          location={ req.url }
+          location={ req.originalUrl }
           context={ context }
         />
       );
@@ -72,7 +78,7 @@ router.use('*', function(req, res) {
             )
             .replace(
               '<div id="root"></div>',
-              `<div id="root">${ renderToString(jsx) }</div>
+              `<div id="root">${ jsx }</div>
                <script>window.REDUX_DATA = ${ JSON.stringify(store.getState()) }</script>`
             )
         );

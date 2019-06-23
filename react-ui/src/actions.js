@@ -37,6 +37,8 @@ export const UPDATE_COURSE_CLASSES = 'UPDATE_COURSE_CLASSES';
 // For prefetching data
 export const UPDATE_COURSE_METADATA = 'UPDATE_COURSE_METADATA';
 
+const padBaseUrl = (url) => `${global.baseUrl || ''}${url}`;
+
 /*
  * action creators
  */
@@ -51,7 +53,7 @@ export const setUser = (username, user) => ({
 
 export const loginUser = () => ({
   [RSAA]: {
-    endpoint: '/server/users/login',
+    endpoint: padBaseUrl('/server/users/login'),
     method: 'GET',
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
@@ -299,9 +301,9 @@ export const deleteAccount = (username) => ({
   }
 });
 
-export const getCourseMetadata = (subject, catalogNumber, baseUrl = '') => ({
+export const getCourseMetadata = (subject, catalogNumber) => ({
   [RSAA]: {
-    endpoint: `${baseUrl}/server/courses/info/${subject}/${catalogNumber}`,
+    endpoint: padBaseUrl(`/server/courses/info/${subject}/${catalogNumber}`),
     method: 'GET',
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,

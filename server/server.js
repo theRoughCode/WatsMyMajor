@@ -38,7 +38,7 @@ require('./core/passport');
 app.use(passport.initialize());
 
 // Priority serve any static files.
-app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+app.use('/static', express.static(path.join(__dirname, '../react-ui/build/static')));
 
 // Configure Raven for logging to Sentry
 Raven.config(process.env.SENTRY_DSN).install();

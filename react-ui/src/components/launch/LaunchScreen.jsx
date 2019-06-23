@@ -153,6 +153,8 @@ LaunchIcon.propTypes = {
   alt: PropTypes.string.isRequired,
 };
 
+const getImage = (img) => (typeof img === 'object') ? '' : img;
+
 export default class LaunchScreen extends Component {
   static propTypes = {
     history: PropTypes.object.isRequired,
@@ -184,25 +186,25 @@ export default class LaunchScreen extends Component {
                     <LaunchIcon
                       url="../schedule"
                       text="Schedule Courses"
-                      icon={ CalendarIcon }
+                      icon={ getImage(CalendarIcon) }
                       alt="Schedule"
                     />
                     <LaunchIcon
                       url="../majors"
                       text="Track Majors"
-                      icon={ MortarBoardIcon }
+                      icon={ getImage(MortarBoardIcon) }
                       alt="Majors"
                     />
                     <LaunchIcon
                       url="../courses/browse"
                       text="Browse Courses"
-                      icon={ SearchIcon }
+                      icon={ getImage(SearchIcon) }
                       alt="Browse"
                     />
                     <LaunchIcon
                       url="../courses/browse"
                       text="Watch Classes"
-                      icon={ WatchingIcon }
+                      icon={ getImage(WatchingIcon) }
                       alt="Watch Classes"
                     />
                   </div>
