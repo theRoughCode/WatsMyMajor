@@ -91,83 +91,86 @@ const CourseContent = ({
 
   return (
     <MediaQuery minWidth={ 400 }>
-      { matches => (
-        <div style={ styles.courseContent(!matches) }>
-          <Helmet>
-            <title>{ pageTitle }</title>
-            <meta name="description" content={ pageDescription } />
-            <meta name="keywords" content={ pageKeywords } />
-            <meta property="og:url"           content={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` } />
-            <meta property="og:type"          content="website" />
-            <meta property="og:title"         content={ pageTitle } />
-            <meta property="og:description"   content={ pageDescription } />
-            <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png" />
-          </Helmet>
-          <CourseHeader
-            subject={ subject }
-            catalogNumber={ catalogNumber }
-            title={ title }
-            rating={ rating }
-            url={ url }
-            terms={ terms }
-            addToCartHandler={ addToCartHandler }
-            removeFromCartHandler={ removeFromCartHandler }
-            taken={ taken }
-            inCart={ inCart }
-            eligible={ eligible }
-          />
-          <div style={ styles.bodyContainer }>
-            <div style={ styles.rightContainer }>
-              <CourseDescription
-                subject={ subject }
-                catalogNumber={ catalogNumber }
-                description={ description }
-                crosslistings={ crosslistings }
-                antireqs={ antireqs }
-                coreqs={ coreqs }
-                prereqs={ prereqs }
-                postreqs={ postreqs }
-              />
-              {
-                classes.length > 0 && (
-                  <CourseClassList
-                    expandClass={ expandClass }
-                    term={ term }
-                    classes={ classes }
-                  />
-                )
-              }
-            </div>
-            <div style={ styles.leftContainer(!matches) }>
-              {
-                Object.keys(prereqs).length > 0 && (
-                  <Link to={ `/courses/${subject}/${catalogNumber}/tree/prereqs` }>
-                    <RaisedButton
-                      label="View Requisites Tree"
-                      style={ styles.treeButton }
+      { matches => {
+        const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+        return (
+          <div style={ styles.courseContent(isMobile) }>
+            <Helmet>
+              <title>{ pageTitle }</title>
+              <meta name="description" content={ pageDescription } />
+              <meta name="keywords" content={ pageKeywords } />
+              <meta property="og:url"           content={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` } />
+              <meta property="og:type"          content="website" />
+              <meta property="og:title"         content={ pageTitle } />
+              <meta property="og:description"   content={ pageDescription } />
+              <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png" />
+            </Helmet>
+            <CourseHeader
+              subject={ subject }
+              catalogNumber={ catalogNumber }
+              title={ title }
+              rating={ rating }
+              url={ url }
+              terms={ terms }
+              addToCartHandler={ addToCartHandler }
+              removeFromCartHandler={ removeFromCartHandler }
+              taken={ taken }
+              inCart={ inCart }
+              eligible={ eligible }
+            />
+            <div style={ styles.bodyContainer }>
+              <div style={ styles.rightContainer }>
+                <CourseDescription
+                  subject={ subject }
+                  catalogNumber={ catalogNumber }
+                  description={ description }
+                  crosslistings={ crosslistings }
+                  antireqs={ antireqs }
+                  coreqs={ coreqs }
+                  prereqs={ prereqs }
+                  postreqs={ postreqs }
+                />
+                {
+                  classes.length > 0 && (
+                    <CourseClassList
+                      expandClass={ expandClass }
+                      term={ term }
+                      classes={ classes }
                     />
-                  </Link>
-                )
-              }
-              <CourseRequisites
-                antireqs={ antireqs }
-                coreqs={ coreqs }
-                prereqs={ prereqs }
-                postreqs={ postreqs }
-              />
+                  )
+                }
+              </div>
+              <div style={ styles.leftContainer(isMobile) }>
+                {
+                  Object.keys(prereqs).length > 0 && (
+                    <Link to={ `/courses/${subject}/${catalogNumber}/tree/prereqs` }>
+                      <RaisedButton
+                        label="View Requisites Tree"
+                        style={ styles.treeButton }
+                      />
+                    </Link>
+                  )
+                }
+                <CourseRequisites
+                  antireqs={ antireqs }
+                  coreqs={ coreqs }
+                  prereqs={ prereqs }
+                  postreqs={ postreqs }
+                />
+              </div>
             </div>
+            <div
+              className="fb-like"
+              style={ styles.fbLikeContainer }
+              data-href={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` }
+              data-layout="standard"
+              data-action="like"
+              data-share="true"
+              data-show-faces="true"
+            />
           </div>
-          <div
-            className="fb-like"
-            style={ styles.fbLikeContainer }
-            data-href={ `https://www.watsmymajor.com/courses/${subject}/${catalogNumber}` }
-            data-layout="standard"
-            data-action="like"
-            data-share="true"
-            data-show-faces="true"
-          />
-        </div>
-      ) }
+        )
+      } }
     </MediaQuery>
   );
 };

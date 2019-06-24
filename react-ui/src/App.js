@@ -126,9 +126,6 @@ class App extends Component {
   handleRouteChange({ pathname }) {
     const pathArr = pathname.split("/").slice(1);
     switch (pathArr[0]) {
-    case "majors": // View majors
-      document.title = "View Majors - WatsMyMajor";
-      break;
     case "my-courses": // My courses
       document.title = "My Courses - WatsMyMajor";
       break;
@@ -139,7 +136,6 @@ class App extends Component {
       this.setState({ sideBarOpen: false });
       // falls through
     default:
-      document.title = "WatsMyMajor - University of Waterloo Course Planner";
     }
   }
 
@@ -178,56 +174,59 @@ class App extends Component {
 
     return (
       <MediaQuery minWidth={ 475 }>
-        { matches => (
-          <div className="App">
-            <Helmet>
-              <title>WatsMyMajor</title>
-              <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
-              This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
-              <meta name="keywords" content="uw, uwaterloo, watsmymajor, course, cs, cs246" />
-              <meta property="og:url"           content="https://www.watsmymajor.com" />
-              <meta property="og:type"          content="website" />
-              <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
-              <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
-              <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
-            </Helmet>
-            <AppBar
-              toggleSideBar={ this.onToggleSideBar }
-              onLogout={ this.onLogout }
-              isLoggedIn={ this.state.isLoggedIn }
-            />
-            <SideBar open={ this.state.sideBarOpen } />
-            <div style={ newStyles(!matches) }>
-              <Switch>
-                <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
-                <Route path='/privacy-policy' component={ PrivacyPolicy } />
-                <Route path='/welcome' render={ this.addUndirect(LaunchScreen) } />
-                <Route path='/register' render={ this.addUndirect(Register) } />
-                <Route path='/login' render={ this.addUndirect(Login) } />
-                <Route path='/forgot-password' render={ this.addUndirect(ForgotPassword) } />
-                <Route path='/reset-password' render={ this.addUndirect(ResetPassword) } />
-                <Route path='/verify-email' component={ VerifyEmail } />
-                <Route path='/unwatch-class' component={ UnwatchedClass } />
-                <Route path='/settings' render={ this.addRedirect(Settings) } />
-                <Route path='/majors/:faculty?/:majorKey?' component={ Majors } />
-                <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
-                <Route path='/my-schedule/:term?' render={ this.addRedirect(MyScheduleView) } />
-                <Route path='/schedule/:username/:term?' component={ MyScheduleView } />
-                <Route path='/courses/browse' component={ BrowseCourseView } />
-                <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
-              </Switch>
+        { matches => {
+          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+          return (
+            <div className="App">
+              <Helmet>
+                <title>WatsMyMajor - University of Waterloo Course Planner</title>
+                <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
+                This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
+                <meta name="keywords" content="uw, uwaterloo, watsmymajor, course, cs, cs246" />
+                <meta property="og:url"           content="https://www.watsmymajor.com" />
+                <meta property="og:type"          content="website" />
+                <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
+                <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
+                <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
+              </Helmet>
+              <AppBar
+                toggleSideBar={ this.onToggleSideBar }
+                onLogout={ this.onLogout }
+                isLoggedIn={ this.state.isLoggedIn }
+              />
+              <SideBar open={ this.state.sideBarOpen } />
+              <div style={ newStyles(isMobile) }>
+                <Switch>
+                  <Route exact path='/' render={ this.addRedirect(Dashboard, '/welcome') } />
+                  <Route path='/privacy-policy' component={ PrivacyPolicy } />
+                  <Route path='/welcome' render={ this.addUndirect(LaunchScreen) } />
+                  <Route path='/register' render={ this.addUndirect(Register) } />
+                  <Route path='/login' render={ this.addUndirect(Login) } />
+                  <Route path='/forgot-password' render={ this.addUndirect(ForgotPassword) } />
+                  <Route path='/reset-password' render={ this.addUndirect(ResetPassword) } />
+                  <Route path='/verify-email' component={ VerifyEmail } />
+                  <Route path='/unwatch-class' component={ UnwatchedClass } />
+                  <Route path='/settings' render={ this.addRedirect(Settings) } />
+                  <Route path='/majors/:faculty?/:majorKey?' component={ Majors } />
+                  <Route path='/my-courses' render={ this.addRedirect(MyCourseView) } />
+                  <Route path='/my-schedule/:term?' render={ this.addRedirect(MyScheduleView) } />
+                  <Route path='/schedule/:username/:term?' component={ MyScheduleView } />
+                  <Route path='/courses/browse' component={ BrowseCourseView } />
+                  <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
+                </Switch>
+              </div>
+              <ToastContainer />
+              <Snackbar
+                open={ this.state.snackOpen }
+                message={ this.state.snack.msg }
+                action={ this.state.snack.actionMsg }
+                autoHideDuration={ this.state.snackAutoHideDuration }
+                onActionClick={ this.handleActionClick }
+                onRequestClose={ this.handleRequestClose }
+              />
             </div>
-            <ToastContainer />
-            <Snackbar
-              open={ this.state.snackOpen }
-              message={ this.state.snack.msg }
-              action={ this.state.snack.actionMsg }
-              autoHideDuration={ this.state.snackAutoHideDuration }
-              onActionClick={ this.handleActionClick }
-              onRequestClose={ this.handleRequestClose }
-            />
-          </div>
-        ) }
+          );
+        } }
       </MediaQuery>
     );
   }

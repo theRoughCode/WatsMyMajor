@@ -97,39 +97,42 @@ const CourseHeader = ({
 
   return (
     <MediaQuery minWidth={ 600 }>
-      { matches => (
-        <div style={ styles.container }>
-          <div style={ styles.leftContainer }>
-            <div className="course-code" style={ styles.courseCodeContainer }>
-              <h1 style={ styles.courseCode }>{ subject } { catalogNumber }</h1>
-              <CourseRatings
-                avgRating={ rating.avgRating }
-                numRatings={ rating.numRatings }
-                subject={ subject }
-                catalogNumber={ catalogNumber }
-              />
-            </div>
-            <a href={ url } className="course-header-title">{ title }</a>
-            {
-              takeStatus && (
-                <div style={ styles.taken } >
-                  <CheckIcon style={{ marginRight: 5 }} />
-                  <span>{ takeStatus }</span>
-                </div>
-              )
-            }
-          </div>
-          <div style={ styles.rightContainer }>
-            {terms.length > 0 && (
-              <div style={ styles.terms }>
-                <span style={{ margin: 'auto' }}>Offered in: &nbsp;</span>
-                <span style={{ margin: 'auto' }}>{ terms.join(', ') }</span>
+      { matches => {
+        const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+        return (
+          <div style={ styles.container }>
+            <div style={ styles.leftContainer }>
+              <div className="course-code" style={ styles.courseCodeContainer }>
+                <h1 style={ styles.courseCode }>{ subject } { catalogNumber }</h1>
+                <CourseRatings
+                  avgRating={ rating.avgRating }
+                  numRatings={ rating.numRatings }
+                  subject={ subject }
+                  catalogNumber={ catalogNumber }
+                />
               </div>
-            )}
-            { cartButton(!matches) }
+              <a href={ url } className="course-header-title">{ title }</a>
+              {
+                takeStatus && (
+                  <div style={ styles.taken } >
+                    <CheckIcon style={{ marginRight: 5 }} />
+                    <span>{ takeStatus }</span>
+                  </div>
+                )
+              }
+            </div>
+            <div style={ styles.rightContainer }>
+              {terms.length > 0 && (
+                <div style={ styles.terms }>
+                  <span style={{ margin: 'auto' }}>Offered in: &nbsp;</span>
+                  <span style={{ margin: 'auto' }}>{ terms.join(', ') }</span>
+                </div>
+              )}
+              { cartButton(isMobile) }
+            </div>
           </div>
-        </div>
-      ) }
+        );
+      } }
     </MediaQuery>
   );
 };

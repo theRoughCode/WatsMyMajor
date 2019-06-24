@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import ChooseBoard from './ChooseBoard';
 import SelectScreen from './SelectScreen';
 import MajorsAppBar from './MajorsAppBar';
@@ -218,6 +219,17 @@ class MajorsContainer extends Component {
     } else {
       return (
         <div style={ styles.container }>
+          <Helmet>
+            <title>View Majors - WatsMyMajor</title>
+            <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
+            This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
+            <meta name="keywords" content="majors, minors, options, uw, uwaterloo, watsmymajor" />
+            <meta property="og:url"           content="https://www.watsmymajor.com/majors" />
+            <meta property="og:type"          content="website" />
+            <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
+            <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
+            <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
+          </Helmet>
           <MajorsAppBar
             majorName={ name }
             majorKey={ key }

@@ -10,6 +10,7 @@ import { loginUser } from 'actions';
 import reducers from 'reducers';
 
 const router = require('express').Router();
+const MobileDetect = require('mobile-detect');
 const path = require('path');
 const fs = require('fs');
 
@@ -18,9 +19,6 @@ router.use('/server', require('./routes'));
 
 // All remaining requests return the React app, so it can handle routing.
 router.use('*', function(req, res) {
-  // TODO: Find out why [object%20object] is replacing the last parameter
-  if (req.originalUrl.includes('object%20')) return res.send();
-
   fs.readFile(path.resolve('./react-ui/build/index.html'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -38,6 +36,10 @@ router.use('*', function(req, res) {
 
     // Set base url
     global.baseUrl = `${req.protocol}://${req.get('Host')}`;
+
+    // Check if mobile
+    const md = new MobileDetect(req.headers['user-agent']);
+    global.isMobile = !!md.mobile();
 
     // Check if user is logged in
     if (req.cookies.watsmymajor_jwt != null) {
