@@ -13,8 +13,12 @@ const { reqsRef } = require('./index');
     }
 */
 
-// Remove alphanumeric symbols from catalog number because UW API is bad
-const removeAlphaNumeric = course => course.catalogNumber = course.catalogNumber.replace(/[^a-z0-9+]+/gi, '');
+// Remove non-alphanumeric symbols from catalog number because UW API is bad
+const removeAlphaNumeric = course => {
+  if (course.hasOwnProperty('catalogNumber')) {
+    course.catalogNumber = course.catalogNumber.replace(/[^a-z0-9+]+/gi, '')
+  }
+};
 
 
 /****************************

@@ -96,7 +96,12 @@ const createURL = (subject, catalogNumber, term) => {
 const formatInstructor = (instructor) => {
   if (instructor == null) return '';
   const [lastName, firstName] = instructor.split(',');
-  return `${firstName} ${lastName}`;
+  const nameArr = (firstName == null)
+    ? instructor.split(' ')
+    : `${firstName} ${lastName}`.split(' ');
+  nameArr.splice(1, nameArr.length - 2);
+  const name = nameArr.join(' ');
+  return name;
 }
 
 // Format time string into:
