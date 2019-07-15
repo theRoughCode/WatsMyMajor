@@ -328,8 +328,8 @@ async function updateTermProfClasses(term) {
   });
 }
 
-// Update all profs
-async function updateAllProfs() {
+// Update all profs for all terms
+async function updateAllProfClasses() {
   let term = 1159;
   const maxTerm = process.env.CURRENT_TERM;
   try {
@@ -495,7 +495,7 @@ module.exports = {
   updateLatestClasses,
   updateProfClasses,
   updateTermProfClasses,
-  updateAllProfs,
+  updateAllProfClasses,
   updateProfRmp,
   updateAllProfsRmp,
 };

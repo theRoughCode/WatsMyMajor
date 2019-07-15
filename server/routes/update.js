@@ -59,7 +59,7 @@ UpdateRouter.get('/classes/:term/:subject/:catalogNumber', async function(req, r
 // Updates professors for all courses across all terms
 UpdateRouter.get('/profs/all', async function(req, res) {
   req.setTimeout(0); // disables timeout
-  const err = await update.updateAllProfs();
+  const err = await update.updateAllProfClasses();
   if (err) res.send({ success: false, err });
   else res.send({ success: true, err: null });
 });

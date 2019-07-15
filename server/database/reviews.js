@@ -3,19 +3,25 @@ const profReviewsRef = reviewsRef.child('profs');
 const courseReviewsRef = reviewsRef.child('courses');
 
 /*
-review schema:
+reviewSchema:
 {
   subject,
   catalogNumber,
   date,
-  overallScore,
+  rating,
   difficulty,
-  isMandatory,
+  isMandatory,  // attendance
   textbookUsed,
   grade,
   comments,
-  numThumbsUp,
-  numThumbsDown,
+  numThumbsUp (rmp),
+  numThumbsDown (rmp),
+  votes: votesSchema (wmm)
+}
+
+votesSchema:
+{
+  userId: -1,1
 }
 
 {
@@ -50,6 +56,16 @@ function setRmpReview(profName, review) {
     .set(review);
 }
 
+async function addProfReview(profName,username, review) {
+  const snapshot = await profReviewsRef
+    .child(`${profName.replace(/(\s|\.)/g, '')}`)
+    .once('value');
+  if (!snapshot.exists()) return null;
+  return profReviewsRef
+    .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${username}`)
+    .set(review);
+}
+
 /****************************
  *                          *
  *      G E T T E R S       *
@@ -59,7 +75,7 @@ function setRmpReview(profName, review) {
 async function getRmpReviewIds(prof) {
   try {
     const snapshot = await profReviewsRef
-      .child(`${prof.replace(/\s/g, '')}/rmp`)
+      .child(`${prof.replace(/(\s|\.)/g, '')}/rmp`)
       .once('value');
     const reviews = await snapshot.val() || [];
     return { err: null, reviewIds: Object.keys(reviews) };
@@ -72,7 +88,7 @@ async function getRmpReviewIds(prof) {
 async function getProfReviews(prof) {
   try {
     const snapshot = await profReviewsRef
-      .child(prof.replace(/\s/g, ''))
+      .child(prof.replace(/(\s|\.)/g, ''))
       .once('value');
     const reviews = await snapshot.val() || [];
     return { err: null, reviews };
@@ -84,6 +100,7 @@ async function getProfReviews(prof) {
 
 module.exports = {
   setRmpReview,
+  addProfReview,
   getRmpReviewIds,
   getProfReviews,
 };

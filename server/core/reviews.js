@@ -1,6 +1,35 @@
 const profsDB = require('../database/profs');
 const reviewsDB = require('../database/reviews');
 
+async function addProfReview(profName, username, review) {
+  let err = null;
+  if (profName == null) err = 'Invalid prof name';
+  if (username == null) err = 'Invalid username';
+  if (review == null) err = 'Invalid review';
+  if (err) return err;
+
+  const today = new Date();
+  let dd = today.getDate();
+  if (dd < 10) dd = '0' + dd;
+  let mm = today.getMonth() + 1;
+  if (mm < 10) mm = '0' + mm;
+  const yy = today.getFullYear();
+  const date = `${mm}/${dd}/${yy}`;
+
+  if (review.grade == null || review.grade.length === 0) review.grade = 'N/A';
+  else review.grade = review.grade.toString();
+  review.date = date;
+  review.votes = {};
+
+  try {
+    await reviewsDB.addProfReview(profName, username, review);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
 async function getProfInfo(profName) {
   let { err, prof } = await profsDB.getProf(profName);
   if (err || prof == null) return { err, info: null };
@@ -14,6 +43,7 @@ async function getProfReviews(profName) {
 }
 
 module.exports = {
+  addProfReview,
   getProfInfo,
   getProfReviews,
 };

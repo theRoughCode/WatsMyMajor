@@ -19,19 +19,24 @@ const { profsRef } = require('./index');
  *                          *
  ****************************/
 
+// Sets classes for prof
 async function setProfClasses(prof, subject, catalogNumber, term) {
   const profRef = profsRef.child(`${prof.replace(/(\s|\.)/g, '')}`);
-  await profRef.child('name').set(prof);
-  await profRef
-    .child(`courses/${subject.toUpperCase()}/${catalogNumber}/${term}`)
-    .set(true);
+  try {
+    await profRef.child('name').set(prof);
+    await profRef
+      .child(`courses/${subject.toUpperCase()}/${catalogNumber}/${term}`)
+      .set(true);
+    return null;
+  } catch (err) {
+    return err;
+  }
 }
 
 
-// TODO: Remove rating, difficulty, numratings (add on instead)
-function setRMP(prof, rmpURL, tags, rating, difficulty, numRatings) {
+function setRMP(prof, rmpURL, tags) {
   const profRef = profsRef.child(prof.replace(/(\s|\.)/g, ''));
-  return profRef.update({ rmpURL, tags, rating, difficulty, numRatings });
+  return profRef.update({ rmpURL, tags });
 }
 
 /****************************

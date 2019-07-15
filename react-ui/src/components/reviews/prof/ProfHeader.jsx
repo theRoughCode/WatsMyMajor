@@ -2,19 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
 import Chip from 'material-ui/Chip';
+import { Link } from 'react-router-dom';
 import { Line } from 'rc-progress';
 import ProfRatings from './ProfRatings';
 import { lightGreen2, red, yellow, grey } from 'constants/Colours';
 
 const styles = {
-  container: (isMobile) => ({
+  container: {
     borderBottom: '1px solid #dbdbdb',
-    flexDirection: (isMobile) ? 'column' : 'row',
+    flexDirection:'column',
     textAlign: 'left',
     width: '100%',
     display: 'flex',
     flexWrap: 'wrap',
     paddingBottom: 10,
+  },
+  upperContainer: (isMobile) => ({
+    flexDirection: (isMobile) ? 'column' : 'row',
+    textAlign: 'left',
+    width: '100%',
+    display: 'flex',
+    flexWrap: 'wrap',
   }),
   leftContainer: (isMobile) => ({
     display: 'flex',
@@ -36,6 +44,13 @@ const styles = {
     whiteSpace: 'nowrap',
     color,
   }),
+  coursesDiv: {
+    marginTop: 10,
+  },
+  courseTitle: {
+    fontSize: 12,
+    marginRight: 7,
+  },
   rightContainer: (isMobile) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -73,6 +88,7 @@ const styles = {
 
 const ProfHeader = ({
   profName,
+  courses,
   rating,
   difficulty,
   numRatings,
@@ -86,64 +102,82 @@ const ProfHeader = ({
       ? yellow
       : lightGreen2;
 
-  if (numRatings === 0) return (
-    <MediaQuery minWidth={ 650 }>
-      { matches => {
-        const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
-        return (
-          <div style={ styles.container(isMobile) }>
-            <div style={ styles.leftContainer(isMobile) }>
-              <h1 style={ styles.name }>{ profName }</h1>
+  const upperContainer = (isMobile) => (numRatings === 0)
+    ? (
+      <div style={ styles.upperContainer(isMobile) }>
+        <div style={ styles.leftContainer(isMobile) }>
+          <h1 style={ styles.name }>{ profName }</h1>
+        </div>
+        <div style={ styles.rightContainer(isMobile) }>
+          <span style={ styles.noRatings }>No ratings yet</span>
+        </div>
+      </div>
+    )
+    : (
+      <div style={ styles.upperContainer(isMobile) }>
+        <div style={ styles.leftContainer(isMobile) }>
+          <h1 style={ styles.name }>{ profName }</h1>
+          <ProfRatings rating={ rating } numRatings={ numRatings } />
+        </div>
+        <div style={ styles.rightContainer(isMobile) }>
+          <div>
+            <div style={ styles.difficulty }>
+              <span style={{ fontSize: 20 }}>Difficulty:</span>
+              <Line
+                style={ styles.progress }
+                strokeWidth="8"
+                strokeColor={ barColour }
+                trailWidth="8"
+                percent={ `${percentage}` }
+              />
+              { !isMobile && (
+                <span style={ styles.rating(barColour) }>{ difficulty }</span>
+              ) }
             </div>
-            <div style={ styles.rightContainer(isMobile) }>
-              <span style={ styles.noRatings }>No ratings yet</span>
+            <div style={{ display: 'flex' }}>
+              <div style={ styles.ratingTags }>
+                { tags.map((tag, index) => (
+                  <Chip
+                    style={ styles.chip }
+                    labelStyle={ styles.chipLabel }
+                    key={ index }
+                  >
+                    { tag }
+                  </Chip>
+                )) }
+              </div>
             </div>
           </div>
-        );
-      } }
-    </MediaQuery>
-  );
+        </div>
+      </div>
+    );
 
   return (
     <MediaQuery minWidth={ 650 }>
       { matches => {
         const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
         return (
-          <div style={ styles.container(isMobile) }>
-            <div style={ styles.leftContainer(isMobile) }>
-              <h1 style={ styles.name }>{ profName }</h1>
-              <ProfRatings rating={ rating } numRatings={ numRatings } />
-            </div>
-            <div style={ styles.rightContainer(isMobile) }>
-              <div>
-                <div style={ styles.difficulty }>
-                  <span style={{ fontSize: 20 }}>Difficulty:</span>
-                  <Line
-                    style={ styles.progress }
-                    strokeWidth="8"
-                    strokeColor={ barColour }
-                    trailWidth="8"
-                    percent={ `${percentage}` }
-                  />
-                  { !isMobile && (
-                    <span style={ styles.rating(barColour) }>{ difficulty }</span>
-                  ) }
+          <div style={ styles.container }>
+            { upperContainer(isMobile) }
+            {
+              courses.length > 0 && (
+                <div style={ styles.coursesDiv }>
+                  <span style={{ fontSize: 12, marginRight: 7 }}>Courses taught:</span>
+                  {
+                    courses.map(({ subject, catalogNumber }, i) => {
+                      const course = (i < courses.length - 1)
+                        ? `${subject} ${catalogNumber}, `
+                        : `${subject} ${catalogNumber}`;
+                      return (
+                        <Link key={ i } to={ `/courses/${subject}/${catalogNumber}` }>
+                          <span style={ styles.courseTitle }>{ course }</span>
+                        </Link>
+                      );
+                    })
+                  }
                 </div>
-                <div style={{ display: 'flex' }}>
-                  <div style={ styles.ratingTags }>
-                    { tags.map((tag, index) => (
-                      <Chip
-                        style={ styles.chip }
-                        labelStyle={ styles.chipLabel }
-                        key={ index }
-                      >
-                        { tag }
-                      </Chip>
-                    )) }
-                  </div>
-                </div>
-              </div>
-            </div>
+              )
+            }
           </div>
         );
       } }
@@ -153,6 +187,7 @@ const ProfHeader = ({
 
 ProfHeader.propTypes = {
   profName: PropTypes.string.isRequired,
+  courses: PropTypes.array.isRequired,
   rating: PropTypes.number.isRequired,
   difficulty: PropTypes.number.isRequired,
   numRatings: PropTypes.number.isRequired,

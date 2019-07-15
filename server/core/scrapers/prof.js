@@ -45,15 +45,15 @@ async function getRmpInfo(name) {
     const ratingDiv = $(el).find('.rating');
     const date = $(ratingDiv).find('.date').text();
     const breakdown = $(ratingDiv).find('.breakdown');
-    let overallScore = 0;
+    let rating = 0;
     let difficulty = 0;
     $(breakdown).find('.score').each((i, score) => {
-      if (i === 0) overallScore = Number($(score).text());
+      if (i === 0) rating = Number($(score).text());
       else difficulty = Number($(score).text());
     });
 
     // If empty, ignore
-    if (!overallScore || !id) return;
+    if (!rating || !id) return;
 
 
     const classDiv = $(el).find('.class');
@@ -75,7 +75,7 @@ async function getRmpInfo(name) {
       subject,
       catalogNumber,
       date,
-      overallScore,
+      rating,
       difficulty,
       isMandatory,
       textbookUsed,
