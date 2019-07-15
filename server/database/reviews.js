@@ -56,14 +56,16 @@ function setRmpReview(profName, review) {
     .set(review);
 }
 
-async function addProfReview(profName,username, review) {
-  const snapshot = await profReviewsRef
-    .child(`${profName.replace(/(\s|\.)/g, '')}`)
-    .once('value');
-  if (!snapshot.exists()) return null;
+async function addProfReview(profName, username, review) {
   return profReviewsRef
     .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${username}`)
     .set(review);
+}
+
+async function addVote(profName, id, username, vote) {
+  return profReviewsRef
+    .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${id}/votes/${username}`)
+    .set(vote);
 }
 
 /****************************
@@ -101,6 +103,7 @@ async function getProfReviews(prof) {
 module.exports = {
   setRmpReview,
   addProfReview,
+  addVote,
   getRmpReviewIds,
   getProfReviews,
 };

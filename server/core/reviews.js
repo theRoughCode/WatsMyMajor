@@ -16,13 +16,30 @@ async function addProfReview(profName, username, review) {
   const yy = today.getFullYear();
   const date = `${mm}/${dd}/${yy}`;
 
-  if (review.grade == null || review.grade.length === 0) review.grade = 'N/A';
-  else review.grade = review.grade.toString();
+  if (review.grade != null && review.grade.length === 0) review.grade = null;
+  else if (review.grade != null) review.grade = review.grade.toString();
   review.date = date;
   review.votes = {};
 
   try {
     await reviewsDB.addProfReview(profName, username, review);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
+async function addProfReviewVote(profName, id, username, vote) {
+  let err = null;
+  if (profName == null) err = 'Invalid prof name';
+  if (id == null) err = 'Invalid id';
+  if (username == null) err = 'Invalid username';
+  if (vote == null) err = 'Invalid vote';
+  if (err) return err;
+
+  try {
+    await reviewsDB.addVote(profName, id, username, vote);
     return null;
   } catch (err) {
     console.error(err);
@@ -44,6 +61,7 @@ async function getProfReviews(profName) {
 
 module.exports = {
   addProfReview,
+  addProfReviewVote,
   getProfInfo,
   getProfReviews,
 };

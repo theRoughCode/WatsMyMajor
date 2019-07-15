@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -27,6 +28,10 @@ const styles = {
     maxWidth: 800,
   },
   helpText: {
+    color: grey,
+  },
+  login: {
+    margin: '10px auto',
     color: grey,
   },
   sortContainer: {
@@ -91,11 +96,27 @@ const addProfReview = async (profName, review) => {
   return response.ok;
 }
 
+// Adds prof review vote. Returns true if successful
+const addVote = async (profName, data) => {
+  const response = await fetch(`/server/prof/reviews/${profName}/vote`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      'Content-Type': 'application/json',
+    }
+  });
+  return response.ok;
+}
+
 
 class ProfViewContainer extends Component {
 
   static propTypes = {
     match: PropTypes.object.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
+    username: PropTypes.string.isRequired,
+    location: PropTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -124,12 +145,7 @@ class ProfViewContainer extends Component {
       this.setState({ error: true, loading: false });
       return;
     }
-    let {
-      name,
-      courses,
-      tags,
-      rmpURL
-    } = info;
+    let { name, courses, tags, rmpURL } = info;
     this.setState({
       profName: name,
       courses: courses || [],
@@ -165,11 +181,13 @@ class ProfViewContainer extends Component {
       });
       reviews.push(...rmpReviews);
     }
+
     // Add reviews from watsmymajor
     if (resp.hasOwnProperty('wmm')) {
       numRatings += Object.keys(resp.wmm).length;
       const wmmReviews = Object.keys(resp.wmm).map(id => {
         const review = resp.wmm[id];
+        review.id = id;
         totalRating += review.rating;
         if (review.difficulty != null) {
           totalDifficulty += review.difficulty;
@@ -205,6 +223,32 @@ class ProfViewContainer extends Component {
     else this.updateReviews();
   }
 
+  onVote = (i) => async (vote) => {
+    const profId = this.props.match.params.profName;
+    const reviews = this.state.reviews.slice(0);
+    const id = this.state.reviews[i].id;
+
+    const prevVote = reviews[i].votes[this.props.username];
+    // If already voted, we unvote
+    if (prevVote != null && vote === prevVote) vote = 0;
+
+    const success = await addVote(profId, { id, vote });
+    if (!success) console.error('Failed');
+    else {
+      // Update review thumbs
+      reviews[i].votes[this.props.username] = vote;
+      let numThumbsUp = 0;
+      let numThumbsDown = 0;
+      for (let id in reviews[i].votes) {
+        if (reviews[i].votes[id] === 1) numThumbsUp++;
+        if (reviews[i].votes[id] === -1) numThumbsDown++;
+      }
+      reviews[i].numThumbsUp = numThumbsUp;
+      reviews[i].numThumbsDown = numThumbsDown;
+      this.setState({ reviews });
+    }
+  }
+
   render() {
     const {
       profName,
@@ -216,7 +260,7 @@ class ProfViewContainer extends Component {
       numRatings,
       rmpURL,
       error,
-      loading
+      loading,
     } = this.state;
     if (error) {
       return (
@@ -227,6 +271,16 @@ class ProfViewContainer extends Component {
       );
     }
 
+    let userReview = null;
+
+    // Check if user has reviewed this prof
+    for (let i = 0; i < reviews.length; i++) {
+      if (reviews[i].id === this.props.username) {
+        userReview = reviews[i];
+        break;
+      }
+    }
+
     const reviewsDiv = (loading)
       ? (
         <div style={{ width: '100%', height: '100%' }}>
@@ -235,35 +289,58 @@ class ProfViewContainer extends Component {
       )
       : (
         <div style={ styles.reviewContainer }>
-          { numRatings === 0 && (
-            <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
-          ) }
-          <WriteReview
-            profName={ profName }
-            courses={ courses }
-            onSubmit={ this.onSubmit }
-          />
-          { numRatings > 0 && (
-            <div style={ styles.sortContainer }>
-              <span style={{ marginRight: 7 }}>Sort By:</span>
-              <Select
-                style={{ color: purple, fontWeight: 400 }}
-                value={ this.state.sort }
-                onChange={ this.onChangeSort }
-                inputProps={{
-                  id: 'sort',
-                }}
-                autoWidth
-              >
-                <MenuItem value="New">New</MenuItem>
-                <MenuItem value="Old">Old</MenuItem>
-                <MenuItem value="Highest">Highest Rated</MenuItem>
-                <MenuItem value="Lowest">Lowest Rated</MenuItem>
-                <MenuItem value="Top">Top</MenuItem>
-                <MenuItem value="Controversial">Controversial</MenuItem>
-              </Select>
-            </div>
-          )}
+          {
+            (this.props.isLoggedIn)
+              ? (
+                <WriteReview
+                  profName={ profName }
+                  courses={ courses }
+                  onSubmit={ this.onSubmit }
+                  userReview={ userReview }
+                />
+              )
+              : (
+                <div style={ styles.login }>
+                  <span>
+                    <Link
+                      to={{
+                        pathname: '/login',
+                        state: {
+                          from: this.props.location.pathname,
+                        }
+                      }}
+                    >Login</Link> to write a review!
+                  </span>
+                </div>
+              )
+          }
+          {
+            (numRatings === 0)
+              ? (
+                <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
+              )
+              : (
+                <div style={ styles.sortContainer }>
+                  <span style={{ marginRight: 7 }}>Sort By:</span>
+                  <Select
+                    style={{ color: purple, fontWeight: 400 }}
+                    value={ this.state.sort }
+                    onChange={ this.onChangeSort }
+                    inputProps={{
+                      id: 'sort',
+                    }}
+                    autoWidth
+                  >
+                    <MenuItem value="New">New</MenuItem>
+                    <MenuItem value="Old">Old</MenuItem>
+                    <MenuItem value="Highest">Highest Rated</MenuItem>
+                    <MenuItem value="Lowest">Lowest Rated</MenuItem>
+                    <MenuItem value="Top">Top</MenuItem>
+                    <MenuItem value="Controversial">Controversial</MenuItem>
+                  </Select>
+                </div>
+              )
+          }
           {
             reviews.map(({
               subject,
@@ -293,6 +370,7 @@ class ProfViewContainer extends Component {
                 numThumbsUp={ numThumbsUp }
                 numThumbsDown={ numThumbsDown }
                 rmpURL={ rmpURL }
+                onVote={ this.onVote(i) }
               />
             ))
           }
@@ -326,4 +404,9 @@ class ProfViewContainer extends Component {
 
 }
 
-export default withRouter(ProfViewContainer);
+const mapStateToProps = ({ isLoggedIn, user }) => ({
+  isLoggedIn,
+  username: user.username,
+});
+
+export default withRouter(connect(mapStateToProps)(ProfViewContainer));

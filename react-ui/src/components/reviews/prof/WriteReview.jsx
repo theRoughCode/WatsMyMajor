@@ -16,6 +16,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
+import { objectEquals } from 'utils/arrays';
 import { white, purple, yellow, red } from 'constants/Colours';
 
 const styles = {
@@ -38,6 +39,16 @@ const styles = {
     color: white,
     float: 'right',
     marginRight: 7,
+  },
+  openBtn: {
+    backgroundColor: purple,
+    color: white,
+    float: 'right',
+  },
+  closeBtn: {
+    backgroundColor: red,
+    color: white,
+    float: 'right',
   },
   stars: {
     starRatedColor: yellow,
@@ -67,7 +78,7 @@ const styles = {
   }
 };
 
-const MAX_WORDS = 400;
+const MAX_WORDS = 500;
 
 export default class WriteReview extends Component {
 
@@ -75,6 +86,7 @@ export default class WriteReview extends Component {
     profName: PropTypes.string.isRequired,
     courses: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    userReview: PropTypes.object,
   };
 
   constructor(props) {
@@ -89,11 +101,59 @@ export default class WriteReview extends Component {
       course: '',
       difficulty: '',
       isMandatory: '',
-      textbookRequired: '',
+      textbookUsed: '',
       grade: '',
       gradeError: false,
+      visible: props.userReview == null,
     };
   }
+
+  componentDidMount() {
+    if (this.props.userReview != null) this.updateForm(this.props.userReview);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!objectEquals(this.props.userReview, nextProps.userReview)) {
+      this.updateForm(nextProps.userReview);
+    }
+  }
+
+  updateForm = (userReview) => {
+    const {
+      subject,
+      catalogNumber,
+      rating,
+      difficulty,
+      isMandatory,
+      textbookUsed,
+      grade,
+      comments,
+    } = userReview;
+
+    let course = '';
+
+    for (let i = 0; i < this.props.courses.length; i++) {
+      const c = this.props.courses[i];
+      if (subject === c.subject && catalogNumber === c.catalogNumber) {
+        course = i;
+        break;
+      }
+    }
+    this.setState({
+      rating: rating || 0,
+      review: comments || '',
+      course,
+      difficulty: difficulty || '',
+      isMandatory: (isMandatory == null) ? '' : (isMandatory) ? 'yes' : 'no',
+      textbookUsed: (textbookUsed == null) ? '' : (textbookUsed) ? 'yes' : 'no',
+      grade: grade || '',
+      visible: false,
+    });
+  }
+
+  openForm = () => this.setState({ visible: true });
+
+  closeForm = () => this.setState({ visible: false });
 
   changeRating = (rating) => this.setState({ rating, ratingError: false });
 
@@ -105,7 +165,7 @@ export default class WriteReview extends Component {
 
   changeMandatory = (ev) => this.setState({ isMandatory: ev.target.value });
 
-  changeTextbook = (ev) => this.setState({ textbookRequired: ev.target.value });
+  changeTextbook = (ev) => this.setState({ textbookUsed: ev.target.value });
 
   changeGrade = (ev) => this.setState({ grade: ev.target.value, gradeError: false });
 
@@ -124,7 +184,7 @@ export default class WriteReview extends Component {
         course,
         difficulty,
         isMandatory,
-        textbookRequired,
+        textbookUsed,
         grade,
       } = this.state;
       const reviewObj = {
@@ -133,11 +193,12 @@ export default class WriteReview extends Component {
         subject: (typeof course === 'number') ? this.props.courses[course].subject : null,
         catalogNumber: (typeof course === 'number') ? this.props.courses[course].catalogNumber : null,
         difficulty: difficulty || null,
-        isMandatory: isMandatory || null,
-        textbookRequired: textbookRequired || null,
+        isMandatory: (isMandatory == null) ? null : (isMandatory === 'yes') ? true : false,
+        textbookUsed: (textbookUsed == null) ? null : (textbookUsed === 'yes') ? true : false,
         grade: grade || null,
       };
       this.props.onSubmit(reviewObj);
+      this.setState({ visible: false });
     }
   }
 
@@ -156,7 +217,7 @@ export default class WriteReview extends Component {
       </div>
     );
 
-    return (
+    const form = (
       <form style={ styles.container } noValidate autoComplete="off">
         <div style={{ display: 'flex' }}>
           <FormControl style={ styles.courseField }>
@@ -187,6 +248,7 @@ export default class WriteReview extends Component {
           label="Leave a review"
           placeholder={ `What are your thoughts on ${this.props.profName}?` }
           multiline
+          value={ this.state.review }
           onChange={ this.changeReview }
           style={ styles.textField }
           error={ this.state.reviewError }
@@ -237,7 +299,7 @@ export default class WriteReview extends Component {
                   <FormControl component="fieldset" style={ styles.mandatory }>
                     <FormLabel component="legend" align="left">Was a textbook required?</FormLabel>
                     <RadioGroup
-                      value={ this.state.textbookRequired }
+                      value={ this.state.textbookUsed }
                       onChange={ this.changeTextbook }
                       style={{ flexDirection: 'row' }}
                     >
@@ -253,6 +315,7 @@ export default class WriteReview extends Component {
                       margin="normal"
                       variant="outlined"
                       type="number"
+                      value={ this.state.grade }
                       onChange={ this.changeGrade }
                       error={ this.state.gradeError }
                       inputProps={{ min: "0", max: "100", step: "1" }}
@@ -277,6 +340,37 @@ export default class WriteReview extends Component {
           </div>
         </div>
       </form>
+    );
+
+    return (
+      <div>
+        {
+          (this.state.visible)
+            ? (
+              <Button
+                variant="contained"
+                size="medium"
+                style={ styles.closeBtn }
+                onClick={ this.closeForm }
+              >
+                Cancel
+              </Button>
+            )
+            : (
+              <Button
+                variant="contained"
+                size="medium"
+                style={ styles.openBtn }
+                onClick={ this.openForm }
+              >
+                Edit Review
+              </Button>
+            )
+        }
+        {
+          this.state.visible && form
+        }
+      </div>
     );
   }
 

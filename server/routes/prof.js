@@ -48,6 +48,24 @@ ProfRouter.post('/reviews/:profName/add',
     }
   });
 
+// Add prof review vote
+ProfRouter.post('/reviews/:profName/vote',
+  passport.authenticate('jwt', { session: false }),
+  async function(req, res) {
+    const username = req.user;
+    const profName = req.params.profName;
+    const { id, vote } = Object.assign({}, req.body);
+
+    try {
+      let err =  await reviewsCore.addProfReviewVote(profName, id, username, vote);
+      if (err) return res.status(400).send(err);
+      return res.status(200).send('Review added');
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err);
+    }
+  });
+
 
 
 module.exports = ProfRouter;

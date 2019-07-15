@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
 import StarRatings from 'react-star-ratings';
@@ -96,134 +96,161 @@ const styles = {
 
 const boolToText = (val) => (val == null) ? 'N/A' : (val) ? 'Yes' : 'No';
 
-const Review = ({
-  subject,
-  catalogNumber,
-  date,
-  rating,
-  difficulty,
-  isMandatory,
-  textbookUsed,
-  grade,
-  comments,
-  numThumbsUp,
-  numThumbsDown,
-  rmpURL,
-}) => {
-  const isRmp = rmpURL != null;
-  return (
-    <MediaQuery minWidth={ 600 }>
-      { matches => {
-        const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
-        return (
-          <div style={ styles.container(isMobile) }>
-            <div style={ styles.leftContainer(isMobile) }>
-              { !isMobile && (
-                <span style={ styles.date }>{ date }</span>
-              ) }
-              <div style={ styles.infoList(isMobile) }>
-                <div style={ styles.infoItem(isMobile) }>
-                  <span style={ styles.infoTitle(isMobile) }>Difficulty:</span>
-                  <span>{ (difficulty == null) ? 'N/A' : difficulty }</span>
-                </div>
-                <div style={ styles.infoItem(isMobile) }>
-                  <span style={ styles.infoTitle(isMobile) }>Attendance:</span>
-                  <span>
-                    { (isMandatory == null)
-                      ? 'N/A'
-                      : (isMandatory) ? 'Mandatory' : 'Optional'
-                    }
-                  </span>
-                </div>
-                <div style={ styles.infoItem(isMobile) }>
-                  <span style={ styles.infoTitle(isMobile) }>Textbook Used:</span>
-                  <span>{ boolToText(textbookUsed) }</span>
-                </div>
-                <div style={ styles.infoItem(isMobile) }>
-                  <span style={ styles.infoTitle(isMobile) }>Grade:</span>
-                  <span>{ (grade == null) ? 'N/A' : grade }</span>
-                </div>
-              </div>
-            </div>
-            <div style={ styles.rightContainer }>
-              <div style={ styles.upperContainer }>
-                <div style={ styles.reviewTitle(isMobile) }>
-                  { subject.length > 0 && (
-                    <span style={ styles.classTaken }>{ `${subject} ${catalogNumber}` }</span>
-                  ) }
-                  <StarRatings
-                    rating={ rating }
-                    isSelectable={ false }
-                    isAggregateRating
-                    numOfStars={ 5 }
-                    starRatedColor={ yellow }
-                    starDimension="18px"
-                    starSpacing="1px"
-                  />
-                </div>
-                <div style={ styles.thumbsContainer }>
-                  <div style={ styles.thumbInnerContainer }>
-                    <IconButton style={{ padding: 5 }} disabled={ isRmp }>
-                      <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
-                        thumb_up
-                      </FontIcon>
-                    </IconButton>
-                    <span>{ numThumbsUp }</span>
-                  </div>
-                  <div style={ styles.thumbInnerContainer }>
-                    <IconButton style={{ padding: 5 }} disabled={ isRmp }>
-                      <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
-                        thumb_down
-                      </FontIcon>
-                    </IconButton>
-                    <span>{ numThumbsDown }</span>
-                  </div>
-                </div>
-              </div>
-              { isMobile && (
-                <div style={ styles.mobileDate }>
-                  <span>{ date }</span>
-                </div>
-              ) }
-              <div>
-                <p style={ styles.text }>{ comments }</p>
-                { rmpURL && (
-                  <a
-                    style={ styles.rmpUrl }
-                    rel="noopener noreferrer"
-                    href={ rmpURL }
-                    target="_blank"
-                  >
-                    Retrieved from ratemyprofessors.com
-                  </a>
+export default class Review extends Component {
+
+  static propTypes = {
+    subject: PropTypes.string,
+    catalogNumber: PropTypes.string,
+    date: PropTypes.string.isRequired,
+    rating: PropTypes.number.isRequired,
+    difficulty: PropTypes.number,
+    isMandatory: PropTypes.bool,
+    textbookUsed: PropTypes.bool,
+    grade: PropTypes.string,
+    comments: PropTypes.string.isRequired,
+    numThumbsUp: PropTypes.number.isRequired,
+    numThumbsDown: PropTypes.number.isRequired,
+    rmpURL: PropTypes.string,
+    onVote: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    subject: '',
+    catalogNumber: '',
+  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+
+    };
+  }
+
+  shouldComponentUpdate(nextProps) {
+    if (this.props.numThumbsUp !== nextProps.numThumbsUp) return true;
+    if (this.props.numThumbsDown !== nextProps.numThumbsDown) return true;
+    return false;
+  }
+
+  render() {
+    const {
+      subject,
+      catalogNumber,
+      date,
+      rating,
+      difficulty,
+      isMandatory,
+      textbookUsed,
+      grade,
+      comments,
+      numThumbsUp,
+      numThumbsDown,
+      rmpURL,
+      onVote,
+    } = this.props;
+    const isRmp = rmpURL != null;
+    return (
+      <MediaQuery minWidth={ 600 }>
+        { matches => {
+          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+          return (
+            <div style={ styles.container(isMobile) }>
+              <div style={ styles.leftContainer(isMobile) }>
+                { !isMobile && (
+                  <span style={ styles.date }>{ date }</span>
                 ) }
+                <div style={ styles.infoList(isMobile) }>
+                  <div style={ styles.infoItem(isMobile) }>
+                    <span style={ styles.infoTitle(isMobile) }>Difficulty:</span>
+                    <span>{ (difficulty == null) ? 'N/A' : difficulty }</span>
+                  </div>
+                  <div style={ styles.infoItem(isMobile) }>
+                    <span style={ styles.infoTitle(isMobile) }>Attendance:</span>
+                    <span>
+                      { (isMandatory == null)
+                        ? 'N/A'
+                        : (isMandatory) ? 'Mandatory' : 'Optional'
+                      }
+                    </span>
+                  </div>
+                  <div style={ styles.infoItem(isMobile) }>
+                    <span style={ styles.infoTitle(isMobile) }>Textbook Used:</span>
+                    <span>{ boolToText(textbookUsed) }</span>
+                  </div>
+                  <div style={ styles.infoItem(isMobile) }>
+                    <span style={ styles.infoTitle(isMobile) }>Grade:</span>
+                    <span>{ (grade == null) ? 'N/A' : grade }</span>
+                  </div>
+                </div>
+              </div>
+              <div style={ styles.rightContainer }>
+                <div style={ styles.upperContainer }>
+                  <div style={ styles.reviewTitle(isMobile) }>
+                    { subject.length > 0 && (
+                      <span style={ styles.classTaken }>{ `${subject} ${catalogNumber}` }</span>
+                    ) }
+                    <StarRatings
+                      rating={ rating }
+                      isSelectable={ false }
+                      isAggregateRating
+                      numOfStars={ 5 }
+                      starRatedColor={ yellow }
+                      starDimension="18px"
+                      starSpacing="1px"
+                    />
+                  </div>
+                  <div style={ styles.thumbsContainer }>
+                    <div style={ styles.thumbInnerContainer }>
+                      <IconButton
+                        style={{ padding: 5 }}
+                        disabled={ isRmp }
+                        onClick={ () => onVote(1) }
+                      >
+                        <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
+                          thumb_up
+                        </FontIcon>
+                      </IconButton>
+                      <span>{ numThumbsUp }</span>
+                    </div>
+                    <div style={ styles.thumbInnerContainer }>
+                      <IconButton
+                        style={{ padding: 5 }}
+                        disabled={ isRmp }
+                        onClick={ () => onVote(-1) }
+                      >
+                        <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
+                          thumb_down
+                        </FontIcon>
+                      </IconButton>
+                      <span>{ numThumbsDown }</span>
+                    </div>
+                  </div>
+                </div>
+                { isMobile && (
+                  <div style={ styles.mobileDate }>
+                    <span>{ date }</span>
+                  </div>
+                ) }
+                <div>
+                  <p style={ styles.text }>{ comments }</p>
+                  { rmpURL && (
+                    <a
+                      style={ styles.rmpUrl }
+                      rel="noopener noreferrer"
+                      href={ rmpURL }
+                      target="_blank"
+                    >
+                      Retrieved from ratemyprofessors.com
+                    </a>
+                  ) }
+                </div>
               </div>
             </div>
-          </div>
-        );
-      } }
-    </MediaQuery>
-  );
+          );
+        } }
+      </MediaQuery>
+    );
+  }
+
 }
-
-Review.propTypes = {
-  subject: PropTypes.string,
-  catalogNumber: PropTypes.string,
-  date: PropTypes.string.isRequired,
-  rating: PropTypes.number.isRequired,
-  difficulty: PropTypes.number,
-  isMandatory: PropTypes.bool,
-  textbookUsed: PropTypes.bool,
-  grade: PropTypes.string,
-  comments: PropTypes.string.isRequired,
-  numThumbsUp: PropTypes.number.isRequired,
-  numThumbsDown: PropTypes.number.isRequired,
-  rmpURL: PropTypes.string,
-};
-
-Review.defaultProps = {
-  subject: '',
-  catalogNumber: '',
-}
-
-export default Review;
