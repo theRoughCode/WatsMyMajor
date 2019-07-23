@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import Paper from 'material-ui/Paper';
 import PopularCourseGraph from './PopularCourseGraph';
+import Reviews from './Reviews';
 import UserCoursesGraph from './UserCoursesGraph';
 import Watchlist from './Watchlist';
 import { unwatchClass } from 'actions';
@@ -28,11 +29,15 @@ const styles = {
     flexWrap: 'wrap',
     margin: 20,
   },
+  lowerContainer: {
+    display: 'flex',
+  }
 };
 
 const Dashboard = ({
   name,
   username,
+  reviews,
   myCourses,
   watchlist,
   history,
@@ -48,11 +53,16 @@ const Dashboard = ({
           <PopularCourseGraph />
           <UserCoursesGraph myCourses={ myCourses } />
         </div>
-        <Watchlist
-          watchlist={ watchlist }
-          history={ history }
-          onUnwatch={ (term, classNum) => onUnwatchClass(username, term, classNum) }
-        />
+        <div style={ styles.lowerContainer }>
+          <div style={{ margin: 'auto', display: 'flex' }}>
+            <Watchlist
+              watchlist={ watchlist }
+              history={ history }
+              onUnwatch={ (term, classNum) => onUnwatchClass(username, term, classNum) }
+            />
+            <Reviews courses={ reviews.courses } profs={ reviews.profs } />
+          </div>
+        </div>
       </div>
     ) }
   </MediaQuery>
@@ -61,15 +71,21 @@ const Dashboard = ({
 Dashboard.propTypes = {
   name: PropTypes.string.isRequired,
   username: PropTypes.string.isRequired,
+  reviews: PropTypes.object,
   myCourses: PropTypes.object.isRequired,
   watchlist: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired,
   onUnwatchClass: PropTypes.func.isRequired,
 };
 
+Dashboard.defaultProps = {
+  reviews: {}
+};
+
 const mapStateToProps = ({ user, myCourses, watchlist }) => ({
   name: user.name,
   username: user.username,
+  reviews: user.reviews,
   myCourses,
   watchlist,
 });

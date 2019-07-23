@@ -25,6 +25,7 @@ import BrowseCourseView from 'components/browse/BrowseCourseContainer';
 import MyCourseView from 'components/mycourse/CourseBoardContainer';
 import MyScheduleView from 'components/schedule/MyScheduleContainer';
 import CourseView from 'components/courselist/CourseViewContainer';
+import ProfView from 'components/reviews/prof/ProfViewContainer';
 import {
   toggleSideBar,
   createSnack,
@@ -213,6 +214,7 @@ class App extends Component {
                   <Route path='/schedule/:username/:term?' component={ MyScheduleView } />
                   <Route path='/courses/browse' component={ BrowseCourseView } />
                   <Route path='/courses/:subject/:catalogNumber' component={ CourseView } />
+                  <Route path='/professors/:profName' component={ ProfView } />
                 </Switch>
               </div>
               <ToastContainer />

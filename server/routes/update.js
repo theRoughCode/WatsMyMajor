@@ -56,6 +56,46 @@ UpdateRouter.get('/classes/:term/:subject/:catalogNumber', async function(req, r
   else res.send({ success: true });
 });
 
+// Updates professors for all courses across all terms
+UpdateRouter.get('/profs/all', async function(req, res) {
+  req.setTimeout(0); // disables timeout
+  const err = await update.updateAllProfClasses();
+  if (err) res.send({ success: false, err });
+  else res.send({ success: true, err: null });
+});
+
+// Updates professors for all courses in a term
+UpdateRouter.get('/profs/:term/all', async function(req, res) {
+  const { term } = req.params;
+  req.setTimeout(0); // disables timeout
+  const err = await update.updateTermProfClasses(term);
+  if (err) res.send({ success: false, err });
+  else res.send({ success: true, err: null });
+});
+
+// Updates professors for a particular course
+UpdateRouter.get('/profs/:term/:subject/:catalogNumber', async function(req, res) {
+  const { subject, catalogNumber, term } = req.params;
+  const err = await update.updateProfClasses(subject, catalogNumber, term);
+  if (err) res.send({ success: false, err });
+  else res.send({ success: true });
+});
+
+// Updates professors for a particular course
+UpdateRouter.get('/reviews/prof/rmp/all', async function(req, res) {
+  const { err, failedList } = await update.updateAllProfsRmp();
+  if (err) res.send({ success: false, err, failedList });
+  else res.send({ success: true });
+});
+
+// Updates professors for a particular course
+UpdateRouter.get('/reviews/prof/rmp/:profName', async function(req, res) {
+  const { profName } = req.params;
+  const err = await update.updateProfRmp(profName);
+  if (err) res.send({ success: false, err });
+  else res.send({ success: true });
+});
+
 // Updates count of all users' courses
 UpdateRouter.get('/popular', async function(req, res) {
   const { err, courseCount } = await update.updatePopularCourses();

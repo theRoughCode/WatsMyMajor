@@ -182,7 +182,7 @@ const ClassProf = ({
       <Divider style={ styles.divider } />
       <div style={ styles.shareContainer }>
         <FontAwesome name='globe' style={ styles.icon } />
-        <a className="course-prof-share" rel="noopener noreferrer" href={ rmpURL } target='_blank'>See on RateMyProf.com</a>
+        <a className="course-prof-share" rel="noopener noreferrer" href={ rmpURL } target='_blank'>See on ratemyprofessors.com</a>
       </div>
     </div>
   )

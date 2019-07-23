@@ -80,8 +80,9 @@ class AppBar extends Component {
     location: PropTypes.object.isRequired,
   };
 
-  onSearchResult = (subject, catalogNumber) => {
-    this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+  onSearchResult = ({ subject, catalogNumber, id }) => {
+    if (id != null) this.props.history.push(`/professors/${id}`);
+    else this.props.history.push(`/courses/${subject}/${catalogNumber}`);
   }
 
   onLogin = () => {

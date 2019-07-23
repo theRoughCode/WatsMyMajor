@@ -41,8 +41,13 @@ const { emailsRef } = require('./index');
 //   isSchedulePublic: bool,
 //   cart: [],
 //   schedule: [],
-//   courseList: []
+//   courseList: [],
+//   reviews: {
+//     profs: {},
+//     courses: {}
+//    }
 // }
+
 function setUser(username, user) {
   return usersRef
     .child(username)

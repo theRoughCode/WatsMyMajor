@@ -7,8 +7,9 @@ const courseListDB = require('../database/courseList');
 CoursesRouter.get('/query/:query/:num', async function(req, res) {
   const query = req.params.query;
   const num = req.params.num;
+  const courseOnly = JSON.parse(req.query.courseOnly);
 
-  const { err, result } = await courses.searchCourses(query, num);
+  const { err, result } = await courses.searchCourses(query, num, courseOnly);
   if (err) res.status(400).send(err);
   else res.json(result);
 });

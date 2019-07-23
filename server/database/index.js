@@ -18,7 +18,9 @@ const coursesRef = admin.database().ref('/courses/');
 const emailsRef = admin.database().ref('/emails/');
 const facebookUsersRef = admin.database().ref('/facebookUsers/');
 const majorsRef = admin.database().ref('/majors/');
+const profsRef = admin.database().ref('/profs/');
 const reqsRef = admin.database().ref('/reqs/');
+const reviewsRef = admin.database().ref('/reviews/');
 const statsRef = admin.database().ref('/stats/');
 const usersRef = admin.database().ref('/users/');
 const watchlistRef = admin.database().ref('/watchlist/');
@@ -32,7 +34,9 @@ module.exports = {
   emailsRef,
   facebookUsersRef,
   majorsRef,
+  profsRef,
   reqsRef,
+  reviewsRef,
   statsRef,
   usersRef,
   watchlistRef,

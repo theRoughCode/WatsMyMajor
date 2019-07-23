@@ -3,10 +3,13 @@ const email = require('./email');
 const waterloo = require('./waterloo');
 const courses = require('./courses');
 const classScraper = require('./scrapers/classes');
+const profScraper = require('./scrapers/prof');
 const classesDB = require('../database/classes');
 const courseListDB = require('../database/courseList');
 const courseRatingsDB = require('../database/courseRatings');
+const profsDB = require('../database/profs');
 const requisitesDB = require('../database/requisites');
+const reviewsDB = require('../database/reviews');
 const statsDB = require('../database/stats');
 const usersDB = require('../database/users');
 const watchlistDB = require('../database/watchlist');
@@ -279,6 +282,128 @@ async function updateLatestClasses() {
   }
 }
 
+/****************************
+ *                          *
+ *    P R O F E S S O R     *
+ *                          *
+ ****************************/
+
+// Update profs that taught this course
+async function updateProfClasses(subject, catalogNumber, term) {
+  const { err, classInfo } = await classScraper.getClassInfo(subject, catalogNumber, term);
+  if (err) return err;
+
+  const promises = [];
+  const profs = {};
+
+  classInfo.forEach(c => c.classes.forEach(cl => {
+    const { instructor } = cl;
+    if (instructor == null || instructor.length === 0) return;
+    if (profs.hasOwnProperty(instructor)) return;
+    profs[instructor] = true;
+    promises.push(profsDB.setProfClasses(instructor, subject, catalogNumber, term));
+  }));
+
+  try {
+    await Promise.all(promises);
+    return null;
+  } catch(err) {
+    console.error(`${term} | ${subject} ${catalogNumber}: ${err}`);
+    return err;
+  }
+}
+
+// Update professors for all courses in term
+async function updateTermProfClasses(term) {
+  return new Promise(async (resolve, reject) => {
+    const courses = await courseListDB.getCourseList();
+    asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
+      updateProfClasses(subject, catalogNumber, term)
+        .then(callback)
+        .catch(err => callback(err));
+    }, err => {
+      if (err) resolve(err);
+      else resolve(null);
+    });
+  });
+}
+
+// Update all profs for all terms
+async function updateAllProfClasses() {
+  let term = 1159;
+  const maxTerm = process.env.CURRENT_TERM;
+  try {
+    while (term <= maxTerm) {
+      await updateTermProfClasses(term);
+      term += 4;
+      if (term % 10 === 3) term -= 2;
+    }
+    return null;
+  } catch (err) {
+    return err;
+  }
+}
+
+// Update RMP information for prof
+async function updateProfRmp(profName) {
+  const { err, prof } = await profScraper.getRmpInfo(profName);
+  if (err) return { profName, err };
+
+  const {
+    reviews,
+    rating,
+    difficulty,
+    tags,
+    rmpURL,
+  } = prof;
+
+  try {
+    await profsDB.setRMP(profName, rmpURL, tags, rating, difficulty, reviews.length);
+    const { err, reviewIds } = await reviewsDB.getRmpReviewIds(profName);
+    if (err) return { profName, err };
+    const promises = reviews
+      .filter(r => !reviewIds.includes(r.id))
+      .map(r => reviewsDB.setRmpReview(profName, r));
+    await Promise.all(promises);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return { profName, err };
+  }
+}
+
+async function updateAllProfsRmp() {
+  const CHUNK_SIZE = 100;
+  const { err, profList } = await profsDB.getProfList();
+  if (err) return { err, failedList: [] };
+
+  // divide promises into batches of CHUNK_SIZE
+  const { acc } = profList.reduce(({ acc, num }, { name }) => {
+    if (num <= CHUNK_SIZE) {
+      acc[acc.length - 1].push(name);
+      return { acc, num: num + 1 };
+    } else {
+      acc.push([name]);
+      return { acc, num: 1 };
+    }
+  }, { acc: [[]], num: 0 });
+
+  try {
+    let failedList = [];
+    for (let i = 0; i < acc.length; i++) {
+      const promises = acc[i].map(name => updateProfRmp(name));
+      const list = await Promise.all(promises);
+      failedList = failedList.concat(list);
+    }
+    /* eslint-disable no-console */
+    console.log(`Finished updating all prof reviews at ${new Date()}`);
+    return { err: null, failedList };
+  } catch(err) {
+    console.error(err);
+    return { err, failedList: [] };
+  }
+}
+
 
 /****************************
  *                          *
@@ -368,4 +493,9 @@ module.exports = {
   updateClass,
   updateAllClasses,
   updateLatestClasses,
+  updateProfClasses,
+  updateTermProfClasses,
+  updateAllProfClasses,
+  updateProfRmp,
+  updateAllProfsRmp,
 };
