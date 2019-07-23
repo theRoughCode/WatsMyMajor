@@ -63,7 +63,9 @@ async function getProfList() {
     const snapshot = await profsRef.once('value');
     const profList = [];
     snapshot.forEach(childSnapshot => {
-      profList.push(childSnapshot.child('name').val());
+      const name = childSnapshot.child('name').val();
+      const id = childSnapshot.key;
+      profList.push({ name, id });
     });
     return { err: null, profList };
   } catch (err) {

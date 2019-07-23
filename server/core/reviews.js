@@ -1,5 +1,6 @@
 const profsDB = require('../database/profs');
 const reviewsDB = require('../database/reviews');
+const usersDB = require('../database/users');
 
 async function addProfReview(profName, username, review) {
   let err = null;
@@ -23,6 +24,22 @@ async function addProfReview(profName, username, review) {
 
   try {
     await reviewsDB.addProfReview(profName, username, review);
+    const updates = {};
+    updates[`/reviews/profs/${profName}`] = true;
+    await usersDB.updateUser(username, updates);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
+async function deleteProfReview(profName, username) {
+  try {
+    await reviewsDB.deleteProfReview(profName, username);
+    const updates = {};
+    updates[`/reviews/profs/${profName}`] = null;
+    await usersDB.updateUser(username, updates);
     return null;
   } catch (err) {
     console.error(err);
@@ -53,6 +70,25 @@ async function getProfInfo(profName) {
   return { err: null, info: prof };
 }
 
+async function getProfNames(list) {
+  try {
+    let failedList = [];
+    const promises = Object.keys(list).map(async id => {
+      const { err, info } = await getProfInfo(id);
+      if (err) {
+        failedList.push(id);
+        return null;
+      } else return { id, name: info.name };
+    });
+    if (failedList.length > 0) return { err: `Failed to retrieve ${failedList[0]}.`, names: null };
+    const names = await Promise.all(promises);
+    return { err: null, names };
+  } catch (err) {
+    console.error(err);
+    return { err, names: null };
+  }
+}
+
 async function getProfReviews(profName) {
   let { err, reviews } = await reviewsDB.getProfReviews(profName);
   if (err || reviews == null) return { err, reviews: null };
@@ -61,7 +97,9 @@ async function getProfReviews(profName) {
 
 module.exports = {
   addProfReview,
+  deleteProfReview,
   addProfReviewVote,
   getProfInfo,
+  getProfNames,
   getProfReviews,
 };

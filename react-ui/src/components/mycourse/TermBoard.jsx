@@ -209,7 +209,7 @@ export default class TermBoard extends Component {
     }).catch(err => toast.error(`Failed to parse your courses. Error: ${err.message}`));
   }
 
-  onSearchResult = (subject, catalogNumber) => {
+  onSearchResult = ({ subject, catalogNumber }) => {
     this.props.onUpdateCourses([{ subject, catalogNumber }])
     this.closeAddDialog();
   }
@@ -378,7 +378,7 @@ export default class TermBoard extends Component {
             open={ this.state.addDialogOpen }
             onRequestClose={ this.closeAddDialog }
           >
-            <SearchBar onResult={ this.onSearchResult } />
+            <SearchBar onResult={ this.onSearchResult } courseOnly />
           </Dialog>
         </Paper>
       </div>

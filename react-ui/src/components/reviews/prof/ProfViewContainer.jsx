@@ -96,6 +96,17 @@ const addProfReview = async (profName, review) => {
   return response.ok;
 }
 
+// Deletes prof review. Returns true if successful
+const deleteProfReview = async (profName) => {
+  const response = await fetch(`/server/prof/reviews/${profName}/remove`, {
+    method: 'DELETE',
+    headers: {
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    }
+  });
+  return response.ok;
+}
+
 // Adds prof review vote. Returns true if successful
 const addVote = async (profName, data) => {
   const response = await fetch(`/server/prof/reviews/${profName}/vote`, {
@@ -140,6 +151,17 @@ class ProfViewContainer extends Component {
 
   async componentDidMount() {
     const { profName } = this.props.match.params;
+    this.updateProf(profName);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.profName !== nextProps.match.params.profName) {
+      this.updateProf(nextProps.match.params.profName);
+    }
+  }
+
+  async updateProf(profName) {
+    this.setState({ loading: true });
     const info = await getProfInfo(profName);
     if (info == null) {
       this.setState({ error: true, loading: false });
@@ -219,7 +241,14 @@ class ProfViewContainer extends Component {
   onSubmit = async (review) => {
     const profId = this.props.match.params.profName;
     const success = await addProfReview(profId, review);
-    if (!success) console.error('Failed');
+    if (!success) console.error('Failed to update prof review.');
+    else this.updateReviews();
+  }
+
+  onDelete = async () => {
+    const profId = this.props.match.params.profName;
+    const success = await deleteProfReview(profId);
+    if (!success) console.error('Failed to delete prof review.');
     else this.updateReviews();
   }
 
@@ -228,12 +257,13 @@ class ProfViewContainer extends Component {
     const reviews = this.state.reviews.slice(0);
     const id = this.state.reviews[i].id;
 
+    if (!reviews[i].hasOwnProperty('votes')) reviews[i].votes = {};
     const prevVote = reviews[i].votes[this.props.username];
     // If already voted, we unvote
     if (prevVote != null && vote === prevVote) vote = 0;
 
     const success = await addVote(profId, { id, vote });
-    if (!success) console.error('Failed');
+    if (!success) console.error('Failed to add vote.');
     else {
       // Update review thumbs
       reviews[i].votes[this.props.username] = vote;
@@ -296,6 +326,7 @@ class ProfViewContainer extends Component {
                   profName={ profName }
                   courses={ courses }
                   onSubmit={ this.onSubmit }
+                  onDelete={ this.onDelete }
                   userReview={ userReview }
                 />
               )
@@ -355,9 +386,10 @@ class ProfViewContainer extends Component {
               numThumbsUp,
               numThumbsDown,
               rmpURL,
+              id
             }, i) => (
               <Review
-                key={ i }
+                key={ rmpURL || id || i }
                 subject={ subject }
                 catalogNumber={ catalogNumber }
                 date={ date }

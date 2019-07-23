@@ -13,7 +13,7 @@ const styles = {
   container: {
     width: 'fit-content',
     height: 'fit-content',
-    margin: 'auto',
+    margin: 'auto 10px',
   },
   header: {
     fontSize: 20,

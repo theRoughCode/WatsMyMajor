@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import SearchBar from 'material-ui-search-bar';
 
-async function fetchQuery(query, maxNumberOfResults) {
+async function fetchQuery(query, maxNumberOfResults, courseOnly) {
   try {
-    const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}`, {
+    const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}?courseOnly=${courseOnly}`, {
       headers: {
         'x-secret': process.env.REACT_APP_SERVER_SECRET
       }
@@ -14,11 +14,7 @@ async function fetchQuery(query, maxNumberOfResults) {
         response.status);
       return [];
     }
-    const resultsArr = await response.json();
-    return resultsArr.map(result => {
-      const { subject, catalogNumber, title } = result;
-      return `${subject} ${catalogNumber} - ${title}`;
-    });
+    return await response.json();
   } catch(err) {
     console.error(err);
     return [];
@@ -30,6 +26,7 @@ class AppSearchBar extends Component {
   static propTypes = {
     style: PropTypes.object,
     onResult: PropTypes.func.isRequired,
+    courseOnly: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -39,7 +36,8 @@ class AppSearchBar extends Component {
       whitespace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-    }
+    },
+    courseOnly: false,
   };
 
   constructor(props) {
@@ -48,10 +46,11 @@ class AppSearchBar extends Component {
     this.state = {
       dataSource: [],
       query: '',
+      courseOnly: props.courseOnly,
     };
 
     this.onClick = this.onClick.bind(this);
-    this.queryForCourse = this.queryForCourse.bind(this);
+    this.querySearch = this.querySearch.bind(this);
     this.searchCourse = this.searchCourse.bind(this);
   }
 
@@ -64,14 +63,19 @@ class AppSearchBar extends Component {
     this.setState({ dataSource: [], query: '' });
   }
 
-  // Find all courses that match the queried string
-  async queryForCourse(query) {
+  // Find all courses and profs that match the queried string
+  async querySearch(query) {
     if (!query) return;
 
     this.setState({ query });
 
     const maxNumberOfResults = 5;
-    const dataSource = await fetchQuery(query, maxNumberOfResults);
+    let dataSource = await fetchQuery(query, maxNumberOfResults, this.state.courseOnly);
+    dataSource = dataSource.map(result => {
+      const { subject, catalogNumber, title, name } = result;
+      if (name != null) return name;
+      return `${subject} ${catalogNumber} - ${title}`;
+    });
 
     this.setState({ dataSource });
   }
@@ -79,14 +83,9 @@ class AppSearchBar extends Component {
   async searchCourse(query) {
     if (!query) return;
 
-    const result = await fetchQuery(query, 1);
+    const result = await fetchQuery(query, 1, this.state.courseOnly);
     if (result.length === 0) return;
-    const strArr = result[0].split(' ');
-    if (strArr.length < 2) return;
-
-    const subject = strArr[0];
-    const catalogNumber = strArr[1];
-    this.props.onResult(subject, catalogNumber);
+    this.props.onResult(result[0]);
   }
 
   render() {
@@ -95,10 +94,10 @@ class AppSearchBar extends Component {
         ref={ (input) => this.searchBar = input }
         hintText=""
         name="searchCourses"
-        placeholder="Search for courses"
+        placeholder="Search for courses or profs"
         dataSource={ this.state.dataSource }
         filter={ (searchValue, key) => searchValue.length }
-        onChange={ this.queryForCourse }
+        onChange={ this.querySearch }
         onClick={ this.onClick }
         onRequestSearch={ () => null }
         onNewRequest={ this.searchCourse }

@@ -21,6 +21,15 @@ ProfRouter.get('/info/:name', async function(req, res) {
   else res.json(info);
 });
 
+// Get prof names
+ProfRouter.post('/names', async function(req, res) {
+  const list = Object.assign({}, req.body);
+  const { err, names } = await reviewsCore.getProfNames(list);
+  res.set('Content-Type', 'application/json');
+  if (err) res.status(400).send(err.message);
+  else res.json(names);
+});
+
 // Get prof reviews
 ProfRouter.get('/reviews/:name', async function(req, res) {
   const name = req.params.name;
@@ -42,6 +51,26 @@ ProfRouter.post('/reviews/:profName/add',
       let err =  await reviewsCore.addProfReview(profName, username, review);
       if (err) return res.status(400).send(err);
       return res.status(200).send('Review added');
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err);
+    }
+  });
+
+// Delete prof review
+ProfRouter.delete('/reviews/:profName/remove',
+  passport.authenticate('jwt', { session: false }),
+  async function(req, res) {
+    const username = req.user;
+    const profName = req.params.profName;
+
+    try {
+      let err =  await reviewsCore.deleteProfReview(profName, username);
+      if (err) {
+        console.error(err);
+        return res.status(400).send(err);
+      }
+      return res.status(200).send('Review removed');
     } catch (err) {
       console.error(err);
       res.status(400).send(err);

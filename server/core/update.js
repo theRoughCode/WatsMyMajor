@@ -378,12 +378,12 @@ async function updateAllProfsRmp() {
   if (err) return { err, failedList: [] };
 
   // divide promises into batches of CHUNK_SIZE
-  const { acc } = profList.reduce(({ acc, num }, val) => {
+  const { acc } = profList.reduce(({ acc, num }, { name }) => {
     if (num <= CHUNK_SIZE) {
-      acc[acc.length - 1].push(val);
+      acc[acc.length - 1].push(name);
       return { acc, num: num + 1 };
     } else {
-      acc.push([val]);
+      acc.push([name]);
       return { acc, num: 1 };
     }
   }, { acc: [[]], num: 0 });

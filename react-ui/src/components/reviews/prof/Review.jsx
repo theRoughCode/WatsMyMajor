@@ -5,6 +5,7 @@ import StarRatings from 'react-star-ratings';
 import IconButton from '@material-ui/core/IconButton';
 import FontIcon from 'material-ui/FontIcon';
 import { yellow, grey } from 'constants/Colours';
+import { objectEquals } from 'utils/arrays';
 
 const styles = {
   container: (isMobile) => ({
@@ -128,9 +129,7 @@ export default class Review extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    if (this.props.numThumbsUp !== nextProps.numThumbsUp) return true;
-    if (this.props.numThumbsDown !== nextProps.numThumbsDown) return true;
-    return false;
+    return !objectEquals(this.props, nextProps);
   }
 
   render() {

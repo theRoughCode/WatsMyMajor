@@ -34,10 +34,14 @@ const styles = {
     margin: '10px 7px',
     width: '100%',
   },
+  deleteBtn: {
+    backgroundColor: red,
+    color: white,
+    marginRight: 7,
+  },
   submitBtn: {
     backgroundColor: purple,
     color: white,
-    float: 'right',
     marginRight: 7,
   },
   openBtn: {
@@ -86,6 +90,7 @@ export default class WriteReview extends Component {
     profName: PropTypes.string.isRequired,
     courses: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
     userReview: PropTypes.object,
   };
 
@@ -119,6 +124,18 @@ export default class WriteReview extends Component {
   }
 
   updateForm = (userReview) => {
+    if (userReview == null) {
+      return this.setState({
+        rating: 0,
+        review: '',
+        course: '',
+        difficulty: '',
+        isMandatory: '',
+        textbookUsed: '',
+        grade: '',
+      });
+    }
+
     const {
       subject,
       catalogNumber,
@@ -147,7 +164,6 @@ export default class WriteReview extends Component {
       isMandatory: (isMandatory == null) ? '' : (isMandatory) ? 'yes' : 'no',
       textbookUsed: (textbookUsed == null) ? '' : (textbookUsed) ? 'yes' : 'no',
       grade: grade || '',
-      visible: false,
     });
   }
 
@@ -193,13 +209,18 @@ export default class WriteReview extends Component {
         subject: (typeof course === 'number') ? this.props.courses[course].subject : null,
         catalogNumber: (typeof course === 'number') ? this.props.courses[course].catalogNumber : null,
         difficulty: difficulty || null,
-        isMandatory: (isMandatory == null) ? null : (isMandatory === 'yes') ? true : false,
-        textbookUsed: (textbookUsed == null) ? null : (textbookUsed === 'yes') ? true : false,
+        isMandatory: (isMandatory === '') ? null : (isMandatory === 'yes') ? true : false,
+        textbookUsed: (textbookUsed === '') ? null : (textbookUsed === 'yes') ? true : false,
         grade: grade || null,
       };
       this.props.onSubmit(reviewObj);
       this.setState({ visible: false });
     }
+  }
+
+  onDelete = () => {
+    this.props.onDelete();
+    this.setState({ review: '', visible: true });
   }
 
   render() {
@@ -327,6 +348,18 @@ export default class WriteReview extends Component {
           </div>
           <div style={{ marginTop: 7, display: 'flex', flexDirection: 'column' }}>
             <div>
+              {
+                (this.props.userReview != null) && (
+                  <Button
+                    variant="contained"
+                    size="medium"
+                    style={ styles.deleteBtn }
+                    onClick={ this.onDelete }
+                  >
+                    Delete
+                  </Button>
+                )
+              }
               <Button
                 variant="contained"
                 size="medium"
@@ -340,6 +373,13 @@ export default class WriteReview extends Component {
           </div>
         </div>
       </form>
+    );
+
+    // If not written review yet
+    if (!this.props.userReview) return (
+      <div>
+        { form }
+      </div>
     );
 
     return (

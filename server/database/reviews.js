@@ -62,6 +62,12 @@ async function addProfReview(profName, username, review) {
     .set(review);
 }
 
+async function deleteProfReview(profName, username) {
+  return profReviewsRef
+    .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${username}`)
+    .set(null);
+}
+
 async function addVote(profName, id, username, vote) {
   return profReviewsRef
     .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${id}/votes/${username}`)
@@ -103,6 +109,7 @@ async function getProfReviews(prof) {
 module.exports = {
   setRmpReview,
   addProfReview,
+  deleteProfReview,
   addVote,
   getRmpReviewIds,
   getProfReviews,
