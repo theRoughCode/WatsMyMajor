@@ -10,6 +10,7 @@ import MyCourseView from 'components/mycourse/CourseBoardContainer';
 import MyScheduleView from 'components/schedule/MyScheduleContainer';
 import BrowseCourseView from 'components/browse/BrowseCourseContainer';
 import CourseView from 'components/courselist/CourseViewContainer';
+import ProfView from 'components/reviews/prof/ProfViewContainer';
 
 
 export default [
@@ -78,5 +79,9 @@ export default [
   {
     path: '/courses/:subject/:catalogNumber',
     component: CourseView,
+  },
+  {
+    path: '/professors/:profName',
+    component: ProfView,
   },
 ];

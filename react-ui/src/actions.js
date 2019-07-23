@@ -36,6 +36,7 @@ export const UPDATE_COURSE_CLASSES = 'UPDATE_COURSE_CLASSES';
 
 // For prefetching data
 export const UPDATE_COURSE_METADATA = 'UPDATE_COURSE_METADATA';
+export const UPDATE_PROF_METADATA = 'UPDATE_PROF_METADATA';
 
 const padBaseUrl = (url) => `${global.baseUrl || ''}${url}`;
 
@@ -326,6 +327,21 @@ export const getCourseClasses = (subject, catalogNumber, term) => ({
     types: [
       '',
       { type: UPDATE_COURSE_CLASSES },
+      '',
+    ]
+  }
+});
+
+export const getProfMetadata = (profId) => ({
+  [RSAA]: {
+    endpoint: padBaseUrl(`/server/prof/info/${profId}`),
+    method: 'GET',
+    headers: {
+      'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
+    },
+    types: [
+      '',
+      { type: UPDATE_PROF_METADATA },
       '',
     ]
   }

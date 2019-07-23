@@ -32,6 +32,7 @@ import {
   UPDATE_COURSE_CLASSES,
   // Prefetch data
   UPDATE_COURSE_METADATA,
+  UPDATE_PROF_METADATA,
 } from './actions';
 
 function sideBarOpen(state = false, action) {
@@ -325,6 +326,25 @@ function courseClasses(state = [], action) {
   }
 }
 
+function profMetadata(state = {}, action) {
+  let info = null;
+  const courses = [];
+  switch (action.type) {
+  case UPDATE_PROF_METADATA:
+    info = action.payload;
+    if (info == null) return state;
+    Object.keys(info.courses).forEach(subject => {
+      Object.keys(info.courses[subject]).forEach(catalogNumber => {
+        courses.push({ subject, catalogNumber });
+      });
+    });
+    info.courses = courses;
+    return info;
+  default:
+    return state;
+  }
+}
+
 const reducers = combineReducers({
   sideBarOpen,
   snack,
@@ -338,6 +358,7 @@ const reducers = combineReducers({
   courseCardPrereqs,
   courseMetadata,
   courseClasses,
+  profMetadata,
 });
 
 export default reducers;

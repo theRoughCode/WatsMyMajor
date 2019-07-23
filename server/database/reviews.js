@@ -1,6 +1,6 @@
 const { reviewsRef } = require('./index');
 const profReviewsRef = reviewsRef.child('profs');
-const courseReviewsRef = reviewsRef.child('courses');
+// const courseReviewsRef = reviewsRef.child('courses');
 
 /*
 reviewSchema:

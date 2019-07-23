@@ -11,6 +11,8 @@ import WriteReview from './WriteReview';
 import ErrorView from 'components/tools/ErrorView';
 import LoadingView from 'components/tools/LoadingView';
 import { purple, grey } from 'constants/Colours';
+import { objectEquals } from 'utils/arrays';
+import { getProfMetadata } from 'actions';
 
 const styles = {
   container: (isMobile) => {
@@ -50,27 +52,6 @@ const sortFunctions = {
   'Top': (r1, r2) => (r2.numThumbsUp-r2.numThumbsDown) - (r1.numThumbsUp-r1.numThumbsDown),
   'Controversial': (r1, r2) => (r1.numThumbsUp-r1.numThumbsDown) - (r2.numThumbsUp-r2.numThumbsDown),
 };
-
-
-const getProfInfo = async (profName) => {
-  const response = await fetch(`/server/prof/info/${profName}`, {
-    headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
-  });
-  if (!response.ok) return null;
-
-  const info = await response.json();
-  if (info == null) return null;
-  const courses = [];
-  Object.keys(info.courses).forEach(subject => {
-    Object.keys(info.courses[subject]).forEach(catalogNumber => {
-      courses.push({ subject, catalogNumber });
-    });
-  });
-  info.courses = courses;
-  return info;
-}
 
 const getProfReviews = async (profName) => {
   const response = await fetch(`/server/prof/reviews/${profName}`, {
@@ -128,21 +109,30 @@ class ProfViewContainer extends Component {
     isLoggedIn: PropTypes.bool.isRequired,
     username: PropTypes.string.isRequired,
     location: PropTypes.object.isRequired,
+    profMetadata: PropTypes.object.isRequired,
+    updateMetadataHandler: PropTypes.func.isRequired,
+  };
+
+  static loadData = (match) => {
+    const { profName } = match.params;
+    return getProfMetadata(profName);
   };
 
   constructor(props) {
     super(props);
 
+    let { name, courses, tags, rmpURL } = props.profMetadata;
+
     this.state = {
-      profName: '',
-      courses: [],
+      profName: name || '',
+      courses: courses || [],
       reviews: [],
       rating: 0,
       difficulty: 0,
       numRatings: 0,
       numDifficulty: 0,
-      tags: [],
-      rmpURL: '',
+      tags: tags || [],
+      rmpURL: rmpURL || '',
       error: false,
       sort: 'New',
       loading: true,
@@ -155,31 +145,32 @@ class ProfViewContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.profName !== nextProps.match.params.profName) {
-      this.updateProf(nextProps.match.params.profName);
+    const { match, profMetadata } = nextProps;
+    if (this.props.match.params.profName !== match.params.profName) {
+      this.updateProf(match.params.profName);
+      return;
+    }
+
+    if (!objectEquals(this.props.profMetadata, profMetadata)) {
+      let { name, courses, tags, rmpURL } = profMetadata;
+      this.setState({
+        profName: name,
+        courses: courses || [],
+        tags: tags || [],
+        rmpURL: rmpURL || '',
+      });
+      this.updateReviews(name);
     }
   }
 
   async updateProf(profName) {
     this.setState({ loading: true });
-    const info = await getProfInfo(profName);
-    if (info == null) {
-      this.setState({ error: true, loading: false });
-      return;
-    }
-    let { name, courses, tags, rmpURL } = info;
-    this.setState({
-      profName: name,
-      courses: courses || [],
-      tags: tags || [],
-      rmpURL: rmpURL || '',
-    });
-
-    this.updateReviews();
+    setTimeout(() => this.setState({ loading: false }), 5000);
+    this.props.updateMetadataHandler(profName);
   }
 
-  async updateReviews() {
-    const resp = await getProfReviews(this.state.profName);
+  async updateReviews(profName) {
+    const resp = await getProfReviews(profName);
     if (resp == null) return;
 
     let numRatings = 0;
@@ -242,14 +233,14 @@ class ProfViewContainer extends Component {
     const profId = this.props.match.params.profName;
     const success = await addProfReview(profId, review);
     if (!success) console.error('Failed to update prof review.');
-    else this.updateReviews();
+    else this.updateReviews(this.state.profName);
   }
 
   onDelete = async () => {
     const profId = this.props.match.params.profName;
     const success = await deleteProfReview(profId);
     if (!success) console.error('Failed to delete prof review.');
-    else this.updateReviews();
+    else this.updateReviews(this.state.profName);
   }
 
   onVote = (i) => async (vote) => {
@@ -436,9 +427,16 @@ class ProfViewContainer extends Component {
 
 }
 
-const mapStateToProps = ({ isLoggedIn, user }) => ({
+const mapStateToProps = ({ isLoggedIn, user, profMetadata }) => ({
   isLoggedIn,
   username: user.username,
+  profMetadata,
 });
 
-export default withRouter(connect(mapStateToProps)(ProfViewContainer));
+const mapDispatchToProps = dispatch => {
+  return {
+    updateMetadataHandler: (profId) => dispatch(getProfMetadata(profId)),
+  };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProfViewContainer));
