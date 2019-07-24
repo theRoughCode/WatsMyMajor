@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
+import { Helmet } from 'react-helmet';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ProfHeader from './ProfHeader';
@@ -121,10 +122,11 @@ class ProfViewContainer extends Component {
   constructor(props) {
     super(props);
 
-    let { name, courses, tags, rmpURL } = props.profMetadata;
+    let { name, courses, tags, rmpURL, id } = props.profMetadata;
 
     this.state = {
       profName: name || '',
+      id: id || '',
       courses: courses || [],
       reviews: [],
       rating: 0,
@@ -152,9 +154,10 @@ class ProfViewContainer extends Component {
     }
 
     if (!objectEquals(this.props.profMetadata, profMetadata)) {
-      let { name, courses, tags, rmpURL } = profMetadata;
+      let { name, courses, tags, rmpURL, id } = profMetadata;
       this.setState({
         profName: name,
+        id: id || '',
         courses: courses || [],
         tags: tags || [],
         rmpURL: rmpURL || '',
@@ -273,6 +276,7 @@ class ProfViewContainer extends Component {
   render() {
     const {
       profName,
+      id,
       courses,
       reviews,
       rating,
@@ -400,12 +404,27 @@ class ProfViewContainer extends Component {
         </div>
       );
 
+    const pageTitle = `${profName} | University of Waterloo - WatsMyMajor`;
+    const pageDescription = `${profName} - ${tags.join(', ')} (${numRatings} ratings)`;
+    const pageKeywords = [profName, 'uw', 'uwaterloo', 'waterloo', 'prof', 'professor',
+      ...tags, ...courses.map(({ subject, catalogNumber}) => subject + ' ' + catalogNumber)];
+
     return (
       <MediaQuery minWidth={ 400 }>
         { matches => {
           const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
           return (
             <div style={{ width: '100%', display: 'flex' }}>
+              <Helmet>
+                <title>{ pageTitle }</title>
+                <meta name="description" content={ pageDescription } />
+                <meta name="keywords" content={ pageKeywords } />
+                <meta property="og:url"           content={ `https://www.watsmymajor.com/professors/${id}` } />
+                <meta property="og:type"          content="website" />
+                <meta property="og:title"         content={ pageTitle } />
+                <meta property="og:description"   content={ pageDescription } />
+                <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png" />
+              </Helmet>
               <div style={ styles.container(isMobile) }>
                 <ProfHeader
                   profName={ profName }

@@ -47,10 +47,12 @@ function setRMP(prof, rmpURL, tags) {
 
 async function getProf(profName) {
   try {
+    const profId = profName.replace(/(\s|\.)/g, '');
     const snapshot = await profsRef
-      .child(profName.replace(/(\s|\.)/g, ''))
+      .child(profId)
       .once('value');
     const prof = await snapshot.val();
+    prof.id = profId;
     return { err: null, prof };
   } catch (err) {
     console.error(err);

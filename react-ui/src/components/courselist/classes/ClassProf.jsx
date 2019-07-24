@@ -3,17 +3,20 @@ import PropTypes from 'prop-types';
 import Chip from 'material-ui/Chip';
 import Divider from 'material-ui/Divider';
 import CircularProgress from 'material-ui/CircularProgress';
-import FontAwesome from 'react-fontawesome';
+import RateIcon from 'material-ui/svg-icons/maps/rate-review';
 import { Line } from 'rc-progress';
 import StarRatings from 'react-star-ratings';
-import { lightGreen2, yellow, red } from 'constants/Colours';
+import { lightGreen2, yellow, red, darkGrey } from 'constants/Colours';
 
 const styles = {
-  container: {
+  container: (isMobile) => ({
     display: 'inline-block',
-    paddingLeft: 20,
-    borderLeft: '2px solid #eeeeee',
-  },
+    paddingLeft: (isMobile) ? 0 : 20,
+    borderLeft: (isMobile) ? 'none' : '2px solid #eeeeee',
+    paddingTop: (isMobile) ? 20 : 0,
+    marginTop: (isMobile) ? 20 : 0,
+    borderTop: (isMobile) ? '2px solid #eeeeee' : 'none',
+  }),
   stars: {
     starRatedColor: yellow,
     starDimension: '15px',
@@ -30,9 +33,10 @@ const styles = {
     marginLeft: '10px'
   },
   icon: {
-    width: '20px',
-    height: '20px',
-    marginRight: '10px'
+    width: 20,
+    height: 20,
+    marginRight: 6,
+    verticalAlign: 'middle',
   },
   chip: {
     margin: 2,
@@ -68,12 +72,13 @@ const styles = {
     height: 'auto',
     padding: 20,
   },
-  shareContainer: {
+  shareContainer: (isMobile) => ({
     textAlign: 'left',
     fontSize: 15,
     padding: '10px 20px',
-    paddingBottom: 0,
-  }
+    paddingBottom: (isMobile) ? 10 : 0,
+    borderBottom: (isMobile) ? '1px solid #eeeeee' : 'none',
+  })
 };
 
 
@@ -149,13 +154,14 @@ Rating.defaultProps = {
 const ClassProf = ({
   instructor,
   loading,
-  prof
+  prof,
+  isMobile,
 }) => {
   const {
     rating,
     difficulty,
     tags,
-    rmpURL,
+    id
   } = prof;
 
   const loadingView = (
@@ -169,7 +175,7 @@ const ClassProf = ({
   );
 
   const renderedView = (
-    <div style={ styles.container }>
+    <div style={ styles.container(isMobile) }>
       <ProfHeader
         name={ instructor }
         stars={ rating }
@@ -180,15 +186,20 @@ const ClassProf = ({
         tags={ tags }
       />
       <Divider style={ styles.divider } />
-      <div style={ styles.shareContainer }>
-        <FontAwesome name='globe' style={ styles.icon } />
-        <a className="course-prof-share" rel="noopener noreferrer" href={ rmpURL } target='_blank'>See on ratemyprofessors.com</a>
+      <div style={ styles.shareContainer(isMobile) }>
+        <RateIcon color={ darkGrey } style={ styles.icon } />
+        <a
+          className="course-prof-share"
+          rel="noopener noreferrer"
+          href={ `/professors/${id}` }
+          target='_blank'
+        >See all reviews</a>
       </div>
     </div>
   )
 
   if (loading) return loadingView;
-  else if (!rmpURL) return null;
+  else if (id == null) return null;
   else return renderedView;
 };
 
@@ -196,6 +207,7 @@ ClassProf.propTypes = {
   instructor: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   prof: PropTypes.object.isRequired,
+  isMobile: PropTypes.bool.isRequired,
 };
 
 export default ClassProf;

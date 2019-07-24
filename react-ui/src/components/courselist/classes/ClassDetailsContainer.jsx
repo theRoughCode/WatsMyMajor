@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -50,12 +51,14 @@ const styles =  {
     flexDirection: 'column',
     paddingBottom: 0,
   },
-  body: {
+  body: (isMobile) => ({
     display: 'flex',
-  },
+    flexDirection: (isMobile) ? 'column' : 'row',
+  }),
   note: {
     fontSize: 13,
     marginTop: 30,
+    marginBottom: 10,
   },
   actions: {
     paddingTop: 0,
@@ -69,7 +72,7 @@ const styles =  {
 
 async function retrieveProfInfo(instructor) {
   try {
-    const response = await fetch(`/server/prof/${instructor}`, {
+    const response = await fetch(`/server/prof/info/${instructor}`, {
       headers: {
         'x-secret': process.env.REACT_APP_SERVER_SECRET
       }
@@ -197,53 +200,62 @@ export default class ClassDetailsContainer extends Component {
     }
 
     return (
-      <Dialog
-        title={
-          <div style={ styles.titleContainer }>
-            <div style={ styles.header }>
-              <span style={ styles.headerText }>Class Information</span>
-              <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
-              <span style={ styles.admURL }>
-                Scraped from:
-                <a href={ admURL } target="_blank" rel="noopener noreferrer">
-                  adm.uwaterloo.ca
-                </a>
-              </span>
-            </div>
-            { watchButton }
-          </div>
-        }
-        open={ open }
-        actions={ actions }
-        onRequestClose={ onClose }
-        contentStyle={ styles.dialog }
-        bodyStyle={ styles.container }
-        actionsContainerStyle={ styles.actions }
-      >
-        <div style={ styles.body }>
-          <ClassInfo
-            units={ units }
-            topic={ topic }
-            attending={ enrollmentTotal }
-            enrollmentCap={ enrollmentCap }
-            waiting={ waitingTotal }
-            waitingCap={ waitingCap }
-            reserved={ reserveTotal }
-            reserveCap={ reserveCap }
-            reserveGroup={ reserveGroup }
-          />
-          <ClassProf
-            instructor={ instructor }
-            loading={ fetchingRMP }
-            prof={ prof }
-          />
-        </div>
-        {
-          (note.length > 0) && (
-            <i style={ styles.note }>{ `Note: ${note}` }</i>
-          )
-        }
-      </Dialog>
+      <MediaQuery minWidth={ 475 }>
+        { matches => {
+          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+          return (
+            <Dialog
+              title={
+                <div style={ styles.titleContainer }>
+                  <div style={ styles.header }>
+                    <span style={ styles.headerText }>Class Information</span>
+                    <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+                    <span style={ styles.admURL }>
+                      <span style={{ marginRight: 4 }}>Scraped from:</span>
+                      <a href={ admURL } target="_blank" rel="noopener noreferrer">
+                        adm.uwaterloo.ca
+                      </a>
+                    </span>
+                  </div>
+                  { watchButton }
+                </div>
+              }
+              open={ open }
+              actions={ actions }
+              onRequestClose={ onClose }
+              contentStyle={ styles.dialog }
+              bodyStyle={ styles.container }
+              actionsContainerStyle={ styles.actions }
+              autoScrollBodyContent
+            >
+              <div style={ styles.body(isMobile) }>
+                <ClassInfo
+                  units={ units }
+                  topic={ topic }
+                  attending={ enrollmentTotal }
+                  enrollmentCap={ enrollmentCap }
+                  waiting={ waitingTotal }
+                  waitingCap={ waitingCap }
+                  reserved={ reserveTotal }
+                  reserveCap={ reserveCap }
+                  reserveGroup={ reserveGroup }
+                />
+                <ClassProf
+                  instructor={ instructor }
+                  loading={ fetchingRMP }
+                  prof={ prof }
+                  isMobile={ isMobile }
+                />
+              </div>
+              {
+                (note.length > 0) && (
+                  <i style={ styles.note }>{ `Note: ${note}` }</i>
+                )
+              }
+            </Dialog>
+          );
+        } }
+      </MediaQuery>
     );
   }
 
