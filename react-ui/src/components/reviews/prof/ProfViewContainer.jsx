@@ -407,7 +407,7 @@ class ProfViewContainer extends Component {
     const pageTitle = `${profName} | University of Waterloo - WatsMyMajor`;
     const pageDescription = `${profName} - ${tags.join(', ')} (${numRatings} ratings)`;
     const pageKeywords = [profName, 'uw', 'uwaterloo', 'waterloo', 'prof', 'professor',
-      ...tags, ...courses.map(({ subject, catalogNumber}) => subject + ' ' + catalogNumber)];
+      ...tags, ...courses.map(({ subject, catalogNumber }) => subject + ' ' + catalogNumber)];
 
     return (
       <MediaQuery minWidth={ 400 }>
