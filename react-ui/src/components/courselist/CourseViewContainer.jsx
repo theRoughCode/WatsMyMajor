@@ -6,6 +6,7 @@ import CourseContent from './content/CourseContent';
 import ClassDetails from './classes/ClassDetailsContainer';
 import PrereqsTree from './tree/PrerequisitesTreeContainer';
 import ErrorView from '../tools/ErrorView';
+import LoadingView from '../tools/LoadingView';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
 import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
 import { hasTakenCourse, isInCart, canTakeCourse } from 'utils/courses';
@@ -118,6 +119,7 @@ class CourseViewContainer extends Component {
       classes: [],
       classInfo: defaultClassInfo,
       watchlist: {},
+      loading: false,
     }
 
     this.updateMetadata = this.updateMetadata.bind(this);
@@ -151,11 +153,14 @@ class CourseViewContainer extends Component {
     const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
     const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
 
-    // Don't want class info from previous class
-    if (isNewCourse) this.closeClassModal();
 
     // User selected new course
     if (isNewCourse) {
+      // Don't want class info from previous class
+      this.closeClassModal();
+      this.setState({ loading: true });
+      setTimeout(() => this.setState({ loading: false }), 5000);
+
       const { myCourses, cart } = nextProps;
       const taken = hasTakenCourse(nextSubject, nextCatNum, myCourses);
       const inCart = isInCart(nextSubject, nextCatNum, cart);
@@ -164,7 +169,7 @@ class CourseViewContainer extends Component {
     }
 
     if (updatedMetadata) this.updateMetadata(nextSubject, nextCatNum, nextProps.courseMetadata);
-    if (updatedClasses) this.setState({ classes: nextProps.courseClasses });
+    if (updatedClasses) this.setState({ classes: nextProps.courseClasses, loading: false });
 
     // User courses are updated
     if (updatedUserCourses) {
@@ -237,7 +242,7 @@ class CourseViewContainer extends Component {
     };
 
     const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
-    this.setState({ course, eligible });
+    this.setState({ course, eligible, loading: false });
   }
 
   viewCart() {
@@ -292,8 +297,11 @@ class CourseViewContainer extends Component {
       eligible,
       classInfo,
       classModalOpen,
-      error
+      error,
+      loading,
     } = this.state;
+
+    if (loading) return <LoadingView />;
 
     if (!this.props.isLoggedIn) {
       taken = false;

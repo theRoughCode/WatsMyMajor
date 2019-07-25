@@ -52,11 +52,11 @@ const styles = {
 };
 
 const mobileStyles = {
-  titleContainer: (isWelcomeScreen) => ({
+  titleContainer: (isWelcomeScreen, expanded) => ({
     cursor: 'pointer',
     width: 'fit-content',
     flex: 'none',
-    marginRight: 15,
+    marginRight: (expanded) ? 0 : 15,
   }),
   searchBar: {
     marginTop: '5px',
@@ -80,6 +80,10 @@ class AppBar extends Component {
     location: PropTypes.object.isRequired,
   };
 
+  state = {
+    expanded: false,
+  };
+
   onSearchResult = ({ subject, catalogNumber, id }) => {
     if (id != null) this.props.history.push(`/professors/${id}`);
     else this.props.history.push(`/courses/${subject}/${catalogNumber}`);
@@ -94,8 +98,13 @@ class AppBar extends Component {
     this.props.onLogout();
   }
 
+  expandSearch = () => this.setState({ expanded: true });
+
+  closeSearch = () => this.setState({ expanded: false });
+
   render() {
     const { toggleSideBar, isLoggedIn } = this.props;
+    const { expanded } = this.state;
     const isWelcomeScreen = (this.props.history.location.pathname === '/welcome');
     const hoverColor = (isWelcomeScreen) ? 'rgba(230, 230, 230, 0.8)' : blueGreenHighlight;
     const button = (isLoggedIn)
@@ -149,29 +158,42 @@ class AppBar extends Component {
               </Link>
             }
           >
-            <SearchBar onResult={ this.onSearchResult } style={ styles.searchBar } />
+            <SearchBar
+              onResult={ this.onSearchResult }
+              style={ styles.searchBar }
+              expandSearch={ this.expandSearch }
+              closeSearch={ this.closeSearch }
+            />
             { button }
           </Bar>
         </MediaQuery>
         <MediaQuery maxWidth={ 800 }>
           <Bar
             style={ styles.container(isWelcomeScreen) }
-            titleStyle={ mobileStyles.titleContainer(isWelcomeScreen) }
+            titleStyle={ mobileStyles.titleContainer(isWelcomeScreen, expanded) }
             onLeftIconButtonClick={ toggleSideBar }
             showMenuIconButton={ !isWelcomeScreen }
             zDepth={ (isWelcomeScreen) ? 0 : 1 }
-            title={
-              <a href="/">
-                <img src={ logo } alt="logo" style={ mobileStyles.logo } />
-              </a>
+            title={ !expanded &&
+              (
+                <a href="/">
+                  <img src={ logo } alt="logo" style={ mobileStyles.logo } />
+                </a>
+              )
             }
           >
-            <SearchBar onResult={ this.onSearchResult } style={ mobileStyles.searchBar } />
+            <SearchBar
+              onResult={ this.onSearchResult }
+              style={ mobileStyles.searchBar }
+              expandSearch={ this.expandSearch }
+              closeSearch={ this.closeSearch }
+              popoverProps={{ style: { width: 'auto' } }}
+            />
             <MediaQuery minWidth={ 530 }>
-              { button }
+              { !expanded && button }
             </MediaQuery>
             <MediaQuery maxWidth={ 530 }>
-              { xsButton }
+              { !expanded && xsButton }
             </MediaQuery>
           </Bar>
         </MediaQuery>

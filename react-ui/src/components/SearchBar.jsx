@@ -27,6 +27,9 @@ class AppSearchBar extends Component {
     style: PropTypes.object,
     onResult: PropTypes.func.isRequired,
     courseOnly: PropTypes.bool,
+    expandSearch: PropTypes.func.isRequired,
+    closeSearch: PropTypes.func.isRequired,
+    popoverProps: PropTypes.object,
   };
 
   static defaultProps = {
@@ -38,6 +41,7 @@ class AppSearchBar extends Component {
       textOverflow: 'ellipsis',
     },
     courseOnly: false,
+    popoverProps: null,
   };
 
   constructor(props) {
@@ -54,13 +58,9 @@ class AppSearchBar extends Component {
     this.searchCourse = this.searchCourse.bind(this);
   }
 
-  componentDidMount() {
-    // Auto focus search bar
-    this.searchBar.focus();
-  }
-
   onClick() {
     this.setState({ dataSource: [], query: '' });
+    this.props.expandSearch();
   }
 
   // Find all courses and profs that match the queried string
@@ -103,6 +103,8 @@ class AppSearchBar extends Component {
         onNewRequest={ this.searchCourse }
         style={ this.props.style }
         value={ this.state.query }
+        onBlur={ this.props.closeSearch }
+        popoverProps={ this.props.popoverProps }
       />
     );
   }
