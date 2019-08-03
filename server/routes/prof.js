@@ -2,6 +2,25 @@ const passport = require('passport');
 const ProfRouter = require('express').Router();
 const profScraper = require('../core/scrapers/prof');
 const reviewsCore = require('../core/reviews');
+const profsDB = require('../database/profs');
+
+// Get professor list for a course
+ProfRouter.get('/list/:subject/:catalogNumber', async function(req, res) {
+  const { subject, catalogNumber } = req.params;
+  const { err, profList } = await profsDB.getCourseProfs(subject.toUpperCase(), catalogNumber);
+  res.set('Content-Type', 'application/json');
+  if (err) res.status(400).send(err.message);
+  else res.json(profList);
+});
+
+// Get prof id
+ProfRouter.get('/id/:name', async function(req, res) {
+  const { name } = req.params;
+  const { err, prof } = await profsDB.getProfId(name);
+  res.set('Content-Type', 'application/json');
+  if (err) res.status(400).send(err.message);
+  else res.json(prof);
+});
 
 // Get professor rating from ratemyprofessors.com
 ProfRouter.get('/rmp/:name', async function(req, res) {
@@ -86,9 +105,9 @@ ProfRouter.post('/reviews/:profName/vote',
     const { id, vote } = Object.assign({}, req.body);
 
     try {
-      let err =  await reviewsCore.addProfReviewVote(profName, id, username, vote);
+      let err = await reviewsCore.addProfReviewVote(profName, id, username, vote);
       if (err) return res.status(400).send(err);
-      return res.status(200).send('Review added');
+      return res.status(200).send('Vote added');
     } catch (err) {
       console.error(err);
       res.status(400).send(err);

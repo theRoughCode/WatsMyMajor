@@ -32,7 +32,9 @@ import {
   UPDATE_COURSE_CLASSES,
   // Prefetch data
   UPDATE_COURSE_METADATA,
+  UPDATE_COURSE_METADATA_ERROR,
   UPDATE_PROF_METADATA,
+  UPDATE_PROF_METADATA_ERROR,
 } from './actions';
 
 function sideBarOpen(state = false, action) {
@@ -312,6 +314,8 @@ function courseMetadata(state = {}, action) {
   switch (action.type) {
   case UPDATE_COURSE_METADATA:
     return action.payload || state;
+  case UPDATE_COURSE_METADATA_ERROR:
+    return { err: true };
   default:
     return state;
   }
@@ -340,6 +344,8 @@ function profMetadata(state = {}, action) {
     });
     info.courses = courses;
     return info;
+  case UPDATE_PROF_METADATA_ERROR:
+    return { error: true };
   default:
     return state;
   }

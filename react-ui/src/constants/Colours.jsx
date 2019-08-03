@@ -37,6 +37,7 @@ export const blueGreenHighlight = '#5aced5';
 
 // YELLOW
 export const yellow = '#FFD54F';
+export const yellow2 = '#FFBB00';
 
 // PURPLE
 export const lightPurple = '#9280ff';

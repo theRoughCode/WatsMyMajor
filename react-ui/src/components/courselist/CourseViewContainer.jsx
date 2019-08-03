@@ -208,6 +208,10 @@ class CourseViewContainer extends Component {
 
   updateMetadata(subject, catalogNumber, metadata) {
     if (metadata == null || Object.keys(metadata).length === 0) return;
+    if (metadata.hasOwnProperty('err')) {
+      this.setState({ error: true });
+      return;
+    }
     subject = subject.toUpperCase();
 
     let {
@@ -242,7 +246,7 @@ class CourseViewContainer extends Component {
     };
 
     const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
-    this.setState({ course, eligible, loading: false });
+    this.setState({ course, eligible, loading: false, error: false });
   }
 
   viewCart() {

@@ -8,6 +8,7 @@ import CourseHeader from './CourseHeader';
 import CourseDescription from './CourseDescription';
 import CourseClassList from './CourseClassList';
 import CourseRequisites from './CourseRequisites';
+import CourseReviewContainer from '../../reviews/courses/CourseReviewContainer';
 
 const styles = {
   courseContent: (isMobile) => {
@@ -159,6 +160,10 @@ const CourseContent = ({
                 />
               </div>
             </div>
+            <CourseReviewContainer
+              subject={ subject }
+              catalogNumber={ catalogNumber }
+            />
             <div
               className="fb-like"
               style={ styles.fbLikeContainer }
