@@ -76,9 +76,46 @@ async function getProfList() {
   }
 }
 
+// Get list of profs for a course
+async function getCourseProfs(subject, catalogNumber) {
+  try {
+    const snapshot = await profsRef.once('value');
+    const profList = [];
+    snapshot.forEach(childSnapshot => {
+      const name = childSnapshot.child('name').val();
+      const courses = childSnapshot.child('courses').val();
+      if (courses == null) return;
+      if (courses.hasOwnProperty(subject) && courses[subject].hasOwnProperty(catalogNumber)) {
+        profList.push(name);
+      }
+    });
+    return { err: null, profList };
+  } catch (err) {
+    console.error(err);
+    return { err: err.message, profList: null };
+  }
+}
+
+// Get prof id by name
+async function getProfId(name) {
+  try {
+    const snapshot = await profsRef
+      .orderByChild('name')
+      .equalTo(name)
+      .once('value');
+    const prof = Object.keys(snapshot.val())[0];
+    return { err: null, prof };
+  } catch (err) {
+    console.error(err);
+    return { err: err.message, prof: null };
+  }
+}
+
 module.exports = {
   setProfClasses,
   setRMP,
   getProf,
   getProfList,
+  getCourseProfs,
+  getProfId,
 };

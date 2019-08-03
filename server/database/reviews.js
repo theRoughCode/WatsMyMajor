@@ -1,9 +1,9 @@
 const { reviewsRef } = require('./index');
 const profReviewsRef = reviewsRef.child('profs');
-// const courseReviewsRef = reviewsRef.child('courses');
+const courseReviewsRef = reviewsRef.child('courses');
 
 /*
-reviewSchema:
+profReviewsSchema:
 {
   subject,
   catalogNumber,
@@ -28,15 +28,39 @@ votesSchema:
   profs: {
     name: {
       rmp: {
-        rmpId: reviewSchema
+        rmpId: profReviewsSchema
       },
       wmm: {
-        id: reviewSchema
+        id: profReviewsSchema
       }
     }
   },
   courses: {
-
+    subject: {
+      catalogNumber: {
+        bird: [
+          {
+            date,
+            comments
+          }
+        ],
+        wmm: {
+          date,
+          comments,
+          advice,
+          term,
+          year,
+          interesting,
+          useful,
+          easy,
+          prof,
+          difficulty,
+          isMandatory,
+          textbookUsed,
+          grade,
+        }
+      }
+    }
   }
 }
 */
@@ -68,9 +92,35 @@ async function deleteProfReview(profName, username) {
     .set(null);
 }
 
-async function addVote(profName, id, username, vote) {
+async function addProfVote(profName, id, username, vote) {
   return profReviewsRef
     .child(`${profName.replace(/(\s|\.)/g, '')}/wmm/${id}/votes/${username}`)
+    .set(vote);
+}
+
+async function setBirdReviews(subject, catalogNumber, reviews, id) {
+  if (reviews == null || reviews.length === 0) return;
+  return courseReviewsRef
+    .child(`${subject}/${catalogNumber}/bird`)
+    .set({ id, reviews });
+}
+
+async function addCourseReview(subject, catalogNumber, username, review) {
+  return courseReviewsRef
+    .child(`${subject}/${catalogNumber}/wmm/${username}`)
+    .set(review);
+}
+
+async function deleteCourseReview(subject, catalogNumber, username) {
+  return courseReviewsRef
+    .child(`${subject}/${catalogNumber}/wmm/${username}`)
+    .set(null);
+}
+
+// id = id of post, username = user who voted
+async function addCourseVote(subject, catalogNumber, id, username, vote) {
+  return courseReviewsRef
+    .child(`${subject}/${catalogNumber}/wmm/${id}/votes/${username}`)
     .set(vote);
 }
 
@@ -106,11 +156,29 @@ async function getProfReviews(prof) {
   }
 }
 
+async function getCourseReviews(subject, catalogNumber) {
+  try {
+    const snapshot = await courseReviewsRef
+      .child(`${subject}/${catalogNumber}`)
+      .once('value');
+    const reviews = await snapshot.val() || [];
+    return { err: null, reviews };
+  } catch (err) {
+    console.error(err);
+    return { err: err.message, reviews: null };
+  }
+}
+
 module.exports = {
   setRmpReview,
   addProfReview,
   deleteProfReview,
-  addVote,
+  addProfVote,
+  setBirdReviews,
+  addCourseReview,
+  deleteCourseReview,
+  addCourseVote,
   getRmpReviewIds,
   getProfReviews,
+  getCourseReviews,
 };

@@ -85,7 +85,7 @@ const styles = {
   text: {
     fontSize: 14,
     textAlign: 'left',
-    marginTop: 0,
+    marginTop: 5,
     marginBottom: 0,
   },
   rmpUrl: {
@@ -187,7 +187,12 @@ export default class Review extends Component {
                 <div style={ styles.upperContainer }>
                   <div style={ styles.reviewTitle(isMobile) }>
                     { subject.length > 0 && (
-                      <span style={ styles.classTaken }>{ `${subject} ${catalogNumber}` }</span>
+                      <a
+                        rel="noopener noreferrer"
+                        href={ `/courses/${subject}/${catalogNumber}` }
+                        target='_blank'
+                        style={ styles.classTaken }
+                      >{ `${subject} ${catalogNumber}` }</a>
                     ) }
                     <StarRatings
                       rating={ rating }

@@ -2,6 +2,16 @@ const profsDB = require('../database/profs');
 const reviewsDB = require('../database/reviews');
 const usersDB = require('../database/users');
 
+const getDate = () => {
+  const today = new Date();
+  let dd = today.getDate();
+  if (dd < 10) dd = '0' + dd;
+  let mm = today.getMonth() + 1;
+  if (mm < 10) mm = '0' + mm;
+  const yy = today.getFullYear();
+  return `${mm}/${dd}/${yy}`;
+}
+
 async function addProfReview(profName, username, review) {
   let err = null;
   if (profName == null) err = 'Invalid prof name';
@@ -9,13 +19,7 @@ async function addProfReview(profName, username, review) {
   if (review == null) err = 'Invalid review';
   if (err) return err;
 
-  const today = new Date();
-  let dd = today.getDate();
-  if (dd < 10) dd = '0' + dd;
-  let mm = today.getMonth() + 1;
-  if (mm < 10) mm = '0' + mm;
-  const yy = today.getFullYear();
-  const date = `${mm}/${dd}/${yy}`;
+  const date = getDate();
 
   if (review.grade != null && review.grade.length === 0) review.grade = null;
   else if (review.grade != null) review.grade = review.grade.toString();
@@ -56,7 +60,7 @@ async function addProfReviewVote(profName, id, username, vote) {
   if (err) return err;
 
   try {
-    await reviewsDB.addVote(profName, id, username, vote);
+    await reviewsDB.addProfVote(profName, id, username, vote);
     return null;
   } catch (err) {
     console.error(err);
@@ -95,6 +99,69 @@ async function getProfReviews(profName) {
   return { err: null, reviews };
 }
 
+async function addCourseReview(subject, catalogNumber, username, review) {
+  let err = null;
+  if (subject == null || catalogNumber == null) err = 'Invalid course';
+  if (username == null) err = 'Invalid username';
+  if (review == null) err = 'Invalid review';
+  if (err) return err;
+
+  const date = getDate();
+  subject = subject.toUpperCase();
+
+  if (review.grade != null && review.grade.length === 0) review.grade = null;
+  else if (review.grade != null) review.grade = review.grade.toString();
+  review.date = date;
+  review.votes = {};
+
+  try {
+    await reviewsDB.addCourseReview(subject, catalogNumber, username, review);
+    const updates = {};
+    updates[`/reviews/courses/${subject}/${catalogNumber}`] = true;
+    await usersDB.updateUser(username, updates);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
+async function deleteCourseReview(subject, catalogNumber, username) {
+  try {
+    await reviewsDB.deleteCourseReview(subject, catalogNumber, username);
+    const updates = {};
+    updates[`/reviews/courses/${subject}/${catalogNumber}`] = null;
+    await usersDB.updateUser(username, updates);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
+async function addCourseReviewVote(subject, catalogNumber, id, username, vote) {
+  let err = null;
+  if (subject == null || catalogNumber == null) err = 'Invalid course';
+  if (id == null) err = 'Invalid id';
+  if (username == null) err = 'Invalid username';
+  if (vote == null) err = 'Invalid vote';
+  if (err) return err;
+
+  try {
+    await reviewsDB.addCourseVote(subject, catalogNumber, id, username, vote);
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
+
+async function getCourseReviews(subject, catalogNumber) {
+  let { err, reviews } = await reviewsDB.getCourseReviews(subject, catalogNumber);
+  if (err || reviews == null) return { err, reviews: null };
+  return { err: null, reviews };
+}
+
 module.exports = {
   addProfReview,
   deleteProfReview,
@@ -102,4 +169,8 @@ module.exports = {
   getProfInfo,
   getProfNames,
   getProfReviews,
+  addCourseReview,
+  deleteCourseReview,
+  addCourseReviewVote,
+  getCourseReviews,
 };

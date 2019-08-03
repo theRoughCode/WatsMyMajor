@@ -135,6 +135,7 @@ class ProfViewContainer extends Component {
       numDifficulty: 0,
       tags: tags || [],
       rmpURL: rmpURL || '',
+      userReview: null,
       error: false,
       sort: 'New',
       loading: true,
@@ -147,20 +148,39 @@ class ProfViewContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { match, profMetadata } = nextProps;
+    const { match, profMetadata, username } = nextProps;
+    if (username !== this.props.username) {
+      let userReview = null;
+      const { reviews } = this.state;
+
+      // Check if user has reviewed this prof
+      for (let i = 0; i < reviews.length; i++) {
+        if (reviews[i].id === nextProps.username) {
+          userReview = reviews[i];
+          break;
+        }
+      }
+      this.setState({ userReview });
+    }
+
     if (this.props.match.params.profName !== match.params.profName) {
       this.updateProf(match.params.profName);
       return;
     }
 
     if (!objectEquals(this.props.profMetadata, profMetadata)) {
-      let { name, courses, tags, rmpURL, id } = profMetadata;
+      let { name, courses, tags, rmpURL, id, error } = profMetadata;
+      if (error != null) {
+        this.setState({ error: true });
+        return;
+      }
       this.setState({
         profName: name,
         id: id || '',
         courses: courses || [],
         tags: tags || [],
         rmpURL: rmpURL || '',
+        error: false,
       });
       this.updateReviews(name);
     }
@@ -174,7 +194,17 @@ class ProfViewContainer extends Component {
 
   async updateReviews(profName) {
     const resp = await getProfReviews(profName);
-    if (resp == null) return;
+    if (resp == null) {
+      this.setState({
+        reviews: [],
+        rating: 0,
+        difficulty: 0,
+        numRatings: 0,
+        numDifficulty: 0,
+        loading: false,
+      });
+      return;
+    }
 
     let numRatings = 0;
     let numDifficulty = 0;
@@ -217,11 +247,16 @@ class ProfViewContainer extends Component {
         }
         review.numThumbsUp = numThumbsUp;
         review.numThumbsDown = numThumbsDown;
+
+        // Check if this is user's review
+        if (id === this.props.username) {
+          this.setState({ userReview: review });
+        }
         return review;
       });
       reviews.push(...wmmReviews);
     }
-    reviews = reviews.sort(sortFunctions['New']);
+    reviews = reviews.sort(sortFunctions[this.state.sort]);
     const rating = Number((totalRating / numRatings).toFixed(1));
     const difficulty = Number((totalDifficulty / numDifficulty).toFixed(1));
     this.setState({ reviews, rating, difficulty, numRatings, numDifficulty, loading: false });
@@ -284,6 +319,7 @@ class ProfViewContainer extends Component {
       tags,
       numRatings,
       rmpURL,
+      userReview,
       error,
       loading,
     } = this.state;
@@ -291,19 +327,9 @@ class ProfViewContainer extends Component {
       return (
         <ErrorView
           msgHeader={ "Oops!" }
-          msgBody={ `Could not find ${this.props.match.params.profName}!` }
+          msgBody={ `Could not find professor id of ${this.props.match.params.profName}!` }
         />
       );
-    }
-
-    let userReview = null;
-
-    // Check if user has reviewed this prof
-    for (let i = 0; i < reviews.length; i++) {
-      if (reviews[i].id === this.props.username) {
-        userReview = reviews[i];
-        break;
-      }
     }
 
     const reviewsDiv = (loading)

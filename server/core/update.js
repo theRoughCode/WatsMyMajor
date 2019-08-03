@@ -3,6 +3,7 @@ const email = require('./email');
 const waterloo = require('./waterloo');
 const courses = require('./courses');
 const classScraper = require('./scrapers/classes');
+const courseReviewsScraper = require('./scrapers/courses');
 const profScraper = require('./scrapers/prof');
 const classesDB = require('../database/classes');
 const courseListDB = require('../database/courseList');
@@ -13,6 +14,8 @@ const reviewsDB = require('../database/reviews');
 const statsDB = require('../database/stats');
 const usersDB = require('../database/users');
 const watchlistDB = require('../database/watchlist');
+
+const MIN_TERM = 1159;
 
 /****************************
  *                          *
@@ -330,7 +333,7 @@ async function updateTermProfClasses(term) {
 
 // Update all profs for all terms
 async function updateAllProfClasses() {
-  let term = 1159;
+  let term = MIN_TERM;
   const maxTerm = process.env.CURRENT_TERM;
   try {
     while (term <= maxTerm) {
@@ -343,6 +346,13 @@ async function updateAllProfClasses() {
     return err;
   }
 }
+
+
+/****************************
+ *                          *
+ *       R E V I E W S      *
+ *                          *
+ ****************************/
 
 // Update RMP information for prof
 async function updateProfRmp(profName) {
@@ -404,6 +414,49 @@ async function updateAllProfsRmp() {
   }
 }
 
+
+// Update course information from birdcourses.com
+async function updateBirdReviews() {
+  const CHUNK_SIZE = 10;
+  try {
+    let courses = await courseReviewsScraper.getBirdCourses();
+    let courseList = await courseListDB.getCourseList();
+    courseList = courseList.map(({ subject, catalogNumber }) => subject + catalogNumber);
+    courses = courses.filter(({ subject, catalogNumber }) => {
+      return courseList.includes(subject.toUpperCase() + catalogNumber.toUpperCase());
+    });
+
+    // divide promises into batches of CHUNK_SIZE
+    const { acc } = courses.reduce(({ acc, num }, item) => {
+      if (num <= CHUNK_SIZE) {
+        acc[acc.length - 1].push(item);
+        return { acc, num: num + 1 };
+      } else {
+        acc.push([item]);
+        return { acc, num: 1 };
+      }
+    }, { acc: [[]], num: 0 });
+
+    const failedList = [];
+    for (let i = 0; i < acc.length; i++) {
+      const promises = acc[i].map(async ({ subject, catalogNumber, link }) => {
+        const { err, reviews } = await courseReviewsScraper.getBirdInfo(link);
+        if (err) {
+          console.error(err);
+          failedList.push({ subject, catalogNumber });
+          return;
+        }
+        const id = link.split('courseid=')[1];
+        await reviewsDB.setBirdReviews(subject, catalogNumber, reviews, id);
+      });
+      await Promise.all(promises);
+    }
+    return null;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+}
 
 /****************************
  *                          *
@@ -498,4 +551,5 @@ module.exports = {
   updateAllProfClasses,
   updateProfRmp,
   updateAllProfsRmp,
+  updateBirdReviews,
 };

@@ -100,7 +100,8 @@ function setCourseInfo(subject, catalogNumber, {
 async function getCourseInfo(subject, catalogNumber) {
   // Get course information
   let { err, course } = await coursesDB.getCourseInfo(subject, catalogNumber);
-  if (err || course == null) return { err, info: null };
+  if (err) return { err, info: null };
+  if (course == null) return { err: 'No course found', info: null };
 
   const {
     // academicLevel,

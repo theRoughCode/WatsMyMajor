@@ -36,7 +36,9 @@ export const UPDATE_COURSE_CLASSES = 'UPDATE_COURSE_CLASSES';
 
 // For prefetching data
 export const UPDATE_COURSE_METADATA = 'UPDATE_COURSE_METADATA';
+export const UPDATE_COURSE_METADATA_ERROR = 'UPDATE_COURSE_METADATA_ERROR';
 export const UPDATE_PROF_METADATA = 'UPDATE_PROF_METADATA';
+export const UPDATE_PROF_METADATA_ERROR = 'UPDATE_PROF_METADATA_ERROR';
 
 const padBaseUrl = (url) => `${global.baseUrl || ''}${url}`;
 
@@ -312,7 +314,7 @@ export const getCourseMetadata = (subject, catalogNumber) => ({
     types: [
       '',
       { type: UPDATE_COURSE_METADATA },
-      '',
+      { type: UPDATE_COURSE_METADATA_ERROR },
     ]
   }
 });
@@ -342,7 +344,7 @@ export const getProfMetadata = (profId) => ({
     types: [
       '',
       { type: UPDATE_PROF_METADATA },
-      '',
+      { type: UPDATE_PROF_METADATA_ERROR },
     ]
   }
 });

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-import StarRatings from 'react-star-ratings';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Slider from 'material-ui/Slider';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -17,18 +17,19 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { objectEquals } from 'utils/arrays';
-import { white, purple, yellow, red } from 'constants/Colours';
+import { white, purple, yellow2, red, darkRed, green } from 'constants/Colours';
 
 const styles = {
   container: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    flexDirection: 'column',
+    // display: 'flex',
+    // flexWrap: 'wrap',
+    // flexDirection: 'column',
     width: '100%',
   },
   courseField: {
     minWidth: 100,
-    margin: 7,
+    marginRight: 7,
+    marginBottom: 7,
   },
   textField: {
     margin: '10px 7px',
@@ -54,10 +55,24 @@ const styles = {
     color: white,
     float: 'right',
   },
-  stars: {
-    starRatedColor: yellow,
-    starDimension: '25px',
-    starSpacing: '2px'
+  sliderOuterDiv: {
+    display: 'flex',
+    maxWidth: 420,
+  },
+  sliderInnerDiv: { margin: 'auto' },
+  sliderLabel: (num) => ({
+    marginLeft: 5,
+    marginRight: 15,
+    backgroundColor: (num <= 2) ? darkRed : (num >= 4) ? green : yellow2,
+    color: 'white',
+    padding: '1.5px 6px',
+    borderRadius: 5,
+    display: 'inline'
+  }),
+  slider: {
+    margin: '10px auto',
+    float: 'right',
+    maxWidth: 300,
   },
   expansionPanel: {
     maxWidth: 300,
@@ -67,10 +82,6 @@ const styles = {
   expansionDetails: {
     display: 'flex',
     flexDirection: 'column',
-  },
-  difficulty: {
-    margin: 7,
-    maxWidth: 200,
   },
   mandatory: {
     margin: 10,
@@ -87,8 +98,9 @@ const MAX_WORDS = 500;
 export default class WriteReview extends Component {
 
   static propTypes = {
-    profName: PropTypes.string.isRequired,
-    courses: PropTypes.array.isRequired,
+    subject: PropTypes.string.isRequired,
+    catalogNumber: PropTypes.string.isRequired,
+    profs: PropTypes.array.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     userReview: PropTypes.object,
@@ -97,14 +109,28 @@ export default class WriteReview extends Component {
   constructor(props) {
     super(props);
 
+    const years = [];
+    const minYear = 2014;
+    for (let i = new Date().getFullYear(); i >= minYear; i--) {
+      years.push(i);
+    }
+
     this.state = {
       open: false,
-      rating: 0,
+      year: '',
+      years,
+      yearError: false,
+      term: '',
+      terms: ['Fall', 'Winter', 'Spring'],
+      termError: false,
+      interesting: 3,
+      useful: 3,
+      easy: 3,
       ratingError: false,
-      review: '',
+      comments: '',
+      advice: '',
       reviewError: false,
-      course: '',
-      difficulty: '',
+      prof: '',
       isMandatory: '',
       textbookUsed: '',
       grade: '',
@@ -126,10 +152,14 @@ export default class WriteReview extends Component {
   updateForm = (userReview) => {
     if (userReview == null) {
       return this.setState({
-        rating: 0,
-        review: '',
-        course: '',
-        difficulty: '',
+        comments: '',
+        term: '',
+        year: '',
+        interesting: 3,
+        useful: 3,
+        easy: 3,
+        advice: '',
+        prof: '',
         isMandatory: '',
         textbookUsed: '',
         grade: '',
@@ -137,30 +167,32 @@ export default class WriteReview extends Component {
     }
 
     const {
-      subject,
-      catalogNumber,
-      rating,
-      difficulty,
+      prof,
       isMandatory,
       textbookUsed,
       grade,
       comments,
+      advice,
+      term,
+      year,
+      interesting,
+      useful,
+      easy,
     } = userReview;
 
-    let course = '';
+    const profIdx = this.props.profs.indexOf(prof);
+    const termIdx = this.state.terms.indexOf(term);
+    const yearIdx = this.state.years.indexOf(year);
 
-    for (let i = 0; i < this.props.courses.length; i++) {
-      const c = this.props.courses[i];
-      if (subject === c.subject && catalogNumber === c.catalogNumber) {
-        course = i;
-        break;
-      }
-    }
     this.setState({
-      rating: rating || 0,
-      review: comments || '',
-      course,
-      difficulty: difficulty || '',
+      comments: comments || '',
+      advice: advice || '',
+      prof: (profIdx > -1) ? profIdx : '',
+      term: (termIdx > -1) ? termIdx : '',
+      year: (yearIdx > -1) ? yearIdx : '',
+      interesting: interesting || 3,
+      useful: useful || 3,
+      easy: easy || 3,
       isMandatory: (isMandatory == null) ? '' : (isMandatory) ? 'yes' : 'no',
       textbookUsed: (textbookUsed == null) ? '' : (textbookUsed) ? 'yes' : 'no',
       grade: grade || '',
@@ -171,13 +203,16 @@ export default class WriteReview extends Component {
 
   closeForm = () => this.setState({ visible: false });
 
-  changeRating = (rating) => this.setState({ rating, ratingError: false });
+  changeEasy = (_, easy) => this.setState({ easy });
+  changeUseful = (_, useful) => this.setState({ useful });
+  changeInteresting = (_, interesting) => this.setState({ interesting });
 
-  changeCourse = (ev) => this.setState({ course: ev.target.value });
+  changeProf = (ev) => this.setState({ prof: ev.target.value });
+  changeTerm = (ev) => this.setState({ term: ev.target.value, termError: false });
+  changeYear = (ev) => this.setState({ year: ev.target.value, yearError: false });
 
-  changeReview = (ev) => this.setState({ review: ev.target.value, reviewError: false });
-
-  changeDifficulty = (ev) => this.setState({ difficulty: ev.target.value });
+  changeComments = (ev) => this.setState({ comments: ev.target.value, reviewError: false });
+  changeAdvice = (ev) => this.setState({ advice: ev.target.value });
 
   changeMandatory = (ev) => this.setState({ isMandatory: ev.target.value });
 
@@ -187,27 +222,37 @@ export default class WriteReview extends Component {
 
   onSubmit = () => {
     const {
-      rating,
-      review,
-      course,
-      difficulty,
+      comments,
+      advice,
+      prof,
+      term,
+      year,
+      years,
+      terms,
+      interesting,
+      useful,
+      easy,
       isMandatory,
       textbookUsed,
       grade,
     } = this.state;
-    const reviewError = (review.length === 0 || review.length > MAX_WORDS);
-    const ratingError = (rating === 0);
+    const reviewError = (comments.length === 0 || comments.length > MAX_WORDS);
+    const termError = (term.length === 0);
+    const yearError = (year.length === 0);
     const gradeError = (grade < 0 || grade > 100);
 
-    if (reviewError || ratingError || gradeError) {
-      this.setState({ reviewError, ratingError, gradeError });
+    if (reviewError || termError || yearError || gradeError) {
+      this.setState({ reviewError, termError, yearError, gradeError });
     } else {
       const reviewObj = {
-        rating,
-        comments: review,
-        subject: (typeof course === 'number') ? this.props.courses[course].subject : null,
-        catalogNumber: (typeof course === 'number') ? this.props.courses[course].catalogNumber : null,
-        difficulty: difficulty || null,
+        comments,
+        advice,
+        term: terms[term],
+        year: years[year],
+        interesting,
+        useful,
+        easy,
+        prof: (typeof prof === 'number') ? this.props.profs[prof] : null,
         isMandatory: (isMandatory === '') ? null : (isMandatory === 'yes') ? true : false,
         textbookUsed: (textbookUsed === '') ? null : (textbookUsed === 'yes') ? true : false,
         grade: grade || null,
@@ -219,7 +264,7 @@ export default class WriteReview extends Component {
 
   onDelete = () => {
     this.props.onDelete();
-    this.setState({ review: '', visible: true });
+    this.setState({ comments: '', advice: '', visible: true });
   }
 
   render() {
@@ -228,8 +273,11 @@ export default class WriteReview extends Component {
         { this.state.reviewError && (
           <span style={ styles.errorText }>{ `Review cannot exceed ${MAX_WORDS} words.` }</span>
         ) }
-        { this.state.ratingError && (
-          <span style={ styles.errorText }>{ `A rating is required.` }</span>
+        { this.state.yearError && (
+          <span style={ styles.errorText }>{ `Please select a year.` }</span>
+        ) }
+        { this.state.termError && (
+          <span style={ styles.errorText }>{ `Please select a term.` }</span>
         ) }
         { this.state.gradeError && (
           <span style={ styles.errorText }>{ `Invalid grade percentage.` }</span>
@@ -241,37 +289,114 @@ export default class WriteReview extends Component {
       <form style={ styles.container } noValidate autoComplete="off">
         <div style={{ display: 'flex' }}>
           <FormControl style={ styles.courseField }>
-            <InputLabel htmlFor="course">Course</InputLabel>
+            <InputLabel htmlFor="prof">Instructor</InputLabel>
             <Select
-              value={ this.state.course }
-              onChange={ this.changeCourse }
-              inputProps={{ id: 'course' }}
+              value={ this.state.prof }
+              onChange={ this.changeProf }
+              inputProps={{ id: 'prof' }}
             >
               {
-                this.props.courses.map(({ subject, catalogNumber }, i) => (
-                  <MenuItem key={ i } value={ i }>{ `${subject} ${catalogNumber}` }</MenuItem>
+                this.props.profs.map((prof, i) => (
+                  <MenuItem key={ i } value={ i }>{ prof }</MenuItem>
                 ))
               }
             </Select>
           </FormControl>
-          <div style={{ height: 'fit-content', margin: 7, marginTop: 'auto' }}>
-            <StarRatings
-              rating={ this.state.rating }
-              changeRating={ this.changeRating }
-              isSelectable
-              numOfStars={ 5 }
-              { ...styles.stars }
+          <FormControl style={ styles.courseField }>
+            <InputLabel htmlFor="term">Term</InputLabel>
+            <Select
+              value={ this.state.term }
+              onChange={ this.changeTerm }
+              inputProps={{ id: 'term' }}
+            >
+              {
+                this.state.terms.map((term, i) => (
+                  <MenuItem key={ i } value={ i }>{ term }</MenuItem>
+                ))
+              }
+            </Select>
+          </FormControl>
+          <FormControl style={ styles.courseField }>
+            <InputLabel htmlFor="year">Year</InputLabel>
+            <Select
+              value={ this.state.year }
+              onChange={ this.changeYear }
+              inputProps={{ id: 'year' }}
+            >
+              {
+                this.state.years.map((year, i) => (
+                  <MenuItem key={ i } value={ i }>{ year }</MenuItem>
+                ))
+              }
+            </Select>
+          </FormControl>
+        </div>
+        <div style={ styles.sliderOuterDiv }>
+          <div style={ styles.sliderInnerDiv }>
+            <span>Easy:</span>
+            <span style={ styles.sliderLabel(this.state.easy) }>{ this.state.easy }</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Slider
+              step={ 1 }
+              value={ this.state.easy }
+              min={ 1 }
+              max={ 5 }
+              onChange={ this.changeEasy }
+              sliderStyle={ styles.slider }
+            />
+          </div>
+        </div>
+        <div style={ styles.sliderOuterDiv }>
+          <div style={ styles.sliderInnerDiv }>
+            <span>Useful:</span>
+            <span style={ styles.sliderLabel(this.state.useful) }>{ this.state.useful }</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Slider
+              step={ 1 }
+              value={ this.state.useful }
+              min={ 1 }
+              max={ 5 }
+              onChange={ this.changeUseful }
+              sliderStyle={ styles.slider }
+            />
+          </div>
+        </div>
+        <div style={ styles.sliderOuterDiv }>
+          <div style={ styles.sliderInnerDiv }>
+            <span>Interesting:</span>
+            <span style={ styles.sliderLabel(this.state.interesting) }>{ this.state.interesting }</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <Slider
+              step={ 1 }
+              value={ this.state.interesting }
+              min={ 1 }
+              max={ 5 }
+              onChange={ this.changeInteresting }
+              sliderStyle={ styles.slider }
             />
           </div>
         </div>
         <TextField
           label="Leave a review"
-          placeholder={ `What are your thoughts on ${this.props.profName}?` }
+          placeholder={ `What are your thoughts on ${this.props.subject} ${this.props.catalogNumber}?` }
           multiline
-          value={ this.state.review }
-          onChange={ this.changeReview }
+          value={ this.state.comments }
+          onChange={ this.changeComments }
           style={ styles.textField }
           error={ this.state.reviewError }
+          margin="normal"
+          variant="outlined"
+        />
+        <TextField
+          label="Give some advice"
+          placeholder={ 'Any advice for this course?' }
+          multiline
+          value={ this.state.advice }
+          onChange={ this.changeAdvice }
+          style={ styles.textField }
           margin="normal"
           variant="outlined"
         />
@@ -291,20 +416,6 @@ export default class WriteReview extends Component {
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
                 <div style={ styles.expansionDetails }>
-                  <FormControl style={ styles.difficulty }>
-                    <FormLabel component="legend" align="left">How difficult was it?</FormLabel>
-                    <Select
-                      value={ this.state.difficulty }
-                      onChange={ this.changeDifficulty }
-                      style={{ width: 100 }}
-                    >
-                      <MenuItem value={ 1 }>1 (Easy)</MenuItem>
-                      <MenuItem value={ 2 }>2</MenuItem>
-                      <MenuItem value={ 3 }>3</MenuItem>
-                      <MenuItem value={ 4 }>4</MenuItem>
-                      <MenuItem value={ 5 }>5 (Hard)</MenuItem>
-                    </Select>
-                  </FormControl>
                   <FormControl component="fieldset" style={ styles.mandatory }>
                     <FormLabel component="legend" align="left">Was attendance mandatory?</FormLabel>
                     <RadioGroup
@@ -375,11 +486,7 @@ export default class WriteReview extends Component {
     );
 
     // If not written review yet
-    if (!this.props.userReview) return (
-      <div>
-        { form }
-      </div>
-    );
+    if (!this.props.userReview) return form;
 
     return (
       <div>
