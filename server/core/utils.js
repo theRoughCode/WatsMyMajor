@@ -215,6 +215,8 @@ function stripCourseListMetadata(courseList) {
   if (courseList == null) return null;
   return courseList.map(({ term, level, courses }) => {
     courses = stripCoursesMetadata(courses) || [];
+    if (term == null) term = 'My Term Board';
+    if (level == null) level = '1A';
     return { term, level, courses };
   });
 }

@@ -157,7 +157,6 @@ async function getUnverifiedUsers() {
   return snapshot.val();
 }
 
-
 module.exports = {
   setUser,
   updateUser,

@@ -144,7 +144,7 @@ export default class TermBoard extends Component {
   static defaultProps = {
     index: '',
     term: '',
-    level: '',
+    level: '1A',
     courses: [],
     provided: {},
     snapshot: {},

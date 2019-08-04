@@ -27,8 +27,8 @@ class AppSearchBar extends Component {
     style: PropTypes.object,
     onResult: PropTypes.func.isRequired,
     courseOnly: PropTypes.bool,
-    expandSearch: PropTypes.func.isRequired,
-    closeSearch: PropTypes.func.isRequired,
+    expandSearch: PropTypes.func,
+    closeSearch: PropTypes.func,
     popoverProps: PropTypes.object,
   };
 
@@ -40,6 +40,8 @@ class AppSearchBar extends Component {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     },
+    expandSearch: () => {},
+    closeSearch: () => {},
     courseOnly: false,
     popoverProps: null,
   };

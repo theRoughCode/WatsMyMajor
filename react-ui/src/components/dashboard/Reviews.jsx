@@ -59,8 +59,8 @@ const getCourseList = (courses) => {
 export default class Reviews extends Component {
 
   static propTypes = {
-    courses: PropTypes.array,
-    profs: PropTypes.array,
+    courses: PropTypes.object,
+    profs: PropTypes.object,
   };
 
   static defaultProps = {

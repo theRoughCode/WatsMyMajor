@@ -11,6 +11,7 @@ export const LOGOUT_USER = 'LOGOUT_USER';
 export const CREATE_SNACK = 'CREATE_SNACK';
 export const UPDATE_USER_COURSES = 'UPDATE_USER_COURSES';
 export const UPDATE_USER_COURSES_PREREQS = 'UPDATE_USER_COURSES_PREREQS';
+export const UPDATE_USER_COURSES_ERROR = 'UPDATE_USER_COURSES_ERROR';
 export const UPDATE_USER_SCHEDULE = 'UPDATE_USER_SCHEDULE';
 export const UPDATE_USER_SCHEDULE_FAILURE = 'UPDATE_USER_SCHEDULE_FAILURE';
 export const CLEAR_USER_SCHEDULE = 'CLEAR_USER_SCHEDULE';
@@ -95,7 +96,7 @@ export const updateUserCourses = (username, courseList) => ({
     types: [
       { type: UPDATE_USER_COURSES, meta: { courseList } },
       { type: UPDATE_USER_COURSES_PREREQS },
-      ''
+      { type: UPDATE_USER_COURSES_ERROR }
     ]
   }
 });

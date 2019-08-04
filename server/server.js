@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const Raven = require('raven');
+const Sentry = require('@sentry/node');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -40,8 +40,8 @@ app.use(passport.initialize());
 // Priority serve any static files.
 app.use('/static', express.static(path.join(__dirname, '../react-ui/build/static')));
 
-// Configure Raven for logging to Sentry
-Raven.config(process.env.SENTRY_DSN).install();
+// Configure Sentry for error logging
+Sentry.init({ dsn: process.env.SENTRY_DSN });
 
 // Connect all our routes to our application
 app.use('/', router);

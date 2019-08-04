@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { toast } from 'react-toastify';
+import * as Sentry from '@sentry/browser';
 import {
   TOGGLE_SIDEBAR,
   SET_USER,
@@ -8,6 +9,7 @@ import {
   CREATE_SNACK,
   UPDATE_USER_COURSES,
   UPDATE_USER_COURSES_PREREQS,
+  UPDATE_USER_COURSES_ERROR,
   UPDATE_USER_SCHEDULE,
   UPDATE_USER_SCHEDULE_FAILURE,
   CLEAR_USER_SCHEDULE,
@@ -94,6 +96,9 @@ function courseList(state = [], action) {
     return action.meta.courseList || state;
   case UPDATE_USER_COURSES_PREREQS:
     return action.payload || state;
+  case UPDATE_USER_COURSES_ERROR:
+    Sentry.captureMessage(JSON.stringify(action.payload));
+    return state;
   default:
     return state;
   }
