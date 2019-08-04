@@ -17,6 +17,7 @@ const styles = {
       width: `calc(100% - ${horPadding * 2}px)`,
       height: 'calc(100% - 40px)',
       display: 'flex',
+      flexDirection: 'column',
       flexWrap: 'wrap',
       padding: `20px ${horPadding}px`,
     }
@@ -326,7 +327,7 @@ class CourseReviewContainer extends Component {
           return (
             <div style={{ width: '100%' }}>
               <div style={ styles.container(isMobile) }>
-                <div style={{ marginBottom: 15 }}>
+                <div style={{ width: 'fit-content', marginBottom: 10 }}>
                   <span style={ styles.title }>Reviews</span>
                   { numRatings != null && (
                     <span style={ styles.subtitle }>{ numRatingsText }</span>

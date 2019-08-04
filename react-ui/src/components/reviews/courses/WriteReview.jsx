@@ -21,19 +21,23 @@ import { white, purple, yellow2, red, darkRed, green } from 'constants/Colours';
 
 const styles = {
   container: {
-    // display: 'flex',
-    // flexWrap: 'wrap',
-    // flexDirection: 'column',
     width: '100%',
+    overflowX: 'hidden',
   },
-  courseField: {
-    minWidth: 100,
+  instructorField: {
+    marginRight: 7,
+    marginBottom: 7,
+    minWidth: 90,
+    maxWidth: 120,
+  },
+  selectField: {
+    minWidth: 78,
     marginRight: 7,
     marginBottom: 7,
   },
   textField: {
     margin: '10px 7px',
-    width: '100%',
+    display: 'flex',
   },
   deleteBtn: {
     backgroundColor: red,
@@ -288,7 +292,7 @@ export default class WriteReview extends Component {
     const form = (
       <form style={ styles.container } noValidate autoComplete="off">
         <div style={{ display: 'flex' }}>
-          <FormControl style={ styles.courseField }>
+          <FormControl style={ styles.instructorField }>
             <InputLabel htmlFor="prof">Instructor</InputLabel>
             <Select
               value={ this.state.prof }
@@ -302,7 +306,7 @@ export default class WriteReview extends Component {
               }
             </Select>
           </FormControl>
-          <FormControl style={ styles.courseField }>
+          <FormControl style={ styles.selectField }>
             <InputLabel htmlFor="term">Term</InputLabel>
             <Select
               value={ this.state.term }
@@ -316,7 +320,7 @@ export default class WriteReview extends Component {
               }
             </Select>
           </FormControl>
-          <FormControl style={ styles.courseField }>
+          <FormControl style={ styles.selectField }>
             <InputLabel htmlFor="year">Year</InputLabel>
             <Select
               value={ this.state.year }

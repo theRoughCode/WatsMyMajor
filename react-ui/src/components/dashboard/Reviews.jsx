@@ -44,7 +44,6 @@ const getProfNames = async (list) => {
   }
 }
 
-
 const getCourseList = (courses) => {
   if (courses == null) return [];
   const courseList = [];
