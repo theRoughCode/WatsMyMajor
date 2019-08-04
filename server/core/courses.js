@@ -5,6 +5,9 @@ const profsDB = require('../database/profs');
 const courseListDB = require('../database/courseList');
 const courseRatingsDB = require('../database/courseRatings');
 
+let courseList = [];
+let profList = [];
+
 // Extractors for fuzzy searching
 const simpleExtractor = ({ subject, catalogNumber, name }) =>
   (name == null) ? subject + ' ' + catalogNumber : name;
@@ -24,13 +27,20 @@ const containsCourse = ({ subject, catalogNumber, name }, arr) => {
 // Searches courses with query and a specified number of results to return
 async function searchCourses(query, limit, courseOnly) {
   try {
-    const courses = await courseListDB.getCourseList();
-    const queryList = courses.slice(0);
+    // Cache results
+    if (courseList.length === 0) {
+      courseList = await courseListDB.getCourseList();
+    }
+    const queryList = courseList.slice(0);
     if (!courseOnly) {
-      const { err, profList } = await profsDB.getProfList();
-      if (err) {
-        console.error(err);
-        return { err, result: null };
+      if (profList.length === 0) {
+        const res = await profsDB.getProfList();
+        const err = res.err;
+        profList = res.profList;
+        if (err) {
+          console.error(err);
+          return { err, result: null };
+        }
       }
       queryList.push(...profList);
     }
