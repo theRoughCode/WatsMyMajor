@@ -53,6 +53,7 @@ class App extends Component {
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
     onUndoSnack: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
   };
 
@@ -82,6 +83,7 @@ class App extends Component {
       snackOpen: false,
       snack,
       isLoggedIn,
+      prevPath: '/',
     };
 
     this.handleRouteChange = this.handleRouteChange.bind(this);
@@ -153,15 +155,19 @@ class App extends Component {
 
   // Redirects to Login if not logged in
   addRedirect(Component, redirectUrl = '/login') {
-    return (props) => (
-      (this.state.isLoggedIn) ? <Component { ...props } /> : <Redirect to={ redirectUrl } />
-    );
+    return (props) => {
+      if (this.state.isLoggedIn) return <Component { ...props } />;
+      this.setState({ prevPath: this.props.location.pathname });
+      return <Redirect to={ redirectUrl } />;
+    }
   }
 
-  // Redirects to dashboard if logged in
+  // Redirects to Dashboard if logged in
   addUndirect(Component) {
     return (props) => (
-      (this.state.isLoggedIn) ? <Redirect to="/" /> : <Component { ...props } />
+      (this.state.isLoggedIn)
+        ? <Redirect to={ this.state.prevPath } />
+        : <Component { ...props } />
     );
   }
 
