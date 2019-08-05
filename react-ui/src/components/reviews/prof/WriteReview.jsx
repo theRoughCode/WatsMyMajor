@@ -107,8 +107,8 @@ export default class WriteReview extends Component {
       difficulty: '',
       isMandatory: '',
       textbookUsed: '',
+      grades: ['A+', 'A' ,'B', 'C', 'D', 'E', 'F'],
       grade: '',
-      gradeError: false,
       visible: props.userReview == null,
     };
   }
@@ -183,7 +183,7 @@ export default class WriteReview extends Component {
 
   changeTextbook = (ev) => this.setState({ textbookUsed: ev.target.value });
 
-  changeGrade = (ev) => this.setState({ grade: ev.target.value, gradeError: false });
+  changeGrade = (ev) => this.setState({ grade: ev.target.value });
 
   onSubmit = () => {
     const {
@@ -197,10 +197,9 @@ export default class WriteReview extends Component {
     } = this.state;
     const reviewError = (review.length === 0 || review.length > MAX_WORDS);
     const ratingError = (rating === 0);
-    const gradeError = (grade < 0 || grade > 100);
 
-    if (reviewError || ratingError || gradeError) {
-      this.setState({ reviewError, ratingError, gradeError });
+    if (reviewError || ratingError) {
+      this.setState({ reviewError, ratingError });
     } else {
       const reviewObj = {
         rating,
@@ -230,9 +229,6 @@ export default class WriteReview extends Component {
         ) }
         { this.state.ratingError && (
           <span style={ styles.errorText }>{ `A rating is required.` }</span>
-        ) }
-        { this.state.gradeError && (
-          <span style={ styles.errorText }>{ `Invalid grade percentage.` }</span>
         ) }
       </div>
     );
@@ -328,18 +324,17 @@ export default class WriteReview extends Component {
                     </RadioGroup>
                   </FormControl>
                   <FormControl component="fieldset" style={ styles.mandatory }>
-                    <FormLabel component="legend" align="left">What was your grade (%)?</FormLabel>
-                    <TextField
-                      label="Grade"
-                      placeholder={ `Enter your grade...` }
-                      margin="normal"
-                      variant="outlined"
-                      type="number"
+                    <FormLabel component="legend" align="left">What was your grade?</FormLabel>
+                    <Select
                       value={ this.state.grade }
                       onChange={ this.changeGrade }
-                      error={ this.state.gradeError }
-                      inputProps={{ min: "0", max: "100", step: "1" }}
-                    />
+                    >
+                      {
+                        this.state.grades.map(grade => (
+                          <MenuItem key={ grade } value={ grade }>{ grade }</MenuItem>
+                        ))
+                      }
+                    </Select>
                   </FormControl>
                 </div>
               </ExpansionPanelDetails>

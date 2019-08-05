@@ -5,6 +5,16 @@ const { getPrereqs } = require('../database/requisites');
 	PROVIDES UTILITY FUNCTIONS FOR OTHER MODULES
 */
 
+// Formats date into MM/DD/YYYY
+const formatDate = (date) => {
+  let dd = date.getDate();
+  if (dd < 10) dd = '0' + dd;
+  let mm = date.getMonth() + 1;
+  if (mm < 10) mm = '0' + mm;
+  const yy = date.getFullYear();
+  return `${mm}/${dd}/${yy}`;
+}
+
 // Separate subject, catalog number, and title from course string
 function parseCourse(courseStr) {
   // Get title
@@ -227,6 +237,7 @@ function stripCartMetadata(cart) {
 }
 
 module.exports = {
+  formatDate,
   parseCourse,
   nestReqs,
   parseReqs,

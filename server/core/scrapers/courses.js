@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const utils = require('./utils');
+const { formatDate } = require('./utils');
 
 async function getBirdCourses() {
   const baseUrl = 'https://birdcourses.com';
@@ -54,7 +55,7 @@ async function getBirdInfo(link) {
     const meta = $(el).find('td').children().first().text();
     const comments = $(el).find('td').contents().last().text().replace(/^\s+|\s+$/g, '');
     let date = meta.split(' - ')[1];
-    date = date.split(' ')[0];
+    date = formatDate(new Date(date.split(' ')[0]));
     reviews.push({
       comments,
       date

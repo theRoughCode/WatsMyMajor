@@ -1,15 +1,11 @@
 const profsDB = require('../database/profs');
 const reviewsDB = require('../database/reviews');
 const usersDB = require('../database/users');
+const { formatDate } = require('./utils');
 
 const getDate = () => {
   const today = new Date();
-  let dd = today.getDate();
-  if (dd < 10) dd = '0' + dd;
-  let mm = today.getMonth() + 1;
-  if (mm < 10) mm = '0' + mm;
-  const yy = today.getFullYear();
-  return `${mm}/${dd}/${yy}`;
+  return formatDate(today);
 }
 
 async function addProfReview(profName, username, review) {
