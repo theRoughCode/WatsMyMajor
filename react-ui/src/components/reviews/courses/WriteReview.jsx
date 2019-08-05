@@ -8,13 +8,19 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import AddIcon from 'material-ui/svg-icons/content/add';
+import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import { objectEquals } from 'utils/arrays';
 import { white, purple, yellow2, red, darkRed, green } from 'constants/Colours';
@@ -27,7 +33,7 @@ const styles = {
   instructorField: {
     marginRight: 7,
     marginBottom: 7,
-    minWidth: 90,
+    minWidth: 95,
     maxWidth: 120,
   },
   selectField: {
@@ -36,7 +42,7 @@ const styles = {
     marginBottom: 7,
   },
   textField: {
-    margin: '10px 7px',
+    margin: '10px 0px',
     display: 'flex',
   },
   deleteBtn: {
@@ -78,10 +84,38 @@ const styles = {
     float: 'right',
     maxWidth: 300,
   },
+  card: {
+    maxWidth: 500,
+    margin: '10px 0px',
+    border: '1px solid rgba(0, 0, 0, .2)',
+    boxShadow: 'none',
+  },
+  cardHeader: {
+    padding: '10px 20px',
+    textAlign: 'left',
+    backgroundColor: 'rgba(0, 0, 0, .03)',
+    borderBottom: '1px solid rgba(0, 0, 0, .125)',
+  },
+  resourceDiv: {
+    marginBottom: 10,
+    display: 'flex',
+  },
+  resourceTitle: {
+    maxWidth: 180,
+    margin: 'auto 0',
+  },
+  resourceLink: {
+    width: 260,
+    margin: 'auto 5px',
+  },
   expansionPanel: {
     maxWidth: 300,
     border: '1px solid rgba(0, 0, 0, .2)',
     boxShadow: 'none',
+  },
+  expansionHeader: {
+    backgroundColor: 'rgba(0, 0, 0, .03)',
+    borderBottom: '1px solid rgba(0, 0, 0, .125)',
   },
   expansionDetails: {
     display: 'flex',
@@ -98,6 +132,18 @@ const styles = {
 };
 
 const MAX_WORDS = 500;
+const MAX_RESOURCE_TITLE = 50;
+const MAX_RESOURCE_LINK = 100;
+
+const validURL = (str) => {
+  const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return str.length === 0 || !!pattern.test(str);
+}
 
 export default class WriteReview extends Component {
 
@@ -133,12 +179,13 @@ export default class WriteReview extends Component {
       ratingError: false,
       comments: '',
       advice: '',
-      reviewError: false,
+      reviewError: '',
       prof: '',
       isMandatory: '',
       textbookUsed: '',
       grades: ['A+', 'A' ,'B', 'C', 'D', 'E', 'F'],
       grade: '',
+      resources: [{ title: '', link: '' }],
       visible: props.userReview == null,
     };
   }
@@ -167,6 +214,7 @@ export default class WriteReview extends Component {
         isMandatory: '',
         textbookUsed: '',
         grade: '',
+        resources: [{ title: '', link: '' }],
       });
     }
 
@@ -182,6 +230,7 @@ export default class WriteReview extends Component {
       interesting,
       useful,
       easy,
+      resources,
     } = userReview;
 
     const profIdx = this.props.profs.indexOf(prof);
@@ -200,6 +249,7 @@ export default class WriteReview extends Component {
       isMandatory: (isMandatory == null) ? '' : (isMandatory) ? 'yes' : 'no',
       textbookUsed: (textbookUsed == null) ? '' : (textbookUsed) ? 'yes' : 'no',
       grade: grade || '',
+      resources: resources || [{ title: '', link: '' }],
     });
   }
 
@@ -217,6 +267,26 @@ export default class WriteReview extends Component {
 
   changeComments = (ev) => this.setState({ comments: ev.target.value, reviewError: false });
   changeAdvice = (ev) => this.setState({ advice: ev.target.value });
+
+  changeResourceTitle = (i) => (ev) => {
+    const resources = this.state.resources;
+    resources[i].title = ev.target.value;
+  }
+  changeResourceLink = (i) => (ev) => {
+    const resources = this.state.resources;
+    resources[i].link = ev.target.value;
+  }
+  addResource = () => {
+    const resources = this.state.resources.slice(0);
+    resources.push({ title: '', link: '' });
+    this.setState({ resources });
+  }
+  removeResource = (i) => () => {
+    const resources = this.state.resources.slice(0);
+    if (resources.length === 1) resources[0] = { title: '', link: '' };
+    else resources.splice(i, 1);
+    this.setState({ resources });
+  }
 
   changeMandatory = (ev) => this.setState({ isMandatory: ev.target.value });
 
@@ -240,13 +310,42 @@ export default class WriteReview extends Component {
       textbookUsed,
       grade,
     } = this.state;
-    const reviewError = (comments.length === 0 || comments.length > MAX_WORDS);
+    let reviewError = '';
+    if (comments.length === 0) reviewError = 'Review cannot be left blank.';
+    else if (comments.length > MAX_WORDS) reviewError = `Review cannot exceed ${MAX_WORDS} words.`;
     const termError = (term.length === 0);
     const yearError = (year.length === 0);
+    let resourcesError = false;
+    const resources = this.state.resources.slice(0);
+    for (let i = 0; i < resources.length; i++) {
+      const { title, link } = resources[i];
 
-    if (reviewError || termError || yearError) {
-      this.setState({ reviewError, termError, yearError });
+      // Title error check
+      if (title.length > MAX_RESOURCE_TITLE) {
+        resourcesError = true;
+        resources[i].titleErr = `Title cannot exceed ${MAX_RESOURCE_TITLE} chars.`;
+      } else if (title.length === 0 && link.length > 0) {
+        resourcesError = true;
+        resources[i].titleErr = `Title cannot be blank.`;
+      } else resources[i].titleErr = null;
+
+      // Link error check
+      if (link.length > MAX_RESOURCE_LINK) {
+        resourcesError = true;
+        resources[i].linkErr = `Link cannot exceed ${MAX_RESOURCE_LINK} chars.`;
+      } else if (!validURL(link)) {
+        resourcesError = true;
+        resources[i].linkErr = 'Invalid link.';
+      } else if (link.length === 0 && title.length > 0) {
+        resourcesError = true;
+        resources[i].linkErr = `Link cannot be blank.`;
+      } else resources[i].linkErr = null;
+    }
+
+    if (reviewError.length > 0 || termError || yearError || resourcesError) {
+      this.setState({ reviewError, termError, yearError, resources });
     } else {
+      this.setState({ resources });
       const reviewObj = {
         comments,
         advice,
@@ -259,6 +358,7 @@ export default class WriteReview extends Component {
         isMandatory: (isMandatory === '') ? null : (isMandatory === 'yes') ? true : false,
         textbookUsed: (textbookUsed === '') ? null : (textbookUsed === 'yes') ? true : false,
         grade: grade || null,
+        resources: resources.filter(({ title }) => title.length > 0),
       };
       this.props.onSubmit(reviewObj);
       this.setState({ visible: false });
@@ -273,8 +373,8 @@ export default class WriteReview extends Component {
   render() {
     const errorDiv = (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        { this.state.reviewError && (
-          <span style={ styles.errorText }>{ `Review cannot exceed ${MAX_WORDS} words.` }</span>
+        { this.state.reviewError.length > 0 && (
+          <span style={ styles.errorText }>{ this.state.reviewError }</span>
         ) }
         { this.state.yearError && (
           <span style={ styles.errorText }>{ `Please select a year.` }</span>
@@ -284,6 +384,48 @@ export default class WriteReview extends Component {
         ) }
       </div>
     );
+
+    const resourcesList = this.state.resources.map(({ title, link, titleErr, linkErr }, i) => (
+      <div key={ `${title}${link}` } style={ styles.resourceDiv }>
+        <div style={ styles.resourceTitle }>
+          <TextField
+            label="Title"
+            placeholder="Describe this link"
+            defaultValue={ title }
+            onChange={ this.changeResourceTitle(i) }
+            style={{ width: '100%', marginBottom: 0 }}
+            error={ titleErr != null }
+            margin="normal"
+            variant="outlined"
+          />
+          <div style={{ height: 10 }}>
+            <span style={ styles.errorText }>{ titleErr }</span>
+          </div>
+        </div>
+        <div style={ styles.resourceLink }>
+          <TextField
+            label="Link"
+            placeholder="Enter the link here..."
+            defaultValue={ link }
+            onChange={ this.changeResourceLink(i) }
+            style={{ width: '100%', marginBottom: 0 }}
+            error={ linkErr != null }
+            margin="normal"
+            variant="outlined"
+          />
+          <div style={{ height: 10 }}>
+            <span style={ styles.errorText }>{ linkErr }</span>
+          </div>
+        </div>
+        <div style={{ display: 'flex' }}>
+          <div style={{ margin: 'auto' }}>
+            <IconButton style={{ padding: 5 }} onClick={ this.removeResource(i) }>
+              <CloseIcon />
+            </IconButton>
+          </div>
+        </div>
+      </div>
+    ));
 
     const form = (
       <form style={ styles.container } noValidate autoComplete="off">
@@ -386,12 +528,12 @@ export default class WriteReview extends Component {
           value={ this.state.comments }
           onChange={ this.changeComments }
           style={ styles.textField }
-          error={ this.state.reviewError }
+          error={ this.state.reviewError.length > 0 }
           margin="normal"
           variant="outlined"
         />
         <TextField
-          label="Give some advice"
+          label="Give some advice (optional)"
           placeholder={ 'Any advice for this course?' }
           multiline
           value={ this.state.advice }
@@ -400,17 +542,29 @@ export default class WriteReview extends Component {
           margin="normal"
           variant="outlined"
         />
+        <Card style={ styles.card }>
+          <CardHeader
+            action={
+              <IconButton onClick={ this.addResource }>
+                <AddIcon />
+              </IconButton>
+            }
+            title="Add useful resources"
+            titleTypographyProps={{ style: { fontSize: '0.95rem' } }}
+            style={ styles.cardHeader }
+          />
+          <CardContent style={{ paddingTop: 0, paddingBottom: 0 }}>
+            { resourcesList }
+          </CardContent>
+        </Card>
         <div style={{ display: 'flex', marginBottom: 25 }}>
-          <div style={{ flex: 1, margin: 'auto 7px' }}>
+          <div style={{ flex: 1, marginRight: 10 }}>
             <ExpansionPanel style={ styles.expansionPanel }>
               <ExpansionPanelSummary
                 expandIcon={ <ExpandMoreIcon /> }
                 aria-controls="panel1a-content"
                 id="panel1a-header"
-                style={{
-                  backgroundColor: 'rgba(0, 0, 0, .03)',
-                  borderBottom: '1px solid rgba(0, 0, 0, .125)',
-                }}
+                style={ styles.expansionHeader }
               >
                 <Typography>Add More Details</Typography>
               </ExpansionPanelSummary>

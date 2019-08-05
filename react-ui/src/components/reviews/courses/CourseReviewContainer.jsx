@@ -8,6 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import LoadingView from 'components/tools/LoadingView';
 import WriteReview from './WriteReview';
 import Review from './Review';
+import Resources from './Resources';
 import { purple, grey } from 'constants/Colours';
 
 const styles = {
@@ -147,6 +148,7 @@ class CourseReviewContainer extends Component {
       catalogNumber: props.catalogNumber,
       profs: [],
       reviews: [],
+      resources: [],
       userReview: null,
       sort: 'New',
       loading: true,
@@ -204,6 +206,7 @@ class CourseReviewContainer extends Component {
 
       let numRatings = 0;
       let reviews = [];
+      const resources = [];
 
       // Add reviews from birdcourses
       if (resp.hasOwnProperty('bird')) {
@@ -236,6 +239,11 @@ class CourseReviewContainer extends Component {
           review.numThumbsUp = numThumbsUp;
           review.numThumbsDown = numThumbsDown;
 
+          // Add useful resources
+          if (review.hasOwnProperty('resources')) {
+            resources.push(...review.resources);
+          }
+
           // Check if this is user's review
           if (id === this.props.username) {
             this.setState({ userReview: review });
@@ -247,7 +255,7 @@ class CourseReviewContainer extends Component {
       }
 
       reviews = reviews.sort(sortFunctions[this.state.sort]);
-      this.setState({ reviews, numRatings, loading: false });
+      this.setState({ resources, reviews, numRatings, loading: false });
     } catch (e) {
       console.error(e);
     }
@@ -308,6 +316,7 @@ class CourseReviewContainer extends Component {
       catalogNumber,
       profs,
       reviews,
+      resources,
       userReview,
       numRatings,
       loading,
@@ -325,115 +334,120 @@ class CourseReviewContainer extends Component {
           const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
           const numRatingsText = (numRatings === 1) ? '1 rating' : `${numRatings} ratings`;
           return (
-            <div style={{ width: '100%' }}>
-              <div style={ styles.container(isMobile) }>
-                <div style={{ width: 'fit-content', marginBottom: 10 }}>
-                  <span style={ styles.title }>Reviews</span>
-                  { numRatings != null && (
-                    <span style={ styles.subtitle }>{ numRatingsText }</span>
-                  ) }
-                </div>
-                <div>
-                  {
-                    (this.props.isLoggedIn)
-                      ? (
-                        <WriteReview
-                          subject={ subject }
-                          catalogNumber={ catalogNumber }
-                          profs={ profs }
-                          onSubmit={ this.onSubmit }
-                          onDelete={ this.onDelete }
-                          userReview={ userReview }
-                        />
-                      )
-                      : (
-                        <div style={ styles.login }>
-                          <span>
-                            <Link
-                              to={{
-                                pathname: '/login',
-                                state: {
-                                  from: this.props.location.pathname,
-                                }
+            <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap-reverse' }}>
+              <div style={{ width: '100%', maxWidth: 760 }}>
+                <div style={ styles.container(isMobile) }>
+                  <div style={{ width: 'fit-content', marginBottom: 10 }}>
+                    <span style={ styles.title }>Reviews</span>
+                    { numRatings != null && (
+                      <span style={ styles.subtitle }>{ numRatingsText }</span>
+                    ) }
+                  </div>
+                  <div style={{ width: '100%' }}>
+                    {
+                      (this.props.isLoggedIn)
+                        ? (
+                          <WriteReview
+                            subject={ subject }
+                            catalogNumber={ catalogNumber }
+                            profs={ profs }
+                            onSubmit={ this.onSubmit }
+                            onDelete={ this.onDelete }
+                            userReview={ userReview }
+                          />
+                        )
+                        : (
+                          <div style={ styles.login }>
+                            <span>
+                              <Link
+                                to={{
+                                  pathname: '/login',
+                                  state: {
+                                    from: this.props.location.pathname,
+                                  }
+                                }}
+                              >Login</Link> to write a review!
+                            </span>
+                          </div>
+                        )
+                    }
+                    {
+                      (numRatings === 0)
+                        ? (
+                          (this.props.isLoggedIn)
+                            ? <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
+                            : null
+                        )
+                        : (
+                          <div style={ styles.sortContainer }>
+                            <span style={{ marginRight: 7 }}>Sort By:</span>
+                            <Select
+                              style={{ color: purple, fontWeight: 400 }}
+                              value={ this.state.sort }
+                              onChange={ this.onChangeSort }
+                              inputProps={{
+                                id: 'sort',
                               }}
-                            >Login</Link> to write a review!
-                          </span>
-                        </div>
-                      )
-                  }
-                  {
-                    (numRatings === 0)
-                      ? (
-                        <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
-                      )
-                      : (
-                        <div style={ styles.sortContainer }>
-                          <span style={{ marginRight: 7 }}>Sort By:</span>
-                          <Select
-                            style={{ color: purple, fontWeight: 400 }}
-                            value={ this.state.sort }
-                            onChange={ this.onChangeSort }
-                            inputProps={{
-                              id: 'sort',
-                            }}
-                            autoWidth
-                          >
-                            <MenuItem value="New">New</MenuItem>
-                            <MenuItem value="Old">Old</MenuItem>
-                            <MenuItem value="Highest">Highest Rated</MenuItem>
-                            <MenuItem value="Lowest">Lowest Rated</MenuItem>
-                            <MenuItem value="Top">Top</MenuItem>
-                            <MenuItem value="Controversial">Controversial</MenuItem>
-                          </Select>
-                        </div>
-                      )
-                  }
-                  {
-                    reviews.map(({
-                      id,
-                      date,
-                      prof,
-                      profId,
-                      term,
-                      year,
-                      interesting,
-                      useful,
-                      easy,
-                      difficulty,
-                      isMandatory,
-                      textbookUsed,
-                      grade,
-                      comments,
-                      advice,
-                      numThumbsUp,
-                      numThumbsDown,
-                      birdURL,
-                    }, i) => (
-                      <Review
-                        key={ id || i }
-                        date={ date }
-                        prof={ prof }
-                        profId={ profId }
-                        term={ term }
-                        year={ year }
-                        interesting={ interesting }
-                        useful={ useful }
-                        easy={ easy }
-                        difficulty={ difficulty }
-                        isMandatory={ isMandatory }
-                        textbookUsed={ textbookUsed }
-                        grade={ grade }
-                        comments={ comments }
-                        advice={ advice }
-                        numThumbsUp={ numThumbsUp }
-                        numThumbsDown={ numThumbsDown }
-                        birdURL={ birdURL }
-                        onVote={ this.onVote(i) }
-                      />
-                    ))
-                  }
+                              autoWidth
+                            >
+                              <MenuItem value="New">New</MenuItem>
+                              <MenuItem value="Old">Old</MenuItem>
+                              <MenuItem value="Highest">Highest Rated</MenuItem>
+                              <MenuItem value="Lowest">Lowest Rated</MenuItem>
+                              <MenuItem value="Top">Top</MenuItem>
+                              <MenuItem value="Controversial">Controversial</MenuItem>
+                            </Select>
+                          </div>
+                        )
+                    }
+                    {
+                      reviews.map(({
+                        id,
+                        date,
+                        prof,
+                        profId,
+                        term,
+                        year,
+                        interesting,
+                        useful,
+                        easy,
+                        difficulty,
+                        isMandatory,
+                        textbookUsed,
+                        grade,
+                        comments,
+                        advice,
+                        numThumbsUp,
+                        numThumbsDown,
+                        birdURL,
+                      }, i) => (
+                        <Review
+                          key={ id || i }
+                          date={ date }
+                          prof={ prof }
+                          profId={ profId }
+                          term={ term }
+                          year={ year }
+                          interesting={ interesting }
+                          useful={ useful }
+                          easy={ easy }
+                          difficulty={ difficulty }
+                          isMandatory={ isMandatory }
+                          textbookUsed={ textbookUsed }
+                          grade={ grade }
+                          comments={ comments }
+                          advice={ advice }
+                          numThumbsUp={ numThumbsUp }
+                          numThumbsDown={ numThumbsDown }
+                          birdURL={ birdURL }
+                          onVote={ this.onVote(i) }
+                        />
+                      ))
+                    }
+                  </div>
                 </div>
               </div>
+              <Resources resources={ resources } />
             </div>
           );
         } }
