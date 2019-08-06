@@ -31,7 +31,7 @@ const Resources = ({ resources }) => (resources.length === 0) ? null : (
   <div style={{ margin: '0 auto' }}>
     <Paper style={ styles.container }>
       <div style={ styles.header }>
-        <span style={{ margin: 'auto 20px' }}>Useful Resources</span>
+        <span style={{ margin: 'auto' }}>Useful Resources</span>
       </div>
       <div style={ styles.body }>
         <List component="nav">

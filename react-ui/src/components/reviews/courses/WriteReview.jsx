@@ -44,11 +44,13 @@ const styles = {
   textField: {
     margin: '10px 0px',
     display: 'flex',
+    backgroundColor: 'white',
   },
   deleteBtn: {
     backgroundColor: red,
     color: white,
     marginRight: 7,
+    marginBottom: 7,
   },
   submitBtn: {
     backgroundColor: purple,
@@ -64,6 +66,7 @@ const styles = {
     backgroundColor: red,
     color: white,
     float: 'right',
+    marginBottom: 7,
   },
   sliderOuterDiv: {
     display: 'flex',
@@ -386,7 +389,7 @@ export default class WriteReview extends Component {
     );
 
     const resourcesList = this.state.resources.map(({ title, link, titleErr, linkErr }, i) => (
-      <div key={ `${title}${link}` } style={ styles.resourceDiv }>
+      <div key={ `${i}:${title}${link}` } style={ styles.resourceDiv }>
         <div style={ styles.resourceTitle }>
           <TextField
             label="Title"
