@@ -148,7 +148,7 @@ const mapDispatchToProps = dispatch => {
       const msg = `${subject} ${catalogNumber} has been added to your cart.`;
       const actionMsg = 'undo';
       const undoMsg = `${subject} ${catalogNumber} has been removed from your cart.`;
-      const handleActionClick = () => dispatch(removeFromCart(subject, catalogNumber));
+      const handleActionClick = () => dispatch(removeFromCart(subject, catalogNumber, username, cart));
       dispatch(addToCart(subject, catalogNumber, username, cart));
       dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
     }
