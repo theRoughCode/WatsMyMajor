@@ -125,7 +125,7 @@ class ForgotPassword extends Component {
           this.setState({ emailError: `Email doesn't exist`, isEmailError: true, });
           return;
         default:
-          toast.error('Failed to create account. Please contact an administrator.');
+          toast.error('Failed to send reset email. Please contact an administrator.');
           return;
         }
       } else {
@@ -142,7 +142,7 @@ class ForgotPassword extends Component {
 
   handleInputChange = (e) => {
     const { value: inputVal, name: inputName } = e.target;
-    
+
 
     this.setState({
       [inputName]: inputVal,
