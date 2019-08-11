@@ -54,6 +54,7 @@ const styles = {
   treeContainer: {
     height: '90%',
     width: '100%',
+    overflowX: 'auto',
   }
 };
 
@@ -317,7 +318,7 @@ class PrerequisitesTreeContainer extends Component {
 
   // Closes tree from depth n onwards
   closeAtDepth(node, n, currentDepth = 0) {
-    if (node.isLeaf || !node.isOpen) return;
+    if (node == null || node.isLeaf || !node.isOpen) return;
     if (node.children == null || node.children.length === 0) return;
     // If we're at the required depth, close the tree
     if (n === currentDepth) {

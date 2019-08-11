@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Tree from 'react-tree-graph';
 import Dimensions from 'react-dimensions';
 
+const MAX_WIDTH = 1480;
+
 // We need a component because react-dimensions will complain if we use a
 // stateless presentational component.
 class PrerequisitesTree extends Component {
@@ -13,7 +15,8 @@ class PrerequisitesTree extends Component {
   };
 
   render() {
-    const { data, containerWidth, containerHeight } = this.props;
+    let { data, containerWidth, containerHeight } = this.props;
+    if (containerWidth > MAX_WIDTH) containerWidth = MAX_WIDTH;
     return (
       <Tree
         data={ data }

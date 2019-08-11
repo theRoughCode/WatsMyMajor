@@ -1,4 +1,5 @@
 const asyncjs = require('async');
+const fs = require('fs');
 const email = require('./email');
 const waterloo = require('./waterloo');
 const courses = require('./courses');
@@ -534,6 +535,64 @@ async function updateWatchlist(term, classInfo) {
   return;
 }
 
+async function updateXML() {
+  try {
+    const courseList = await courseListDB.getCourseList();
+    const { profList } = await profsDB.getProfList();
+    const date = new Date();
+    let dd = date.getDate();
+    if (dd < 10) dd = '0' + dd;
+    let mm = date.getMonth() + 1;
+    if (mm < 10) mm = '0' + mm;
+    const yy = date.getFullYear();
+    const dateStr = `${yy}-${mm}-${dd}`;
+    const courseXml = courseList.map(({ subject, catalogNumber }) => {
+      const str = `
+  <url>
+    <loc>https://www.watsmymajor.com/courses/${subject}/${catalogNumber}</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://www.watsmymajor.com/courses/${subject}/${catalogNumber}/tree/prereqs</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.50</priority>
+  </url>`;
+      return str;
+    }).join('');
+    const profXml = profList.map(({ id }) => {
+      const str = `
+  <url>
+    <loc>https://www.watsmymajor.com/professors/${id}</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>`;
+      return str;
+    }).join('');
+    const xml = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.watsmymajor.com</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.00</priority>
+  </url>
+  <url>
+    <loc>https://www.watsmymajor.com/courses/browse</loc>
+    <lastmod>${dateStr}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.60</priority>
+  </url>${courseXml}${profXml}
+</urlset>`;
+    fs.writeFile('./react-ui/public/sitemap.xml', xml, (err) => {
+      if (err) console.error(err);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 module.exports = {
   updateCourseList,
@@ -552,4 +611,5 @@ module.exports = {
   updateProfRmp,
   updateAllProfsRmp,
   updateBirdReviews,
+  updateXML,
 };

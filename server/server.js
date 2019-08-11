@@ -37,8 +37,9 @@ app.use(cookieParser());
 require('./core/passport');
 app.use(passport.initialize());
 
-// Priority serve any static files.
+// Priority serve any static and public files.
 app.use('/static', express.static(path.join(__dirname, '../react-ui/build/static')));
+app.use('/public', express.static(path.join(__dirname, '../react-ui/public')));
 
 // Configure Sentry for error logging
 Sentry.init({ dsn: process.env.SENTRY_DSN });
