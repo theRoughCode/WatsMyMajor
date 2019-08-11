@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
@@ -15,13 +16,14 @@ import 'stylesheets/Tree.css';
 const INITIAL_DEPTH = 2;
 
 const styles = {
-  container: {
+  container: (isMobile) => ({
     backgroundColor: '#242424',
-    height: '100%',
-    width: '100%',
+    height: (isMobile) ? '100vw' : '100%',
+    width: (isMobile) ? '100vh' : '100%',
     display: 'flex',
-    flexDirection: 'column'
-  },
+    flexDirection: 'column',
+    transform: (isMobile) ? 'translatex(calc(50vw - 50%)) translatey(calc(50vh - 50%)) rotate(90deg)' : 'none',
+  }),
   header: {
     margin: 20,
     marginBottom: 0,
@@ -363,34 +365,41 @@ class PrerequisitesTreeContainer extends Component {
     if (tree == null) return null;
 
     return (
-      <div style={ styles.container }>
-        <div style={ styles.header }>
-          <Link to={ `/courses/${subject}/${catalogNumber}` }>
-            <FlatButton
-              label={ `Back to ${subject} ${catalogNumber}` }
-              labelStyle={ styles.backLabel }
-              icon={ <BackIcon style={ styles.backIcon } color="white" /> }
-            />
-          </Link>
-          <span style={ styles.title }>Prerequisites Tree</span>
-          {
-            canBeSimplified && (
-              <Toggle
-                label="Simplified View"
-                style={ styles.toggle }
-                labelStyle={ styles.toggleLabel }
-                labelPosition="right"
-                onToggle={ this.toggleSimplifiedView }
-              />
-            )
-          }
-        </div>
-        { tree && (
-          <div style={ styles.treeContainer }>
-            <Tree data={ tree } />
-          </div>
-        ) }
-      </div>
+      <MediaQuery minWidth={ 475 }>
+        { matches => {
+          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+          return (
+            <div style={ styles.container(isMobile) }>
+              <div style={ styles.header }>
+                <Link to={ `/courses/${subject}/${catalogNumber}` }>
+                  <FlatButton
+                    label={ `Back to ${subject} ${catalogNumber}` }
+                    labelStyle={ styles.backLabel }
+                    icon={ <BackIcon style={ styles.backIcon } color="white" /> }
+                  />
+                </Link>
+                <span style={ styles.title }>Prerequisites Tree</span>
+                {
+                  canBeSimplified && (
+                    <Toggle
+                      label="Simplified View"
+                      style={ styles.toggle }
+                      labelStyle={ styles.toggleLabel }
+                      labelPosition="right"
+                      onToggle={ this.toggleSimplifiedView }
+                    />
+                  )
+                }
+              </div>
+              { tree && (
+                <div style={ styles.treeContainer }>
+                  <Tree data={ tree } />
+                </div>
+              ) }
+            </div>
+          );
+        } }
+      </MediaQuery>
     );
   }
 

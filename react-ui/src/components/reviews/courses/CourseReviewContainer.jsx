@@ -140,6 +140,8 @@ class CourseReviewContainer extends Component {
     catalogNumber: PropTypes.string.isRequired,
   };
 
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -157,8 +159,15 @@ class CourseReviewContainer extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     const { subject, catalogNumber } = this.state;
     this.updatePage(subject, catalogNumber);
+  }
+
+
+  componentWillUnmount() {
+    this._isMounted = false;
+    if (this.timer != null) clearTimeout(this.timer);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -182,17 +191,17 @@ class CourseReviewContainer extends Component {
   }
 
   async updatePage(subject, catalogNumber) {
-    this.setState({ subject, catalogNumber, loading: true });
-    setTimeout(() => this.setState({ loading: false }), 5000);
+    if (this._isMounted) this.setState({ subject, catalogNumber, loading: true });
+    this.timer = setTimeout(() => this.setState({ loading: false }), 5000);
     this.updateReviews(subject, catalogNumber);
     const profs = await getProfList(subject, catalogNumber);
-    if (profs != null) this.setState({ profs });
+    if (this._isMounted && profs != null) this.setState({ profs });
   }
 
   async updateReviews(subject, catalogNumber) {
     try {
       const resp = await getCourseReviews(subject, catalogNumber);
-      if (resp == null) {
+      if (this._isMounted && resp == null) {
         this.setState({
           reviews: [],
           rating: 0,
@@ -245,7 +254,7 @@ class CourseReviewContainer extends Component {
           }
 
           // Check if this is user's review
-          if (id === this.props.username) {
+          if (this._isMounted && id === this.props.username) {
             this.setState({ userReview: review });
           }
           return review;
@@ -255,7 +264,7 @@ class CourseReviewContainer extends Component {
       }
 
       reviews = reviews.sort(sortFunctions[this.state.sort]);
-      this.setState({ resources, reviews, numRatings, loading: false });
+      if (this._isMounted) this.setState({ resources, reviews, numRatings, loading: false });
     } catch (e) {
       console.error(e);
     }
