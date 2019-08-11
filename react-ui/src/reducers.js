@@ -253,7 +253,6 @@ function user(state = defaultUser, action) {
     return action.payload || defaultUser;
   case LOGOUT_USER:
   case DELETE_ACCOUNT_SUCCESS:
-    if (!window.hasOwnProperty('isServer')) document.cookie = 'watsmymajor_jwt=; expires = Thu, 01 Jan 1970 00:00:00 GMT';
     return defaultUser;
   case DELETE_ACCOUNT_FAILURE:
     toast.error('Failed to delete account. Please contact an administrator.')

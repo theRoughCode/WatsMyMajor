@@ -177,12 +177,16 @@ class MajorsContainer extends Component {
 
     const name = majorsList[faculty].majors[majorKey];
     document.title = `${name} Major | University of Waterloo - WatsMyMajor`;
-    const { data, url } = await fetchRequirements(faculty, majorKey);
-    const core = await fetchRequirements(faculty, 'core');
+    let { data, url, ignoreCore } = await fetchRequirements(faculty, majorKey);
+    let core = [];
+    if (!ignoreCore) {
+      const coreReqs = await fetchRequirements(faculty, 'core');
+      core = coreReqs.data;
+    }
     this.setState({
       key: majorKey,
       faculty,
-      core: core.data,
+      core,
       name,
       reqs: data,
       url,

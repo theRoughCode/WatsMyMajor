@@ -42,6 +42,7 @@ export const UPDATE_PROF_METADATA = 'UPDATE_PROF_METADATA';
 export const UPDATE_PROF_METADATA_ERROR = 'UPDATE_PROF_METADATA_ERROR';
 
 const padBaseUrl = (url) => `${global.baseUrl || ''}${url}`;
+const removeCookie = () => document.cookie = 'watsmymajor_jwt=; expires = Thu, 01 Jan 1970 00:00:00 GMT';
 
 /*
  * action creators
@@ -66,7 +67,10 @@ export const loginUser = () => ({
   }
 });
 
-export const logoutUser = () => ({ type: LOGOUT_USER });
+export const logoutUser = () => {
+  removeCookie();
+  return { type: LOGOUT_USER };
+};
 
 export const createSnack = (
   msg,
@@ -290,20 +294,23 @@ export const unlinkFacebook = (username) => ({
   }
 });
 
-export const deleteAccount = (username) => ({
-  [RSAA]: {
-    endpoint: `/server/users/delete/${username}`,
-    method: 'GET',
-    headers: {
-      'X-Secret': process.env.REACT_APP_SERVER_SECRET,
-    },
-    types: [
-      '',
-      { type: DELETE_ACCOUNT_SUCCESS },
-      { type: DELETE_ACCOUNT_FAILURE },
-    ]
-  }
-});
+export const deleteAccount = (username) => {
+  removeCookie();
+  return {
+    [RSAA]: {
+      endpoint: `/server/users/delete/${username}`,
+      method: 'GET',
+      headers: {
+        'X-Secret': process.env.REACT_APP_SERVER_SECRET,
+      },
+      types: [
+        '',
+        { type: DELETE_ACCOUNT_SUCCESS },
+        { type: DELETE_ACCOUNT_FAILURE },
+      ]
+    }
+  };
+};
 
 export const getCourseMetadata = (subject, catalogNumber) => ({
   [RSAA]: {

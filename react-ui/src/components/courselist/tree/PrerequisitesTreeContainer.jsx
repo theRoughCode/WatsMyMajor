@@ -55,6 +55,7 @@ const styles = {
     height: '90%',
     width: '100%',
     overflowX: 'auto',
+    overflowY: 'hidden',
   }
 };
 
@@ -330,7 +331,7 @@ class PrerequisitesTreeContainer extends Component {
 
   // Depth-first traversal to close tree nodes
   closeTree(node) {
-    if (node.isLeaf || !node.isOpen) return;
+    if (node == null || node.isLeaf || !node.isOpen) return;
     if (node.children == null || node.children.length === 0) return;
     node.children.forEach(child => this.closeTree(child));
     node._children = node.children;
@@ -339,7 +340,7 @@ class PrerequisitesTreeContainer extends Component {
 
   // Open/close node.
   toggleNode(node) {
-    if (node.isLeaf) return;
+    if (node == null || node.isLeaf) return;
     if (node.isOpen) {
       this.closeTree(node);
       node.isOpen = false;
