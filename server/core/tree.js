@@ -1,35 +1,47 @@
 const requisites = require('../database/requisites');
+const { getCourseTitle } = require('../database/courseList');
 
-const cached = {};
+let cached = {};
+
+// want to clear cache if too large
+const MAX_LENGTH = 100;
 
 // Returns a prerequisites tree.
-// If there are no prereqs: { subject, catalogNumber }
-// Else, { subject, catalogNumber, choose, children }
+// If there are no prereqs: { subject, catalogNumber, title }
+// Else, { subject, catalogNumber, title, choose, children }
 async function getPrereqsTree(subject, catalogNumber) {
+  if (Object.keys(cached).length > MAX_LENGTH) cached = {};
   if (cached.hasOwnProperty(subject + catalogNumber)) {
-    const { choose, children } = cached[subject + catalogNumber];
-    return { subject, catalogNumber, choose, children };
+    const { title, choose, children } = cached[subject + catalogNumber];
+    return { subject, catalogNumber, title, choose, children };
   }
 
-  const { err, reqs } = await requisites.getPrereqs(subject, catalogNumber);
+  let title = '';
+  let { err, reqs } = await requisites.getPrereqs(subject, catalogNumber);
   if (err) {
     console.error(err);
-    return { subject, catalogNumber };
+    return { subject, catalogNumber, title };
+  }
+  ({ err, title } = await getCourseTitle(subject, catalogNumber));
+  if (err) {
+    console.error(err);
+    return { subject, catalogNumber, title: '' };
   }
 
   if (reqs == null || !reqs.hasOwnProperty('reqs')) {
-    cached[subject + catalogNumber] = {};
-    return { subject, catalogNumber };
+    cached[subject + catalogNumber] = { title };
+    return { subject, catalogNumber, title };
   }
 
   const parsedReqs = await parsePrereqs(reqs);
   if (parsedReqs == null) {
-    cached[subject + catalogNumber] = {};
-    return { subject, catalogNumber };
+    cached[subject + catalogNumber] = { title };
+    return { subject, catalogNumber, title };
   } else {
     const { choose, children } = parsedReqs;
     cached[subject + catalogNumber] = parsedReqs;
-    return { subject, catalogNumber, choose, children };
+    cached[subject + catalogNumber].title = title;
+    return { subject, catalogNumber, title, choose, children };
   }
 }
 

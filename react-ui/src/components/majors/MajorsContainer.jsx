@@ -205,10 +205,14 @@ class MajorsContainer extends Component {
 
   render() {
     const { majorsList, name, faculty, key, url, reqs, core } = this.state;
-    const { isLoggedIn, history, location } = this.props;
+    const { history, location } = this.props;
 
-    // Notify non-loggedin users that they should login first.
-    if (!isLoggedIn) fireLoginPrompt(history, location.pathname, 'Log in to save your selections!');
+    setTimeout(() => {
+      // Notify non-loggedin users that they should login first.
+      if (!this.props.isLoggedIn) {
+        fireLoginPrompt(history, location.pathname, 'Log in to save your selections!');
+      }
+    }, 1500);
 
     if (key.length === 0) {
       return (

@@ -10,6 +10,7 @@ import BackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import Tree from './PrerequisitesTree';
 import { hasTakenCourse } from 'utils/courses';
 import { objectEquals } from 'utils/arrays';
+import { whiteGrey } from 'constants/Colours';
 import 'stylesheets/Tree.css';
 
 // Depth of tree to leave open.
@@ -42,8 +43,13 @@ const styles = {
   title: {
     fontSize: 25,
     color: 'white',
-    flex: 1,
     marginLeft: 20,
+  },
+  courseTitle: {
+    fontSize: 15,
+    color: whiteGrey,
+    flex: 1,
+    display: 'flex',
   },
   toggle: {
     width: 200,
@@ -105,6 +111,7 @@ class PrerequisitesTreeContainer extends Component {
       data: null,  // contains data
       tree: null,  // contains current tree view
       canBeSimplified: false,  // true if tree can be simplified
+      title: '',
     };
 
     this.toggleSimplifiedView = this.toggleSimplifiedView.bind(this);
@@ -146,17 +153,22 @@ class PrerequisitesTreeContainer extends Component {
 
   // Parses course node and formats it
   parseCourseNode(node, myCourses) {
-    const { subject, catalogNumber, choose, children } = node;
-    const id = generateRandomId();
+    const { subject, catalogNumber, title, choose, children } = node;
+    const id = `${subject}${catalogNumber}_${generateRandomId()}`;
     const courseNode = {
       subject,
       catalogNumber,
+      title,
       choose,
       name: `${subject} ${catalogNumber}`,
-      id: `${subject}${catalogNumber}_${id}`,
+      id,
       taken: hasTakenCourse(subject, catalogNumber, myCourses),
       isOpen: true,
       isLeaf: false,
+      textProps: {
+        onMouseEnter: () => this.setState({ title }),
+        onMouseLeave: () => this.setState({ title: '' }),
+      },
       gProps: {},
     };
 
@@ -362,7 +374,7 @@ class PrerequisitesTreeContainer extends Component {
   }
 
   render() {
-    const { tree, canBeSimplified } = this.state;
+    const { tree, canBeSimplified, title } = this.state;
     const { subject, catalogNumber } = this.props;
     if (tree == null) return null;
 
@@ -381,6 +393,9 @@ class PrerequisitesTreeContainer extends Component {
                   />
                 </Link>
                 <span style={ styles.title }>Prerequisites Tree</span>
+                <div style={ styles.courseTitle }>
+                  <span style={{ margin: 'auto' }}>{ title }</span>
+                </div>
                 {
                   canBeSimplified && (
                     <Toggle
