@@ -50,6 +50,7 @@ const styles = {
     color: whiteGrey,
     flex: 1,
     display: 'flex',
+    margin: 'auto 10px',
   },
   toggle: {
     width: 200,

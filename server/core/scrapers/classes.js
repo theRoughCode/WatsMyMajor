@@ -85,7 +85,7 @@ async function getClassInfo(subject, catalogNumber, term) {
  ****************************/
 
 // Create adm.uwaterloo URL
-const createURL = (subject, catalogNumber, term) => {
+function createURL(subject, catalogNumber, term) {
   const level = (catalogNumber.length < 3 || (catalogNumber.charAt(0) <= 4)) ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
@@ -93,7 +93,7 @@ const createURL = (subject, catalogNumber, term) => {
 }
 
 // Format instructor into firstname lastname
-const formatInstructor = (instructor) => {
+function formatInstructor(instructor) {
   if (instructor == null) return '';
   const [lastName, firstName] = instructor.split(',');
   const nameArr = (firstName == null)
@@ -113,7 +113,7 @@ const formatInstructor = (instructor) => {
 //   isCancelled: false,
 //   isClosed: false
 // }
-const formatTimes = (timeStr) => {
+function formatTimes(timeStr) {
   const timeObj = {
     startTime: '',
     endTime: '',
@@ -176,43 +176,45 @@ const formatTimes = (timeStr) => {
     endTime: `${endHour}:${endMin}`,
     weekdays,
   });
-};
+}
 
 // Format reserve arr into useable object
-const formatReserve = (reserveArr) => {
+function formatReserve(reserveArr) {
   const reserveGroup = reserveArr[0].split(': ')[1];
   const reserveCap = Number(reserveArr[1]);
   const reserveTotal = Number(reserveArr[2]);
   return { reserveGroup, reserveCap, reserveTotal };
-};
+}
 
 // Format row data into useable object
-const formatRow = (row) => ({
-  classNumber: Number(row[0]),
-  section: row[1],
-  campus: row[2].replace(/\s+/g, ' '),
-  // associatedClass: row[3],
-  // relatedComp1: row[4],
-  // relatedComp2: row[5],
-  enrollmentCap: Number(row[6]),
-  enrollmentTotal: Number(row[7]),
-  waitingCap: Number(row[8]),
-  waitingTotal: Number(row[9]),
-  reserveCap: 0,
-  reserveTotal: 0,
-  reserveGroup: '',
-  classes: [
-    {
-      ...formatTimes(row[10]),
-      location: row[11].replace(/\s+/g, ' '),
-      instructor: formatInstructor(row[12]),
-    }
-  ],
-  lastUpdated: new Date(Date.now()).toLocaleDateString("en-US", {
-    year: "numeric", month: "short",
-    day: "numeric", hour: "2-digit", minute: "2-digit"
-  }),
-});
+function formatRow(row) {
+  return ({
+    classNumber: Number(row[0]),
+    section: row[1],
+    campus: row[2].replace(/\s+/g, ' '),
+    // associatedClass: row[3],
+    // relatedComp1: row[4],
+    // relatedComp2: row[5],
+    enrollmentCap: Number(row[6]),
+    enrollmentTotal: Number(row[7]),
+    waitingCap: Number(row[8]),
+    waitingTotal: Number(row[9]),
+    reserveCap: 0,
+    reserveTotal: 0,
+    reserveGroup: '',
+    classes: [
+      {
+        ...formatTimes(row[10]),
+        location: row[11].replace(/\s+/g, ' '),
+        instructor: formatInstructor(row[12]),
+      }
+    ],
+    lastUpdated: new Date(Date.now()).toLocaleDateString("en-US", {
+      year: "numeric", month: "short",
+      day: "numeric", hour: "2-digit", minute: "2-digit"
+    }),
+  });
+}
 
 
 module.exports = {

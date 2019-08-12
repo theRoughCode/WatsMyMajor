@@ -26,6 +26,7 @@ const styles = {
 };
 
 const getProfNames = async (list) => {
+  if (list.length === 0) return [];
   try {
     const response = await fetch(`/server/prof/names`, {
       method: 'POST',
@@ -36,11 +37,11 @@ const getProfNames = async (list) => {
       }
     });
 
-    if (!response.ok) return { names: null };
+    if (!response.ok) return [];
     return await response.json();
   } catch (err) {
     console.error(err);
-    return { subject: null, catalogNumber: null };
+    return [];
   }
 }
 
