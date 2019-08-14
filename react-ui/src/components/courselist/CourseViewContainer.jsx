@@ -105,24 +105,35 @@ class CourseViewContainer extends Component {
 
     const { subject, catalogNumber } = props.match.params;
 
+    let course = defaultCourse;
+    let eligible = false;
+    let loading = false;
+    let error = false;
+    if (Object.keys(this.props.courseMetadata).length > 0) {
+      const parsedData = this.updateMetadata(subject, catalogNumber, this.props.courseMetadata);
+      if (parsedData != null) {
+        if (parsedData.error) error = true;
+        else ({ course, eligible, loading } = parsedData);
+      }
+    }
+
     this.state = {
       subject: subject.toUpperCase(),
       catalogNumber,
       term: process.env.REACT_APP_CURRENT_TERM || process.env.CURRENT_TERM,
       admURL: '',
-      error: false,
+      error,
       classModalOpen: false,
       taken: hasTakenCourse(subject, catalogNumber, props.myCourses),
       inCart: isInCart(subject, catalogNumber, props.cart),
-      eligible: false,
-      course: (Object.keys(props.courseMetadata).length > 0) ? props.courseMetadata : defaultCourse,
+      eligible,
+      course,
       classes: [],
       classInfo: defaultClassInfo,
       watchlist: {},
-      loading: false,
+      loading,
     }
 
-    this.updateMetadata = this.updateMetadata.bind(this);
     this.onExpandClass = this.onExpandClass.bind(this);
     this.closeClassModal = this.closeClassModal.bind(this);
     this.updatePageInfo = this.updatePageInfo.bind(this);
@@ -168,7 +179,10 @@ class CourseViewContainer extends Component {
       this.updatePageInfo(nextSubject, nextCatNum);
     }
 
-    if (updatedMetadata) this.updateMetadata(nextSubject, nextCatNum, nextProps.courseMetadata);
+    if (updatedMetadata) {
+      const data = this.updateMetadata(nextSubject, nextCatNum, nextProps.courseMetadata);
+      if (data != null) this.setState(data);
+    }
     if (updatedClasses) this.setState({ classes: nextProps.courseClasses, loading: false });
 
     // User courses are updated
@@ -206,12 +220,11 @@ class CourseViewContainer extends Component {
     this.props.updateClassesHandler(subject, catalogNumber, this.state.term);
   }
 
+  // Cannot modify state because we want to be able to call this in constructor
   updateMetadata(subject, catalogNumber, metadata) {
-    if (metadata == null || Object.keys(metadata).length === 0) return;
-    if (metadata.hasOwnProperty('err')) {
-      this.setState({ error: true });
-      return;
-    }
+    if (metadata == null || Object.keys(metadata).length === 0) return null;
+    if (metadata.hasOwnProperty('err')) return { error: true };
+
     subject = subject.toUpperCase();
 
     let {
@@ -246,7 +259,7 @@ class CourseViewContainer extends Component {
     };
 
     const eligible = canTakeCourse(this.props.myCourses, prereqs, coreqs, antireqs);
-    this.setState({ course, eligible, loading: false, error: false });
+    return { course, eligible, loading: false, error: false };
   }
 
   viewCart() {

@@ -65,7 +65,7 @@ const CourseContent = ({
   addToCartHandler,
   removeFromCartHandler,
 }) => {
-  const {
+  let {
     title,
     description,
     rating,
@@ -84,6 +84,7 @@ const CourseContent = ({
   setTimeout(() => {
     if (window.FB) window.FB.XFBML.parse();
   }, 500);
+  if (title == null) title = '';
 
   const pageTitle = `${subject} ${catalogNumber} - ${title} | University of Waterloo - WatsMyMajor`;
   const pageDescription = `${subject} ${catalogNumber} - ${title}: ${description}`;
