@@ -96,12 +96,12 @@ const renderRequisites = (reqs, myCourses) => {
   const courses = Object.assign({}, myCourses);
   // Remove prereqs array and set to false instead
   // TODO: Remove this once myCourses is revamped
-  Object.keys(courses).map(subject =>
-    Object.keys(courses[subject]).map(catalogNumber =>
+  Object.keys(courses).forEach(subject =>
+    Object.keys(courses[subject]).forEach(catalogNumber =>
       courses[subject][catalogNumber] = false
     )
   );
-  return reqs.map((req, index) => renderReqNode(req, index, courses))
+  return reqs.map((req, index) => renderReqNode(req, index, courses));
 };
 
 async function fetchRequirements(faculty, key) {

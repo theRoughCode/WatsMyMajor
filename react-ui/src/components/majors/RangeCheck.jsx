@@ -58,8 +58,6 @@ const getTakenCoursesInRange = (subject, from, to, excluding, myCourses) => {
     for (let i = 0; i < excluding.length; i++) {
       if (catNum === excluding[i]) return false;
     }
-    // Mark course as taken
-    myCourses[subject][catNum] = true;
     return true;
   });
 }
@@ -86,30 +84,43 @@ export default class RangeCheck extends Component {
     const children = Array.from(Array(choose).keys()).map(() =>
       ({ subject: '', catalogNumber: '', checked: false, taken: false }));
     this.setState({ children });
-    this.checkTaken(subject, from, to, excluding, children, myCourses);
+    this.checkTaken(subject, from, to, choose, excluding, children, myCourses);
   }
 
   componentWillReceiveProps(nextProps) {
-    const { subject, from, to, excluding, myCourses } = nextProps;
+    const { subject, from, to, choose, excluding, myCourses } = nextProps;
     if (subject !== this.props.subject
       || from !== this.props.from
       || to !== this.props.to) {
-      this.checkTaken(subject, from, to, excluding, this.state.children, myCourses);
+      this.checkTaken(subject, from, to, choose, excluding, this.state.children, myCourses);
     }
   }
 
-  checkTaken = (subject, from, to, excluding, children, myCourses) => {
+  checkTaken = (subject, from, to, choose, excluding, children, myCourses) => {
     const takenCourses = getTakenCoursesInRange(subject, from, to, excluding, myCourses);
     if (takenCourses.length === 0) return;
 
     // If course is taken, increment count by 1
-    if (this.props.choose === 1) {
+    if (choose === 1) {
+      const catalogNumber = takenCourses[0];
+      // Mark course as taken
+      myCourses[subject][catalogNumber] = true;
       this.props.onCheck(null, true);
-      this.setState({ taken: true, isChecked: true });
+      this.setState({
+        taken: true,
+        isChecked: true,
+        children: [{ subject, catalogNumber, checked: true, taken: true }],
+      });
     } else {
-      this.props.onCheck(null, true, takenCourses.length);
+      this.props.onCheck(null, true, choose);
       takenCourses.forEach((catalogNumber, index) => {
-        children[index] = { subject, catalogNumber, checked: true, taken: true };
+        let checked = (choose >= 1);
+        // Mark course as taken
+        if (checked) {
+          choose--;
+          myCourses[subject][catalogNumber] = true;
+        }
+        children[index] = { subject, catalogNumber, checked, taken: checked };
       });
       this.setState({ children });
     }
@@ -142,7 +153,7 @@ export default class RangeCheck extends Component {
           style={ styles.checkbox }
           disabled={ choose > 1 || this.state.taken }
         />
-        { (choose > 1) && (
+        { (choose >= 1) && (
           <div style={ styles.indentedChecks }>
             {
               this.state.children.map(({ subject, catalogNumber, checked, taken }, index) => {
