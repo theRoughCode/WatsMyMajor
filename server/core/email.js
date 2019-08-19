@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-const users = require('../core/users');
+const users = require('./users');
 const emailsDB = require('../database/emails');
 const usersDB = require('../database/users');
 
@@ -17,6 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const emailStyles = `
+<head>
   <style>
     #button {
       display: inline-block;
@@ -32,6 +33,7 @@ const emailStyles = `
       mso-hide: all;
     }
   </style>
+</head>
 `;
 
 // Returns err

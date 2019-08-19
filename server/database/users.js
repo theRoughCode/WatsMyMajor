@@ -92,9 +92,11 @@ async function getUser(username) {
 }
 
 async function getUserByEmail(email) {
+  email = email.replace(/\./g, ',');
   try {
     const emailSnapshot = await emailsRef.child(email).once('value');
     const username = emailSnapshot.val();
+    if (username == null) return { user: null, err: 'Email not found.' };
     const snapshot = await usersRef.child(username).once('value');
     return { user: { ... snapshot.val(), username }, err: null };
   } catch (err) {
