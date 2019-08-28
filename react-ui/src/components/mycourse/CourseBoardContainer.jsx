@@ -137,7 +137,7 @@ class CourseBoardContainer extends Component {
 
   async componentDidMount() {
     this.setState({
-      courseList: this.props.courseList,
+      courseList: this.props.courseList || [],
       cart: this.props.cart,
       loading: false,
     });
@@ -149,10 +149,10 @@ class CourseBoardContainer extends Component {
 
   async componentWillReceiveProps(nextProps) {
     if (!arrayOfObjectEquals(nextProps.courseList, this.state.courseList)) {
-      this.setState({ courseList: nextProps.courseList });
+      this.setState({ courseList: nextProps.courseList || [] });
     }
     if (!arrayOfObjectEquals(nextProps.cart, this.state.cart)) {
-      this.setState({ cart: nextProps.cart });
+      this.setState({ cart: nextProps.cart || [] });
     }
     if (nextProps.username !== this.state.username) {
       this.setState({ username: nextProps.username });
@@ -336,6 +336,7 @@ class CourseBoardContainer extends Component {
   }
 
   importTerms = (terms) => {
+    if (terms == null) return;
     const { username, courseList } = this.state;
 
     // Dedup courses: remove courses that are duplicates in imported terms
