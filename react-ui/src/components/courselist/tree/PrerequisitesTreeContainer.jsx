@@ -67,7 +67,8 @@ const styles = {
 };
 
 const getTree = (subject, catalogNumber, callback) => {
-  fetch(`/server/tree/${subject}/${catalogNumber}`, {
+  const url = `${global.baseUrl || ''}/server/tree/${subject}/${catalogNumber}`;
+  fetch(url, {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET
     }

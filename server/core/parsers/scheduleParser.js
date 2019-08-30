@@ -315,6 +315,7 @@ async function parseSchedule2(text) {
   let textArr = text.split(/\n/g);
   textArr = read(textArr, 'My Class Enrollment Results');
   textArr = read(textArr, 'Groupbox');
+  if (textArr == null) return { term: null, courses: null };
   const term = textArr[1].trim();
   const termInfo = getTermInfo(term);
   textArr = read(textArr, 'Section', 0, 1);

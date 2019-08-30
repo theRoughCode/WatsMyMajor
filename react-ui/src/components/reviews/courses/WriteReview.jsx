@@ -314,8 +314,9 @@ export default class WriteReview extends Component {
       grade,
     } = this.state;
     let reviewError = '';
-    if (comments.length === 0) reviewError = 'Review cannot be left blank.';
-    else if (comments.length > MAX_WORDS) reviewError = `Review cannot exceed ${MAX_WORDS} words.`;
+    const numWords = comments.trim().replace(/\n/g, ' ').split(' ').length;
+    if (numWords === 0) reviewError = 'Review cannot be left blank.';
+    else if (numWords > MAX_WORDS) reviewError = `Review cannot exceed ${MAX_WORDS} words.`;
     const termError = (term.length === 0);
     const yearError = (year.length === 0);
     let resourcesError = false;
@@ -350,7 +351,7 @@ export default class WriteReview extends Component {
     } else {
       this.setState({ resources });
       const reviewObj = {
-        comments,
+        comments: comments.trim(),
         advice,
         term: terms[term],
         year: years[year],

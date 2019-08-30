@@ -101,6 +101,7 @@ AddCourseCard.propTypes = {
 
 const renderCourses = (showAdd, courseList, onClick, highlightBackground) => {
   const courses = courseList.map((course, index) => {
+    if (course == null) return null; // Not sure why it would be null, but err was thrown
     const key = `${course.subject}/${course.catalogNumber}/${index}`;
     return (
       <Draggable

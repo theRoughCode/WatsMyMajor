@@ -221,6 +221,7 @@ UsersRouter.post('/add/schedule/:username', async function(req, res) {
 
   // Parse schedule
   const { term, courses } = await parseSchedule(text);
+  if (term == null || courses == null) return res.status(400).send('Failed to parse schedule.');
 
   try {
     let { user, err } = await users.getUser(username);
