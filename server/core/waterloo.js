@@ -168,10 +168,14 @@ function getReqs(subject, catalogNumber, callback) {
       if (antireqs) {
         // check if contains valid courses and not a note
         if (!(/[a-z]/.test(antireqString))) {
-          // remove whitespace and split by comma
           antireqs = antireqs
+            // SOC/LS 280 -> SOC 280,LS 280
+            // NOTE:  only works for 2 options, need to modify to handle multiple
+            .replace(/(\w+)\/(\w+) (\w+)/g, "$1 $3,$2 $3")
+            .replace(/\//g, ',')
+            // remove whitespace
             .replace(/\s+/g, '')
-            .replace('/', ',')
+            // split by comma
             .split(',');
 
           try {
