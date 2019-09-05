@@ -5,7 +5,7 @@ const {
   fillCartMetadata,
   stripCourseListMetadata,
   stripCartMetadata,
-} = require('../core/utils');
+} = require('./utils');
 
 async function getUser(username) {
   const { user, err } = await usersDB.getUser(username);

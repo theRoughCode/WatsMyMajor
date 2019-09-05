@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import MediaQuery from 'react-responsive';
 import { DragDropContext } from 'react-beautiful-dnd';
 import ReactTooltip from 'react-tooltip';
+import * as Sentry from '@sentry/browser';
+import { toast } from 'react-toastify';
 import MyCourseSideBar from './MyCourseSideBar';
 import MyCourseAppBar from './MyCourseAppBar';
 import TermRow from './TermRow';
@@ -159,8 +161,6 @@ class CourseBoardContainer extends Component {
     }
   }
 
-  getTermList = (id) =>  this.state.courseList[id].courses;
-
   // Highlight prereqs when dragging a course card
   onDragStart = (start) => {
     if (start.type !== DragTypes.COURSE) return;
@@ -240,6 +240,15 @@ class CourseBoardContainer extends Component {
     case 'Trash':
       return null;
     default:
+      if (!this.state.courseList.hasOwnProperty(id)) {
+        Sentry.captureException(`
+          User: ${this.state.username}\n
+          Invalid id: ${id}\n
+          Courselist: ${JSON.stringify(this.state.courseList)}
+        `);
+        toast.error('There was an error updating your courses.  Please contact an administrator.');
+        return [];
+      }
       return this.state.courseList[id].courses || [];
     }
   }
@@ -254,6 +263,15 @@ class CourseBoardContainer extends Component {
     case 'Trash': break;
     default: {
       const { username, courseList } = this.state;
+      if (!courseList.hasOwnProperty(id)) {
+        Sentry.captureException(`
+          User: ${username}\n
+          Invalid id: ${id}\n
+          Courselist: ${JSON.stringify(courseList)}
+        `);
+        toast.error('There was an error updating your courses.  Please contact an administrator.');
+        return;
+      }
       courseList[id].courses = board;
       this.setState({ courseList });
       doAsync(() => this.props.updateCourseHandler(username, courseList));
@@ -283,6 +301,15 @@ class CourseBoardContainer extends Component {
 
   renameBoard = (id, name, level) => {
     const { username, courseList } = this.state;
+    if (!courseList.hasOwnProperty(id)) {
+      Sentry.captureException(`
+        User: ${username}\n
+        Invalid id: ${id}\n
+        Courselist: ${JSON.stringify(courseList)}
+      `);
+      toast.error('There was an error updating your courses.  Please contact an administrator.');
+      return;
+    }
     courseList[id].term = name;
     courseList[id].level = level;
     this.setState({ courseList });
@@ -291,6 +318,15 @@ class CourseBoardContainer extends Component {
 
   clearBoard = (id) => {
     const { username, courseList } = this.state;
+    if (!courseList.hasOwnProperty(id)) {
+      Sentry.captureException(`
+        User: ${username}\n
+        Invalid id: ${id}\n
+        Courselist: ${JSON.stringify(courseList)}
+      `);
+      toast.error('There was an error updating your courses.  Please contact an administrator.');
+      return;
+    }
     courseList[id].courses = [];
     this.setState({ courseList });
     this.props.updateCourseHandler(username, courseList);
@@ -310,6 +346,15 @@ class CourseBoardContainer extends Component {
 
   loadCourses = async (id, newCourses) => {
     const { username, courseList } = this.state;
+    if (!courseList.hasOwnProperty(id)) {
+      Sentry.captureException(`
+        User: ${username}\n
+        Invalid id: ${id}\n
+        Courselist: ${JSON.stringify(courseList)}
+      `);
+      toast.error('There was an error updating your courses.  Please contact an administrator.');
+      return;
+    }
     let courses = courseList[id].courses || [];
 
     // Dedup courses: remove courses that are duplicates from new courses
