@@ -247,7 +247,6 @@ class CourseBoardContainer extends Component {
           Courselist: ${JSON.stringify(this.state.courseList)}
         `);
         toast.error('There was an error updating your courses.  Please contact an administrator.');
-        return [];
       }
       return this.state.courseList[id].courses || [];
     }

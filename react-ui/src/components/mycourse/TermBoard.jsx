@@ -165,6 +165,13 @@ export default class TermBoard extends Component {
     importText: ''
   };
 
+  componentWillReceiveProps(nextProps) {
+    const { level, term } = nextProps;
+    if (level !== this.state.relevel || term !== this.state.rename) {
+      this.setState({ relevel: level, rename: term });
+    }
+  }
+
   toggleSettings = (open) => this.setState({ settingsOpen: open });
 
   openRenameDialog = () => this.setState({ settingsOpen: false, renameDialogOpen: true });
