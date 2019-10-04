@@ -82,6 +82,7 @@ async function setSchedulePrivacy(username, isPublic) {
 
 async function setCourseList(username, courseList) {
   try {
+    console.log('rearranging course list')
     const strippedCourseList = stripCourseListMetadata(courseList);
     await usersDB.setField(username, 'courseList', strippedCourseList);
     courseList = await fillCourseListMetadata(courseList);

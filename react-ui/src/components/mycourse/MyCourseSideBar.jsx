@@ -7,21 +7,24 @@ const styles = {
   container: {
     position: 'fixed',
     right: 0,
-    paddingTop: 30,
-    paddingRight: 30,
+    marginTop: 30,
+    marginRight: 30,
     display: 'flex',
     flexDirection: 'column',
   },
 };
 
-const MyCourseSideBar = ({ cartCourses, onClearCart }) => (
+const MyCourseSideBar = ({ cartCourses, onClearCart, isEditing }) => (
   <div style={ styles.container }>
-    <Trash />
+    {
+      isEditing && <Trash />
+    }
     <TermBoard
       term="Cart"
       courses={ cartCourses }
       isCart
       onClearBoard={ onClearCart }
+      isEditing={ isEditing }
     />
   </div>
 );
@@ -29,6 +32,7 @@ const MyCourseSideBar = ({ cartCourses, onClearCart }) => (
 MyCourseSideBar.propTypes = {
   cartCourses: PropTypes.array,
   onClearCart: PropTypes.func,
+  isEditing: PropTypes.bool.isRequired,
 };
 
 MyCourseSideBar.defaultProps = {

@@ -9,6 +9,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import AddIcon from 'material-ui/svg-icons/content/add';
+import EditIcon from 'material-ui/svg-icons/image/edit';
+import SaveIcon from 'material-ui/svg-icons/content/save';
 import ImportIcon from 'material-ui/svg-icons/action/backup';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Parser from './ParseTranscript';
@@ -17,6 +19,7 @@ import {
   skyBlue,
   red,
   lightGreen2,
+  blueGreenHighlight,
 } from 'constants/Colours';
 
 const styles = {
@@ -68,9 +71,11 @@ export default class MyCourseAppBar extends Component {
     onAddBoard: PropTypes.func.isRequired,
     onImport: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
+    onEditChange: PropTypes.func.isRequired,
     showClearButton: PropTypes.bool.isRequired,
     showTrashOnDrag: PropTypes.bool,
     isDraggingCourse: PropTypes.bool,
+    isEditing: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -137,7 +142,17 @@ export default class MyCourseAppBar extends Component {
     this.props.onClear();
   }
 
+  onEditOn = () => this.props.onEditChange(true);
+  onEditOff = () => this.props.onEditChange(false);
+
   render() {
+    const {
+      showTrashOnDrag,
+      isDraggingCourse,
+      showClearButton,
+      isEditing,
+    } = this.props;
+
     const addTermDialogActions = [
       <FlatButton
         label="Cancel"
@@ -175,11 +190,11 @@ export default class MyCourseAppBar extends Component {
       />,
     ];
 
-    const showTrash = (this.props.showTrashOnDrag && this.props.isDraggingCourse);
+    const showTrash = (showTrashOnDrag && isDraggingCourse);
 
     return (
       <div style={ styles.container }>
-        { this.props.showTrashOnDrag && (
+        { showTrashOnDrag && (
           <div style={ styles.trashContainer(showTrash) }>
             <Trash isMobile />
           </div>
@@ -197,13 +212,17 @@ export default class MyCourseAppBar extends Component {
               <MediaQuery minWidth={ 852 }>
                 { matches => (
                   <div>
-                    <RaisedButton
-                      onClick={ this.openAddTermDialog }
-                      label="Add Term"
-                      backgroundColor={ lightGreen2 }
-                      style={ styles.button(matches) }
-                      icon={ <AddIcon /> }
-                    />
+                    {
+                      isEditing && (
+                        <RaisedButton
+                          onClick={ this.openAddTermDialog }
+                          label="Add Term"
+                          backgroundColor={ lightGreen2 }
+                          style={ styles.button(matches) }
+                          icon={ <AddIcon /> }
+                        />
+                      )
+                    }
                     <RaisedButton
                       onClick={ this.openImportDialog }
                       label="Import Courses"
@@ -212,7 +231,7 @@ export default class MyCourseAppBar extends Component {
                       icon={ <ImportIcon /> }
                     />
                     {
-                      this.props.showClearButton && (
+                      isEditing && showClearButton && (
                         <RaisedButton
                           onClick={ this.openClearDialog }
                           label="Clear Board"
@@ -221,6 +240,27 @@ export default class MyCourseAppBar extends Component {
                           icon={ <ClearIcon /> }
                         />
                       )
+                    }
+                    {
+                      isEditing
+                        ? (
+                          <RaisedButton
+                            onClick={ this.onEditOff }
+                            label="Save Board"
+                            backgroundColor={ blueGreenHighlight }
+                            style={ styles.button(matches) }
+                            icon={ <SaveIcon /> }
+                          />
+                        )
+                        : (
+                          <RaisedButton
+                            onClick={ this.onEditOn }
+                            label="Edit Board"
+                            backgroundColor={ lightGreen2 }
+                            style={ styles.button(matches) }
+                            icon={ <EditIcon /> }
+                          />
+                        )
                     }
                   </div>
                 ) }
@@ -240,7 +280,7 @@ export default class MyCourseAppBar extends Component {
                 icon={ <ImportIcon /> }
               />
               {
-                this.props.showClearButton && (
+                showClearButton && (
                   <RaisedButton
                     onClick={ this.openClearDialog }
                     backgroundColor={ red }
