@@ -115,7 +115,7 @@ class CourseBoardContainer extends Component {
     cart: PropTypes.array.isRequired,
     username: PropTypes.string.isRequired,
     updateCourseHandler: PropTypes.func.isRequired,
-    setCartHandler: PropTypes.func.isRequired,
+    updateCartHandler: PropTypes.func.isRequired,
     deselectCourseHandler: PropTypes.func.isRequired,
     highlightPrereqsHandler: PropTypes.func.isRequired,
     sendDuplicateCourseSnack: PropTypes.func.isRequired,
@@ -215,7 +215,7 @@ class CourseBoardContainer extends Component {
     const toIndex = destination.index + toRowNum * numPerRow - offsetNum;
 
     if (fromIndex === toIndex) return;
-    const { username, courseList } = this.state;
+    const { courseList } = this.state;
     const [removed] = courseList.splice(fromIndex, 1);
     courseList.splice(toIndex, 0, removed);
     this.setState({ courseList });
@@ -234,7 +234,7 @@ class CourseBoardContainer extends Component {
   getBoard = (id) => {
     switch (id) {
     case 'Cart':
-      return this.state.cart;
+      return this.state.cart.slice();
     case 'Trash':
       return null;
     default:
@@ -246,7 +246,9 @@ class CourseBoardContainer extends Component {
         `);
         toast.error('There was an error updating your courses.  Please contact an administrator.');
       }
-      return this.state.courseList[id].courses || [];
+      if (this.state.courseList[id].courses != null) {
+        return this.state.courseList[id].courses.slice();
+      } else return [];
     }
   }
 
@@ -324,10 +326,7 @@ class CourseBoardContainer extends Component {
     this.setState({ courseList });
   }
 
-  clearCart = () => {
-    this.setState({ cart: [] });
-    this.props.setCartHandler(this.state.username, []);
-  }
+  clearCart = () => this.setState({ cart: [] });
 
   addBoard = (term, level) => {
     const { courseList } = this.state;
@@ -412,7 +411,7 @@ class CourseBoardContainer extends Component {
   }
 
   deleteBoard = (id) => {
-    const { username, courseList } = this.state;
+    const { courseList } = this.state;
     courseList.splice(id, 1);
     this.setState({ courseList });
   }
@@ -420,8 +419,9 @@ class CourseBoardContainer extends Component {
   toggleEditing = (isEditing) => {
     // Save board
     if (!isEditing) {
-      const { username, courseList } = this.state;
+      const { username, courseList, cart } = this.state;
       this.props.updateCourseHandler(username, courseList);
+      this.props.updateCartHandler(username, cart);
     }
     this.setState({ isEditing });
   }
@@ -588,7 +588,7 @@ const mapDispatchToProps = dispatch => {
     updateCourseHandler: (username, courseList) => {
       dispatch(updateUserCourses(username, courseList));
     },
-    setCartHandler: (username, cart) => {
+    updateCartHandler: (username, cart) => {
       dispatch(setCart(username, cart));
     },
     deselectCourseHandler: () => {

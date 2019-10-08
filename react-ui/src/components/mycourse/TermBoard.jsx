@@ -16,6 +16,7 @@ import Parser from './ParseCourses';
 import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from 'constants/DragTypes';
+import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
 import {
   purple,
   lightPurple,
@@ -163,16 +164,32 @@ export default class TermBoard extends Component {
     addDialogOpen: false,
     settingsOpen: false,
     relevel: this.props.level,
-    rename: this.props.term,
+    reterm: this.props.term,
     renameError: '',
     importText: ''
   };
 
   componentWillReceiveProps(nextProps) {
     const { level, term } = nextProps;
-    if (level !== this.state.relevel || term !== this.state.rename) {
-      this.setState({ relevel: level, rename: term });
+    if (level !== this.state.relevel || term !== this.state.reterm) {
+      this.setState({ relevel: level, reterm: term });
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { index, term, level, courses, isEditing, provided, snapshot } = nextProps;
+    const indexChanged = this.props.index !== index;
+    const termChanged = this.props.term !== term;
+    const levelChanged = this.props.level !== level;
+    const coursesChanged = !arrayOfObjectEquals(courses, this.props.courses);
+    const editingChanged = this.props.isEditing !== isEditing;
+    const providedChanged = !objectEquals(this.props.provided, provided);
+    const snapshotChanged = !objectEquals(this.props.snapshot, snapshot);
+    const stateChanged = !objectEquals(this.state, nextState);
+
+    return indexChanged || termChanged || levelChanged
+      || coursesChanged || editingChanged || providedChanged
+      || snapshotChanged || stateChanged;
   }
 
   toggleSettings = (open) => this.setState({ settingsOpen: open });
@@ -181,22 +198,22 @@ export default class TermBoard extends Component {
   openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
   openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
-  closeRenameDialog = () => this.setState({ rename: this.props.term, renameError: '', renameDialogOpen: false });
+  closeRenameDialog = () => this.setState({ reterm: this.props.term, renameError: '', renameDialogOpen: false });
   closeImportDialog = () => this.setState({ importDialogOpen: false });
   closeAddDialog = () => this.setState({ addDialogOpen: false });
 
-  onChangeRenameText = (e, rename) => this.setState({ rename, renameError: '' });
+  onChangeRenameText = (e, reterm) => this.setState({ reterm, renameError: '' });
   onChangeRelevel = (ev, index, relevel) => this.setState({ relevel });
   onChangeImportText = (importText) => this.setState({ importText });
 
   onRename = () => {
-    const { rename, relevel } = this.state;
-    if (rename.length === 0) {
+    const { reterm, relevel } = this.state;
+    if (reterm.length === 0) {
       this.setState({ renameError: 'Field cannot be left blank' });
       return;
     }
-    this.props.onRenameBoard(rename, relevel);
-    this.closeRenameDialog();
+    this.props.onRenameBoard(reterm, relevel);
+    this.setState({ renameError: '', renameDialogOpen: false });
   }
 
   onImport = () => {
@@ -339,7 +356,13 @@ export default class TermBoard extends Component {
                   ref={ provided.innerRef }
                   style={ getListStyle(snapshot.isDraggingOver) }
                 >
-                  { renderCourses(!isCart && !snapshot.isDraggingOver, isEditing, courses, this.openAddDialog, snapshot.isDraggingOver) }
+                  { renderCourses(
+                    !isCart && !snapshot.isDraggingOver,
+                    isEditing,
+                    courses,
+                    this.openAddDialog,
+                    snapshot.isDraggingOver
+                  ) }
                   { provided.placeholder }
                 </div>
               ) }
@@ -356,7 +379,7 @@ export default class TermBoard extends Component {
             <TextField
               hintText="e.g. Winter 2019"
               floatingLabelText="New Board Name"
-              value={ this.state.rename }
+              value={ this.state.reterm }
               errorText={ this.state.renameError }
               onChange={ this.onChangeRenameText }
             />

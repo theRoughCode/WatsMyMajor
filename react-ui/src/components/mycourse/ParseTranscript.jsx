@@ -21,10 +21,12 @@ const ParseTranscript = ({ onChange }) => {
       text: (
         <div style={{ textAlign: 'center' }}>
           <p>
-            Select all, copy, and paste it below.
+            Select and copy everything
           </p>
           <p>
-            If that doesn't work, right-click, select "Print", and copy everything within the preview screen.
+            <i>
+              If that doesn't work, right-click, select "Print", and copy everything within the preview screen.
+            </i>
           </p>
         </div>
       )
