@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
 import { toast } from 'react-toastify';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
@@ -12,7 +14,9 @@ import AddIcon from 'material-ui/svg-icons/content/add';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import SaveIcon from 'material-ui/svg-icons/content/save';
 import ImportIcon from 'material-ui/svg-icons/action/backup';
-import ClearIcon from 'material-ui/svg-icons/content/clear';
+import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import ClearIcon from 'material-ui/svg-icons/navigation/refresh';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import Parser from './ParseTranscript';
 import Trash from './Trash';
 import {
@@ -20,6 +24,7 @@ import {
   red,
   lightGreen2,
   blueGreenHighlight,
+  mustard,
 } from 'constants/Colours';
 
 const styles = {
@@ -90,6 +95,7 @@ export default class MyCourseAppBar extends Component {
     text: '',
     level: '1A',
     errorText: '',
+    menuEl: null,
   };
 
   openAddTermDialog = () => this.setState({ addTermDialogOpen: true });
@@ -102,6 +108,9 @@ export default class MyCourseAppBar extends Component {
 
   onChangeText = (_, text) => this.setState({ text, errorText: '' });
   onChangeLevel = (ev, index, level) => this.setState({ level });
+
+  openMenu = (ev) => this.setState({ menuEl: ev.currentTarget });
+  closeMenu = (ev) => this.setState({ menuEl: null });
 
   onAddTerm = () => {
     const { text, level } = this.state;
@@ -144,6 +153,7 @@ export default class MyCourseAppBar extends Component {
 
   onEditOn = () => this.props.onEditChange(true);
   onEditOff = () => this.props.onEditChange(false);
+  onCancel = () => this.props.onEditChange(false, true);
 
   render() {
     const {
@@ -235,7 +245,7 @@ export default class MyCourseAppBar extends Component {
                         <RaisedButton
                           onClick={ this.openClearDialog }
                           label="Clear Board"
-                          backgroundColor={ red }
+                          backgroundColor={ mustard }
                           style={ styles.button(matches) }
                           icon={ <ClearIcon /> }
                         />
@@ -246,7 +256,7 @@ export default class MyCourseAppBar extends Component {
                         ? (
                           <RaisedButton
                             onClick={ this.onEditOff }
-                            label="Save Board"
+                            label="Save"
                             backgroundColor={ blueGreenHighlight }
                             style={ styles.button(matches) }
                             icon={ <SaveIcon /> }
@@ -262,33 +272,75 @@ export default class MyCourseAppBar extends Component {
                           />
                         )
                     }
+                    {
+                      isEditing && (
+                        <RaisedButton
+                          onClick={ this.onCancel }
+                          label="Cancel"
+                          backgroundColor={ red }
+                          style={ styles.button(matches) }
+                          icon={ <CloseIcon /> }
+                        />
+                      )
+                    }
                   </div>
                 ) }
               </MediaQuery>
             </MediaQuery>
             <MediaQuery maxWidth={ 821 }>
-              <RaisedButton
-                onClick={ this.openAddTermDialog }
-                backgroundColor={ lightGreen2 }
-                style={ styles.xsButton }
-                icon={ <AddIcon /> }
-              />
-              <RaisedButton
-                onClick={ this.openImportDialog }
-                backgroundColor={ skyBlue }
-                style={ styles.xsButton }
-                icon={ <ImportIcon /> }
-              />
-              {
-                showClearButton && (
-                  <RaisedButton
-                    onClick={ this.openClearDialog }
-                    backgroundColor={ red }
-                    style={ styles.xsButton }
-                    icon={ <ClearIcon /> }
-                  />
-                )
-              }
+              <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                onClick={ this.openMenu }
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="long-menu"
+                anchorEl={ this.state.menuEl }
+                keepMounted
+                open={ this.state.menuEl != null }
+                onClose={ this.closeMenu }
+              >
+                {
+                  isEditing && (
+                    <MenuItem onClick={ this.openAddTermDialog }>
+                      Add Term
+                    </MenuItem>
+                  )
+                }
+                <MenuItem onClick={ this.openImportDialog }>
+                  Import Courses
+                </MenuItem>
+                {
+                  isEditing && showClearButton && (
+                    <MenuItem onClick={ this.openClearDialog }>
+                      Clear Board
+                    </MenuItem>
+                  )
+                }
+                {
+                  isEditing
+                    ? (
+                      <MenuItem onClick={ this.onEditOff }>
+                        Save Changes
+                      </MenuItem>
+                    )
+                    : (
+                      <MenuItem onClick={ this.onEditOn }>
+                        Edit Board
+                      </MenuItem>
+                    )
+                }
+                {
+                  isEditing && (
+                    <MenuItem onClick={ this.onCancel }>
+                      Discard Changes
+                    </MenuItem>
+                  )
+                }
+              </Menu>
             </MediaQuery>
           </div>
           <div>

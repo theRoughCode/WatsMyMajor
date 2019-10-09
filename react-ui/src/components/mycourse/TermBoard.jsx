@@ -141,7 +141,7 @@ export default class TermBoard extends Component {
     isEditing: PropTypes.bool.isRequired,
     isCart: PropTypes.bool,
     onRenameBoard: PropTypes.func,
-    onUpdateCourses: PropTypes.func,
+    onAddCourses: PropTypes.func,
     onDeleteBoard: PropTypes.func,
     onClearBoard: PropTypes.func.isRequired,
   };
@@ -154,7 +154,7 @@ export default class TermBoard extends Component {
     provided: {},
     snapshot: {},
     isCart: false,
-    onUpdateCourses: () => null,
+    onAddCourses: () => null,
     onRenameBoard: () => null,
   };
 
@@ -233,12 +233,12 @@ export default class TermBoard extends Component {
     }).then((termCourses) => {
       this.setState({ importing: false });
       const { courses } = termCourses;
-      this.props.onUpdateCourses(courses);
+      this.props.onAddCourses(courses);
     }).catch(err => toast.error(`Failed to parse your courses. Error: ${err.message}`));
   }
 
   onSearchResult = ({ subject, catalogNumber }) => {
-    this.props.onUpdateCourses([{ subject, catalogNumber }])
+    this.props.onAddCourses([{ subject, catalogNumber }])
     this.closeAddDialog();
   }
 

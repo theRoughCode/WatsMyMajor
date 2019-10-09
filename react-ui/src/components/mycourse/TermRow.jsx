@@ -19,7 +19,7 @@ const TermRow = ({
   onClearBoard,
   onRenameBoard,
   onDeleteBoard,
-  onUpdateCourses,
+  onAddCourses,
   cart,
   onClearCart,
   isEditing,
@@ -70,7 +70,7 @@ const TermRow = ({
                     onClearBoard={ () => onClearBoard(offsetIndex) }
                     onRenameBoard={ (rename, relevel) => onRenameBoard(offsetIndex, rename, relevel) }
                     onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
-                    onUpdateCourses={ (courses) => onUpdateCourses(offsetIndex, courses) }
+                    onAddCourses={ (courses) => onAddCourses(offsetIndex, courses) }
                   />
                 ) }
               </Draggable>
@@ -89,7 +89,7 @@ TermRow.propTypes = {
   onClearBoard: PropTypes.func.isRequired,
   onRenameBoard: PropTypes.func.isRequired,
   onDeleteBoard: PropTypes.func.isRequired,
-  onUpdateCourses: PropTypes.func.isRequired,
+  onAddCourses: PropTypes.func.isRequired,
   isEditing: PropTypes.bool.isRequired,
   showCart: PropTypes.bool,
   cart: PropTypes.array,

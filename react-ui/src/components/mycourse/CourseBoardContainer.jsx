@@ -328,13 +328,16 @@ class CourseBoardContainer extends Component {
 
   clearCart = () => this.setState({ cart: [] });
 
+  clearCourses = () => this.setState({ courseList: [] });
+
   addBoard = (term, level) => {
     const { courseList } = this.state;
     courseList.push({ term, level, courses: [] });
     this.setState({ courseList });
   }
 
-  loadCourses = async (id, newCourses) => {
+  // Add courses to a term board
+  addCourses = async (id, newCourses) => {
     const { username, courseList } = this.state;
     if (!courseList.hasOwnProperty(id)) {
       Sentry.captureException(`
@@ -362,10 +365,6 @@ class CourseBoardContainer extends Component {
     courseList[id].courses = courses.concat(newCourses);
 
     this.setState({ courseList });
-  }
-
-  clearCourses = () => {
-    this.setState({ courseList: [] });
   }
 
   importTerms = (terms) => {
@@ -416,12 +415,31 @@ class CourseBoardContainer extends Component {
     this.setState({ courseList });
   }
 
-  toggleEditing = (isEditing) => {
-    // Save board
-    if (!isEditing) {
+  // Handles edit mode and saving/cancelling.
+  // When a user saves, we update the database to reflect the changes.
+  toggleEditing = (isEditing, isCancel=false) => {
+    if (isEditing) {
+      // If editing, we want to store original version of courselist and cart
+      const tempCourseList = JSON.stringify(this.state.courseList);
+      const tempCart = JSON.stringify(this.state.cart);
+      this.setState({ tempCourseList, tempCart });
+    } else if (!isCancel) {
+      // If saving, we want to update database
       const { username, courseList, cart } = this.state;
       this.props.updateCourseHandler(username, courseList);
       this.props.updateCartHandler(username, cart);
+      this.setState({ tempCourseList: [], tempCart: [] });
+    } else {
+      // If cancelling, we want to reset courselist and cart
+      const { tempCourseList, tempCart } = this.state;
+      const courseList = (tempCourseList != null) ? JSON.parse(tempCourseList) : [];
+      const cart = (tempCart != null) ? JSON.parse(tempCart) : [];
+      this.setState({
+        courseList,
+        cart,
+        tempCourseList: null,
+        tempCart: null,
+      });
     }
     this.setState({ isEditing });
   }
@@ -457,7 +475,7 @@ class CourseBoardContainer extends Component {
           onClearBoard={ this.clearBoard }
           onRenameBoard={ this.renameBoard }
           onDeleteBoard={ this.deleteBoard }
-          onUpdateCourses={ this.loadCourses }
+          onAddCourses={ this.addCourses }
           cart={ this.state.cart }
           onClearCart={ this.onClearCart }
           isEditing={ isEditing }
@@ -480,7 +498,7 @@ class CourseBoardContainer extends Component {
                 onClearBoard={ this.clearBoard }
                 onRenameBoard={ this.renameBoard }
                 onDeleteBoard={ this.deleteBoard }
-                onUpdateCourses={ this.loadCourses }
+                onAddCourses={ this.addCourses }
                 isEditing={ isEditing }
               />
             )
