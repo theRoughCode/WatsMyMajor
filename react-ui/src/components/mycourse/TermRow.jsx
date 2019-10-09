@@ -19,10 +19,11 @@ const TermRow = ({
   onClearBoard,
   onRenameBoard,
   onDeleteBoard,
-  onUpdateCourses,
-  showCart,
+  onAddCourses,
   cart,
   onClearCart,
+  isEditing,
+  showCart,
 }) => (
   <Droppable
     droppableId={ `row/${rowNumber}` }
@@ -40,8 +41,9 @@ const TermRow = ({
           <TermBoard
             term="Cart"
             courses={ cart }
-            isCart
             onClearBoard={ onClearCart }
+            isEditing={ isEditing }
+            isCart
           />
         ) }
         {
@@ -54,6 +56,7 @@ const TermRow = ({
                 type={ DragTypes.COLUMN }
                 index={ index }
                 key={ index }
+                isDragDisabled={ !isEditing }
               >
                 { (provided, snapshot) => (
                   <TermBoard
@@ -63,10 +66,11 @@ const TermRow = ({
                     courses={ courses }
                     provided={ provided }
                     snapshot={ snapshot }
+                    isEditing={ isEditing }
                     onClearBoard={ () => onClearBoard(offsetIndex) }
                     onRenameBoard={ (rename, relevel) => onRenameBoard(offsetIndex, rename, relevel) }
                     onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
-                    onUpdateCourses={ (courses) => onUpdateCourses(offsetIndex, courses) }
+                    onAddCourses={ (courses) => onAddCourses(offsetIndex, courses) }
                   />
                 ) }
               </Draggable>
@@ -85,7 +89,8 @@ TermRow.propTypes = {
   onClearBoard: PropTypes.func.isRequired,
   onRenameBoard: PropTypes.func.isRequired,
   onDeleteBoard: PropTypes.func.isRequired,
-  onUpdateCourses: PropTypes.func.isRequired,
+  onAddCourses: PropTypes.func.isRequired,
+  isEditing: PropTypes.bool.isRequired,
   showCart: PropTypes.bool,
   cart: PropTypes.array,
   onClearCart: PropTypes.func,

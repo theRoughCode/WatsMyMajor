@@ -16,6 +16,7 @@ import Parser from './ParseCourses';
 import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from 'constants/DragTypes';
+import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
 import {
   purple,
   lightPurple,
@@ -28,12 +29,13 @@ const stylesConst = {
   width: 200,
 };
 const styles = {
-  board: {
+  board: (isCart) => ({
     margin: 10,
     width:  stylesConst.width,
     display: 'flex',
     flexDirection: 'column',
-  },
+    maxHeight: (isCart) ? 450 : 'none',
+  }),
   header: (isDragging) => ({
     padding: '5px 0',
     backgroundColor: isDragging ? lightPurple : purple,
@@ -61,10 +63,10 @@ const styles = {
     color: 'white',
     marginLeft: 'auto'
   },
-  listContainer: {
-    height: 'calc(100% - 70px)',
+  listContainer: (isCart) => ({
     margin: '6px 0',
-  },
+    overflowY: (isCart) ? 'auto' : 'none',
+  }),
   addCourseCard: {
     border: '1px dashed #bcbcbc',
     borderRadius: '5px',
@@ -99,7 +101,7 @@ AddCourseCard.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-const renderCourses = (showAdd, courseList, onClick, highlightBackground) => {
+const renderCourses = (showAdd, isEditing, courseList, onClick, highlightBackground) => {
   const courses = courseList.map((course, index) => {
     if (course == null) return null; // Not sure why it would be null, but err was thrown
     const key = `${course.subject}/${course.catalogNumber}/${index}`;
@@ -109,6 +111,7 @@ const renderCourses = (showAdd, courseList, onClick, highlightBackground) => {
         draggableId={ key }
         index={ index }
         type={ DragTypes.COURSE }
+        isDragDisabled={ !isEditing }
       >
         { (provided, snapshot) => (
           <CourseCard
@@ -121,8 +124,8 @@ const renderCourses = (showAdd, courseList, onClick, highlightBackground) => {
       </Draggable>
     );
   });
-  // Add "Add courses" button if not a cart
-  if (showAdd) courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
+  // Add "Add courses" button if not a cart and editing mode is on
+  if (showAdd && isEditing) courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
   return courses;
 };
 
@@ -135,9 +138,10 @@ export default class TermBoard extends Component {
     courses: PropTypes.array,
     provided: PropTypes.object,
     snapshot: PropTypes.object,
+    isEditing: PropTypes.bool.isRequired,
     isCart: PropTypes.bool,
     onRenameBoard: PropTypes.func,
-    onUpdateCourses: PropTypes.func,
+    onAddCourses: PropTypes.func,
     onDeleteBoard: PropTypes.func,
     onClearBoard: PropTypes.func.isRequired,
   };
@@ -150,7 +154,7 @@ export default class TermBoard extends Component {
     provided: {},
     snapshot: {},
     isCart: false,
-    onUpdateCourses: () => null,
+    onAddCourses: () => null,
     onRenameBoard: () => null,
   };
 
@@ -160,16 +164,32 @@ export default class TermBoard extends Component {
     addDialogOpen: false,
     settingsOpen: false,
     relevel: this.props.level,
-    rename: this.props.term,
+    reterm: this.props.term,
     renameError: '',
     importText: ''
   };
 
   componentWillReceiveProps(nextProps) {
     const { level, term } = nextProps;
-    if (level !== this.state.relevel || term !== this.state.rename) {
-      this.setState({ relevel: level, rename: term });
+    if (level !== this.state.relevel || term !== this.state.reterm) {
+      this.setState({ relevel: level, reterm: term });
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { index, term, level, courses, isEditing, provided, snapshot } = nextProps;
+    const indexChanged = this.props.index !== index;
+    const termChanged = this.props.term !== term;
+    const levelChanged = this.props.level !== level;
+    const coursesChanged = !arrayOfObjectEquals(courses, this.props.courses);
+    const editingChanged = this.props.isEditing !== isEditing;
+    const providedChanged = !objectEquals(this.props.provided, provided);
+    const snapshotChanged = !objectEquals(this.props.snapshot, snapshot);
+    const stateChanged = !objectEquals(this.state, nextState);
+
+    return indexChanged || termChanged || levelChanged
+      || coursesChanged || editingChanged || providedChanged
+      || snapshotChanged || stateChanged;
   }
 
   toggleSettings = (open) => this.setState({ settingsOpen: open });
@@ -178,22 +198,22 @@ export default class TermBoard extends Component {
   openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
   openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
-  closeRenameDialog = () => this.setState({ rename: this.props.term, renameError: '', renameDialogOpen: false });
+  closeRenameDialog = () => this.setState({ reterm: this.props.term, renameError: '', renameDialogOpen: false });
   closeImportDialog = () => this.setState({ importDialogOpen: false });
   closeAddDialog = () => this.setState({ addDialogOpen: false });
 
-  onChangeRenameText = (e, rename) => this.setState({ rename, renameError: '' });
+  onChangeRenameText = (e, reterm) => this.setState({ reterm, renameError: '' });
   onChangeRelevel = (ev, index, relevel) => this.setState({ relevel });
   onChangeImportText = (importText) => this.setState({ importText });
 
   onRename = () => {
-    const { rename, relevel } = this.state;
-    if (rename.length === 0) {
+    const { reterm, relevel } = this.state;
+    if (reterm.length === 0) {
       this.setState({ renameError: 'Field cannot be left blank' });
       return;
     }
-    this.props.onRenameBoard(rename, relevel);
-    this.closeRenameDialog();
+    this.props.onRenameBoard(reterm, relevel);
+    this.setState({ renameError: '', renameDialogOpen: false });
   }
 
   onImport = () => {
@@ -213,12 +233,12 @@ export default class TermBoard extends Component {
     }).then((termCourses) => {
       this.setState({ importing: false });
       const { courses } = termCourses;
-      this.props.onUpdateCourses(courses);
+      this.props.onAddCourses(courses);
     }).catch(err => toast.error(`Failed to parse your courses. Error: ${err.message}`));
   }
 
   onSearchResult = ({ subject, catalogNumber }) => {
-    this.props.onUpdateCourses([{ subject, catalogNumber }])
+    this.props.onAddCourses([{ subject, catalogNumber }])
     this.closeAddDialog();
   }
 
@@ -233,7 +253,7 @@ export default class TermBoard extends Component {
   }
 
   render() {
-    const { index, term, level, courses, isCart } = this.props;
+    const { index, term, level, courses, isCart, isEditing } = this.props;
     const droppableId = (isCart) ? 'Cart' : index;
 
     const renameDialogActions = [
@@ -287,7 +307,7 @@ export default class TermBoard extends Component {
       <div ref={ innerRef } { ...draggableProps }>
         <Paper
           zDepth={ 1 }
-          style={ styles.board }
+          style={ styles.board(isCart) }
         >
           <div style={ styles.header(isDragging) } { ...dragHandleProps }>
             <div style={ styles.box } />
@@ -298,31 +318,35 @@ export default class TermBoard extends Component {
               ) }
             </div>
             <div style={ styles.box } >
-              <IconMenu
-                iconButtonElement={ <IconButton><MoreVertIcon /></IconButton> }
-                anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                iconStyle={ styles.editIcon }
-                onRequestChange={ this.toggleSettings }
-                open={ this.state.settingsOpen }
-                useLayerForClickAway
-              >
-                {
-                  isCart
-                    ? <MenuItem primaryText="Clear Cart" onClick={ this.clearBoard } />
-                    : (
-                      <div>
-                        <MenuItem primaryText="Edit Name" onClick={ this.openRenameDialog } />
-                        <MenuItem primaryText="Import Courses" onClick={ this.openImportDialog } />
-                        <MenuItem primaryText="Clear Term" onClick={ this.clearBoard } />
-                        <MenuItem primaryText="Delete Term" onClick={ this.deleteBoard } />
-                      </div>
-                    )
-                }
-              </IconMenu>
+              {
+                isEditing && (
+                  <IconMenu
+                    iconButtonElement={ <IconButton><MoreVertIcon /></IconButton> }
+                    anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                    targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                    iconStyle={ styles.editIcon }
+                    onRequestChange={ this.toggleSettings }
+                    open={ this.state.settingsOpen }
+                    useLayerForClickAway
+                  >
+                    {
+                      isCart
+                        ? <MenuItem primaryText="Clear Cart" onClick={ this.clearBoard } />
+                        : (
+                          <div>
+                            <MenuItem primaryText="Edit Name" onClick={ this.openRenameDialog } />
+                            <MenuItem primaryText="Import Courses" onClick={ this.openImportDialog } />
+                            <MenuItem primaryText="Clear Term" onClick={ this.clearBoard } />
+                            <MenuItem primaryText="Delete Term" onClick={ this.deleteBoard } />
+                          </div>
+                        )
+                    }
+                  </IconMenu>
+                )
+              }
             </div>
           </div>
-          <div style={ styles.listContainer }>
+          <div style={ styles.listContainer(isCart) }>
             <Droppable
               droppableId={ droppableId }
               type={ DragTypes.COURSE }
@@ -332,7 +356,13 @@ export default class TermBoard extends Component {
                   ref={ provided.innerRef }
                   style={ getListStyle(snapshot.isDraggingOver) }
                 >
-                  { renderCourses(!isCart && !snapshot.isDraggingOver, courses, this.openAddDialog, snapshot.isDraggingOver) }
+                  { renderCourses(
+                    !isCart && !snapshot.isDraggingOver,
+                    isEditing,
+                    courses,
+                    this.openAddDialog,
+                    snapshot.isDraggingOver
+                  ) }
                   { provided.placeholder }
                 </div>
               ) }
@@ -349,7 +379,7 @@ export default class TermBoard extends Component {
             <TextField
               hintText="e.g. Winter 2019"
               floatingLabelText="New Board Name"
-              value={ this.state.rename }
+              value={ this.state.reterm }
               errorText={ this.state.renameError }
               onChange={ this.onChangeRenameText }
             />

@@ -106,8 +106,6 @@ const mobileStyles = {
   },
 };
 
-// Make call asynchronously (kinda hacky)
-const doAsync = func => setTimeout(func, 1);
 
 class CourseBoardContainer extends Component {
 
@@ -117,7 +115,7 @@ class CourseBoardContainer extends Component {
     cart: PropTypes.array.isRequired,
     username: PropTypes.string.isRequired,
     updateCourseHandler: PropTypes.func.isRequired,
-    setCartHandler: PropTypes.func.isRequired,
+    updateCartHandler: PropTypes.func.isRequired,
     deselectCourseHandler: PropTypes.func.isRequired,
     highlightPrereqsHandler: PropTypes.func.isRequired,
     sendDuplicateCourseSnack: PropTypes.func.isRequired,
@@ -134,6 +132,7 @@ class CourseBoardContainer extends Component {
       loading: true,
       username,
       isDraggingCourse: false,
+      isEditing: false,
     };
   }
 
@@ -216,11 +215,10 @@ class CourseBoardContainer extends Component {
     const toIndex = destination.index + toRowNum * numPerRow - offsetNum;
 
     if (fromIndex === toIndex) return;
-    const { username, courseList } = this.state;
+    const { courseList } = this.state;
     const [removed] = courseList.splice(fromIndex, 1);
     courseList.splice(toIndex, 0, removed);
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
   }
 
   // Called when a course is being dragged
@@ -236,7 +234,7 @@ class CourseBoardContainer extends Component {
   getBoard = (id) => {
     switch (id) {
     case 'Cart':
-      return this.state.cart;
+      return this.state.cart.slice();
     case 'Trash':
       return null;
     default:
@@ -248,7 +246,9 @@ class CourseBoardContainer extends Component {
         `);
         toast.error('There was an error updating your courses.  Please contact an administrator.');
       }
-      return this.state.courseList[id].courses || [];
+      if (this.state.courseList[id].courses != null) {
+        return this.state.courseList[id].courses.slice();
+      } else return [];
     }
   }
 
@@ -257,7 +257,6 @@ class CourseBoardContainer extends Component {
     switch (id) {
     case 'Cart':
       this.setState({ cart: board });
-      doAsync(() => this.props.setCartHandler(this.state.username, board));
       break;
     case 'Trash': break;
     default: {
@@ -273,7 +272,6 @@ class CourseBoardContainer extends Component {
       }
       courseList[id].courses = board;
       this.setState({ courseList });
-      doAsync(() => this.props.updateCourseHandler(username, courseList));
     }
     }
   }
@@ -293,7 +291,6 @@ class CourseBoardContainer extends Component {
     const destBoard = this.getBoard(dest.droppableId);
     const [removed] = sourceBoard.splice(source.index, 1);
     if (destBoard) destBoard.splice(dest.index, 0, removed);
-    // TODO: Think about not updating twice (2 network requests)
     this.updateBoard(source.droppableId, sourceBoard);
     this.updateBoard(dest.droppableId, destBoard);
   }
@@ -312,7 +309,6 @@ class CourseBoardContainer extends Component {
     courseList[id].term = name;
     courseList[id].level = level;
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
   }
 
   clearBoard = (id) => {
@@ -328,22 +324,20 @@ class CourseBoardContainer extends Component {
     }
     courseList[id].courses = [];
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
   }
 
-  clearCart = () => {
-    this.setState({ cart: [] });
-    this.props.setCartHandler(this.state.username, []);
-  }
+  clearCart = () => this.setState({ cart: [] });
+
+  clearCourses = () => this.setState({ courseList: [] });
 
   addBoard = (term, level) => {
-    const { username, courseList } = this.state;
+    const { courseList } = this.state;
     courseList.push({ term, level, courses: [] });
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
   }
 
-  loadCourses = async (id, newCourses) => {
+  // Add courses to a term board
+  addCourses = async (id, newCourses) => {
     const { username, courseList } = this.state;
     if (!courseList.hasOwnProperty(id)) {
       Sentry.captureException(`
@@ -371,12 +365,6 @@ class CourseBoardContainer extends Component {
     courseList[id].courses = courses.concat(newCourses);
 
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
-  }
-
-  clearCourses = () => {
-    this.setState({ courseList: [] });
-    this.props.updateCourseHandler(this.state.username, []);
   }
 
   importTerms = (terms) => {
@@ -422,14 +410,42 @@ class CourseBoardContainer extends Component {
   }
 
   deleteBoard = (id) => {
-    const { username, courseList } = this.state;
+    const { courseList } = this.state;
     courseList.splice(id, 1);
     this.setState({ courseList });
-    this.props.updateCourseHandler(username, courseList);
+  }
+
+  // Handles edit mode and saving/cancelling.
+  // When a user saves, we update the database to reflect the changes.
+  toggleEditing = (isEditing, isCancel=false) => {
+    if (isEditing) {
+      // If editing, we want to store original version of courselist and cart
+      const tempCourseList = JSON.stringify(this.state.courseList);
+      const tempCart = JSON.stringify(this.state.cart);
+      this.setState({ tempCourseList, tempCart });
+    } else if (!isCancel) {
+      // If saving, we want to update database
+      const { username, courseList, cart } = this.state;
+      this.props.updateCourseHandler(username, courseList);
+      this.props.updateCartHandler(username, cart);
+      this.setState({ tempCourseList: [], tempCart: [] });
+    } else {
+      // If cancelling, we want to reset courselist and cart
+      const { tempCourseList, tempCart } = this.state;
+      const courseList = (tempCourseList != null) ? JSON.parse(tempCourseList) : [];
+      const cart = (tempCart != null) ? JSON.parse(tempCart) : [];
+      this.setState({
+        courseList,
+        cart,
+        tempCourseList: null,
+        tempCart: null,
+      });
+    }
+    this.setState({ isEditing });
   }
 
   renderBoard = (numPerRow) => {
-    const { courseList } = this.state;
+    const { courseList, isEditing } = this.state;
     const numTerms = courseList.length;
 
     // Empty board
@@ -459,10 +475,11 @@ class CourseBoardContainer extends Component {
           onClearBoard={ this.clearBoard }
           onRenameBoard={ this.renameBoard }
           onDeleteBoard={ this.deleteBoard }
-          onUpdateCourses={ this.loadCourses }
-          showCart
+          onAddCourses={ this.addCourses }
           cart={ this.state.cart }
           onClearCart={ this.onClearCart }
+          isEditing={ isEditing }
+          showCart
         />
       </div>
     );
@@ -481,7 +498,8 @@ class CourseBoardContainer extends Component {
                 onClearBoard={ this.clearBoard }
                 onRenameBoard={ this.renameBoard }
                 onDeleteBoard={ this.deleteBoard }
-                onUpdateCourses={ this.loadCourses }
+                onAddCourses={ this.addCourses }
+                isEditing={ isEditing }
               />
             )
           })
@@ -502,7 +520,9 @@ class CourseBoardContainer extends Component {
                 onAddBoard={ this.addBoard }
                 onImport={ this.importTerms }
                 onClear={ this.clearCourses }
+                onEditChange={ this.toggleEditing }
                 showClearButton={ this.state.courseList.length > 0 }
+                isEditing={ this.state.isEditing }
               />
               <MediaQuery minWidth={ 900 }>
                 <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(3) }>
@@ -513,6 +533,7 @@ class CourseBoardContainer extends Component {
                     <MyCourseSideBar
                       cartCourses={ this.state.cart }
                       onClearCart={ this.clearCart }
+                      isEditing={ this.state.isEditing }
                     />
                   </div>
                 </DragDropContext>
@@ -526,6 +547,7 @@ class CourseBoardContainer extends Component {
                     <MyCourseSideBar
                       cartCourses={ this.state.cart }
                       onClearCart={ this.clearCart }
+                      isEditing={ this.state.isEditing }
                     />
                   </div>
                 </DragDropContext>
@@ -539,6 +561,7 @@ class CourseBoardContainer extends Component {
                     <MyCourseSideBar
                       cartCourses={ this.state.cart }
                       onClearCart={ this.clearCart }
+                      isEditing={ this.state.isEditing }
                     />
                   </div>
                 </DragDropContext>
@@ -583,7 +606,7 @@ const mapDispatchToProps = dispatch => {
     updateCourseHandler: (username, courseList) => {
       dispatch(updateUserCourses(username, courseList));
     },
-    setCartHandler: (username, cart) => {
+    updateCartHandler: (username, cart) => {
       dispatch(setCart(username, cart));
     },
     deselectCourseHandler: () => {

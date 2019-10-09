@@ -177,6 +177,7 @@ async function fillCoursesMetadata(courses) {
 
     // Fill prereqs
     if (prereqs == null || prereqs.length === 0) {
+      // console.log('fill prereqs')
       let reqs = {};
       ({ err, reqs } = await getPrereqs(subject, catalogNumber));
       if (err) {
@@ -190,6 +191,7 @@ async function fillCoursesMetadata(courses) {
 
     // Fill course title
     if (title == null || title === '') {
+      // console.log('fill title')
       ({ err, title } = await getCourseTitle(subject, catalogNumber));
       if (err) {
         console.error(err);
