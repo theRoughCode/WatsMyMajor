@@ -577,9 +577,11 @@ class CourseBoardContainer extends Component {
                     onAddBoard={ this.addBoard }
                     onImport={ this.importTerms }
                     onClear={ this.clearCourses }
+                    onEditChange={ this.toggleEditing }
                     showClearButton={ this.state.courseList.length > 0 }
                     showTrashOnDrag
                     isDraggingCourse={ this.state.isDraggingCourse }
+                    isEditing={ this.state.isEditing }
                   />
                   <div style={ mobileStyles.viewContainer }>
                     <div style={ mobileStyles.boardContainer }>

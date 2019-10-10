@@ -313,7 +313,7 @@ export default class TermBoard extends Component {
             <div style={ styles.box } />
             <div style={{ ...styles.box, ...styles.boardTitle }}>
               <span>{ term }</span>
-              { (level.length > 0) && (
+              { (!isCart && level.length > 0) && (
                 <span style={ styles.level }>{ level }</span>
               ) }
             </div>

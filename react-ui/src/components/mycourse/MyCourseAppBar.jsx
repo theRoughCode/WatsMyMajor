@@ -80,7 +80,7 @@ export default class MyCourseAppBar extends Component {
     showClearButton: PropTypes.bool.isRequired,
     showTrashOnDrag: PropTypes.bool,
     isDraggingCourse: PropTypes.bool,
-    isEditing: PropTypes.bool,
+    isEditing: PropTypes.bool.isRequired,
   };
 
   static defaultProps = {
