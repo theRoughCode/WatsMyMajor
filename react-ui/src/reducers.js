@@ -250,6 +250,11 @@ function user(state = defaultUser, action) {
     action.user.username = action.username;
     return action.user || defaultUser;
   case LOGIN_USER:
+    Sentry.configureScope((scope) => {
+      if (action.payload != null) {
+        scope.setUser({ userId: action.payload.username });
+      }
+    });
     return action.payload || defaultUser;
   case LOGOUT_USER:
   case DELETE_ACCOUNT_SUCCESS:

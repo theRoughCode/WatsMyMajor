@@ -65,8 +65,8 @@ export default class Reviews extends Component {
   };
 
   static defaultProps = {
-    courses: [],
-    profs: [],
+    courses: {},
+    profs: {},
   }
 
   constructor(props) {
@@ -86,37 +86,47 @@ export default class Reviews extends Component {
 
   render() {
     const { courses, profs } = this.state;
+    if (courses.length === 0 && profs.length === 0) return null;
+
     return (
       <div style={ styles.container }>
         <Paper style={ styles.innerContainer }>
           <span style={ styles.header }>My Reviews</span>
-          <List
-            subheader={
-              <ListSubheader style={ styles.subheader }>Courses</ListSubheader>
-            }
-          >
-            { courses.map(({ subject, catalogNumber }) => (
-              <ListItem
-                key={ subject + catalogNumber }
-                button
-                component="a"
-                href={ `/courses/${subject}/${catalogNumber}` }
+          {
+            courses.length > 0 && (
+              <List
+                subheader={
+                  <ListSubheader style={ styles.subheader }>Courses</ListSubheader>
+                }
               >
-                <ListItemText primary={ `${subject} ${catalogNumber}` } />
-              </ListItem>
-            )) }
-          </List>
-          <List
-            subheader={
-              <ListSubheader style={ styles.subheader }>Professors</ListSubheader>
-            }
-          >
-            { profs.map(({ name, id }) => (
-              <ListItem key={ id } button component="a" href={ `/professors/${id}` }>
-                <ListItemText primary={ name } />
-              </ListItem>
-            )) }
-          </List>
+                { courses.map(({ subject, catalogNumber }) => (
+                  <ListItem
+                    key={ subject + catalogNumber }
+                    button
+                    component="a"
+                    href={ `/courses/${subject}/${catalogNumber}` }
+                  >
+                    <ListItemText primary={ `${subject} ${catalogNumber}` } />
+                  </ListItem>
+                )) }
+              </List>
+            )
+          }
+          {
+            profs.length && (
+              <List
+                subheader={
+                  <ListSubheader style={ styles.subheader }>Professors</ListSubheader>
+                }
+              >
+                { profs.map(({ name, id }) => (
+                  <ListItem key={ id } button component="a" href={ `/professors/${id}` }>
+                    <ListItemText primary={ name } />
+                  </ListItem>
+                )) }
+              </List>
+            )
+          }
         </Paper>
       </div>
     );
