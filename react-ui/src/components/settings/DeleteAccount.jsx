@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import { darkRed } from 'constants/Colours';
 
 const styles = {
@@ -35,19 +39,6 @@ export default class DeleteAccount extends Component {
   render() {
     const { open } = this.state;
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.handleClose }
-      />,
-      <FlatButton
-        label="Delete"
-        secondary
-        onClick={ this.onDelete }
-      />,
-    ];
-
     return (
       <div style={ styles.container }>
         <RaisedButton
@@ -56,14 +47,31 @@ export default class DeleteAccount extends Component {
           labelStyle={ styles.button }
           backgroundColor={ darkRed }
         />
+
+        {/* Newer version ov material-ui */}
         <Dialog
-          title="Are you sure you want to delete your account?"
-          actions={ actions }
           modal={ false }
           open={ open }
           onRequestClose={ this.handleClose }
         >
-          All your current data will be lost.
+          <DialogTitle >{"Are you sure you want to delete your account?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              All your current data will be lost.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <FlatButton
+              label="Cancel"
+              primary
+              onClick={ this.handleClose }
+            />
+            <FlatButton
+              label="Delete"
+              secondary
+              onClick={ this.onDelete }
+            />
+          </DialogActions>
         </Dialog>
       </div>
     );

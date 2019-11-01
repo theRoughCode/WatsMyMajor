@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
-import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import AvatarIcon from 'material-ui/svg-icons/action/account-circle';
 import Grid from '@material-ui/core/Grid';
 import { lightGreen2, red } from 'constants/Colours';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const maxFileSize = 5242880; // %MB
 
@@ -17,9 +21,8 @@ const styles = {
     marginTop: 20,
     display: 'flex',
   },
-  dialog: {
-    width: 400,
-    maxWidth: 'none',
+  responsiveDialog: {
+    width: 'fit-content'
   },
   loaderContainer: {
     width: '100%',
@@ -179,24 +182,6 @@ export default class ImageUpload extends Component {
   onUnlockEaster = () => this.onSubmit(null, true);
 
   render() {
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        onClick={ this.closeDialog }
-        disabled={ this.state.loading }
-      />,
-      <FlatButton
-        label="Unlock Easter Egg"
-        onClick={ this.onUnlockEaster }
-        style={{ display: 'none' }}
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onSubmit }
-        disabled={ this.state.file.length === 0 }
-      />,
-    ];
 
     const dialogBody = (this.state.loading)
       ? (
@@ -215,7 +200,7 @@ export default class ImageUpload extends Component {
               container
               direction="row"
               justify="flex-start"
-              spacing={ 8 }
+              spacing={ 2 }
             >
               <Grid item>
                 <RaisedButton
@@ -264,16 +249,39 @@ export default class ImageUpload extends Component {
           icon={ <AvatarIcon /> }
         />
         <Dialog
-          title="Change Avatar"
-          actions={ actions }
-          modal
+          modal = {false}
           open={ this.state.open }
-          contentStyle={ styles.dialog }
+          contentStyle={ styles.responsiveDialog }
         >
-          { dialogBody }
-        </Dialog>
+          <DialogTitle >{"Change Avatar"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              { dialogBody }
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <FlatButton
+              label="Cancel"
+              onClick={ this.closeDialog }
+              disabled={ this.state.loading }
+            />
+            <FlatButton
+              label="Unlock Easter Egg"
+              onClick={ this.onUnlockEaster }
+              style={{ display: 'none' }}
+            />
+            <FlatButton
+              label="Submit"
+              primary
+              onClick={ this.onSubmit }
+              disabled={ this.state.file.length === 0 }
+            />
+          </DialogActions>
+          </Dialog>
       </div>
     );
   }
 
 }
+
+    

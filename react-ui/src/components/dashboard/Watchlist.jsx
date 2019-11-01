@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import { List, ListItem } from 'material-ui/List';
@@ -14,6 +18,9 @@ const styles = {
     width: 'fit-content',
     height: 'fit-content',
     margin: 'auto 10px',
+  },
+  responsiveDialog: {
+    width: 'fit-content'
   },
   header: {
     fontSize: 20,
@@ -140,20 +147,6 @@ class Watchlist extends Component {
     const { watchlist, toBeDeleted, dialogOpen } = this.state;
     if (Object.keys(watchlist).length === 0) return null;
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        keyboardFocused
-        onClick={ this.onSubmit }
-      />,
-    ];
-
     return (
       <Paper style={ styles.container } depth={ 1 }>
         <List>
@@ -181,17 +174,34 @@ class Watchlist extends Component {
           }
         </List>
         <Dialog
-          title="Are you sure?"
-          actions={ actions }
           modal={ false }
           open={ dialogOpen }
           onRequestClose={ this.closeDialog }
+          contentStyle={ styles.responsiveDialog }
         >
-          { toBeDeleted >= 0 && `
-            Are you sure you want to remove ${watchlist[toBeDeleted].subject}
-            ${watchlist[toBeDeleted].catalogNumber} (${watchlist[toBeDeleted].classNum})
-            from your watchlist?
-          ` }
+          <DialogTitle id="responsive-dialog-title">{"Are you sure?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              { toBeDeleted >= 0 && `
+                Are you sure you want to remove ${watchlist[toBeDeleted].subject}
+                ${watchlist[toBeDeleted].catalogNumber} (${watchlist[toBeDeleted].classNum})
+                from your watchlist?
+              ` }
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <FlatButton
+              label="Cancel"
+              primary
+              onClick={ this.closeDialog }
+            />,
+            <FlatButton
+              label="Submit"
+              primary
+              keyboardFocused
+              onClick={ this.onSubmit }
+            />,
+          </DialogActions>
         </Dialog>
       </Paper>
     );

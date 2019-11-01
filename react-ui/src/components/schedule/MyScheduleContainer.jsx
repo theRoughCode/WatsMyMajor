@@ -6,7 +6,11 @@ import { toast } from 'react-toastify';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import CopyIcon from 'material-ui/svg-icons/editor/insert-drive-file';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import CalendarContainer from './CalendarContainer';
@@ -256,20 +260,6 @@ class ScheduleContainer extends Component {
       );
     }
 
-    const importDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.onCloseDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onSubmit }
-        disabled={ this.state.text.length === 0 }
-      />,
-    ];
-
     return (Object.keys(this.props.schedule).length > 0)
       ? (
         <div style={{ height: '100%' }}>
@@ -286,17 +276,33 @@ class ScheduleContainer extends Component {
             isPublic={ this.state.isPublic }
           />
           <Dialog
-            title="Import Schedule"
-            actions={ importDialogActions }
-            modal={ false }
+            modal={ false } 
             open={ this.state.importDialogOpen }
             onRequestClose={ this.closeImportDialog }
-            contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
+            fullscreen = { true }
           >
-            <ParserInstructions
-              onChange={ this.onChange }
-              stepContents={ stepContents }
-            />
+             <DialogTitle id="responsive-dialog-title">{"Import Courses"}</DialogTitle>
+             <DialogContent>
+               <DialogContentText>
+                  <ParserInstructions
+                    onChange={ this.onChange }
+                    stepContents={ stepContents }
+                  />
+              </DialogContentText>
+             </DialogContent>
+             <DialogActions>
+              <FlatButton
+                  label="Cancel"
+                  primary
+                  onClick={ this.onCloseDialog }
+                />
+                <FlatButton
+                  label="Submit"
+                  primary
+                  onClick={ this.onSubmit }
+                  disabled={ this.state.text.length === 0 }
+                />
+                </DialogActions>
           </Dialog>
         </div>
       )
