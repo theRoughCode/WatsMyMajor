@@ -249,7 +249,7 @@ export default class ImageUpload extends Component {
           icon={ <AvatarIcon /> }
         />
         <Dialog
-          modal = {false}
+          modal={ false }
           open={ this.state.open }
           contentStyle={ styles.responsiveDialog }
         >
@@ -277,7 +277,7 @@ export default class ImageUpload extends Component {
               disabled={ this.state.file.length === 0 }
             />
           </DialogActions>
-          </Dialog>
+        </Dialog>
       </div>
     );
   }

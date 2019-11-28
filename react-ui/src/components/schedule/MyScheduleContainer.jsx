@@ -22,7 +22,7 @@ import { objectEquals } from 'utils/arrays';
 const stepContents = [
   {
     button: 'Log in to Quest',
-    text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">here</a>.</p>
+    text: <p style={{ marginLeft: 15, textAlign: 'left' }}>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer" >here</a>.</p>
   },
   {
     button: 'Enroll',
@@ -279,35 +279,35 @@ class ScheduleContainer extends Component {
             modal={ false } 
             open={ this.state.importDialogOpen }
             onRequestClose={ this.closeImportDialog }
-            fullscreen = { true }
+            fullscreen={ 'true' }
           >
-             <DialogTitle id="responsive-dialog-title">{"Import Courses"}</DialogTitle>
-             <DialogContent>
-               <DialogContentText>
-                  <ParserInstructions
-                    onChange={ this.onChange }
-                    stepContents={ stepContents }
-                  />
+            <DialogTitle id="responsive-dialog-title">{"Import Courses"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                <ParserInstructions
+                  onChange={ this.onChange }
+                  stepContents={ stepContents }
+                />
               </DialogContentText>
-             </DialogContent>
-             <DialogActions>
+            </DialogContent>
+            <DialogActions>
               <FlatButton
-                  label="Cancel"
-                  primary
-                  onClick={ this.onCloseDialog }
-                />
-                <FlatButton
-                  label="Submit"
-                  primary
-                  onClick={ this.onSubmit }
-                  disabled={ this.state.text.length === 0 }
-                />
-                </DialogActions>
+                label="Cancel"
+                primary
+                onClick={ this.onCloseDialog }
+              />
+              <FlatButton
+                label="Submit"
+                primary
+                onClick={ this.onSubmit }
+                disabled={ this.state.text.length === 0 }
+              />
+            </DialogActions>
           </Dialog>
         </div>
       )
       : (
-        <div style={{ marginTop: 50 }}>
+        <div style={{ marginTop: 16 }}>
           <ParserInstructions
             onChange={ this.onChange }
             stepContents={ stepContents }
@@ -315,6 +315,7 @@ class ScheduleContainer extends Component {
           <RaisedButton
             label="Submit"
             primary
+            style={{ position:'absolute', bottom:'0', right:'0' }}
             onClick={ this.onSubmit }
             disabled={ this.state.text.length === 0 }
           />

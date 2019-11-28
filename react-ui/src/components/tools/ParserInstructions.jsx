@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import MediaQuery from 'react-responsive';
 import {
   Step,
   Stepper,
@@ -8,19 +10,40 @@ import {
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import 'stylesheets/InstructionsView.css';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import Button from '@material-ui/core/Button';
+
+const CustomizedMobileStepper = withStyles({
+  dotActive: {
+    backgroundColor: '#119DA4'
+  },
+  
+})(MobileStepper);
 
 const styles = {
   stepperInfo: {
     height: '100%',
     margin: 'auto',
+    alignItems: 'center',
+  },
+  stepper: {
+    float: 'none',
+    margin: 0 ,
   },
   buttonContainer: {
     marginTop: 30,
     display: 'flex'
+  },
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   }
 };
 
-export default class ParserInstructions extends Component {
+export default class ParserInstructions extends React.Component {
   static propTypes = {
     stepContents: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -95,38 +118,70 @@ export default class ParserInstructions extends Component {
     const { stepIndex, stepContents } = this.state;
 
     return (
-      <div className="instructions">
-        <Stepper linear={ false } activeStep={ stepIndex }>
-          {
-            stepContents.map(({ button }, stepIndex) => (
-              <Step key={ stepIndex }>
-                <StepButton onClick={ () => this.setState({ stepIndex }) }>
-                  { button }
-                </StepButton>
-              </Step>
-            ))
-          }
-        </Stepper>
-        <div style={ styles.stepperInfo }>
-          { this.getStepContent(stepIndex) }
-          <div style={ styles.buttonContainer }>
-            <div style={{ margin: 'auto' }}>
-              <FlatButton
-                label="Back"
-                disabled={ stepIndex === 0 }
-                onClick={ this.handlePrev }
-                style={{ marginRight: 12 }}
-              />
-              <RaisedButton
-                label="Next"
-                disabled={ stepIndex === stepContents.length - 1 }
-                primary
-                onClick={ this.handleNext }
+
+      //Mobile device = MobileStepper
+      <div> 
+        <MediaQuery maxWidth={ 768 }>
+          <div className={ styles.root }>
+            <div className='stepperInfo'>
+              { this.getStepContent(stepIndex) }
+              <CustomizedMobileStepper
+                steps={ stepContents.length }
+                activeStep={ stepIndex }
+                variant='dots'
+                style={{ marginBottom:45, backgroundColor: '#FFFFFF', position:'absolute', zIndex: 0}}
+                nextButton={
+                  <Button size="small" onClick={ this.handleNext } disabled={ stepIndex === stepContents.length - 1 }>
+                  Next
+                    <KeyboardArrowRight />
+                  </Button>
+                }
+                backButton={
+                  <Button size="small" onClick={ this.handlePrev } disabled={ stepIndex === 0 }>
+                    <KeyboardArrowLeft />
+                  Back
+                  </Button>
+                }
               />
             </div>
           </div>
-        </div>
-      </div>
+        </MediaQuery>
+
+        <MediaQuery minWidth={ 769 }>
+          <div className="instructions">
+            <Stepper linear={ false } activeStep={ stepIndex }>
+              {
+                stepContents.map(({ button }, stepIndex) => (
+                  <Step key={ stepIndex }>
+                    <StepButton onClick={ () => this.setState({ stepIndex }) }>
+                      { button }
+                    </StepButton>
+                  </Step>
+                ))
+              }
+            </Stepper>
+            <div style={ styles.stepperInfo }>
+              { this.getStepContent(stepIndex) }
+              <div style={ styles.buttonContainer }>
+                <div style={{ margin: 'auto' }}>
+                  <FlatButton
+                    label="Back"
+                    disabled={ stepIndex === 0 }
+                    onClick={ this.handlePrev }
+                    style={{ marginRight: 12 }}
+                  />
+                  <RaisedButton
+                    label="Next"
+                    disabled={ stepIndex === stepContents.length - 1 }
+                    primary
+                    onClick={ this.handleNext }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </MediaQuery>
+      </div>  
     );
   }
 

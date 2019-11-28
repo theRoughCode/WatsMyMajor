@@ -6,6 +6,11 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -16,13 +21,6 @@ import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from 'constants/DragTypes';
 import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import DeviceOrientation, { Orientation } from 'react-screen-orientation'
-
 import {
   purple,
   lightPurple,
@@ -171,7 +169,6 @@ export default class TermBoard extends Component {
     renameDialogOpen: false,
     importDialogOpen: false,
     addDialogOpen: false,
-    rotationDialogOpen: false,
     settingsOpen: false,
     relevel: this.props.level,
     reterm: this.props.term,
@@ -207,12 +204,10 @@ export default class TermBoard extends Component {
   openRenameDialog = () => this.setState({ settingsOpen: false, renameDialogOpen: true });
   openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
   openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
-  openRotationDialog = () => this.setState({ rotationDialogOpen: true });
 
   closeRenameDialog = () => this.setState({ reterm: this.props.term, renameError: '', renameDialogOpen: false });
   closeImportDialog = () => this.setState({ importDialogOpen: false });
   closeAddDialog = () => this.setState({ addDialogOpen: false });
-  closeRotationDialog = () => this.setState({ rotationDialogOpen: false });
 
   onChangeRenameText = (e, reterm) => this.setState({ reterm, renameError: '' });
   onChangeRelevel = (ev, index, relevel) => this.setState({ relevel });
@@ -313,21 +308,7 @@ export default class TermBoard extends Component {
                         : (
                           <div>
                             <MenuItem primaryText="Edit Name" onClick={ this.openRenameDialog } />
-
-                            {/* If screen of device is 'sm' and in portrait mode, then Dialog Import Courses wont open, 
-                            it will open in landscape mode for more comfort. 
-                            Using module screen-orientation.
-                            */}
-                            <DeviceOrientation lockOrientation={'landscape'}>
-                              <Orientation orientation='landscape' alwaysRender={false}>
-                                <MenuItem primaryText="Import Courses" onClick={ this.openImportDialog } />
-                              </Orientation>
-                              <Orientation orientation='portrait' alwaysRender={false}>
-                                <MenuItem primaryText="Import Courses" onClick={ this.openRotationDialog } />
-                              </Orientation>
-                            </DeviceOrientation>
-                            
-                            
+                            <MenuItem primaryText="Import Courses" onClick={ this.openImportDialog } />
                             <MenuItem primaryText="Clear Term" onClick={ this.clearBoard } />
                             <MenuItem primaryText="Delete Term" onClick={ this.deleteBoard } />
                           </div>
@@ -360,38 +341,38 @@ export default class TermBoard extends Component {
               ) }
             </Droppable>
           </div>
+
           <Dialog
             modal={ false }
             open={ this.state.renameDialogOpen }
             onRequestClose={ this.closeRenameDialog }
             contentStyle={ styles.responsiveDialog }
-            
           >
-            <DialogTitle id="responsive-dialog-title">{"Rename Board"}</DialogTitle>
+            <DialogTitle>{"Rename Board"}</DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                  <TextField
-                    hintText="e.g. Winter 2019"
-                    floatingLabelText="New Board Name"
-                    value={ this.state.reterm }
-                    errorText={ this.state.renameError }
-                    onChange={ this.onChangeRenameText }
-                  />
-                  <SelectField
-                    floatingLabelText="Term Level"
-                    value={ this.state.relevel }
-                    onChange={ this.onChangeRelevel }
-                  >
-                    <MenuItem value="1A" primaryText="1A" />
-                    <MenuItem value="1B" primaryText="1B" />
-                    <MenuItem value="2A" primaryText="2A" />
-                    <MenuItem value="2B" primaryText="2B" />
-                    <MenuItem value="3A" primaryText="3A" />
-                    <MenuItem value="3B" primaryText="3B" />
-                    <MenuItem value="4A" primaryText="4A" />
-                    <MenuItem value="4B" primaryText="4B" />
-                    <MenuItem value="5A+" primaryText="5A+" />
-                  </SelectField>
+              <DialogContentText>
+                <TextField
+                  hintText="e.g. Winter 2019"
+                  floatingLabelText="New Board Name"
+                  value={ this.state.reterm }
+                  errorText={ this.state.renameError }
+                  onChange={ this.onChangeRenameText }
+                />
+                <SelectField
+                  floatingLabelText="Term Level"
+                  value={ this.state.relevel }
+                  onChange={ this.onChangeRelevel }
+                >
+                  <MenuItem value="1A" primaryText="1A" />
+                  <MenuItem value="1B" primaryText="1B" />
+                  <MenuItem value="2A" primaryText="2A" />
+                  <MenuItem value="2B" primaryText="2B" />
+                  <MenuItem value="3A" primaryText="3A" />
+                  <MenuItem value="3B" primaryText="3B" />
+                  <MenuItem value="4A" primaryText="4A" />
+                  <MenuItem value="4B" primaryText="4B" />
+                  <MenuItem value="5A+" primaryText="5A+" />
+                </SelectField>
               </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -405,37 +386,16 @@ export default class TermBoard extends Component {
                 primary
                 onClick={ this.onRename }
               />
-                </DialogActions>
-          </Dialog>
-
-            {/* Dialog for portrait mode active, to rotate device */}
-          <Dialog
-          modal={ false }
-          open={ this.state.rotationDialogOpen }
-          onRequestClose={ this.closeRotationDialog }
-           >
-              <DialogTitle id="responsive-dialog-title">{"Import Courses"}</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Please rotate your dispaly
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <FlatButton
-                    label="Cancel"
-                    primary
-                    onClick={ this.closeRotationDialog }
-                  />
-                </DialogActions>
+            </DialogActions>
           </Dialog>
 
           <Dialog
             modal={ false }
             open={ this.state.importDialogOpen }
             onRequestClose={ this.closeImportDialog }
-            fullScreen = {true}
+            fullScreen={ 'true' }
           >
-            <DialogTitle id="responsive-dialog-title">{"Import Courses"}</DialogTitle>
+            <DialogTitle>{"Import Courses"}</DialogTitle>
             <DialogContent>
               <Parser onChange={ this.onChangeImportText } />
             </DialogContent>
@@ -452,6 +412,7 @@ export default class TermBoard extends Component {
               />
             </DialogActions>
           </Dialog>
+
           <Dialog
             modal={ false }
             open={ this.state.addDialogOpen }

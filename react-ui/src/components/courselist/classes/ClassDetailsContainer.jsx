@@ -150,7 +150,7 @@ export default class ClassDetailsContainer extends Component {
 
   render() {
     const  { classInfo, watchlist, admURL, open, onClose, onWatch, onUnwatch } = this.props;
-    const { instructor, prof, fetchingRMP } = this.state;
+    const { instructor, props, prof, fetchingRMP } = this.state;
     const {
       classNumber,
       units,
@@ -206,26 +206,26 @@ export default class ClassDetailsContainer extends Component {
               contentStyle={ styles.dialog }
               bodyStyle={ styles.container }
               autoScrollBodyContent
-              fullWidth={ true }
+              fullWidth={ 'true' }
             >
-               <DialogTitle >
+              <DialogTitle >
                 <div style={ styles.titleContainer }>
-                    <div style={ styles.header }>
-                      <span style={ styles.headerText }>Class Information</span>
-                      <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
-                      <span style={ styles.admURL }>
-                        <span style={{ marginRight: 4 }}>Scraped from:</span>
-                        <a href={ admURL } target="_blank" rel="noopener noreferrer">
+                  <div style={ styles.header }>
+                    <span style={ styles.headerText }>Class Information</span>
+                    <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
+                    <span style={ styles.admURL }>
+                      <span style={{ marginRight: 4 }}>Scraped from:</span>
+                      <a href={ admURL } target="_blank" rel="noopener noreferrer">
                           adm.uwaterloo.ca
-                        </a>
-                      </span>
-                    </div>
-                    { watchButton }
+                      </a>
+                    </span>
                   </div>
-               </DialogTitle>
-               <DialogContent>
+                  { watchButton }
+                </div>
+              </DialogTitle>
+              <DialogContent>
                 <DialogContentText>
-                    <div style={ styles.body(isMobile) }>
+                  <div style={ styles.body(isMobile) }>
                     <ClassInfo
                       units={ units }
                       topic={ topic }
@@ -256,7 +256,7 @@ export default class ClassDetailsContainer extends Component {
                   label="Close"
                   onClick={ onClose }
                 />
-             </DialogActions>
+              </DialogActions>
             </Dialog>
           );
         } }
