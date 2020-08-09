@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MediaQuery from 'react-responsive';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import WatchIcon from 'material-ui/svg-icons/action/visibility';
@@ -31,11 +35,10 @@ const styles =  {
   watchContainer: {
     display: 'flex',
     flexDirection: 'column',
-    marginLeft: 20,
   },
   watchText: {
-    fontSize: 13,
-    margin: '0px auto',
+    fontSize: 12,
+    marginLeft: '0px auto',
     color: darkRed,
   },
   lastUpdated: {
@@ -49,14 +52,14 @@ const styles =  {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    paddingBottom: 0,
+    paddingBottom: 0
   },
   body: (isMobile) => ({
     display: 'flex',
     flexDirection: (isMobile) ? 'column' : 'row',
   }),
   note: {
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 30,
     marginBottom: 10,
   },
@@ -67,7 +70,7 @@ const styles =  {
     lineHeight: 0.7,
     paddingLeft: 2,
     fontSize: 11,
-  }
+  },
 };
 
 async function retrieveProfInfo(instructor) {
@@ -147,7 +150,7 @@ export default class ClassDetailsContainer extends Component {
 
   render() {
     const  { classInfo, watchlist, admURL, open, onClose, onWatch, onUnwatch } = this.props;
-    const { instructor, prof, fetchingRMP } = this.state;
+    const { instructor, props, prof, fetchingRMP } = this.state;
     const {
       classNumber,
       units,
@@ -162,13 +165,6 @@ export default class ClassDetailsContainer extends Component {
       reserveGroup,
       lastUpdated,
     } = classInfo;
-
-    const actions = [
-      <FlatButton
-        label="Close"
-        onClick={ onClose }
-      />
-    ];
 
     let watchButton = null;
 
@@ -205,7 +201,14 @@ export default class ClassDetailsContainer extends Component {
           const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
           return (
             <Dialog
-              title={
+              open={ open }
+              onRequestClose={ onClose }
+              contentStyle={ styles.dialog }
+              bodyStyle={ styles.container }
+              autoScrollBodyContent
+              fullWidth={ 'true' }
+            >
+              <DialogTitle >
                 <div style={ styles.titleContainer }>
                   <div style={ styles.header }>
                     <span style={ styles.headerText }>Class Information</span>
@@ -213,45 +216,47 @@ export default class ClassDetailsContainer extends Component {
                     <span style={ styles.admURL }>
                       <span style={{ marginRight: 4 }}>Scraped from:</span>
                       <a href={ admURL } target="_blank" rel="noopener noreferrer">
-                        adm.uwaterloo.ca
+                          adm.uwaterloo.ca
                       </a>
                     </span>
                   </div>
                   { watchButton }
                 </div>
-              }
-              open={ open }
-              actions={ actions }
-              onRequestClose={ onClose }
-              contentStyle={ styles.dialog }
-              bodyStyle={ styles.container }
-              actionsContainerStyle={ styles.actions }
-              autoScrollBodyContent
-            >
-              <div style={ styles.body(isMobile) }>
-                <ClassInfo
-                  units={ units }
-                  topic={ topic }
-                  attending={ enrollmentTotal }
-                  enrollmentCap={ enrollmentCap }
-                  waiting={ waitingTotal }
-                  waitingCap={ waitingCap }
-                  reserved={ reserveTotal }
-                  reserveCap={ reserveCap }
-                  reserveGroup={ reserveGroup }
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  <div style={ styles.body(isMobile) }>
+                    <ClassInfo
+                      units={ units }
+                      topic={ topic }
+                      attending={ enrollmentTotal }
+                      enrollmentCap={ enrollmentCap }
+                      waiting={ waitingTotal }
+                      waitingCap={ waitingCap }
+                      reserved={ reserveTotal }
+                      reserveCap={ reserveCap }
+                      reserveGroup={ reserveGroup }
+                    />
+                    <ClassProf
+                      instructor={ instructor }
+                      loading={ fetchingRMP }
+                      prof={ prof }
+                      isMobile={ isMobile }
+                    />
+                  </div>
+                  {
+                    (note.length > 0) && (
+                      <i style={ styles.note }>{ `Note: ${note}` }</i>
+                    )
+                  }
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <FlatButton
+                  label="Close"
+                  onClick={ onClose }
                 />
-                <ClassProf
-                  instructor={ instructor }
-                  loading={ fetchingRMP }
-                  prof={ prof }
-                  isMobile={ isMobile }
-                />
-              </div>
-              {
-                (note.length > 0) && (
-                  <i style={ styles.note }>{ `Note: ${note}` }</i>
-                )
-              }
+              </DialogActions>
             </Dialog>
           );
         } }

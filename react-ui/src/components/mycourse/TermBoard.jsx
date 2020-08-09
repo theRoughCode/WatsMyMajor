@@ -6,7 +6,11 @@ import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
@@ -44,6 +48,9 @@ const styles = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
     display: 'flex',
   }),
+  responsiveDialog: {
+    width: 'fit-content'
+  },
   box: {
     flex: 1,
     display: 'flex',
@@ -256,40 +263,6 @@ export default class TermBoard extends Component {
     const { index, term, level, courses, isCart, isEditing } = this.props;
     const droppableId = (isCart) ? 'Cart' : index;
 
-    const renameDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeRenameDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onRename }
-      />,
-    ];
-
-    const importDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeImportDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onImport }
-      />,
-    ];
-
-    const addDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeAddDialog }
-      />,
-    ];
-
     let innerRef = null;
     let draggableProps = [];
     let dragHandleProps = [];
@@ -368,55 +341,95 @@ export default class TermBoard extends Component {
               ) }
             </Droppable>
           </div>
+
           <Dialog
-            title="Rename Board"
-            actions={ renameDialogActions }
             modal={ false }
             open={ this.state.renameDialogOpen }
             onRequestClose={ this.closeRenameDialog }
-            contentStyle={{ width: 400 }}
+            contentStyle={ styles.responsiveDialog }
           >
-            <TextField
-              hintText="e.g. Winter 2019"
-              floatingLabelText="New Board Name"
-              value={ this.state.reterm }
-              errorText={ this.state.renameError }
-              onChange={ this.onChangeRenameText }
-            />
-            <SelectField
-              floatingLabelText="Term Level"
-              value={ this.state.relevel }
-              onChange={ this.onChangeRelevel }
-            >
-              <MenuItem value="1A" primaryText="1A" />
-              <MenuItem value="1B" primaryText="1B" />
-              <MenuItem value="2A" primaryText="2A" />
-              <MenuItem value="2B" primaryText="2B" />
-              <MenuItem value="3A" primaryText="3A" />
-              <MenuItem value="3B" primaryText="3B" />
-              <MenuItem value="4A" primaryText="4A" />
-              <MenuItem value="4B" primaryText="4B" />
-              <MenuItem value="5A+" primaryText="5A+" />
-            </SelectField>
+            <DialogTitle>{"Rename Board"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                <TextField
+                  hintText="e.g. Winter 2019"
+                  floatingLabelText="New Board Name"
+                  value={ this.state.reterm }
+                  errorText={ this.state.renameError }
+                  onChange={ this.onChangeRenameText }
+                />
+                <SelectField
+                  floatingLabelText="Term Level"
+                  value={ this.state.relevel }
+                  onChange={ this.onChangeRelevel }
+                >
+                  <MenuItem value="1A" primaryText="1A" />
+                  <MenuItem value="1B" primaryText="1B" />
+                  <MenuItem value="2A" primaryText="2A" />
+                  <MenuItem value="2B" primaryText="2B" />
+                  <MenuItem value="3A" primaryText="3A" />
+                  <MenuItem value="3B" primaryText="3B" />
+                  <MenuItem value="4A" primaryText="4A" />
+                  <MenuItem value="4B" primaryText="4B" />
+                  <MenuItem value="5A+" primaryText="5A+" />
+                </SelectField>
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <FlatButton
+                label="Cancel"
+                primary
+                onClick={ this.closeRenameDialog }
+              />
+              <FlatButton
+                label="Submit"
+                primary
+                onClick={ this.onRename }
+              />
+            </DialogActions>
           </Dialog>
+
           <Dialog
-            title="Import Courses"
-            actions={ importDialogActions }
             modal={ false }
             open={ this.state.importDialogOpen }
             onRequestClose={ this.closeImportDialog }
-            contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
+            fullScreen={ 'true' }
           >
-            <Parser onChange={ this.onChangeImportText } />
+            <DialogTitle>{"Import Courses"}</DialogTitle>
+            <DialogContent>
+              <Parser onChange={ this.onChangeImportText } />
+            </DialogContent>
+            <DialogActions>
+              <FlatButton
+                label="Cancel"
+                primary
+                onClick={ this.closeImportDialog }
+              />
+              <FlatButton
+                label="Submit"
+                primary
+                onClick={ this.onImport }
+              />
+            </DialogActions>
           </Dialog>
+
           <Dialog
-            title="Add Course"
-            actions={ addDialogActions }
             modal={ false }
             open={ this.state.addDialogOpen }
             onRequestClose={ this.closeAddDialog }
+            contentStyle={ styles.responsiveDialog }
           >
-            <SearchBar onResult={ this.onSearchResult } courseOnly />
+            <DialogTitle id="responsive-dialog-title">{"Add Course"}</DialogTitle>
+            <DialogContent>
+              <SearchBar onResult={ this.onSearchResult } courseOnly />
+            </DialogContent>
+            <DialogActions>
+              <FlatButton
+                label="Cancel"
+                primary
+                onClick={ this.closeAddDialog }
+              />
+            </DialogActions>
           </Dialog>
         </Paper>
       </div>

@@ -5,7 +5,11 @@ import { toast } from 'react-toastify';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
@@ -35,6 +39,9 @@ const styles = {
     height: 70,
     zIndex: 1,
     boxShadow: '0 8px 6px -6px #999',
+  },
+  responsiveDialog: {
+    width: 'fit-content',
   },
   trashContainer: (isShowing) => ({
     display: (isShowing) ? 'flex' : 'none',
@@ -162,43 +169,6 @@ export default class MyCourseAppBar extends Component {
       showClearButton,
       isEditing,
     } = this.props;
-
-    const addTermDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeAddTermDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onAddTerm }
-      />,
-    ];
-    const importDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeImportDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onImport }
-      />,
-    ];
-    const clearDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeClearDialog }
-      />,
-      <FlatButton
-        label="Confirm"
-        primary
-        onClick={ this.onClear }
-      />,
-    ];
 
     const showTrash = (showTrashOnDrag && isDraggingCourse);
 
@@ -345,53 +315,101 @@ export default class MyCourseAppBar extends Component {
           </div>
           <div>
             <Dialog
-              title="Add Term"
-              actions={ addTermDialogActions }
               modal={ false }
               open={ this.state.addTermDialogOpen }
               onRequestClose={ this.closeAddTermDialog }
-              contentStyle={{ width: 400 }}
+              contentStyle={ styles.responsiveDialog }
+              
             >
-              <TextField
-                hintText="e.g. Fall 2018"
-                floatingLabelText="New Board Name"
-                errorText={ this.state.errorText }
-                onChange={ this.onChangeText }
-              />
-              <SelectField
-                floatingLabelText="Term Level"
-                value={ this.state.level }
-                onChange={ this.onChangeLevel }
-              >
-                <MenuItem value="1A" primaryText="1A" />
-                <MenuItem value="1B" primaryText="1B" />
-                <MenuItem value="2A" primaryText="2A" />
-                <MenuItem value="2B" primaryText="2B" />
-                <MenuItem value="3A" primaryText="3A" />
-                <MenuItem value="3B" primaryText="3B" />
-                <MenuItem value="4A" primaryText="4A" />
-                <MenuItem value="4B" primaryText="4B" />
-                <MenuItem value="5A+" primaryText="5A+" />
-              </SelectField>
+              <DialogTitle>{"Add Term"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  <TextField
+                    hintText="e.g. Fall 2018"
+                    floatingLabelText="New Board Name"
+                    errorText={ this.state.errorText }
+                    onChange={ this.onChangeText }
+                  />
+                  <SelectField
+                    floatingLabelText="Term Level"
+                    value={ this.state.level }
+                    onChange={ this.onChangeLevel }
+                  >
+                    <MenuItem value="1A" primaryText="1A" />
+                    <MenuItem value="1B" primaryText="1B" />
+                    <MenuItem value="2A" primaryText="2A" />
+                    <MenuItem value="2B" primaryText="2B" />
+                    <MenuItem value="3A" primaryText="3A" />
+                    <MenuItem value="3B" primaryText="3B" />
+                    <MenuItem value="4A" primaryText="4A" />
+                    <MenuItem value="4B" primaryText="4B" />
+                    <MenuItem value="5A+" primaryText="5A+" />
+                  </SelectField>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <FlatButton
+                  label="Cancel"
+                  primary
+                  onClick={ this.closeAddTermDialog }
+                />
+                <FlatButton
+                  label="Submit"
+                  primary
+                  onClick={ this.onAddTerm }
+                />
+              </DialogActions>
             </Dialog>
+
             <Dialog
-              title="Import Courses"
-              actions={ importDialogActions }
               modal={ false }
               open={ this.state.importDialogOpen }
               onRequestClose={ this.closeImportDialog }
-              contentStyle={{ width: 1000, maxWidth: 'none', height: 600 }}
+              fullScreen={ 'true' }
             >
-              <Parser onChange={ text => this.onChangeText(null, text) } />
+              <DialogTitle>{"Import Courses"}</DialogTitle>
+              <DialogContent>
+                <Parser onChange={ text => this.onChangeText(null, text) } />
+              </DialogContent>
+              <DialogActions>
+                <FlatButton
+                  label="Cancel"
+                  primary
+                  onClick={ this.closeImportDialog }
+                />
+                <FlatButton
+                  label="Submit"
+                  primary
+                  onClick={ this.onImport }
+                />
+              </DialogActions>
             </Dialog>
+            
             <Dialog
-              title="Clear Courses"
-              actions={ clearDialogActions }
               modal={ false }
               open={ this.state.clearDialogOpen }
               onRequestClose={ this.closeClearDialog }
+              contentStyle={ styles.responsiveDialog }
             >
-              <span>Are you sure you want to clear your courses?</span>
+              <DialogTitle>{"Clear Courses"}</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  <span>Are you sure you want to clear your courses?</span>
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <FlatButton
+                  label="Cancel"
+                  primary
+                  onClick={ this.closeClearDialog }
+                />
+                <FlatButton
+                  label="Confirm"
+                  primary
+                  // disabled={  }
+                  onClick={ this.onClear }
+                />
+              </DialogActions>
             </Dialog>
           </div>
         </div>
