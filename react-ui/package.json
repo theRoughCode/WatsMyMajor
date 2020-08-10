@@ -9,7 +9,6 @@
   "dependencies": {
     "@material-ui/core": "^3.3.2",
     "classnames": "^2.2.6",
-    "cross-env": "^5.2.0",
     "cryptiles": "^4.1.2",
     "material-ui": "^0.20.2",
     "material-ui-search-bar": "^0.4.2",
