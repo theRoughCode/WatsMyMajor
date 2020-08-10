@@ -9,6 +9,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import SelectField from 'material-ui/SelectField';
+import SelectMenuItem from 'material-ui/MenuItem';
 import TextField from 'material-ui/TextField';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import EditIcon from 'material-ui/svg-icons/image/edit';
@@ -363,15 +364,15 @@ export default class MyCourseAppBar extends Component {
                 value={ this.state.level }
                 onChange={ this.onChangeLevel }
               >
-                <MenuItem value="1A" primaryText="1A" />
-                <MenuItem value="1B" primaryText="1B" />
-                <MenuItem value="2A" primaryText="2A" />
-                <MenuItem value="2B" primaryText="2B" />
-                <MenuItem value="3A" primaryText="3A" />
-                <MenuItem value="3B" primaryText="3B" />
-                <MenuItem value="4A" primaryText="4A" />
-                <MenuItem value="4B" primaryText="4B" />
-                <MenuItem value="5A+" primaryText="5A+" />
+                <SelectMenuItem value="1A" primaryText="1A" />
+                <SelectMenuItem value="1B" primaryText="1B" />
+                <SelectMenuItem value="2A" primaryText="2A" />
+                <SelectMenuItem value="2B" primaryText="2B" />
+                <SelectMenuItem value="3A" primaryText="3A" />
+                <SelectMenuItem value="3B" primaryText="3B" />
+                <SelectMenuItem value="4A" primaryText="4A" />
+                <SelectMenuItem value="4B" primaryText="4B" />
+                <SelectMenuItem value="5A+" primaryText="5A+" />
               </SelectField>
             </Dialog>
             <Dialog
