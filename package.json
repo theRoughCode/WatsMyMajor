@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A web app that helps Waterloo students pick their courses",
   "engines": {
-    "node": "8.11.x"
+    "node": "12.x"
   },
   "scripts": {
     "start": "cross-env NODE_PATH=./react-ui/src node server",
