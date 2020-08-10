@@ -6,7 +6,7 @@
     "node": "12.16.x"
   },
   "scripts": {
-    "start": "cross-env NODE_PATH=./react-ui/src node server",
+    "start": "cross-env NODE_PATH=./react-ui/src node --optimize_for_size --max_old_space_size=460 --gc_interval=100 server",
     "heroku-postbuild": "cd react-ui/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build",
     "build": "cd react-ui/ && npm run build",
     "lint": "./node_modules/.bin/eslint . --ext .js --ext .jsx"
