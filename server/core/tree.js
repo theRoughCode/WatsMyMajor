@@ -1,3 +1,4 @@
+const Sentry = require('@sentry/node');
 const requisites = require('../database/requisites');
 const { getCourseTitle } = require('../database/courseList');
 
@@ -9,7 +10,7 @@ const MAX_LENGTH = 100;
 // Returns a prerequisites tree.
 // If there are no prereqs: { subject, catalogNumber, title }
 // Else, { subject, catalogNumber, title, choose, children }
-async function getPrereqsTree(subject, catalogNumber) {
+async function getPrereqsTree(subject, catalogNumber, visited = {}) {
   if (Object.keys(cached).length > MAX_LENGTH) cached = {};
   if (cached.hasOwnProperty(subject + catalogNumber)) {
     const { title, choose, children } = cached[subject + catalogNumber];
@@ -33,7 +34,9 @@ async function getPrereqsTree(subject, catalogNumber) {
     return { subject, catalogNumber, title };
   }
 
-  const parsedReqs = await parsePrereqs(reqs);
+  visited = JSON.parse(JSON.stringify(visited));
+  visited[subject + catalogNumber] = true;
+  const parsedReqs = await parsePrereqs(reqs, visited);
   if (parsedReqs == null) {
     cached[subject + catalogNumber] = { title };
     return { subject, catalogNumber, title };
@@ -45,18 +48,25 @@ async function getPrereqsTree(subject, catalogNumber) {
   }
 }
 
-async function parsePrereqs(prereqs) {
+async function parsePrereqs(prereqs, visited = {}) {
   if (prereqs == null || Object.keys(prereqs).length === 0) {
     return null;
   }
 
   if (prereqs.hasOwnProperty('choose')) {
     const { choose, reqs } = prereqs;
-    const reqTree = await Promise.all(reqs.map(parsePrereqs));
-    return { choose, children: reqTree };
+    const reqTree = await Promise.all(reqs.map((req) => parsePrereqs(req, visited)));
+    return { choose, children: reqTree.filter(tree => tree != null) };
   } else if (prereqs.hasOwnProperty('subject')) {
     const { subject, catalogNumber } = prereqs;
-    const tree = await getPrereqsTree(subject, catalogNumber);
+    // Avoid cycle in tree if already visited (edge case with prereq parser error)
+    if (visited.hasOwnProperty(subject + catalogNumber)) {
+      Sentry.captureException(new Error(`Captured prereqs tree cycle: ${subject} ${catalogNumber}, ${JSON.stringify(visited)}`));
+      return null;
+    }
+    visited = JSON.parse(JSON.stringify(visited));
+    visited[subject + catalogNumber] = true;
+    const tree = await getPrereqsTree(subject, catalogNumber, visited);
     return tree;
   } else return null;
 }
