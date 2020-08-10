@@ -19,11 +19,13 @@ const INITIAL_DEPTH = 2;
 const styles = {
   container: (isMobile) => ({
     backgroundColor: '#242424',
-    height: (isMobile) ? '100vw' : '100%',
-    width: (isMobile) ? '100vh' : '100%',
+    height: isMobile ? '100vw' : '100%',
+    width: isMobile ? '100vh' : '100%',
     display: 'flex',
     flexDirection: 'column',
-    transform: (isMobile) ? 'translatex(calc(50vw - 50%)) translatey(calc(50vh - 50%)) rotate(90deg)' : 'none',
+    transform: isMobile
+      ? 'translatex(calc(50vw - 50%)) translatey(calc(50vh - 50%)) rotate(90deg)'
+      : 'none',
   }),
   header: {
     margin: 20,
@@ -56,24 +58,24 @@ const styles = {
     width: 200,
   },
   toggleLabel: {
-    color: 'white'
+    color: 'white',
   },
   treeContainer: {
     height: '90%',
     width: '100%',
     overflowX: 'auto',
     overflowY: 'hidden',
-  }
+  },
 };
 
 const getTree = (subject, catalogNumber, callback) => {
   const url = `${global.baseUrl || ''}/server/tree/${subject}/${catalogNumber}`;
   fetch(url, {
     headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then(callback);
 };
 
@@ -96,10 +98,9 @@ const setTakenClass = (node) => {
   } else {
     node.gProps.className = 'taken';
   }
-}
+};
 
 class PrerequisitesTreeContainer extends Component {
-
   static propTypes = {
     subject: PropTypes.string.isRequired,
     catalogNumber: PropTypes.string.isRequired,
@@ -110,9 +111,9 @@ class PrerequisitesTreeContainer extends Component {
     super(props);
 
     this.state = {
-      data: null,  // contains data
-      tree: null,  // contains current tree view
-      canBeSimplified: false,  // true if tree can be simplified
+      data: null, // contains data
+      tree: null, // contains current tree view
+      canBeSimplified: false, // true if tree can be simplified
       title: '',
     };
 
@@ -121,7 +122,7 @@ class PrerequisitesTreeContainer extends Component {
 
   componentWillMount() {
     const { subject, catalogNumber, myCourses } = this.props;
-    getTree(subject, catalogNumber, data => {
+    getTree(subject, catalogNumber, (data) => {
       const tree = this.parseNodes(data, myCourses);
       if (tree != null) {
         this.closeAtDepth(tree, INITIAL_DEPTH);
@@ -186,7 +187,7 @@ class PrerequisitesTreeContainer extends Component {
 
       // Have to take all prereqs of this course
       if (!choose) {
-        courseNode.children = children.map(child => this.parseNodes(child, myCourses));
+        courseNode.children = children.map((child) => this.parseNodes(child, myCourses));
       } else {
         // i.e. Only need x number of children to fulfill prereqs
         // We need a Choose node in the middle
@@ -194,7 +195,8 @@ class PrerequisitesTreeContainer extends Component {
         const parsedChooseNode = this.parseChooseNode(chooseNode, myCourses);
         courseNode.children = [parsedChooseNode];
       }
-    } else {  // Leaf node
+    } else {
+      // Leaf node
       courseNode.isOpen = false;
       courseNode.isLeaf = true;
       courseNode.gProps.className = 'leaf';
@@ -208,7 +210,7 @@ class PrerequisitesTreeContainer extends Component {
   parseChooseNode(node, myCourses) {
     const { choose, children } = node;
     const id = generateRandomId();
-    const name = (choose === 0) ? 'Choose all of:' : `Choose ${choose} of:`;
+    const name = choose === 0 ? 'Choose all of:' : `Choose ${choose} of:`;
     const chooseNode = {
       name,
       id,
@@ -218,14 +220,14 @@ class PrerequisitesTreeContainer extends Component {
       gProps: {
         className: `choose-${choose}`,
       },
-      children: children.map(child => this.parseNodes(child, myCourses)),
+      children: children.map((child) => this.parseNodes(child, myCourses)),
     };
 
     // Attach open/close click listener
     chooseNode.gProps.onClick = this.toggleNode.bind(this, chooseNode);
 
     // Check children to see if number of taken courses meet requirements
-    let counter = (choose === 0) ? children.length : choose;
+    let counter = choose === 0 ? children.length : choose;
     for (let i = 0; i < chooseNode.children.length; i++) {
       if (counter === 0) break;
       if (chooseNode.children[i].taken) counter--;
@@ -257,12 +259,12 @@ class PrerequisitesTreeContainer extends Component {
     // If it is a course node or is a choose node that does not have all its
     // prereqs satisfied, we keep all children and recursively simplify tree.
     if (isCourseNode(simpNode) || !simpNode.taken) {
-      simpNode.children = children.map(child => this.simplifyTree(child));
-      simpNode._children = _children.map(child => this.simplifyTree(child));
+      simpNode.children = children.map((child) => this.simplifyTree(child));
+      simpNode._children = _children.map((child) => this.simplifyTree(child));
     } else {
       // If it is a choose node that has its prereqs fulfilled, we only display
       // the courses that fulfilled it.
-      const hiddenChildren = []
+      const hiddenChildren = [];
       const takenChildren = [];
 
       const sortChild = (child) => {
@@ -302,25 +304,19 @@ class PrerequisitesTreeContainer extends Component {
     if (origNode.isLeaf) return origNode;
 
     const { children, _children, hidden } = origNode;
-    const newChildren =
-      (children)
-        ? children.map(child => this.unSimplifyTree(child))
-        : [];
-    const _newChildren =
-      (_children)
-        ? _children.map(child => this.unSimplifyTree(child))
-        : [];
+    const newChildren = children ? children.map((child) => this.unSimplifyTree(child)) : [];
+    const _newChildren = _children ? _children.map((child) => this.unSimplifyTree(child)) : [];
 
     const sortChild = (child) => {
       const origChild = this.unSimplifyTree(child);
       // Put child in visible children if parent node is open
       if (origNode.isOpen) newChildren.push(origChild);
       else _newChildren.push(origChild);
-    }
+    };
 
     // Sort children into appropriate bucket
     if (hidden) hidden.forEach(sortChild);
-    delete(origNode.hidden);
+    delete origNode.hidden;
 
     origNode.children = newChildren;
     origNode._children = _newChildren;
@@ -340,14 +336,14 @@ class PrerequisitesTreeContainer extends Component {
       this.toggleNode(node);
       return;
     }
-    node.children.forEach(child => this.closeAtDepth(child, n, currentDepth + 1));
+    node.children.forEach((child) => this.closeAtDepth(child, n, currentDepth + 1));
   }
 
   // Depth-first traversal to close tree nodes
   closeTree(node) {
     if (node == null || node.isLeaf || !node.isOpen) return;
     if (node.children == null || node.children.length === 0) return;
-    node.children.forEach(child => this.closeTree(child));
+    node.children.forEach((child) => this.closeTree(child));
     node._children = node.children;
     node.children = null;
   }
@@ -369,7 +365,8 @@ class PrerequisitesTreeContainer extends Component {
   toggleSimplifiedView(ev, isToggled) {
     let { tree } = this.state;
 
-    if (isToggled) tree = this.simplifyTree(tree); // Want to simplify tree
+    if (isToggled) tree = this.simplifyTree(tree);
+    // Want to simplify tree
     else tree = this.unSimplifyTree(tree); // Want to unsimplify tree
 
     this.setState({ tree });
@@ -381,47 +378,44 @@ class PrerequisitesTreeContainer extends Component {
     if (tree == null) return null;
 
     return (
-      <MediaQuery minWidth={ 475 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={475}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
-            <div style={ styles.container(isMobile) }>
-              <div style={ styles.header }>
-                <Link to={ `/courses/${subject}/${catalogNumber}` }>
+            <div style={styles.container(isMobile)}>
+              <div style={styles.header}>
+                <Link to={`/courses/${subject}/${catalogNumber}`}>
                   <FlatButton
-                    label={ `Back to ${subject} ${catalogNumber}` }
-                    labelStyle={ styles.backLabel }
-                    icon={ <BackIcon style={ styles.backIcon } color="white" /> }
+                    label={`Back to ${subject} ${catalogNumber}`}
+                    labelStyle={styles.backLabel}
+                    icon={<BackIcon style={styles.backIcon} color="white" />}
                   />
                 </Link>
-                <span style={ styles.title }>Prerequisites Tree</span>
-                <div style={ styles.courseTitle }>
-                  <span style={{ margin: 'auto' }}>{ title }</span>
+                <span style={styles.title}>Prerequisites Tree</span>
+                <div style={styles.courseTitle}>
+                  <span style={{ margin: 'auto' }}>{title}</span>
                 </div>
-                {
-                  canBeSimplified && (
-                    <Toggle
-                      label="Simplified View"
-                      style={ styles.toggle }
-                      labelStyle={ styles.toggleLabel }
-                      labelPosition="right"
-                      onToggle={ this.toggleSimplifiedView }
-                    />
-                  )
-                }
+                {canBeSimplified && (
+                  <Toggle
+                    label="Simplified View"
+                    style={styles.toggle}
+                    labelStyle={styles.toggleLabel}
+                    labelPosition="right"
+                    onToggle={this.toggleSimplifiedView}
+                  />
+                )}
               </div>
-              { tree && (
-                <div style={ styles.treeContainer }>
-                  <Tree data={ tree } />
+              {tree && (
+                <div style={styles.treeContainer}>
+                  <Tree data={tree} />
                 </div>
-              ) }
+              )}
             </div>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }
 
 const mapStateToProps = ({ myCourses }) => ({ myCourses });

@@ -2,7 +2,7 @@ const TreeRouter = require('express').Router();
 const tree = require('../core/tree');
 
 // Get prerequisite tree for course
-TreeRouter.get('/:subject/:number', async function(req, res) {
+TreeRouter.get('/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 

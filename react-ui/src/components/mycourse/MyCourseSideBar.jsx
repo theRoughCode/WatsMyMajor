@@ -15,16 +15,14 @@ const styles = {
 };
 
 const MyCourseSideBar = ({ cartCourses, onClearCart, isEditing }) => (
-  <div style={ styles.container }>
-    {
-      isEditing && <Trash />
-    }
+  <div style={styles.container}>
+    {isEditing && <Trash />}
     <TermBoard
       term="Cart"
-      courses={ cartCourses }
+      courses={cartCourses}
       isCart
-      onClearBoard={ onClearCart }
-      isEditing={ isEditing }
+      onClearBoard={onClearCart}
+      isEditing={isEditing}
     />
   </div>
 );

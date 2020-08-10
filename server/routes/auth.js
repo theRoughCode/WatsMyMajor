@@ -10,10 +10,10 @@ const JWT_SECRET = process.env.SERVER_SECRET;
 // Sign JWT token and populate payload with username
 const getToken = (username) => {
   return jwt.sign({ username }, JWT_SECRET);
-}
+};
 
 // Register user
-AuthRouter.post('/register', async function(req, res) {
+AuthRouter.post('/register', async function (req, res) {
   const username = req.body.username.toLowerCase();
   const { name, email: userEmail, password } = req.body;
 
@@ -32,7 +32,7 @@ AuthRouter.post('/register', async function(req, res) {
 });
 
 // Login user
-AuthRouter.post('/login', function(req, res) {
+AuthRouter.post('/login', function (req, res) {
   const username = req.body.username.toLowerCase();
 
   passport.authenticate('login', { session: false }, (err, user, info) => {
@@ -47,8 +47,8 @@ AuthRouter.post('/login', function(req, res) {
 });
 
 // Facebook authentication
-AuthRouter.get('/facebook', function(req, res) {
-  passport.authenticate('facebook-token', async function(err, username, info) {
+AuthRouter.get('/facebook', function (req, res) {
+  passport.authenticate('facebook-token', async function (err, username, info) {
     if (err) {
       console.error(err);
       return res.status(400).send(err);
@@ -66,7 +66,7 @@ AuthRouter.get('/facebook', function(req, res) {
       } else {
         res.cookie('watsmymajor_jwt', getToken(username)).json({ username, user });
       }
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       res.status(400).send(err);
     }
@@ -74,7 +74,7 @@ AuthRouter.get('/facebook', function(req, res) {
 });
 
 // Forgot password
-AuthRouter.post('/forgot', async function(req, res) {
+AuthRouter.post('/forgot', async function (req, res) {
   const { email: userEmail } = req.body;
 
   try {
@@ -90,7 +90,7 @@ AuthRouter.post('/forgot', async function(req, res) {
 });
 
 // Delete user
-AuthRouter.get('/delete/:username', async function(req, res) {
+AuthRouter.get('/delete/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
 
   try {
@@ -106,7 +106,7 @@ AuthRouter.get('/delete/:username', async function(req, res) {
   }
 });
 
-AuthRouter.get('/unverified', async function(req, res) {
+AuthRouter.get('/unverified', async function (req, res) {
   const usersList = await users.getUnverifiedUsers();
   res.json(usersList);
 });

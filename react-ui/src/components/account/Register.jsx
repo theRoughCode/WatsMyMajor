@@ -57,7 +57,7 @@ const styles = {
     flex: 1,
   },
   registerButton: {
-    width: '100%'
+    width: '100%',
   },
   registerText: {
     color: 'white',
@@ -77,16 +77,15 @@ const styles = {
     top: '50%',
     left: '50%',
     marginTop: -12,
-    marginLeft: -12
+    marginLeft: -12,
   },
   registerButtonWrapper: {
     marginTop: 20,
-    position: 'relative'
-  }
+    position: 'relative',
+  },
 };
 
 export default class Register extends Component {
-
   state = {
     registered: false,
     loading: false,
@@ -94,7 +93,7 @@ export default class Register extends Component {
     nameError: '',
     emailError: '',
     passwordError: '',
-  }
+  };
 
   removeErrors = () => {
     this.setState({
@@ -104,7 +103,7 @@ export default class Register extends Component {
       passwordError: '',
       confirmPasswordError: '',
     });
-  }
+  };
 
   onRegister = async (ev) => {
     ev.preventDefault();
@@ -130,7 +129,7 @@ export default class Register extends Component {
     }
 
     this.setState({
-      loading: true
+      loading: true,
     });
 
     try {
@@ -145,8 +144,8 @@ export default class Register extends Component {
         credentials: 'include',
         headers: {
           'content-type': 'application/json',
-          'x-secret': process.env.REACT_APP_SERVER_SECRET
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
 
       if (!response.ok) {
@@ -178,77 +177,82 @@ export default class Register extends Component {
       toast.error('Failed to create account. Please contact an administrator.');
       console.error(err);
     }
-  }
+  };
 
   render() {
     if (this.state.registered) return <EmailSent />;
-    return  (
-      <div style={ styles.viewContainer }>
-        <div style={ styles.container }>
-          <div style={ styles.header }>
-            <img src={ logo } alt="logo" style={ styles.logo } />
-            <span style={ styles.title }>Hey there!</span>
-            <span style={ styles.subtitle }>Sign up to begin organizing your courses.</span>
+    return (
+      <div style={styles.viewContainer}>
+        <div style={styles.container}>
+          <div style={styles.header}>
+            <img src={logo} alt="logo" style={styles.logo} />
+            <span style={styles.title}>Hey there!</span>
+            <span style={styles.subtitle}>Sign up to begin organizing your courses.</span>
           </div>
-          <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
-            <form style={ styles.body }>
+          <Paper style={styles.formContainer} zDepth={2} rounded={false}>
+            <form style={styles.body}>
               <TextField
                 hintText="e.g. Ferigoose123"
                 floatingLabelText="Username"
-                errorText={ this.state.usernameError }
-                onChange={ this.removeErrors }
+                errorText={this.state.usernameError}
+                onChange={this.removeErrors}
                 ref="username"
-              /><br />
+              />
+              <br />
               <TextField
                 hintText="e.g. Feridun Hamdullahpur"
                 floatingLabelText="Full Name"
-                errorText={ this.state.nameError }
-                onChange={ this.removeErrors }
+                errorText={this.state.nameError}
+                onChange={this.removeErrors}
                 ref="name"
-              /><br />
+              />
+              <br />
               <TextField
                 hintText="e.g. feridun@edu.uwaterloo.ca"
                 floatingLabelText="Email"
-                errorText={ this.state.emailError }
-                onChange={ this.removeErrors }
+                errorText={this.state.emailError}
+                onChange={this.removeErrors}
                 ref="email"
-              /><br />
+              />
+              <br />
               <TextField
                 hintText="*********"
                 floatingLabelText="Password"
                 type="password"
-                errorText={ this.state.passwordError }
-                onChange={ this.removeErrors }
+                errorText={this.state.passwordError}
+                onChange={this.removeErrors}
                 ref="password"
-              /><br />
+              />
+              <br />
               <TextField
                 hintText="*********"
                 floatingLabelText="Confirm Password"
                 type="password"
-                errorText={ this.state.confirmPasswordError }
-                onChange={ this.removeErrors }
+                errorText={this.state.confirmPasswordError}
+                onChange={this.removeErrors}
                 ref="confirmPassword"
-              /><br />
-              <div style={ styles.registerButtonWrapper }>
+              />
+              <br />
+              <div style={styles.registerButtonWrapper}>
                 <RaisedButton
                   label="Sign up"
-                  backgroundColor={ green }
-                  style={ styles.registerButton }
-                  labelStyle={ styles.registerText }
-                  onClick={ this.onRegister }
-                  disabled={ this.state.loading }
+                  backgroundColor={green}
+                  style={styles.registerButton}
+                  labelStyle={styles.registerText}
+                  onClick={this.onRegister}
+                  disabled={this.state.loading}
                   type="submit"
                 />
-                {this.state.loading &&
-                  <CircularProgress size={ 24 } style={ styles.loadingIcon } />
-                }
+                {this.state.loading && <CircularProgress size={24} style={styles.loadingIcon} />}
               </div>
             </form>
           </Paper>
-          <div style={ styles.privacy }>
-            <span>By signing up, you agree to our <a href="/privacy-policy">Privacy Policy</a>.</span>
+          <div style={styles.privacy}>
+            <span>
+              By signing up, you agree to our <a href="/privacy-policy">Privacy Policy</a>.
+            </span>
           </div>
-          <div style={ styles.footer }>
+          <div style={styles.footer}>
             Already have an account yet? <Link to="/login">Sign in</Link>
           </div>
         </div>

@@ -14,12 +14,7 @@ import ScheduleIcon from 'material-ui/svg-icons/action/schedule';
 import Avatar from './Avatar';
 import GithubIcon from '../tools/GithubIcon';
 import { fireLoginPrompt } from '../tools/LoginPrompt';
-import {
-  gunMetal,
-  lightGrey,
-  green,
-  white
-} from 'constants/Colours';
+import { gunMetal, lightGrey, green, white } from 'constants/Colours';
 
 const styles = {
   drawer: {
@@ -30,9 +25,9 @@ const styles = {
     flexDirection: 'column',
     backgroundColor: gunMetal,
   },
-  avatarMenuItem: (isLoggedIn) =>( {
-    marginTop: (isLoggedIn) ? 60 : 0,
-    paddingBottom: (isLoggedIn) ? 5 : 0,
+  avatarMenuItem: (isLoggedIn) => ({
+    marginTop: isLoggedIn ? 60 : 0,
+    paddingBottom: isLoggedIn ? 5 : 0,
     paddingTop: '20px',
     backgroundColor: gunMetal,
   }),
@@ -43,8 +38,8 @@ const styles = {
     marginLeft: 'auto',
   },
   listItem: (isSelected) => ({
-    backgroundColor: (isSelected) ? green : 'inherit',
-    color: (isSelected) ? white : lightGrey,
+    backgroundColor: isSelected ? green : 'inherit',
+    color: isSelected ? white : lightGrey,
   }),
   listTextItem: {
     marginLeft: -10,
@@ -61,20 +56,18 @@ const styles = {
     marginLeft: 10,
     verticalAlign: 'text-bottom',
     color: white,
-  }
-}
+  },
+};
 
 const LinkItem = ({ primaryText, icon, path, onClick, isSelected }) => {
-  const text = <span>{ primaryText }</span>;
+  const text = <span>{primaryText}</span>;
   const onItemClick = () => onClick(`/${path}`);
   return (
     <ListItem
-      primaryText={
-        <span style={ styles.listTextItem }>{ text }</span>
-      }
-      leftIcon={ icon }
-      style={ styles.listItem(isSelected) }
-      onClick={ onItemClick }
+      primaryText={<span style={styles.listTextItem}>{text}</span>}
+      leftIcon={icon}
+      style={styles.listItem(isSelected)}
+      onClick={onItemClick}
     />
   );
 };
@@ -85,7 +78,7 @@ LinkItem.propTypes = {
   path: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   isSelected: PropTypes.bool.isRequired,
-}
+};
 
 class SideBarContainer extends Component {
   static propTypes = {
@@ -101,11 +94,11 @@ class SideBarContainer extends Component {
   };
 
   state = {
-    pathname: this.props.location.pathname
+    pathname: this.props.location.pathname,
   };
 
   componentDidMount() {
-    this.props.history.listen(location => {
+    this.props.history.listen((location) => {
       if (location.pathname !== this.state.pathname) {
         this.setState({ pathname: location.pathname });
       }
@@ -118,70 +111,75 @@ class SideBarContainer extends Component {
     const { isLoggedIn, history } = this.props;
     if (isLoggedIn || !isLoginRequired) this.props.history.push(to);
     else fireLoginPrompt(history, to);
-  }
+  };
 
   // Link requires user to be logged in
   onLoginRequiredClick = (to) => {
     this.onNavClick(to, true);
-  }
+  };
 
   render() {
     const { name, profileURL, isLoggedIn, open, history } = this.props;
     const { pathname } = this.state;
 
     return (
-      <Drawer open={ open } width={ 200 } containerStyle={ styles.drawer }>
+      <Drawer open={open} width={200} containerStyle={styles.drawer}>
         <MenuItem
           className="avatar-menu"
-          style={ styles.avatarMenuItem(isLoggedIn) }
-          onClick={ () => history.push('/settings') }
-          disabled={ !isLoggedIn }
+          style={styles.avatarMenuItem(isLoggedIn)}
+          onClick={() => history.push('/settings')}
+          disabled={!isLoggedIn}
         >
-          { isLoggedIn && <Avatar name={ name } profileURL={ profileURL } /> }
+          {isLoggedIn && <Avatar name={name} profileURL={profileURL} />}
         </MenuItem>
-        <Divider style={ styles.divider } />
+        <Divider style={styles.divider} />
         <List style={{ flex: 1 }}>
           <LinkItem
             primaryText="Dashboard"
             path=""
-            icon={ <DashboardIcon color={ white } /> }
-            isSelected={ (pathname === "/") }
-            onClick={ this.onLoginRequiredClick }
+            icon={<DashboardIcon color={white} />}
+            isSelected={pathname === '/'}
+            onClick={this.onLoginRequiredClick}
           />
           <LinkItem
             primaryText="Browse Courses"
             path="courses/browse"
-            icon={ <SearchIcon color={ white } /> }
-            isSelected={ (pathname.startsWith("/courses")) }
-            onClick={ this.onNavClick }
+            icon={<SearchIcon color={white} />}
+            isSelected={pathname.startsWith('/courses')}
+            onClick={this.onNavClick}
           />
           <LinkItem
             primaryText="View Majors"
             path="majors"
-            icon={ <SchoolIcon color={ white } /> }
-            isSelected={ (pathname.startsWith("/majors")) }
-            onClick={ this.onNavClick }
+            icon={<SchoolIcon color={white} />}
+            isSelected={pathname.startsWith('/majors')}
+            onClick={this.onNavClick}
           />
           <LinkItem
             primaryText="My Courses"
             path="my-courses"
-            icon={ <MyCoursesIcon color={ white } /> }
-            isSelected={ (pathname === "/my-courses") }
-            onClick={ this.onLoginRequiredClick }
+            icon={<MyCoursesIcon color={white} />}
+            isSelected={pathname === '/my-courses'}
+            onClick={this.onLoginRequiredClick}
           />
           <LinkItem
             primaryText="My Schedule"
             path="my-schedule"
-            icon={ <ScheduleIcon color={ white } /> }
-            isSelected={ (pathname === "/my-schedule") }
-            onClick={ this.onLoginRequiredClick }
+            icon={<ScheduleIcon color={white} />}
+            isSelected={pathname === '/my-schedule'}
+            onClick={this.onLoginRequiredClick}
           />
         </List>
-        <div style={ styles.github }>
-          <div style={ styles.githubTextContainer }>
-            <a style={{ color: 'white', textDecoration: 'none' }} target="_blank" rel="noopener noreferrer" href="https://github.com/theRoughCode/watsmymajor/issues">
+        <div style={styles.github}>
+          <div style={styles.githubTextContainer}>
+            <a
+              style={{ color: 'white', textDecoration: 'none' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/theRoughCode/watsmymajor/issues"
+            >
               <span>Found an issue?</span>
-              <GithubIcon style={ styles.githubIcon } />
+              <GithubIcon style={styles.githubIcon} />
             </a>
           </div>
         </div>

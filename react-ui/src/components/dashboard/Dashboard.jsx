@@ -21,7 +21,7 @@ const styles = {
     display: 'flex',
   },
   headerText: (isMobile) => ({
-    fontSize: (isMobile) ? 17 : 25,
+    fontSize: isMobile ? 17 : 25,
     fontWeight: 500,
   }),
   graphContainer: {
@@ -31,40 +31,32 @@ const styles = {
   },
   lowerContainer: {
     display: 'flex',
-  }
+  },
 };
 
-const Dashboard = ({
-  name,
-  username,
-  reviews,
-  myCourses,
-  watchlist,
-  history,
-  onUnwatchClass,
-}) => (
-  <MediaQuery minWidth={ 700 }>
-    { matches => (
-      <div style={ styles.container }>
-        <Paper style={ styles.header }>
-          <h2 style={ styles.headerText(!matches) }>Welcome to WatsMyMajor, { name }!</h2>
+const Dashboard = ({ name, username, reviews, myCourses, watchlist, history, onUnwatchClass }) => (
+  <MediaQuery minWidth={700}>
+    {(matches) => (
+      <div style={styles.container}>
+        <Paper style={styles.header}>
+          <h2 style={styles.headerText(!matches)}>Welcome to WatsMyMajor, {name}!</h2>
         </Paper>
-        <div style={ styles.graphContainer }>
+        <div style={styles.graphContainer}>
           <PopularCourseGraph />
-          <UserCoursesGraph myCourses={ myCourses } />
+          <UserCoursesGraph myCourses={myCourses} />
         </div>
-        <div style={ styles.lowerContainer }>
+        <div style={styles.lowerContainer}>
           <div style={{ margin: 'auto', display: 'flex' }}>
             <Watchlist
-              watchlist={ watchlist }
-              history={ history }
-              onUnwatch={ (term, classNum) => onUnwatchClass(username, term, classNum) }
+              watchlist={watchlist}
+              history={history}
+              onUnwatch={(term, classNum) => onUnwatchClass(username, term, classNum)}
             />
-            <Reviews courses={ reviews.courses } profs={ reviews.profs } />
+            <Reviews courses={reviews.courses} profs={reviews.profs} />
           </div>
         </div>
       </div>
-    ) }
+    )}
   </MediaQuery>
 );
 
@@ -79,7 +71,7 @@ Dashboard.propTypes = {
 };
 
 Dashboard.defaultProps = {
-  reviews: {}
+  reviews: {},
 };
 
 const mapStateToProps = ({ user, myCourses, watchlist }) => ({
@@ -90,7 +82,7 @@ const mapStateToProps = ({ user, myCourses, watchlist }) => ({
   watchlist,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   onUnwatchClass: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
 });
 

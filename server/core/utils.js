@@ -2,7 +2,7 @@ const { getCourseTitle } = require('../database/courseList');
 const { getPrereqs } = require('../database/requisites');
 
 /*
-	PROVIDES UTILITY FUNCTIONS FOR OTHER MODULES
+  PROVIDES UTILITY FUNCTIONS FOR OTHER MODULES
 */
 
 // Formats date into MM/DD/YYYY
@@ -13,7 +13,7 @@ const formatDate = (date) => {
   if (mm < 10) mm = '0' + mm;
   const yy = date.getFullYear();
   return `${mm}/${dd}/${yy}`;
-}
+};
 
 // Separate subject, catalog number, and title from course string
 function parseCourse(courseStr) {
@@ -30,10 +30,11 @@ function parseCourse(courseStr) {
 
   // Search for numbers
   index = courseStr.search(/[0-9]/);
-  if (index === -1) return {
-    subject: courseStr.toUpperCase(),
-    catalogNumber: ''
-  };
+  if (index === -1)
+    return {
+      subject: courseStr.toUpperCase(),
+      catalogNumber: '',
+    };
 
   const subject = courseStr.slice(0, index).toUpperCase();
   const catalogNumber = courseStr.slice(index);
@@ -41,7 +42,7 @@ function parseCourse(courseStr) {
   return {
     subject,
     catalogNumber,
-    title
+    title,
   };
 }
 
@@ -49,7 +50,7 @@ function parseCourse(courseStr) {
 function nestReqs(reqArr) {
   if (!Array.isArray(reqArr)) return {};
 
-  const reqs = reqArr.slice(!isNaN(reqArr[0])).map(req => {
+  const reqs = reqArr.slice(!isNaN(reqArr[0])).map((req) => {
     if (Array.isArray(req)) {
       // [1, 'CS136']
       if (!isNaN(req[0]) && typeof req[1] === 'string') return parseCourse(req[1]);
@@ -57,8 +58,8 @@ function nestReqs(reqArr) {
     } else return parseCourse(req);
   });
   return {
-    choose: (!isNaN(reqArr[0])) ? Number(reqArr[0]) : 0,
-    reqs
+    choose: !isNaN(reqArr[0]) ? Number(reqArr[0]) : 0,
+    reqs,
   };
 }
 
@@ -71,7 +72,7 @@ function parseReqs(arr) {
       // add course subject for those without
       if (index > 0 && !req.subject) {
         let prev = acc[acc.length - 1];
-        if (Array.isArray(prev)) prev = prev[prev.length - 1];  // get last elem
+        if (Array.isArray(prev)) prev = prev[prev.length - 1]; // get last elem
         req.subject = prev.subject;
       }
     }
@@ -98,18 +99,18 @@ function fillInSubject(subjectStrArr) {
       return { subject: prevSubject, catalogNumber: reqStrArr[0] };
     } else {
       prevSubject = reqStrArr[0];
-      return{ subject: reqStrArr[0], catalogNumber: reqStrArr[1] };
+      return { subject: reqStrArr[0], catalogNumber: reqStrArr[1] };
     }
   });
 }
 
 // Converts weird data formatting to pick format
 function unpick(str) {
-  str = str.replace(/\s*and\s*/g,',');
+  str = str.replace(/\s*and\s*/g, ',');
 
   if (str.includes('of')) {
     var choose = str.slice(0, 3);
-    switch(choose) {
+    switch (choose) {
     case 'One':
       choose = 1;
       break;
@@ -122,27 +123,37 @@ function unpick(str) {
     default:
       return str;
     }
-    const arr = str.slice(6,-1).replace(/\s+/g,'').replace('/', ',').split(',');
+    const arr = str.slice(6, -1).replace(/\s+/g, '').replace('/', ',').split(',');
     return { choose, reqs: fillInSubject(arr) };
-  } else if (str.includes(' or')) { // ASSUMING ONLY ONE GROUP OF 'or'
+  } else if (str.includes(' or')) {
+    // ASSUMING ONLY ONE GROUP OF 'or'
     let open = str.indexOf('(');
     let close = str.indexOf(')');
     if (open === -1 || close === -1) close = str.length;
     // replace ' or ' with comma and split into array.  Also remove periods
-    const chooseReqs = str.slice(open + 1, close).replace(/\sor\s/g,', ').replace(/(\s|\.)/g, '').split(',');
-    const arr = [{
-      choose: 1,
-      reqs: fillInSubject(chooseReqs)
-    }];
+    const chooseReqs = str
+      .slice(open + 1, close)
+      .replace(/\sor\s/g, ', ')
+      .replace(/(\s|\.)/g, '')
+      .split(',');
+    const arr = [
+      {
+        choose: 1,
+        reqs: fillInSubject(chooseReqs),
+      },
+    ];
 
     if (!str.includes('[')) return arr[0];
 
     // Remove special chars
     /* eslint-disable no-useless-escape */
-    const checkSpecial = new RegExp('[^A-z0-9,]|\s', 'g');
+    const checkSpecial = new RegExp('[^A-z0-9,]|s', 'g');
     // remove 'arr' from original string and exclude commas before and after
-    str = str.replace(/ *\([^)]*\) */g, "");
-    const reqsArr = str.replace(checkSpecial, '').split(',').filter(r => r.length > 0);
+    str = str.replace(/ *\([^)]*\) */g, '');
+    const reqsArr = str
+      .replace(checkSpecial, '')
+      .split(',')
+      .filter((r) => r.length > 0);
     arr.push(...fillInSubject(reqsArr));
     return arr;
   } else return parseCourse(str);
@@ -160,7 +171,10 @@ function flattenPrereqs(prereqs) {
   // Inductive case: list of courses
   if (prereqs.hasOwnProperty('reqs')) {
     // flatten map
-    return [].concat.apply([], prereqs.reqs.map(req => flattenPrereqs(req)));
+    return [].concat.apply(
+      [],
+      prereqs.reqs.map((req) => flattenPrereqs(req))
+    );
   }
 
   console.error('Unknown format', prereqs);
@@ -171,49 +185,53 @@ function flattenPrereqs(prereqs) {
 async function fillCoursesMetadata(courses) {
   if (!courses) return courses;
 
-  return await Promise.all(courses.map(async function(course) {
-    let { subject, catalogNumber, prereqs, title } = course;
-    let err = null;
+  return Promise.all(
+    courses.map(async function (course) {
+      let { subject, catalogNumber, prereqs, title } = course;
+      let err = null;
 
-    // Fill prereqs
-    if (prereqs == null || prereqs.length === 0) {
-      // console.log('fill prereqs')
-      let reqs = {};
-      ({ err, reqs } = await getPrereqs(subject, catalogNumber));
-      if (err) {
-        console.error(err);
-        return course;
+      // Fill prereqs
+      if (prereqs == null || prereqs.length === 0) {
+        // console.log('fill prereqs')
+        let reqs = {};
+        ({ err, reqs } = await getPrereqs(subject, catalogNumber));
+        if (err) {
+          console.error(err);
+          return course;
+        }
+        // We want to flatten the prereqs of each course and attach them to the course
+        // to be used as a course card.
+        prereqs = flattenPrereqs(reqs);
       }
-      // We want to flatten the prereqs of each course and attach them to the course
-      // to be used as a course card.
-      prereqs = flattenPrereqs(reqs);
-    }
 
-    // Fill course title
-    if (title == null || title === '') {
-      // console.log('fill title')
-      ({ err, title } = await getCourseTitle(subject, catalogNumber));
-      if (err) {
-        console.error(err);
-        return course;
+      // Fill course title
+      if (title == null || title === '') {
+        // console.log('fill title')
+        ({ err, title } = await getCourseTitle(subject, catalogNumber));
+        if (err) {
+          console.error(err);
+          return course;
+        }
       }
-    }
 
-    return { subject, catalogNumber, title, prereqs };
-  }));
+      return { subject, catalogNumber, title, prereqs };
+    })
+  );
 }
 
 async function fillCourseListMetadata(courseList) {
   if (courseList == null) return null;
-  return await Promise.all(courseList.map(async ({ term, level, courses }) => {
-    courses = await fillCoursesMetadata(courses);
-    return { term, level, courses };
-  }));
+  return Promise.all(
+    courseList.map(async ({ term, level, courses }) => {
+      courses = await fillCoursesMetadata(courses);
+      return { term, level, courses };
+    })
+  );
 }
 
 async function fillCartMetadata(cart) {
   if (cart == null) return null;
-  return await fillCoursesMetadata(cart);
+  return fillCoursesMetadata(cart);
 }
 
 function stripCoursesMetadata(courses) {

@@ -21,17 +21,15 @@ const styles = {
 };
 
 const ChooseReqs = ({ choose, reqs }) => (
-  <div style={ styles.container }>
-    <span style={ styles.choose }>{ `Choose ${choose} of:` }</span>
-    <div style={ styles.reqs }>
-      { reqs }
-    </div>
+  <div style={styles.container}>
+    <span style={styles.choose}>{`Choose ${choose} of:`}</span>
+    <div style={styles.reqs}>{reqs}</div>
   </div>
 );
 
 ChooseReqs.propTypes = {
   choose: PropTypes.number.isRequired,
-  reqs: PropTypes.array.isRequired
+  reqs: PropTypes.array.isRequired,
 };
 
 export default ChooseReqs;

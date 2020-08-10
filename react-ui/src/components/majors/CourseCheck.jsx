@@ -10,13 +10,13 @@ const styles = {
   },
   labelStyle: (taken) => ({
     width: '100%',
-    color: (taken) ? green2 : 'inherit',
+    color: taken ? green2 : 'inherit',
   }),
   checkbox: {
     marginTop: 10,
     width: 'auto',
     textAlign: 'left',
-  }
+  },
 };
 
 export default class CourseCheck extends Component {
@@ -29,7 +29,7 @@ export default class CourseCheck extends Component {
 
   state = {
     taken: false,
-    isChecked: false
+    isChecked: false,
   };
 
   componentDidMount() {
@@ -52,24 +52,24 @@ export default class CourseCheck extends Component {
       this.props.onCheck(null, true);
     }
     this.setState({ taken, isChecked: taken });
-  }
+  };
 
   onCheck = (ev, isChecked) => {
     this.setState({ isChecked });
     this.props.onCheck(ev, isChecked);
-  }
+  };
 
   render() {
     const { subject, catalogNumber } = this.props;
     return (
       <Checkbox
-        label={ `${subject} ${catalogNumber}` }
-        checked={ this.state.isChecked }
-        disabled={ this.state.taken }
-        onCheck={ this.onCheck }
-        labelStyle={ styles.labelStyle(this.state.taken) }
-        iconStyle={ styles.iconStyle }
-        style={ styles.checkbox }
+        label={`${subject} ${catalogNumber}`}
+        checked={this.state.isChecked}
+        disabled={this.state.taken}
+        onCheck={this.onCheck}
+        labelStyle={styles.labelStyle(this.state.taken)}
+        iconStyle={styles.iconStyle}
+        style={styles.checkbox}
       />
     );
   }

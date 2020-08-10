@@ -66,11 +66,11 @@ const styles = {
     marginTop: 40,
     display: 'flex',
     flexDirection: 'column',
-  }
+  },
 };
 
 const defaultErrorState = { emailError: '', isEmailError: false };
-const emailSentMessage = `You should soon receive instructions to reset your password at the email you provided.`
+const emailSentMessage = `You should soon receive instructions to reset your password at the email you provided.`;
 
 class ForgotPassword extends Component {
   constructor(props) {
@@ -80,7 +80,7 @@ class ForgotPassword extends Component {
       ...defaultErrorState,
       email: '',
       forgotPasswordEmailSent: false,
-    }
+    };
 
     this.handleForgotPassword = this.handleForgotPassword.bind(this);
   }
@@ -93,7 +93,7 @@ class ForgotPassword extends Component {
     }
 
     return { err: null, email };
-  }
+  };
 
   async handleForgotPassword(ev) {
     ev.preventDefault();
@@ -112,8 +112,8 @@ class ForgotPassword extends Component {
         credentials: 'include',
         headers: {
           'content-type': 'application/json',
-          'x-secret': process.env.REACT_APP_SERVER_SECRET
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
 
       if (!response.ok) {
@@ -122,96 +122,91 @@ class ForgotPassword extends Component {
 
         switch (code) {
         case ERROR_EMAIL_NOT_FOUND:
-          this.setState({ emailError: `Email doesn't exist`, isEmailError: true, });
+          this.setState({ emailError: `Email doesn't exist`, isEmailError: true });
           return;
         default:
           toast.error('Failed to send reset email. Please contact an administrator.');
           return;
         }
       } else {
-        this.setState({ email: "", forgotPasswordEmailSent: true });
+        this.setState({ email: '', forgotPasswordEmailSent: true });
       }
     } catch (err) {
       toast.error('Failed to send reset email. Please contact an administrator.');
       console.error(err);
     }
-
   }
 
-  removeErrors = () => this.setState({ emailError: '', isEmailError: false })
+  removeErrors = () => this.setState({ emailError: '', isEmailError: false });
 
   handleInputChange = (e) => {
     const { value: inputVal, name: inputName } = e.target;
-
 
     this.setState({
       [inputName]: inputVal,
       ...defaultErrorState,
     });
-  }
+  };
 
   renderEmailForm = () => {
     const { email, emailError, isEmailError } = this.state;
     return (
       <>
-        <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
-          <form style={ styles.body }>
+        <Paper style={styles.formContainer} zDepth={2} rounded={false}>
+          <form style={styles.body}>
             <TextField
               name="email"
-              value={ email }
+              value={email}
               placeholder="e.g. feridun@edu.uwaterloo.ca"
               label="Email"
-              error={ isEmailError }
+              error={isEmailError}
               fullWidth
               margin="normal"
-              helperText={ isEmailError && emailError }
-              onChange={ this.handleInputChange }
-            /><br />
+              helperText={isEmailError && emailError}
+              onChange={this.handleInputChange}
+            />
+            <br />
             <RaisedButton
               label="Submit"
-              backgroundColor={ green }
-              style={ styles.loginButton }
-              labelStyle={ styles.loginText }
-              onClick={ this.handleForgotPassword }
+              backgroundColor={green}
+              style={styles.loginButton}
+              labelStyle={styles.loginText}
+              onClick={this.handleForgotPassword}
               type="submit"
             />
           </form>
         </Paper>
-        <div style={ styles.footer }>
+        <div style={styles.footer}>
           Don't have an account yet? <Link to="/register">Sign up</Link>
         </div>
       </>
     );
-  }
+  };
 
-  renderEmailSentMessage = () => (<span style={ styles.message }> {emailSentMessage} </span>)
+  renderEmailSentMessage = () => <span style={styles.message}> {emailSentMessage} </span>;
 
   render() {
     const { forgotPasswordEmailSent } = this.state;
 
-    return  (
-      <div style={ styles.viewContainer }>
-        <div style={ styles.container }>
-          <div style={ styles.header }>
-            <img src={ logo } alt="logo" style={ styles.logo } />
-            <span style={ styles.title }>Forgot Password</span>
-            <span style={ styles.subtitle }>Please enter your email to reset your password</span>
+    return (
+      <div style={styles.viewContainer}>
+        <div style={styles.container}>
+          <div style={styles.header}>
+            <img src={logo} alt="logo" style={styles.logo} />
+            <span style={styles.title}>Forgot Password</span>
+            <span style={styles.subtitle}>Please enter your email to reset your password</span>
           </div>
-          {
-            forgotPasswordEmailSent
-              ? this.renderEmailSentMessage()
-              : this.renderEmailForm()
-          }
+          {forgotPasswordEmailSent ? this.renderEmailSentMessage() : this.renderEmailForm()}
         </div>
       </div>
     );
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   onSetUser: (username, user) => {
     dispatch(setUser(username, user));
-  }
+  },
 });
 
 export default connect(null, mapDispatchToProps)(ForgotPassword);

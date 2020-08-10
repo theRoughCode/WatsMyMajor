@@ -25,7 +25,7 @@ const styles = {
   courseView: {
     width: '100%',
     display: 'flex',
-  }
+  },
 };
 
 const defaultCourse = {
@@ -63,19 +63,18 @@ const defaultClassInfo = {
   isTBA: false,
   isCancelled: false,
   isClosed: false,
-  lastUpdated: ''
+  lastUpdated: '',
 };
 
 // Duplicated from server/core/scrapers/classes.js
 const createAdmURL = (subject, catalogNumber, term) => {
-  const level = (catalogNumber.length < 3 || (catalogNumber.charAt(0) <= 4)) ? 'under' : 'grad';
+  const level = catalogNumber.length < 3 || catalogNumber.charAt(0) <= 4 ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
   return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
-}
+};
 
 class CourseViewContainer extends Component {
-
   static propTypes = {
     courseMetadata: PropTypes.object.isRequired,
     courseClasses: PropTypes.array.isRequired,
@@ -132,7 +131,7 @@ class CourseViewContainer extends Component {
       classInfo: defaultClassInfo,
       watchlist: {},
       loading,
-    }
+    };
 
     this.onExpandClass = this.onExpandClass.bind(this);
     this.closeClassModal = this.closeClassModal.bind(this);
@@ -148,7 +147,8 @@ class CourseViewContainer extends Component {
     const { subject, catalogNumber, term } = this.state;
     const admURL = createAdmURL(subject, catalogNumber, term);
     this.setState({ admURL });
-    if (Object.keys(this.props.courseMetadata).length === 0) this.props.updateMetadataHandler(subject, catalogNumber);
+    if (Object.keys(this.props.courseMetadata).length === 0)
+      this.props.updateMetadataHandler(subject, catalogNumber);
     this.updateWatchlist(this.props.watchlist);
     this.props.updateClassesHandler(subject, catalogNumber, this.state.term);
   }
@@ -162,8 +162,7 @@ class CourseViewContainer extends Component {
     const updatedCart = !arrayOfObjectEquals(nextProps.cart, this.props.cart);
     const updatedUserCourses = !objectEquals(nextProps.myCourses, this.props.myCourses);
     const updatedWatchlist = !objectEquals(nextProps.watchlist, this.props.watchlist);
-    const isNewCourse = (subject !== nextSubject || catalogNumber !== nextCatNum);
-
+    const isNewCourse = subject !== nextSubject || catalogNumber !== nextCatNum;
 
     // User selected new course
     if (isNewCourse) {
@@ -327,58 +326,50 @@ class CourseViewContainer extends Component {
     }
 
     const renderedCourseView = (
-      <div style={ styles.courseView }>
+      <div style={styles.courseView}>
         <CourseContent
-          subject={ subject }
-          catalogNumber={ catalogNumber }
-          course={ course }
-          term={ term }
-          classes={ classes }
-          expandClass={ this.onExpandClass }
-          taken={ taken }
-          inCart={ inCart }
-          eligible={ eligible }
-          addToCartHandler={ this.addCourseToCart }
-          removeFromCartHandler={ this.removeCourseFromCart }
+          subject={subject}
+          catalogNumber={catalogNumber}
+          course={course}
+          term={term}
+          classes={classes}
+          expandClass={this.onExpandClass}
+          taken={taken}
+          inCart={inCart}
+          eligible={eligible}
+          addToCartHandler={this.addCourseToCart}
+          removeFromCartHandler={this.removeCourseFromCart}
         />
         <ClassDetails
-          classInfo={ classInfo }
-          watchlist={ watchlist }
-          admURL={ admURL }
-          open={ classModalOpen }
-          onClose={ this.closeClassModal }
-          onWatch={ this.onWatchClass }
-          onUnwatch={ this.onUnwatchClass }
+          classInfo={classInfo}
+          watchlist={watchlist}
+          admURL={admURL}
+          open={classModalOpen}
+          onClose={this.closeClassModal}
+          onWatch={this.onWatchClass}
+          onUnwatch={this.onUnwatchClass}
         />
       </div>
     );
 
-    const courseView = (error)
-      ? (
-        <ErrorView
-          msgHeader={ "Oops!" }
-          msgBody={ `${subject} ${catalogNumber} is not a valid course!` }
-        />
-      )
-      : renderedCourseView;
+    const courseView = error ? (
+      <ErrorView
+        msgHeader={'Oops!'}
+        msgBody={`${subject} ${catalogNumber} is not a valid course!`}
+      />
+    ) : (
+      renderedCourseView
+    );
 
-    const prereqsTree = <PrereqsTree subject={ subject } catalogNumber={ catalogNumber } />;
+    const prereqsTree = <PrereqsTree subject={subject} catalogNumber={catalogNumber} />;
 
     return (
       <div style={{ width: '100%', height: '100%' }}>
-        <Route
-          path={ `${this.props.match.path}` }
-          exact
-          render={ () => courseView }
-        />
-        <Route
-          path={ `${this.props.match.path}/tree/prereqs` }
-          render={ () => prereqsTree }
-        />
+        <Route path={`${this.props.match.path}`} exact render={() => courseView} />
+        <Route path={`${this.props.match.path}/tree/prereqs`} render={() => prereqsTree} />
       </div>
     );
   }
-
 }
 
 const mapStateToProps = ({
@@ -399,7 +390,7 @@ const mapStateToProps = ({
   courseClasses,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addToCartHandler: (username, cart, subject, catalogNumber, hasTaken, viewCartHandler) => {
       if (hasTaken) {
@@ -421,9 +412,12 @@ const mapDispatchToProps = dispatch => {
       dispatch(createSnack(msg, actionMsg, undoMsg, handleActionClick));
     },
     watchClassHandler: (username, term, classNum) => dispatch(watchClass(username, term, classNum)),
-    unwatchClassHandler: (username, term, classNum) => dispatch(unwatchClass(username, term, classNum)),
-    updateMetadataHandler: (subject, catalogNumber) => dispatch(getCourseMetadata(subject, catalogNumber)),
-    updateClassesHandler: (subject, catalogNumber, term) => dispatch(getCourseClasses(subject, catalogNumber, term)),
+    unwatchClassHandler: (username, term, classNum) =>
+      dispatch(unwatchClass(username, term, classNum)),
+    updateMetadataHandler: (subject, catalogNumber) =>
+      dispatch(getCourseMetadata(subject, catalogNumber)),
+    updateClassesHandler: (subject, catalogNumber, term) =>
+      dispatch(getCourseClasses(subject, catalogNumber, term)),
   };
 };
 

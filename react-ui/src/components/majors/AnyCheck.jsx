@@ -9,7 +9,7 @@ const styles = {
   },
   labelStyle: (taken) => ({
     width: '100%',
-    color: (taken) ? green2 : 'inherit',
+    color: taken ? green2 : 'inherit',
   }),
   checkbox: {
     marginTop: 10,
@@ -27,9 +27,8 @@ const styles = {
   innerIcon: {
     left: 0,
     width: 20,
-  }
+  },
 };
-
 
 const getTakenCourses = (myCourses, limit) => {
   const taken = [];
@@ -44,7 +43,7 @@ const getTakenCourses = (myCourses, limit) => {
     }
   }
   return taken;
-}
+};
 
 export default class AnyCheck extends Component {
   static propTypes = {
@@ -61,8 +60,12 @@ export default class AnyCheck extends Component {
 
   componentDidMount() {
     const { choose, myCourses } = this.props;
-    const children = Array.from(Array(choose).keys()).map(() =>
-      ({ subject: '', catalogNumber: '', checked: false, taken: false }));
+    const children = Array.from(Array(choose).keys()).map(() => ({
+      subject: '',
+      catalogNumber: '',
+      checked: false,
+      taken: false,
+    }));
     this.setState({ children });
     this.checkTaken(myCourses);
   }
@@ -83,7 +86,7 @@ export default class AnyCheck extends Component {
       });
       this.setState({ children });
     }
-  }
+  };
 
   onCheck = (index, isChecked) => {
     // Toggle main checkbox
@@ -95,7 +98,7 @@ export default class AnyCheck extends Component {
       this.setState({ children });
       this.props.onCheck(null, isChecked);
     }
-  }
+  };
 
   render() {
     const { choose } = this.props;
@@ -104,34 +107,32 @@ export default class AnyCheck extends Component {
       <div>
         <Checkbox
           label="Any course"
-          checked={ this.state.isChecked }
-          onCheck={ (_, isChecked) => this.onCheck(-1, isChecked) }
-          iconStyle={ styles.iconStyle }
-          labelStyle={ styles.labelStyle(this.state.taken) }
-          style={ styles.checkbox }
-          disabled={ choose > 1 }
+          checked={this.state.isChecked}
+          onCheck={(_, isChecked) => this.onCheck(-1, isChecked)}
+          iconStyle={styles.iconStyle}
+          labelStyle={styles.labelStyle(this.state.taken)}
+          style={styles.checkbox}
+          disabled={choose > 1}
         />
-        { (choose > 1) && (
-          <div style={ styles.indentedChecks }>
-            {
-              this.state.children.map(({ subject, catalogNumber, checked, taken }, index) => {
-                const label = (subject.length > 0) ? `${subject} ${catalogNumber}` : '';
-                return (
-                  <Checkbox
-                    key={ index }
-                    label={ label }
-                    checked={ checked }
-                    disabled={ taken }
-                    onCheck={ (_, isChecked) => this.onCheck(index, isChecked) }
-                    labelStyle={ styles.labelStyle(taken) }
-                    iconStyle={ styles.innerIcon }
-                    style={ styles.innerChecks }
-                  />
-                );
-              })
-            }
+        {choose > 1 && (
+          <div style={styles.indentedChecks}>
+            {this.state.children.map(({ subject, catalogNumber, checked, taken }, index) => {
+              const label = subject.length > 0 ? `${subject} ${catalogNumber}` : '';
+              return (
+                <Checkbox
+                  key={index}
+                  label={label}
+                  checked={checked}
+                  disabled={taken}
+                  onCheck={(_, isChecked) => this.onCheck(index, isChecked)}
+                  labelStyle={styles.labelStyle(taken)}
+                  iconStyle={styles.innerIcon}
+                  style={styles.innerChecks}
+                />
+              );
+            })}
           </div>
-        ) }
+        )}
       </div>
     );
   }

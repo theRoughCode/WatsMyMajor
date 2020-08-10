@@ -12,7 +12,6 @@ import BrowseCourseView from 'components/browse/BrowseCourseContainer';
 import CourseView from 'components/courselist/CourseViewContainer';
 import ProfView from 'components/reviews/prof/ProfViewContainer';
 
-
 export default [
   {
     path: '/',

@@ -33,8 +33,8 @@ const getProfNames = async (list) => {
       body: JSON.stringify(list),
       headers: {
         'content-type': 'application/json',
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
-      }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
     });
 
     if (!response.ok) return [];
@@ -43,22 +43,20 @@ const getProfNames = async (list) => {
     console.error(err);
     return [];
   }
-}
+};
 
 const getCourseList = (courses) => {
   if (courses == null) return [];
   const courseList = [];
-  Object.keys(courses).forEach(subject => {
-    Object.keys(courses[subject]).forEach(catalogNumber => {
+  Object.keys(courses).forEach((subject) => {
+    Object.keys(courses[subject]).forEach((catalogNumber) => {
       courseList.push({ subject, catalogNumber });
     });
   });
   return courseList;
-}
-
+};
 
 export default class Reviews extends Component {
-
   static propTypes = {
     courses: PropTypes.object,
     profs: PropTypes.object,
@@ -67,7 +65,7 @@ export default class Reviews extends Component {
   static defaultProps = {
     courses: {},
     profs: {},
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -89,47 +87,34 @@ export default class Reviews extends Component {
     if (courses.length === 0 && profs.length === 0) return null;
 
     return (
-      <div style={ styles.container }>
-        <Paper style={ styles.innerContainer }>
-          <span style={ styles.header }>My Reviews</span>
-          {
-            courses.length > 0 && (
-              <List
-                subheader={
-                  <ListSubheader style={ styles.subheader }>Courses</ListSubheader>
-                }
-              >
-                { courses.map(({ subject, catalogNumber }) => (
-                  <ListItem
-                    key={ subject + catalogNumber }
-                    button
-                    component="a"
-                    href={ `/courses/${subject}/${catalogNumber}` }
-                  >
-                    <ListItemText primary={ `${subject} ${catalogNumber}` } />
-                  </ListItem>
-                )) }
-              </List>
-            )
-          }
-          {
-            profs.length && (
-              <List
-                subheader={
-                  <ListSubheader style={ styles.subheader }>Professors</ListSubheader>
-                }
-              >
-                { profs.map(({ name, id }) => (
-                  <ListItem key={ id } button component="a" href={ `/professors/${id}` }>
-                    <ListItemText primary={ name } />
-                  </ListItem>
-                )) }
-              </List>
-            )
-          }
+      <div style={styles.container}>
+        <Paper style={styles.innerContainer}>
+          <span style={styles.header}>My Reviews</span>
+          {courses.length > 0 && (
+            <List subheader={<ListSubheader style={styles.subheader}>Courses</ListSubheader>}>
+              {courses.map(({ subject, catalogNumber }) => (
+                <ListItem
+                  key={subject + catalogNumber}
+                  button
+                  component="a"
+                  href={`/courses/${subject}/${catalogNumber}`}
+                >
+                  <ListItemText primary={`${subject} ${catalogNumber}`} />
+                </ListItem>
+              ))}
+            </List>
+          )}
+          {profs.length && (
+            <List subheader={<ListSubheader style={styles.subheader}>Professors</ListSubheader>}>
+              {profs.map(({ name, id }) => (
+                <ListItem key={id} button component="a" href={`/professors/${id}`}>
+                  <ListItemText primary={name} />
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Paper>
       </div>
     );
   }
-
 }

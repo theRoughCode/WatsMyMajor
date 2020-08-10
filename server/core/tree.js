@@ -61,7 +61,6 @@ async function parsePrereqs(prereqs) {
   } else return null;
 }
 
-
 module.exports = {
-  getPrereqsTree
+  getPrereqsTree,
 };

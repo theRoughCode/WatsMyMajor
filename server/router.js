@@ -18,7 +18,7 @@ const fs = require('fs');
 router.use('/server', require('./routes'));
 
 // All remaining requests return the React app, so it can handle routing.
-router.use('*', function(req, res) {
+router.use('*', function (req, res) {
   fs.readFile(path.resolve('./react-ui/build/index.html'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
@@ -47,7 +47,7 @@ router.use('*', function(req, res) {
     }
 
     // Use 'some' to imitate <Switch> behaviour
-    routes.some(route => {
+    routes.some((route) => {
       const match = matchPath(req.originalUrl, route);
 
       // If component has loadData property, dispatch the data requirement
@@ -58,37 +58,32 @@ router.use('*', function(req, res) {
     });
 
     // Render HTML
-    Promise.all(dataToFetch).then(() => {
-      const jsx = renderToString(
-        <StaticWrapper
-          store={ store }
-          location={ req.originalUrl }
-          context={ context }
-        />
-      );
-      const helmet = Helmet.renderStatic();
-
-      // context.url will contain the URL to redirect to if a <Redirect> was used
-      if (context.url) res.redirect(301, context.url);
-      else {
-        res.writeHead(200, { "Content-Type": "text/html" });
-        res.end(
-          data
-            .replace(
-              '</head>',
-              `${helmet.title.toString()} ${helmet.meta.toString()}</head>`
-            )
-            .replace(
-              '<div id="root"></div>',
-              `<div id="root">${ jsx }</div>
-               <script>window.REDUX_DATA = ${ JSON.stringify(store.getState()) }</script>`
-            )
+    Promise.all(dataToFetch)
+      .then(() => {
+        const jsx = renderToString(
+          <StaticWrapper store={store} location={req.originalUrl} context={context} />
         );
-      }
-    }).catch(err => {
-      console.error(err);
-      res.status(500).send('An error occurred');
-    });
+        const helmet = Helmet.renderStatic();
+
+        // context.url will contain the URL to redirect to if a <Redirect> was used
+        if (context.url) res.redirect(301, context.url);
+        else {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(
+            data
+              .replace('</head>', `${helmet.title.toString()} ${helmet.meta.toString()}</head>`)
+              .replace(
+                '<div id="root"></div>',
+                `<div id="root">${jsx}</div>
+               <script>window.REDUX_DATA = ${JSON.stringify(store.getState())}</script>`
+              )
+          );
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('An error occurred');
+      });
   });
 });
 

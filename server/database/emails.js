@@ -5,18 +5,15 @@ const { emailsRef } = require('./index');
  *
  */
 
-
 /****************************
-  *													*
-  *			S E T T E R S 			*
-  *													*
-  ****************************/
+ *                          *
+ *      S E T T E R S       *
+ *                          *
+ ****************************/
 
 function setEmail(username, email) {
   email = email.replace(/\./g, ',');
-  return emailsRef
-    .child(email)
-    .set(username);
+  return emailsRef.child(email).set(username);
 }
 
 function deleteEmail(email) {
@@ -24,11 +21,10 @@ function deleteEmail(email) {
   return emailsRef.child(email).remove();
 }
 
-
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
 
 // Returns true if an email exists

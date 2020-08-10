@@ -11,26 +11,26 @@ import { lightGreen2, yellow, red, darkGrey } from 'constants/Colours';
 const styles = {
   container: (isMobile) => ({
     display: 'inline-block',
-    paddingLeft: (isMobile) ? 0 : 20,
-    borderLeft: (isMobile) ? 'none' : '2px solid #eeeeee',
-    paddingTop: (isMobile) ? 20 : 0,
-    marginTop: (isMobile) ? 20 : 0,
-    borderTop: (isMobile) ? '2px solid #eeeeee' : 'none',
+    paddingLeft: isMobile ? 0 : 20,
+    borderLeft: isMobile ? 'none' : '2px solid #eeeeee',
+    paddingTop: isMobile ? 20 : 0,
+    marginTop: isMobile ? 20 : 0,
+    borderTop: isMobile ? '2px solid #eeeeee' : 'none',
   }),
   stars: {
     starRatedColor: yellow,
     starDimension: '15px',
-    starSpacing: '1px'
+    starSpacing: '1px',
   },
   divider: {
     borderTop: '1px solid #eeeeee',
-    backgroundColor: 'inherit'
+    backgroundColor: 'inherit',
   },
   progress: {
     width: 170,
     height: '100%',
     margin: 'auto',
-    marginLeft: '10px'
+    marginLeft: '10px',
   },
   icon: {
     width: 20,
@@ -46,7 +46,7 @@ const styles = {
   },
   loading: {
     margin: 'auto',
-    padding: 20
+    padding: 20,
   },
   prof: {
     display: 'flex',
@@ -76,21 +76,20 @@ const styles = {
     textAlign: 'left',
     fontSize: 15,
     padding: '10px 20px',
-    paddingBottom: (isMobile) ? 10 : 0,
-    borderBottom: (isMobile) ? '1px solid #eeeeee' : 'none',
-  })
+    paddingBottom: isMobile ? 10 : 0,
+    borderBottom: isMobile ? '1px solid #eeeeee' : 'none',
+  }),
 };
 
-
 const ProfHeader = ({ name, stars }) => (
-  <div style={ styles.prof }>
-    { name }
+  <div style={styles.prof}>
+    {name}
     <StarRatings
-      rating={ stars }
-      isSelectable={ false }
+      rating={stars}
+      isSelectable={false}
       isAggregateRating
-      numOfStars={ 5 }
-      { ...styles.stars }
+      numOfStars={5}
+      {...styles.stars}
     />
   </div>
 );
@@ -108,33 +107,25 @@ ProfHeader.defaultProps = {
 // Display ratings of professor taken from RateMyProfessor.com
 const Rating = ({ difficulty, tags }) => {
   const percentage = (Number(difficulty) / 5.0) * 100;
-  const barColour = (percentage > 66)
-    ? red
-    : (percentage > 33)
-      ? yellow
-      : lightGreen2;
+  const barColour = percentage > 66 ? red : percentage > 33 ? yellow : lightGreen2;
   return (
-    <div style={ styles.ratingContainer }>
-      <div style={ styles.ratingDifficulty }>
+    <div style={styles.ratingContainer}>
+      <div style={styles.ratingDifficulty}>
         <span>Difficulty:</span>
         <Line
-          style={ styles.progress }
+          style={styles.progress}
           strokeWidth="8"
-          strokeColor={ barColour }
+          strokeColor={barColour}
           trailWidth="8"
-          percent={ `${percentage}` }
+          percent={`${percentage}`}
         />
       </div>
-      <div style={ styles.ratingTags }>
-        { tags.map((tag, index) => (
-          <Chip
-            style={ styles.chip }
-            labelStyle={ styles.chipLabel }
-            key={ index }
-          >
-            { tag }
+      <div style={styles.ratingTags}>
+        {tags.map((tag, index) => (
+          <Chip style={styles.chip} labelStyle={styles.chipLabel} key={index}>
+            {tag}
           </Chip>
-        )) }
+        ))}
       </div>
     </div>
   );
@@ -150,53 +141,34 @@ Rating.defaultProps = {
   tags: [],
 };
 
-
-const ClassProf = ({
-  instructor,
-  loading,
-  prof,
-  isMobile,
-}) => {
-  const {
-    rating,
-    difficulty,
-    tags,
-    id
-  } = prof;
+const ClassProf = ({ instructor, loading, prof, isMobile }) => {
+  const { rating, difficulty, tags, id } = prof;
 
   const loadingView = (
-    <div style={ styles.loading } className="loading">
-      <CircularProgress
-        size={ 40 }
-        thickness={ 5 }
-        style={ styles.loading }
-      />
+    <div style={styles.loading} className="loading">
+      <CircularProgress size={40} thickness={5} style={styles.loading} />
     </div>
   );
 
   const renderedView = (
-    <div style={ styles.container(isMobile) }>
-      <ProfHeader
-        name={ instructor }
-        stars={ rating }
-      />
-      <Divider style={ styles.divider } />
-      <Rating
-        difficulty={ difficulty }
-        tags={ tags }
-      />
-      <Divider style={ styles.divider } />
-      <div style={ styles.shareContainer(isMobile) }>
-        <RateIcon color={ darkGrey } style={ styles.icon } />
+    <div style={styles.container(isMobile)}>
+      <ProfHeader name={instructor} stars={rating} />
+      <Divider style={styles.divider} />
+      <Rating difficulty={difficulty} tags={tags} />
+      <Divider style={styles.divider} />
+      <div style={styles.shareContainer(isMobile)}>
+        <RateIcon color={darkGrey} style={styles.icon} />
         <a
           className="course-prof-share"
           rel="noopener noreferrer"
-          href={ `/professors/${id}` }
-          target='_blank'
-        >See all reviews</a>
+          href={`/professors/${id}`}
+          target="_blank"
+        >
+          See all reviews
+        </a>
       </div>
     </div>
-  )
+  );
 
   if (loading) return loadingView;
   else if (id == null) return null;

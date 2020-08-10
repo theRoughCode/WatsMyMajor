@@ -1,9 +1,9 @@
 html {
-	background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 html, body, #root, .App {
-	height: 100%;
+  height: 100%;
   margin: 0;
 }
 
@@ -12,34 +12,34 @@ html, body, #root, .App {
 }
 
 .App a {
-	color: #356abf;
+  color: #356abf;
 }
 
 .App a:hover {
-	color: #75CAEF;
+  color: #75CAEF;
 }
 
 .loading, .error-wrapper {
-	width: auto;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
+  width: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .error-wrapper span {
-	margin: auto;
-	color: black;
+  margin: auto;
+  color: black;
 }
 
 @keyframes App-logo-spin {
-	from { transform: rotate(0deg); }
-	to { transform: rotate(360deg); }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* SideBar menu */
 
 .avatar-menu:hover {
-	background-color: rgb(74, 87, 104) !important;
+  background-color: rgb(74, 87, 104) !important;
 }
 
 .avatar-wrapper {

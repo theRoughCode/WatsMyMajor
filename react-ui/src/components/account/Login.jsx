@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { toast } from 'react-toastify';
 import Paper from 'material-ui/Paper';
 import TextField from '@material-ui/core/TextField';
@@ -11,7 +11,6 @@ import FacebookIcon from '../tools/FacebookIcon';
 import logo from 'images/logo.png';
 import { setUser } from 'actions';
 import { white, green, grey } from 'constants/Colours';
-
 
 const ERROR_USERNAME_NOT_FOUND = 101;
 const ERROR_WRONG_PASSWORD = 105;
@@ -94,11 +93,10 @@ const styles = {
   footer: {
     marginTop: 40,
     marginBottom: 20,
-  }
+  },
 };
 
 class Login extends Component {
-
   static propTypes = {
     onSetUser: PropTypes.func.isRequired,
     location: PropTypes.object.isRequired,
@@ -113,7 +111,7 @@ class Login extends Component {
       passwordError: '',
       password: '',
       username: '',
-    }
+    };
 
     this.handleLogin = this.handleLogin.bind(this);
     this.handleFacebookLogin = this.handleFacebookLogin.bind(this);
@@ -129,7 +127,7 @@ class Login extends Component {
 
     if (!username || !password) {
       const errMessage = 'This field is required';
-      const errors = {}
+      const errors = {};
       if (!username) errors.usernameError = errMessage;
       if (!password) errors.passwordError = errMessage;
 
@@ -142,13 +140,13 @@ class Login extends Component {
         method: 'POST',
         body: JSON.stringify({
           username,
-          password
+          password,
         }),
         credentials: 'include',
         headers: {
           'content-type': 'application/json',
-          'x-secret': process.env.REACT_APP_SERVER_SECRET
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
       if (!response.ok) {
         const { code } = await response.json();
@@ -161,7 +159,9 @@ class Login extends Component {
           this.setState({ passwordError: 'Wrong password' });
           return;
         case ERROR_USER_NOT_VERIFIED:
-          toast.error("Please verify your email.  We've sent you a verification email at the email you provided.");
+          toast.error(
+            "Please verify your email.  We've sent you a verification email at the email you provided."
+          );
           return;
         case ERROR_SERVER_ERROR:
           toast.error('Failed to create account. Please contact an administrator.');
@@ -172,9 +172,7 @@ class Login extends Component {
         }
       } else {
         const user = await response.json();
-        const to = this.props.location.state
-          ? this.props.location.state.from || '/'
-          : '/';
+        const to = this.props.location.state ? this.props.location.state.from || '/' : '/';
         this.props.history.push(to);
         this.props.onSetUser(username, user);
       }
@@ -193,8 +191,8 @@ class Login extends Component {
         credentials: 'include',
         headers: {
           'x-secret': process.env.REACT_APP_SERVER_SECRET,
-          'authorization': `Bearer ${accessToken}`
-        }
+          authorization: `Bearer ${accessToken}`,
+        },
       });
       if (!response.ok) {
         const { code, message } = await response.json();
@@ -214,9 +212,7 @@ class Login extends Component {
         }
       } else {
         const { username, user } = await response.json();
-        const to = this.props.location.state
-          ? this.props.location.state.from || '/'
-          : '/';
+        const to = this.props.location.state ? this.props.location.state.from || '/' : '/';
         this.props.history.push(to);
         this.props.onSetUser(username, user);
       }
@@ -230,82 +226,83 @@ class Login extends Component {
     const { value, name } = e.target;
 
     this.setState({
-      [name]: value
+      [name]: value,
     });
     this.removeErrors();
-  }
+  };
 
   render() {
-
     const { username, password, usernameError, passwordError } = this.state;
     const isUsernameError = usernameError !== '';
     const isPasswordError = passwordError !== '';
 
-    return  (
-      <div style={ styles.viewContainer }>
-        <div style={ styles.container }>
-          <div style={ styles.header }>
-            <img src={ logo } alt="logo" style={ styles.logo } />
-            <span style={ styles.title }>Welcome back!</span>
-            <span style={ styles.subtitle }>Log in to see your courses.</span>
+    return (
+      <div style={styles.viewContainer}>
+        <div style={styles.container}>
+          <div style={styles.header}>
+            <img src={logo} alt="logo" style={styles.logo} />
+            <span style={styles.title}>Welcome back!</span>
+            <span style={styles.subtitle}>Log in to see your courses.</span>
           </div>
-          <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
-            <form style={ styles.body }>
+          <Paper style={styles.formContainer} zDepth={2} rounded={false}>
+            <form style={styles.body}>
               <TextField
                 name="username"
-                value={ username }
+                value={username}
                 placeholder="e.g. Ferigoose123"
                 label="Username"
-                error={ isUsernameError }
+                error={isUsernameError}
                 fullWidth
                 margin="normal"
-                helperText={ usernameError }
-                onChange={ this.handleInputChange }
-              /><br />
+                helperText={usernameError}
+                onChange={this.handleInputChange}
+              />
+              <br />
               <TextField
                 name="password"
-                value={ password }
+                value={password}
                 placeholder="*********"
                 label="Password"
                 type="password"
                 fullWidth
                 margin="normal"
-                error={ isPasswordError }
-                helperText={ passwordError ? passwordError : <Link to="/forgot-password">Forgot Password?</Link> }
-                onChange={ this.handleInputChange }
-              /><br />
+                error={isPasswordError}
+                helperText={passwordError || <Link to="/forgot-password">Forgot Password?</Link>}
+                onChange={this.handleInputChange}
+              />
+              <br />
               <RaisedButton
                 label="Sign in"
-                backgroundColor={ green }
-                style={ styles.loginButton }
-                labelStyle={ styles.loginText }
-                onClick={ this.handleLogin }
+                backgroundColor={green}
+                style={styles.loginButton}
+                labelStyle={styles.loginText}
+                onClick={this.handleLogin}
                 type="submit"
               />
             </form>
           </Paper>
-          <div style={ styles.fbContainer }>
-            <span style={ styles.subtitle }>or</span>
+          <div style={styles.fbContainer}>
+            <span style={styles.subtitle}>or</span>
             <FacebookLogin
-              appId={ process.env.REACT_APP_FACEBOOK_APP_ID }
+              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
               fields="name,email,picture"
               disableMobileRedirect
-              callback={ this.handleFacebookLogin }
-              onFailure={ err => console.error(err) }
-              render={ renderProps => (
+              callback={this.handleFacebookLogin}
+              onFailure={(err) => console.error(err)}
+              render={(renderProps) => (
                 <RaisedButton
                   label="Continue with Facebook"
-                  onClick={ renderProps.onClick }
-                  style={ styles.fbButton }
-                  buttonStyle={ styles.fbInnerButton }
-                  labelStyle={ styles.fbText }
+                  onClick={renderProps.onClick}
+                  style={styles.fbButton}
+                  buttonStyle={styles.fbInnerButton}
+                  labelStyle={styles.fbText}
                   backgroundColor="#3b5998"
-                  icon={ <FacebookIcon style={ styles.fbIcon } />  }
+                  icon={<FacebookIcon style={styles.fbIcon} />}
                 />
-              )  }
+              )}
             />
           </div>
-          <div style={ styles.footer }>
+          <div style={styles.footer}>
             Don't have an account yet? <Link to="/register">Sign up</Link>
           </div>
         </div>
@@ -314,10 +311,10 @@ class Login extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   onSetUser: (username, user) => {
     dispatch(setUser(username, user));
-  }
+  },
 });
 
 export default connect(null, mapDispatchToProps)(Login);

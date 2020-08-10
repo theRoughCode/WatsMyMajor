@@ -2,7 +2,7 @@ const ReqsRouter = require('express').Router();
 const requisitesDB = require('../database/requisites');
 
 // Get requisites from course
-ReqsRouter.get('/:subject/:number', async function(req, res) {
+ReqsRouter.get('/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
@@ -17,7 +17,7 @@ ReqsRouter.get('/:subject/:number', async function(req, res) {
 });
 
 // Get prereqs from course
-ReqsRouter.get('/prereqs/:subject/:number', async function(req, res) {
+ReqsRouter.get('/prereqs/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
@@ -32,7 +32,7 @@ ReqsRouter.get('/prereqs/:subject/:number', async function(req, res) {
 });
 
 // Get coreqs from course
-ReqsRouter.get('/coreqs/:subject/:number', async function(req, res) {
+ReqsRouter.get('/coreqs/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
@@ -48,7 +48,7 @@ ReqsRouter.get('/coreqs/:subject/:number', async function(req, res) {
 });
 
 // Get antireqs from course
-ReqsRouter.get('/antireqs/:subject/:number', async function(req, res) {
+ReqsRouter.get('/antireqs/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 
@@ -64,7 +64,7 @@ ReqsRouter.get('/antireqs/:subject/:number', async function(req, res) {
 });
 
 // Get postreqs from course
-ReqsRouter.get('/postreqs/:subject/:number', async function(req, res) {
+ReqsRouter.get('/postreqs/:subject/:number', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const number = req.params.number;
 

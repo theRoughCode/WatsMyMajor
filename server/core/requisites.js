@@ -15,31 +15,34 @@ const formatPostreqs = (postreqs) => {
 // Fills course array with titles
 const fillCourseTitles = async (coursesArr) => {
   if (!coursesArr) return [];
-  return await Promise.all(coursesArr.map(async (course) => {
-    if (course.hasOwnProperty("subject")) {
-      const { subject, catalogNumber } = course;
-      const { err, title } = await courseListDB.getCourseTitle(subject, catalogNumber);
-      if (err) {
-        console.error(err);
-        return {};
-      }
-      return { subject, catalogNumber, title };
-    } else if (course.hasOwnProperty("choose")) {
-      let { choose, reqs } = course;
-      reqs = await fillCourseTitles(reqs);
-      return { choose, reqs };
-    } else return course;  // string
-  }));
-}
+  return Promise.all(
+    coursesArr.map(async (course) => {
+      if (course.hasOwnProperty('subject')) {
+        const { subject, catalogNumber } = course;
+        const { err, title } = await courseListDB.getCourseTitle(subject, catalogNumber);
+        if (err) {
+          console.error(err);
+          return {};
+        }
+        return { subject, catalogNumber, title };
+      } else if (course.hasOwnProperty('choose')) {
+        let { choose, reqs } = course;
+        reqs = await fillCourseTitles(reqs);
+        return { choose, reqs };
+      } else return course; // string
+    })
+  );
+};
 
 // Returns reqs, but formatted with course titles.
 // Used with getCourseInfo
 async function getFormattedReqs(subject, catalogNumber) {
   const { err, reqs } = await requisitesDB.getRequisites(subject, catalogNumber);
-  if (err || reqs == null) return {
-    err,
-    reqs: { prereqs: {}, coreqs: [], antireqs: [], postreqs: [] },
-  };
+  if (err || reqs == null)
+    return {
+      err,
+      reqs: { prereqs: {}, coreqs: [], antireqs: [], postreqs: [] },
+    };
 
   let prereqs = reqs.prereqs;
   if (prereqs == null) prereqs = {};
@@ -53,7 +56,7 @@ async function getFormattedReqs(subject, catalogNumber) {
   if (antireqs == null) antireqs = [];
   else antireqs = await fillCourseTitles(antireqs);
 
-  let postreqs = reqs.postreqs
+  let postreqs = reqs.postreqs;
   if (postreqs == null) postreqs = [];
   else postreqs = await fillCourseTitles(formatPostreqs(postreqs));
 

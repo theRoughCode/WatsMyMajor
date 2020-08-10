@@ -6,8 +6,7 @@ async function getHTML(url) {
       if (err) {
         console.error(`FAILED: ${url}. Err: ${err.message}`);
         reject(err);
-      }
-      else resolve(html);
+      } else resolve(html);
     });
   });
 }

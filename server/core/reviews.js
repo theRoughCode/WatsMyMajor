@@ -6,7 +6,7 @@ const { formatDate } = require('./utils');
 const getDate = () => {
   const today = new Date();
   return formatDate(today);
-}
+};
 
 async function addProfReview(profName, username, review) {
   let err = null;
@@ -73,7 +73,7 @@ async function getProfInfo(profName) {
 async function getProfNames(list) {
   try {
     let failedList = [];
-    const promises = Object.keys(list).map(async id => {
+    const promises = Object.keys(list).map(async (id) => {
       const { err, info } = await getProfInfo(id);
       if (err) {
         failedList.push(id);

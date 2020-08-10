@@ -7,7 +7,7 @@ function isSubject(subject) {
 // e.g. "CS 135 Designing Functional Programs 0.50 0.50 94"
 function parseCourse(courseStr) {
   if (courseStr == null) return null;
-  const courseStrArr = courseStr.split(" ");
+  const courseStrArr = courseStr.split(' ');
   if (courseStrArr.length < 2) return null;
   const subject = courseStrArr[0];
   if (!isSubject(subject)) return null;
@@ -41,8 +41,7 @@ function parseTerm(termText) {
 
 function parseText(text, callback) {
   let textArr = text.split(/\n\n/).slice(2);
-  return textArr.map(parseTerm).filter(term => term != null);
+  return textArr.map(parseTerm).filter((term) => term != null);
 }
-
 
 module.exports = parseText;

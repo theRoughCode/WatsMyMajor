@@ -10,7 +10,7 @@ const imagesDB = require('../database/images');
 //       with the required data
 
 // Get user
-UsersRouter.get('/login', async function(req, res) {
+UsersRouter.get('/login', async function (req, res) {
   const username = req.user.toLowerCase();
   const { user, err } = await users.getUser(username);
   if (err) {
@@ -20,7 +20,7 @@ UsersRouter.get('/login', async function(req, res) {
 });
 
 // Get user schedule
-UsersRouter.get('/schedule/:username', async function(req, res) {
+UsersRouter.get('/schedule/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   const { schedule, err } = await users.getUserSchedule(username);
   if (err) {
@@ -31,7 +31,7 @@ UsersRouter.get('/schedule/:username', async function(req, res) {
 });
 
 // Link facebook id to user
-UsersRouter.post('/link/facebook/:username', async function(req, res) {
+UsersRouter.post('/link/facebook/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   const { facebookID, hasFBPic } = req.body;
   if (req.user !== username) return res.sendStatus(401);
@@ -70,13 +70,13 @@ UsersRouter.post('/link/facebook/:username', async function(req, res) {
   ({ user, err } = await users.getUser(username));
   if (err) {
     console.error(err);
-    return	res.status(400).send(err);
+    return res.status(400).send(err);
   }
   res.status(200).json(user);
 });
 
 // Unlink facebook id to user
-UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
+UsersRouter.get('/unlink/facebook/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -84,7 +84,7 @@ UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
     const { user, err } = await users.getUser(username);
     if (err) {
       console.error(err);
-      return	res.status(400).send(err);
+      return res.status(400).send(err);
     }
     await users.updateUser(username, { facebookID: '', profileURL: '' });
 
@@ -101,7 +101,7 @@ UsersRouter.get('/unlink/facebook/:username', async function(req, res) {
 });
 
 // Update user settings
-UsersRouter.post('/edit/settings/:username', async function(req, res) {
+UsersRouter.post('/edit/settings/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -130,7 +130,7 @@ UsersRouter.post('/edit/settings/:username', async function(req, res) {
 
 // Set user
 // Body: { user }
-UsersRouter.post('/set/user/:username', async function(req, res) {
+UsersRouter.post('/set/user/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -139,7 +139,7 @@ UsersRouter.post('/set/user/:username', async function(req, res) {
     password: req.body.password || '',
     cart: req.body.cart || [],
     schedule: req.body.schedule || [],
-    courseList: req.body.courseList || []
+    courseList: req.body.courseList || [],
   };
 
   try {
@@ -153,7 +153,7 @@ UsersRouter.post('/set/user/:username', async function(req, res) {
 
 // Update user
 // Body: { user }
-UsersRouter.post('/edit/:username', function(req, res) {
+UsersRouter.post('/edit/:username', function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -167,7 +167,7 @@ UsersRouter.post('/edit/:username', function(req, res) {
 
 // Set cart
 // Body: { cart }
-UsersRouter.post('/set/cart/:username', async function(req, res) {
+UsersRouter.post('/set/cart/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -180,7 +180,7 @@ UsersRouter.post('/set/cart/:username', async function(req, res) {
 
 // Set schedule
 // Body: { schedule }
-UsersRouter.post('/set/schedule/:username', async function(req, res) {
+UsersRouter.post('/set/schedule/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -201,7 +201,7 @@ UsersRouter.post('/set/schedule/:username', async function(req, res) {
 });
 
 // Set user schedule privacy
-UsersRouter.get('/schedule/privacy/:username', async function(req, res) {
+UsersRouter.get('/schedule/privacy/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -209,10 +209,10 @@ UsersRouter.get('/schedule/privacy/:username', async function(req, res) {
   if (err) {
     console.error(err);
     res.status(400).send(err);
-  }  else res.status(200).send(`Privacy setting for ${username}'s schedule updated.`);
+  } else res.status(200).send(`Privacy setting for ${username}'s schedule updated.`);
 });
 
-UsersRouter.post('/add/schedule/:username', async function(req, res) {
+UsersRouter.post('/add/schedule/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -244,7 +244,7 @@ UsersRouter.post('/add/schedule/:username', async function(req, res) {
 
 // Set courseList
 // Body: { courseList }
-UsersRouter.post('/set/courselist/:username', async function(req, res) {
+UsersRouter.post('/set/courselist/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -256,7 +256,7 @@ UsersRouter.post('/set/courselist/:username', async function(req, res) {
 });
 
 const easterURL = imagesDB.getEasterURL();
-UsersRouter.post('/upload/profile/:username', async function(req, res) {
+UsersRouter.post('/upload/profile/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 
@@ -276,7 +276,7 @@ UsersRouter.post('/upload/profile/:username', async function(req, res) {
       ({ user, err } = await users.getUser(username));
       if (err) {
         console.error(err);
-        return	res.status(400).send(err);
+        return res.status(400).send(err);
       }
       return res.status(200).json(user);
     } catch (err) {
@@ -335,7 +335,7 @@ UsersRouter.post('/remove/profile/:username', async function (req, res) {
 });
 
 // Delete user
-UsersRouter.get('/delete/:username', async function(req, res) {
+UsersRouter.get('/delete/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   if (req.user !== username) return res.sendStatus(401);
 

@@ -58,8 +58,8 @@ export default class UnwatchedClass extends Component {
 
     const response = await fetch(`/server/email/verify/unwatch?token=${token}`, {
       headers: {
-        "x-secret": process.env.REACT_APP_SERVER_SECRET
-      }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
     });
     if (!response.ok) {
       this.setState({ error: true, loading: false });
@@ -74,29 +74,30 @@ export default class UnwatchedClass extends Component {
     const { classNum, subject, catalogNumber } = this.state.info;
 
     // TODO: Add graphics to verification error message
-    const view = (this.state.error)
-      ? (
-        <span style={ styles.error }>
-          Failed to unwatch class.  Please contact an administrator.<br />
-          Click <a href="/">here</a> to return to the home screen.
-        </span>
-      )
-      : (
-        <div style={ styles.bigContainer }>
-          <div style={ styles.smallContainer }>
-            <img src={ logo } alt="logo" style={ styles.logo } />
-            <span style={ styles.title }>Success!</span>
-            <span style={ styles.subtitle }>{ `You have unwatched class ${classNum} (${subject} ${catalogNumber}).` }</span>
-            <span>Click <a href="/">here</a> to return to the home screen.</span>
-          </div>
+    const view = this.state.error ? (
+      <span style={styles.error}>
+        Failed to unwatch class. Please contact an administrator.
+        <br />
+        Click <a href="/">here</a> to return to the home screen.
+      </span>
+    ) : (
+      <div style={styles.bigContainer}>
+        <div style={styles.smallContainer}>
+          <img src={logo} alt="logo" style={styles.logo} />
+          <span style={styles.title}>Success!</span>
+          <span
+            style={styles.subtitle}
+          >{`You have unwatched class ${classNum} (${subject} ${catalogNumber}).`}</span>
+          <span>
+            Click <a href="/">here</a> to return to the home screen.
+          </span>
         </div>
-      );
+      </div>
+    );
 
     return (
-      <div style={ styles.bigContainer }>
-        <div style={ styles.smallContainer }>
-          { view }
-        </div>
+      <div style={styles.bigContainer}>
+        <div style={styles.smallContainer}>{view}</div>
       </div>
     );
   }

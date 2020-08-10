@@ -1,7 +1,7 @@
 const WatRouter = require('express').Router();
 const waterloo = require('../core/waterloo');
 
-WatRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
+WatRouter.get('/info/:subject/:catalogNumber', async function (req, res) {
   const { subject, catalogNumber } = req.params;
 
   const { err, info } = await waterloo.getCourseInformation(subject, catalogNumber);
@@ -12,7 +12,7 @@ WatRouter.get('/info/:subject/:catalogNumber', async function(req, res) {
   res.json(info);
 });
 
-WatRouter.get('/reqs/:subject/:catalogNumber', function(req, res) {
+WatRouter.get('/reqs/:subject/:catalogNumber', function (req, res) {
   const { subject, catalogNumber } = req.params;
 
   waterloo.getReqs(subject, catalogNumber, (err, data) => {
@@ -24,8 +24,7 @@ WatRouter.get('/reqs/:subject/:catalogNumber', function(req, res) {
   });
 });
 
-
-WatRouter.get('/classes/:subject/:catalogNumber', async function(req, res) {
+WatRouter.get('/classes/:subject/:catalogNumber', async function (req, res) {
   const { subject, catalogNumber } = req.params;
 
   const classInfo = await waterloo.getCourseClasses(subject, catalogNumber);

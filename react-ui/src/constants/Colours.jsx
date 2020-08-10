@@ -11,10 +11,10 @@ export const transparent = 'rgba(0,0,0,0)';
 export const white = '#FFF';
 
 // GREY
-export const whiteGrey = '#F2F2F2'
+export const whiteGrey = '#F2F2F2';
 export const lightGrey = '#CCD4E0';
 export const grey = '#888E99';
-export const darkGrey = '#636F82'
+export const darkGrey = '#636F82';
 
 // RED
 export const red = '#ff5454';

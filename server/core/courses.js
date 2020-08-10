@@ -10,19 +10,21 @@ let profList = [];
 
 // Extractors for fuzzy searching
 const simpleExtractor = ({ subject, catalogNumber, name }) =>
-  (name == null) ? subject + ' ' + catalogNumber : name;
-const titleExtractor = ({ subject, catalogNumber, title, name }) => (name == null)
-  ? subject + ' ' + catalogNumber + ' - ' + title
-  : name;
+  name == null ? subject + ' ' + catalogNumber : name;
+const titleExtractor = ({ subject, catalogNumber, title, name }) =>
+  name == null ? subject + ' ' + catalogNumber + ' - ' + title : name;
 
 // Returns true if array contains course
 const containsCourse = ({ subject, catalogNumber, name }, arr) => {
   for (let i = 0; i < arr.length; i++) {
-    if ((arr[i].name != null && arr[i].name === name) ||
-        (arr[i].subject === subject && arr[i].catalogNumber === catalogNumber)) return true;
+    if (
+      (arr[i].name != null && arr[i].name === name) ||
+      (arr[i].subject === subject && arr[i].catalogNumber === catalogNumber)
+    )
+      return true;
   }
   return false;
-}
+};
 
 // Searches courses with query and a specified number of results to return
 async function searchCourses(query, limit, courseOnly) {
@@ -47,7 +49,7 @@ async function searchCourses(query, limit, courseOnly) {
 
     // If query length is <= 5, only search by subject and catalogNumber.
     // Else include title in search as well.
-    const extract = (query.length <= 5) ? simpleExtractor : titleExtractor;
+    const extract = query.length <= 5 ? simpleExtractor : titleExtractor;
     const result = [];
     let fuzzyResults = fuzzy.filter(query, queryList, { extract });
     for (let i = 0; i < fuzzyResults.length; i++) {
@@ -84,16 +86,11 @@ Course Info: {
 }
 */
 
-function setCourseInfo(subject, catalogNumber, {
-  title,
-  units,
-  description,
-  crosslistings,
-  terms,
-  notes,
-  url,
-  academicLevel
-}) {
+function setCourseInfo(
+  subject,
+  catalogNumber,
+  { title, units, description, crosslistings, terms, notes, url, academicLevel }
+) {
   const info = {
     title,
     units,
@@ -151,8 +148,6 @@ async function getCourseInfo(subject, catalogNumber) {
     },
   };
 }
-
-
 
 module.exports = {
   searchCourses,

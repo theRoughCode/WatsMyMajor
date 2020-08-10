@@ -19,8 +19,8 @@ async function parseMajor(url) {
         currReq.type = 'choose';
         currReq.choose = 1;
         break;
-      case "All of":
-        currReq.type = "all";
+      case 'All of':
+        currReq.type = 'all';
         break;
       default:
         if (/.*(Two).*(of|from).*/.test(p)) {
@@ -31,10 +31,12 @@ async function parseMajor(url) {
           currReq.choose = 3;
         }
       }
-      $(elem).find('a').each((i, elem) => {
-        const [subject, catalogNumber] = $(elem).text().split(" ");
-        currReq.courses.push({ type: 'course', subject, catalogNumber });
-      });
+      $(elem)
+        .find('a')
+        .each((i, elem) => {
+          const [subject, catalogNumber] = $(elem).text().split(' ');
+          currReq.courses.push({ type: 'course', subject, catalogNumber });
+        });
       if (currReq.courses.length) reqs.push(currReq);
     });
     return reqs;
@@ -44,7 +46,6 @@ async function parseMajor(url) {
   }
 }
 
-
 module.exports = {
-  parseMajor
+  parseMajor,
 };

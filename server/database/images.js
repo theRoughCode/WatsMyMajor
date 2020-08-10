@@ -4,13 +4,12 @@ const stream = require('stream');
 const getEasterURL = () => {
   const file = profilePicBucket.file('profile-pictures/easter_egg.jpg');
   return `https://storage.googleapis.com/${profilePicBucket.name}/${file.name}?alt=media`;
-}
-
+};
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 // Set profile picture from base64Str string
@@ -35,14 +34,16 @@ async function setProfilePicture(username, { base64Str, contentType }) {
 
   return new Promise((resolve, reject) => {
     bufferStream
-      .pipe(file.createWriteStream({
-        public: true,
-        metadata: {
-          contentType,
-          cacheControl: 'public, max-age=3600'
-        },
-      }))
-      .on('error', err => resolve({ err }))
+      .pipe(
+        file.createWriteStream({
+          public: true,
+          metadata: {
+            contentType,
+            cacheControl: 'public, max-age=3600',
+          },
+        })
+      )
+      .on('error', (err) => resolve({ err }))
       .on('finish', () => resolve({ publicUrl }));
   });
 }

@@ -8,10 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import logo from 'images/logo.png';
 import { setUser } from 'actions';
 import { white, green, grey } from 'constants/Colours';
-import {
-  validatePassword,
-  validateConfirmPassword,
-} from 'utils/validation';
+import { validatePassword, validateConfirmPassword } from 'utils/validation';
 import { toast } from 'react-toastify';
 import { getVerificationToken } from 'utils/strings';
 
@@ -91,15 +88,15 @@ class ResetPassword extends Component {
     ...defaultErrorState,
     confirmPassword: '',
     password: '',
-  }
+  };
 
   validateResetPassword = () => {
     const { password, confirmPassword } = this.state;
-   
+
     const passwordError = validatePassword(password);
     if (passwordError) {
       return {
-        err: { passwordError, isPasswordError: true, },
+        err: { passwordError, isPasswordError: true },
         password: null,
       };
     }
@@ -107,13 +104,13 @@ class ResetPassword extends Component {
     const confirmPasswordError = validateConfirmPassword(password, confirmPassword);
     if (confirmPasswordError) {
       return {
-        err: { confirmPasswordError, isConfirmPasswordError: true, },
+        err: { confirmPasswordError, isConfirmPasswordError: true },
         password: null,
       };
     }
 
     return { err: null, password };
-  }
+  };
 
   handleResetPassword = async (ev) => {
     ev.preventDefault();
@@ -129,11 +126,11 @@ class ResetPassword extends Component {
     const response = await fetch(`/server/email/reset/password?token=${token}`, {
       method: 'POST',
       body: JSON.stringify({
-        password
+        password,
       }),
       headers: {
         'content-type': 'application/json',
-        "x-secret": process.env.REACT_APP_SERVER_SECRET
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
       },
     });
 
@@ -144,35 +141,42 @@ class ResetPassword extends Component {
 
       switch (code) {
       case ERROR_RESET_PASSWORD_TOKEN:
-        this.setState({ passwordError: message, isPasswordError: true, isConfirmPasswordError: true, });
+        this.setState({
+          passwordError: message,
+          isPasswordError: true,
+          isConfirmPasswordError: true,
+        });
         return;
       case ERROR_SAME_PASSWORD:
-        this.setState({ passwordError: message, isPasswordError: true, isConfirmPasswordError: true, });
+        this.setState({
+          passwordError: message,
+          isPasswordError: true,
+          isConfirmPasswordError: true,
+        });
         return;
       default:
         toast.error('An error occured. Please contact an administrator.');
-        return;
       }
     } else {
       this.setState({ willRedirect: true });
       setTimeout(this.redirect, 4000);
     }
-  }
+  };
 
   redirect = () => {
     this.props.history.push('/login');
-  }
+  };
 
-  removeErrors = () => this.setState({ ...defaultErrorState })
+  removeErrors = () => this.setState({ ...defaultErrorState });
 
   handleInputChange = (e) => {
     const { value: inputValue, name: inputName } = e.target;
 
     this.setState({
-      [inputName]: inputValue
+      [inputName]: inputValue,
     });
     this.removeErrors();
-  }
+  };
 
   renderResetPasswordForm = () => {
     const {
@@ -185,87 +189,88 @@ class ResetPassword extends Component {
     } = this.state;
     return (
       <>
-        <div style={ styles.header }>
-          <img src={ logo } alt="logo" style={ styles.logo } />
-          <span style={ styles.title }>Reset Your Password</span>
-          <span style={ styles.subtitle }>Pick a new password</span>
+        <div style={styles.header}>
+          <img src={logo} alt="logo" style={styles.logo} />
+          <span style={styles.title}>Reset Your Password</span>
+          <span style={styles.subtitle}>Pick a new password</span>
         </div>
-        <Paper style={ styles.formContainer } zDepth={ 2 } rounded={ false }>
-          <form style={ styles.body }>
+        <Paper style={styles.formContainer} zDepth={2} rounded={false}>
+          <form style={styles.body}>
             <TextField
               name="password"
-              value={ password }
+              value={password}
               placeholder="*********"
               label="New Password"
               type="password"
               fullWidth
               margin="normal"
-              error={ isPasswordError }
-              helperText={ passwordError }
-              onChange={ this.handleInputChange }
-            /><br />
+              error={isPasswordError}
+              helperText={passwordError}
+              onChange={this.handleInputChange}
+            />
+            <br />
             <TextField
               name="confirmPassword"
-              value={ confirmPassword }
+              value={confirmPassword}
               placeholder="*********"
               label="Confirm Password"
               type="password"
               fullWidth
               margin="normal"
-              error={ isConfirmPasswordError }
-              helperText={ confirmPasswordError }
-              onChange={ this.handleInputChange }
-            /><br />
+              error={isConfirmPasswordError}
+              helperText={confirmPasswordError}
+              onChange={this.handleInputChange}
+            />
+            <br />
             <RaisedButton
               label="Reset Password"
-              backgroundColor={ green }
-              style={ styles.loginButton }
-              labelStyle={ styles.loginText }
-              onClick={ this.handleResetPassword }
+              backgroundColor={green}
+              style={styles.loginButton}
+              labelStyle={styles.loginText}
+              onClick={this.handleResetPassword}
               type="submit"
             />
           </form>
         </Paper>
       </>
     );
-  }
+  };
 
   renderSuccessMessage = () => (
     <>
-      <div style={ styles.header }>
-        <img src={ logo } alt="logo" style={ styles.logo } />
-        <span style={ styles.title }>Password updated!</span>
-        <span style={ styles.subtitle }>Please log in to your account to continue.</span>
+      <div style={styles.header}>
+        <img src={logo} alt="logo" style={styles.logo} />
+        <span style={styles.title}>Password updated!</span>
+        <span style={styles.subtitle}>Please log in to your account to continue.</span>
       </div>
-      <div style={ styles.loadingContainer }>
-        <span style={ styles.subtitle }>Redirecting you to the login page...</span>
-        <CircularProgress style={{ margin: 'auto' }} size={ 40 } thickness={ 3 } />
+      <div style={styles.loadingContainer}>
+        <span style={styles.subtitle}>Redirecting you to the login page...</span>
+        <CircularProgress style={{ margin: 'auto' }} size={40} thickness={3} />
       </div>
-      <span>If you're not redirected after 5 seconds, click <a href="/">here</a> to return to the login screen.</span>
+      <span>
+        If you're not redirected after 5 seconds, click <a href="/">here</a> to return to the login
+        screen.
+      </span>
     </>
-  )
+  );
 
   render() {
     const { willRedirect } = this.state;
 
-    return  (
-      <div style={ styles.viewContainer }>
-        <div style={ styles.container }>
-          {
-            willRedirect
-              ? this.renderSuccessMessage()
-              : this.renderResetPasswordForm()
-          }
+    return (
+      <div style={styles.viewContainer}>
+        <div style={styles.container}>
+          {willRedirect ? this.renderSuccessMessage() : this.renderResetPasswordForm()}
         </div>
       </div>
     );
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   onSetUser: (username, user) => {
     dispatch(setUser(username, user));
-  }
+  },
 });
 
 export default connect(null, mapDispatchToProps)(ResetPassword);

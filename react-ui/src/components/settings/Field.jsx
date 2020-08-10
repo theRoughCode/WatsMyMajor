@@ -20,33 +20,23 @@ const styles = {
     flex: 1,
     marginRight: 30,
   },
-}
+};
 
-
-const Field = ({
-  name,
-  label,
-  value,
-  isEditing,
-  onChange,
-  Icon,
-  errorText,
-  type,
-}) => {
+const Field = ({ name, label, value, isEditing, onChange, Icon, errorText, type }) => {
   const onChangeHandler = (ev) => onChange(name, ev);
-  
+
   return (
-    <div style={ styles.fieldContainer }>
-      <Icon style={ styles.fieldIcon } />
+    <div style={styles.fieldContainer}>
+      <Icon style={styles.fieldIcon} />
       <TextField
-        id={ name }
-        floatingLabelText={ label }
-        value={ value }
-        type={ type }
-        errorText={ errorText }
-        disabled={ !isEditing }
-        onChange={ onChangeHandler }
-        style={ styles.fieldText }
+        id={name}
+        floatingLabelText={label}
+        value={value}
+        type={type}
+        errorText={errorText}
+        disabled={!isEditing}
+        onChange={onChangeHandler}
+        style={styles.fieldText}
       />
     </div>
   );

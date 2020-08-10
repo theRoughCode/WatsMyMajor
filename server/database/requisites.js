@@ -14,12 +14,11 @@ const { reqsRef } = require('./index');
 */
 
 // Remove non-alphanumeric symbols from catalog number because UW API is bad
-const removeAlphaNumeric = course => {
+const removeAlphaNumeric = (course) => {
   if (course.hasOwnProperty('catalogNumber')) {
-    course.catalogNumber = course.catalogNumber.replace(/[^a-z0-9+]+/gi, '')
+    course.catalogNumber = course.catalogNumber.replace(/[^a-z0-9+]+/gi, '');
   }
 };
-
 
 /****************************
  *                          *
@@ -49,7 +48,6 @@ function setPostreq(subject, catalogNumber, postreq, choose, alternatives) {
     .set({ choose, alternatives });
 }
 
-
 /****************************
  *                          *
  *      G E T T E R S       *
@@ -58,14 +56,12 @@ function setPostreq(subject, catalogNumber, postreq, choose, alternatives) {
 
 // Used to retrieve all items in requisites table
 async function getRequisitesSnapshot() {
-  return await reqsRef.once('value');
+  return reqsRef.once('value');
 }
 
 async function getReqType(subject, catalogNumber, reqType) {
   try {
-    const snapshot = await reqsRef
-      .child(`${subject}/${catalogNumber}/${reqType}`)
-      .once('value');
+    const snapshot = await reqsRef.child(`${subject}/${catalogNumber}/${reqType}`).once('value');
     const reqs = await snapshot.val();
     return { err: null, reqs };
   } catch (err) {
@@ -104,4 +100,4 @@ module.exports = {
   getAntireqs,
   getPostreqs,
   getRequisites,
-}
+};

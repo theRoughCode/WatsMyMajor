@@ -25,7 +25,7 @@ const styles = {
   termTitle: {
     fontSize: 18,
     textDecoration: 'underline',
-  }
+  },
 };
 
 // Gets subject and catalog number for classes in watchlist
@@ -33,8 +33,8 @@ const getClassInfo = async (classNum, term) => {
   try {
     const response = await fetch(`/server/watchlist/info/${term}/${classNum}`, {
       headers: {
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
-      }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
     });
 
     if (!response.ok) return { subject: null, catalogNumber: null, classNum };
@@ -44,7 +44,7 @@ const getClassInfo = async (classNum, term) => {
     console.error(err);
     return { subject: null, catalogNumber: null };
   }
-}
+};
 
 const WatchlistItem = ({
   index,
@@ -60,10 +60,10 @@ const WatchlistItem = ({
 
   return (
     <ListItem
-      primaryText={ `${subject} ${catalogNumber} (${classNum})` }
-      onClick={ classClickHandler }
+      primaryText={`${subject} ${catalogNumber} (${classNum})`}
+      onClick={classClickHandler}
       rightIconButton={
-        <IconButton tooltip="Unwatch" onClick={ deleteClickHandler }>
+        <IconButton tooltip="Unwatch" onClick={deleteClickHandler}>
           <DeleteIcon />
         </IconButton>
       }
@@ -111,19 +111,19 @@ class Watchlist extends Component {
     const newWatchList = {};
     for (let term in watchlist) {
       newWatchList[term] = await Promise.all(
-        Object.keys(watchlist[term]).map(async classNum => {
+        Object.keys(watchlist[term]).map(async (classNum) => {
           const { subject, catalogNumber } = await getClassInfo(classNum, term);
           return { subject, catalogNumber, classNum };
         })
-      )
+      );
     }
     return newWatchList;
-  }
+  };
 
   // Navigates to course
   onClassClick = (subject, catalogNumber) => {
     this.props.history.push(`/courses/${subject}/${catalogNumber}`);
-  }
+  };
 
   onDeleteClick = (classNum, term) =>
     this.setState({ toBeDeleted: { classNum, term }, dialogOpen: true });
@@ -132,7 +132,7 @@ class Watchlist extends Component {
     if (Object.keys(this.state.toBeDeleted).length === 0) return;
     this.props.onUnwatch(this.state.toBeDeleted.term, this.state.toBeDeleted.classNum);
     this.closeDialog();
-  }
+  };
 
   closeDialog = () => this.setState({ toBeDeleted: {}, dialogOpen: false });
 
@@ -141,57 +141,45 @@ class Watchlist extends Component {
     if (Object.keys(watchlist).length === 0) return null;
 
     const actions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        keyboardFocused
-        onClick={ this.onSubmit }
-      />,
+      <FlatButton label="Cancel" primary onClick={this.closeDialog} />,
+      <FlatButton label="Submit" primary keyboardFocused onClick={this.onSubmit} />,
     ];
 
     return (
-      <Paper style={ styles.container } depth={ 1 }>
+      <Paper style={styles.container} depth={1}>
         <List>
-          <span style={ styles.header }>Class Watchlist</span>
-          {
-            Object.keys(watchlist).map((term, index) => (
-              <div key={ index } style={ styles.termContainer }>
-                <span style={ styles.termTitle }>{ termNumToStr(term) }</span>
-                {
-                  watchlist[term].map(({ subject, catalogNumber, classNum }, index) => (
-                    <WatchlistItem
-                      key={ index }
-                      index={ index }
-                      term={ term }
-                      subject={ subject }
-                      catalogNumber={ catalogNumber }
-                      classNum={ classNum }
-                      onClassClick={ this.onClassClick }
-                      onDeleteClick={ this.onDeleteClick }
-                    />
-                  ))
-                }
-              </div>
-            ))
-          }
+          <span style={styles.header}>Class Watchlist</span>
+          {Object.keys(watchlist).map((term, index) => (
+            <div key={index} style={styles.termContainer}>
+              <span style={styles.termTitle}>{termNumToStr(term)}</span>
+              {watchlist[term].map(({ subject, catalogNumber, classNum }, index) => (
+                <WatchlistItem
+                  key={index}
+                  index={index}
+                  term={term}
+                  subject={subject}
+                  catalogNumber={catalogNumber}
+                  classNum={classNum}
+                  onClassClick={this.onClassClick}
+                  onDeleteClick={this.onDeleteClick}
+                />
+              ))}
+            </div>
+          ))}
         </List>
         <Dialog
           title="Are you sure?"
-          actions={ actions }
-          modal={ false }
-          open={ dialogOpen }
-          onRequestClose={ this.closeDialog }
+          actions={actions}
+          modal={false}
+          open={dialogOpen}
+          onRequestClose={this.closeDialog}
         >
-          { toBeDeleted >= 0 && `
+          {toBeDeleted >= 0 &&
+            `
             Are you sure you want to remove ${watchlist[toBeDeleted].subject}
             ${watchlist[toBeDeleted].catalogNumber} (${watchlist[toBeDeleted].classNum})
             from your watchlist?
-          ` }
+          `}
         </Dialog>
       </Paper>
     );

@@ -11,7 +11,7 @@ const styles = {
     display: 'flex',
     overflowX: 'auto',
   },
-}
+};
 
 const TermRow = ({
   rowNumber,
@@ -26,60 +26,54 @@ const TermRow = ({
   showCart,
 }) => (
   <Droppable
-    droppableId={ `row/${rowNumber}` }
-    type={ DragTypes.COLUMN }
+    droppableId={`row/${rowNumber}`}
+    type={DragTypes.COLUMN}
     direction="horizontal"
     ignoreContainerClipping
   >
-    { (provided, snapshot) => (
-      <div
-        ref={ provided.innerRef }
-        { ...provided.droppableProps }
-        style={ styles.board }
-      >
-        { showCart && (
+    {(provided, snapshot) => (
+      <div ref={provided.innerRef} {...provided.droppableProps} style={styles.board}>
+        {showCart && (
           <TermBoard
             term="Cart"
-            courses={ cart }
-            onClearBoard={ onClearCart }
-            isEditing={ isEditing }
+            courses={cart}
+            onClearBoard={onClearCart}
+            isEditing={isEditing}
             isCart
           />
-        ) }
-        {
-          courseList.map(({ term, level, courses }, index) => {
-            // Accounts for row number
-            const offsetIndex = index + rowNumber * NUM_PER_ROW;
-            return (
-              <Draggable
-                draggableId={ `term/${rowNumber}/${index}` }
-                type={ DragTypes.COLUMN }
-                index={ index }
-                key={ index }
-                isDragDisabled={ !isEditing }
-              >
-                { (provided, snapshot) => (
-                  <TermBoard
-                    index={ String(offsetIndex) }
-                    term={ term }
-                    level={ level }
-                    courses={ courses }
-                    provided={ provided }
-                    snapshot={ snapshot }
-                    isEditing={ isEditing }
-                    onClearBoard={ () => onClearBoard(offsetIndex) }
-                    onRenameBoard={ (rename, relevel) => onRenameBoard(offsetIndex, rename, relevel) }
-                    onDeleteBoard={ () => onDeleteBoard(offsetIndex) }
-                    onAddCourses={ (courses) => onAddCourses(offsetIndex, courses) }
-                  />
-                ) }
-              </Draggable>
-            );
-          })
-        }
-        { provided.placeholder }
+        )}
+        {courseList.map(({ term, level, courses }, index) => {
+          // Accounts for row number
+          const offsetIndex = index + rowNumber * NUM_PER_ROW;
+          return (
+            <Draggable
+              draggableId={`term/${rowNumber}/${index}`}
+              type={DragTypes.COLUMN}
+              index={index}
+              key={index}
+              isDragDisabled={!isEditing}
+            >
+              {(provided, snapshot) => (
+                <TermBoard
+                  index={String(offsetIndex)}
+                  term={term}
+                  level={level}
+                  courses={courses}
+                  provided={provided}
+                  snapshot={snapshot}
+                  isEditing={isEditing}
+                  onClearBoard={() => onClearBoard(offsetIndex)}
+                  onRenameBoard={(rename, relevel) => onRenameBoard(offsetIndex, rename, relevel)}
+                  onDeleteBoard={() => onDeleteBoard(offsetIndex)}
+                  onAddCourses={(courses) => onAddCourses(offsetIndex, courses)}
+                />
+              )}
+            </Draggable>
+          );
+        })}
+        {provided.placeholder}
       </div>
-    ) }
+    )}
   </Droppable>
 );
 
@@ -94,7 +88,7 @@ TermRow.propTypes = {
   showCart: PropTypes.bool,
   cart: PropTypes.array,
   onClearCart: PropTypes.func,
-}
+};
 
 TermRow.defaultProps = {
   showCart: false,

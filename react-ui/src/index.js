@@ -28,7 +28,7 @@ const store = createStore(
 delete window.REDUX_DATA;
 
 const jsx = (
-  <Provider store={ store }>
+  <Provider store={store}>
     <MuiThemeProvider>
       <Router>
         <App />

@@ -11,22 +11,22 @@ const styles = {
   container: (isMobile) => ({
     marginBottom: 25,
     display: 'flex',
-    flexDirection: (isMobile) ? 'column-reverse' : 'row',
+    flexDirection: isMobile ? 'column-reverse' : 'row',
     width: '100%',
   }),
   leftContainer: (isMobile) => ({
     display: 'flex',
     flexDirection: 'column',
     textAlign: 'left',
-    marginRight: (isMobile) ? 0 : 15,
-    marginTop: (isMobile) ? 10 : 0,
+    marginRight: isMobile ? 0 : 15,
+    marginTop: isMobile ? 10 : 0,
     fontSize: 12,
-    borderRight: (isMobile) ? 'none' : `1px solid ${grey}`,
+    borderRight: isMobile ? 'none' : `1px solid ${grey}`,
     minWidth: 132,
   }),
   infoList: (isMobile) => ({
     display: 'flex',
-    flexDirection: (isMobile) ? 'row' : 'column',
+    flexDirection: isMobile ? 'row' : 'column',
   }),
   mobileDate: {
     textAlign: 'left',
@@ -39,16 +39,16 @@ const styles = {
     fontWeight: 500,
   },
   infoTitle: (isMobile) => ({
-    marginRight: (isMobile) ? 0 : 4,
+    marginRight: isMobile ? 0 : 4,
   }),
   infoItem: (isMobile) => ({
-    marginRight: (isMobile) ? 5 : 0,
+    marginRight: isMobile ? 5 : 0,
     marginBottom: 4,
-    color: (isMobile) ? grey : 'black',
+    color: isMobile ? grey : 'black',
     display: 'flex',
-    flexDirection: (isMobile) ? 'column' : 'row',
+    flexDirection: isMobile ? 'column' : 'row',
     flexGrow: 1,
-    textAlign: (isMobile) ? 'center' : 'left',
+    textAlign: isMobile ? 'center' : 'left',
   }),
   rightContainer: {
     flexGrow: 1,
@@ -80,7 +80,7 @@ const styles = {
   },
   thumb: (isRmp) => ({
     fontSize: 15,
-    color: (isRmp) ? 'grey' : 'black',
+    color: isRmp ? 'grey' : 'black',
   }),
   text: {
     fontSize: 14,
@@ -93,12 +93,11 @@ const styles = {
     float: 'left',
     marginTop: 7,
   },
-}
+};
 
-const boolToText = (val) => (val == null) ? 'N/A' : (val) ? 'Yes' : 'No';
+const boolToText = (val) => (val == null ? 'N/A' : val ? 'Yes' : 'No');
 
 export default class Review extends Component {
-
   static propTypes = {
     subject: PropTypes.string,
     catalogNumber: PropTypes.string,
@@ -123,9 +122,7 @@ export default class Review extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-
-    };
+    this.state = {};
   }
 
   shouldComponentUpdate(nextProps) {
@@ -150,111 +147,101 @@ export default class Review extends Component {
     } = this.props;
     const isRmp = rmpURL != null;
     return (
-      <MediaQuery minWidth={ 600 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={600}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
-            <div style={ styles.container(isMobile) }>
-              <div style={ styles.leftContainer(isMobile) }>
-                { !isMobile && (
-                  <span style={ styles.date }>{ date }</span>
-                ) }
-                <div style={ styles.infoList(isMobile) }>
-                  <div style={ styles.infoItem(isMobile) }>
-                    <span style={ styles.infoTitle(isMobile) }>Difficulty:</span>
-                    <span>{ (difficulty == null) ? 'N/A' : difficulty }</span>
+            <div style={styles.container(isMobile)}>
+              <div style={styles.leftContainer(isMobile)}>
+                {!isMobile && <span style={styles.date}>{date}</span>}
+                <div style={styles.infoList(isMobile)}>
+                  <div style={styles.infoItem(isMobile)}>
+                    <span style={styles.infoTitle(isMobile)}>Difficulty:</span>
+                    <span>{difficulty == null ? 'N/A' : difficulty}</span>
                   </div>
-                  <div style={ styles.infoItem(isMobile) }>
-                    <span style={ styles.infoTitle(isMobile) }>Attendance:</span>
+                  <div style={styles.infoItem(isMobile)}>
+                    <span style={styles.infoTitle(isMobile)}>Attendance:</span>
                     <span>
-                      { (isMandatory == null)
-                        ? 'N/A'
-                        : (isMandatory) ? 'Mandatory' : 'Optional'
-                      }
+                      {isMandatory == null ? 'N/A' : isMandatory ? 'Mandatory' : 'Optional'}
                     </span>
                   </div>
-                  <div style={ styles.infoItem(isMobile) }>
-                    <span style={ styles.infoTitle(isMobile) }>Textbook Used:</span>
-                    <span>{ boolToText(textbookUsed) }</span>
+                  <div style={styles.infoItem(isMobile)}>
+                    <span style={styles.infoTitle(isMobile)}>Textbook Used:</span>
+                    <span>{boolToText(textbookUsed)}</span>
                   </div>
-                  <div style={ styles.infoItem(isMobile) }>
-                    <span style={ styles.infoTitle(isMobile) }>Grade:</span>
-                    <span>{ (grade == null) ? 'N/A' : grade }</span>
+                  <div style={styles.infoItem(isMobile)}>
+                    <span style={styles.infoTitle(isMobile)}>Grade:</span>
+                    <span>{grade == null ? 'N/A' : grade}</span>
                   </div>
                 </div>
               </div>
-              <div style={ styles.rightContainer }>
-                <div style={ styles.upperContainer }>
-                  <div style={ styles.reviewTitle(isMobile) }>
-                    { subject.length > 0 && (
+              <div style={styles.rightContainer}>
+                <div style={styles.upperContainer}>
+                  <div style={styles.reviewTitle(isMobile)}>
+                    {subject.length > 0 && (
                       <a
                         rel="noopener noreferrer"
-                        href={ `/courses/${subject}/${catalogNumber}` }
-                        target='_blank'
-                        style={ styles.classTaken }
-                      >{ `${subject} ${catalogNumber}` }</a>
-                    ) }
+                        href={`/courses/${subject}/${catalogNumber}`}
+                        target="_blank"
+                        style={styles.classTaken}
+                      >{`${subject} ${catalogNumber}`}</a>
+                    )}
                     <StarRatings
-                      rating={ rating }
-                      isSelectable={ false }
+                      rating={rating}
+                      isSelectable={false}
                       isAggregateRating
-                      numOfStars={ 5 }
-                      starRatedColor={ yellow }
+                      numOfStars={5}
+                      starRatedColor={yellow}
                       starDimension="18px"
                       starSpacing="1px"
                     />
                   </div>
-                  <div style={ styles.thumbsContainer }>
-                    <div style={ styles.thumbInnerContainer }>
-                      <IconButton
-                        style={{ padding: 5 }}
-                        disabled={ isRmp }
-                        onClick={ () => onVote(1) }
-                      >
-                        <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
+                  <div style={styles.thumbsContainer}>
+                    <div style={styles.thumbInnerContainer}>
+                      <IconButton style={{ padding: 5 }} disabled={isRmp} onClick={() => onVote(1)}>
+                        <FontIcon className="material-icons" style={styles.thumb(isRmp)}>
                           thumb_up
                         </FontIcon>
                       </IconButton>
-                      <span>{ numThumbsUp }</span>
+                      <span>{numThumbsUp}</span>
                     </div>
-                    <div style={ styles.thumbInnerContainer }>
+                    <div style={styles.thumbInnerContainer}>
                       <IconButton
                         style={{ padding: 5 }}
-                        disabled={ isRmp }
-                        onClick={ () => onVote(-1) }
+                        disabled={isRmp}
+                        onClick={() => onVote(-1)}
                       >
-                        <FontIcon className="material-icons" style={ styles.thumb(isRmp) }>
+                        <FontIcon className="material-icons" style={styles.thumb(isRmp)}>
                           thumb_down
                         </FontIcon>
                       </IconButton>
-                      <span>{ numThumbsDown }</span>
+                      <span>{numThumbsDown}</span>
                     </div>
                   </div>
                 </div>
-                { isMobile && (
-                  <div style={ styles.mobileDate }>
-                    <span>{ date }</span>
+                {isMobile && (
+                  <div style={styles.mobileDate}>
+                    <span>{date}</span>
                   </div>
-                ) }
+                )}
                 <div>
-                  <p style={ styles.text }>{ comments }</p>
-                  { rmpURL && (
+                  <p style={styles.text}>{comments}</p>
+                  {rmpURL && (
                     <a
-                      style={ styles.rmpUrl }
+                      style={styles.rmpUrl}
                       rel="noopener noreferrer"
-                      href={ rmpURL }
+                      href={rmpURL}
                       target="_blank"
                     >
                       Retrieved from ratemyprofessors.com
                     </a>
-                  ) }
+                  )}
                 </div>
               </div>
             </div>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }

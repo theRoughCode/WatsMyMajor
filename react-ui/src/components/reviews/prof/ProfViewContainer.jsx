@@ -17,14 +17,14 @@ import { getProfMetadata } from 'actions';
 
 const styles = {
   container: (isMobile) => {
-    const horPadding = (isMobile) ? 15 : 40;
+    const horPadding = isMobile ? 15 : 40;
     return {
       width: `calc(100% - ${horPadding * 2}px)`,
       height: 'calc(100% - 40px)',
       display: 'flex',
       flexWrap: 'wrap',
       padding: `20px ${horPadding}px`,
-    }
+    };
   },
   reviewContainer: {
     margin: '20px auto',
@@ -46,24 +46,25 @@ const styles = {
 };
 
 const sortFunctions = {
-  'Old': (r1, r2) => new Date(r1.date) - new Date(r2.date),
-  'New': (r1, r2) => new Date(r2.date) - new Date(r1.date),
-  'Highest': (r1, r2) => r2.rating - r1.rating,
-  'Lowest': (r1, r2) => r1.rating - r2.rating,
-  'Top': (r1, r2) => (r2.numThumbsUp-r2.numThumbsDown) - (r1.numThumbsUp-r1.numThumbsDown),
-  'Controversial': (r1, r2) => (r1.numThumbsUp-r1.numThumbsDown) - (r2.numThumbsUp-r2.numThumbsDown),
+  Old: (r1, r2) => new Date(r1.date) - new Date(r2.date),
+  New: (r1, r2) => new Date(r2.date) - new Date(r1.date),
+  Highest: (r1, r2) => r2.rating - r1.rating,
+  Lowest: (r1, r2) => r1.rating - r2.rating,
+  Top: (r1, r2) => r2.numThumbsUp - r2.numThumbsDown - (r1.numThumbsUp - r1.numThumbsDown),
+  Controversial: (r1, r2) =>
+    r1.numThumbsUp - r1.numThumbsDown - (r2.numThumbsUp - r2.numThumbsDown),
 };
 
 const getProfReviews = async (profName) => {
   const response = await fetch(`/server/prof/reviews/${profName}`, {
     headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return null;
   const resp = await response.json();
   return resp;
-}
+};
 
 // Adds prof review. Returns true if successful
 const addProfReview = async (profName, review) => {
@@ -73,10 +74,10 @@ const addProfReview = async (profName, review) => {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
       'Content-Type': 'application/json',
-    }
+    },
   });
   return response.ok;
-}
+};
 
 // Deletes prof review. Returns true if successful
 const deleteProfReview = async (profName) => {
@@ -84,10 +85,10 @@ const deleteProfReview = async (profName) => {
     method: 'DELETE',
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
-    }
+    },
   });
   return response.ok;
-}
+};
 
 // Adds prof review vote. Returns true if successful
 const addVote = async (profName, data) => {
@@ -97,14 +98,12 @@ const addVote = async (profName, data) => {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
       'Content-Type': 'application/json',
-    }
+    },
   });
   return response.ok;
-}
-
+};
 
 class ProfViewContainer extends Component {
-
   static propTypes = {
     match: PropTypes.object.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
@@ -215,7 +214,7 @@ class ProfViewContainer extends Component {
     // Add reviews from ratemyprof
     if (resp.hasOwnProperty('rmp')) {
       numRatings += Object.keys(resp.rmp).length;
-      const rmpReviews = Object.keys(resp.rmp).map(id => {
+      const rmpReviews = Object.keys(resp.rmp).map((id) => {
         const review = resp.rmp[id];
         review.rmpURL = `${this.state.rmpURL}#${id}`;
         totalRating += review.rating;
@@ -231,7 +230,7 @@ class ProfViewContainer extends Component {
     // Add reviews from watsmymajor
     if (resp.hasOwnProperty('wmm')) {
       numRatings += Object.keys(resp.wmm).length;
-      const wmmReviews = Object.keys(resp.wmm).map(id => {
+      const wmmReviews = Object.keys(resp.wmm).map((id) => {
         const review = resp.wmm[id];
         review.id = id;
         totalRating += review.rating;
@@ -272,14 +271,14 @@ class ProfViewContainer extends Component {
     const success = await addProfReview(profId, review);
     if (!success) console.error('Failed to update prof review.');
     else this.updateReviews(this.state.profName);
-  }
+  };
 
   onDelete = async () => {
     const profId = this.props.match.params.profName;
     const success = await deleteProfReview(profId);
     if (!success) console.error('Failed to delete prof review.');
     else this.updateReviews(this.state.profName);
-  }
+  };
 
   onVote = (i) => async (vote) => {
     const profId = this.props.match.params.profName;
@@ -306,7 +305,7 @@ class ProfViewContainer extends Component {
       reviews[i].numThumbsDown = numThumbsDown;
       this.setState({ reviews });
     }
-  }
+  };
 
   render() {
     const {
@@ -326,75 +325,71 @@ class ProfViewContainer extends Component {
     if (error) {
       return (
         <ErrorView
-          msgHeader={ "Oops!" }
-          msgBody={ `Could not find professor id of ${this.props.match.params.profName}!` }
+          msgHeader={'Oops!'}
+          msgBody={`Could not find professor id of ${this.props.match.params.profName}!`}
         />
       );
     }
 
-    const reviewsDiv = (loading)
-      ? (
-        <div style={{ width: '100%', height: '100%' }}>
-          <LoadingView />
-        </div>
-      )
-      : (
-        <div style={ styles.reviewContainer }>
-          {
-            (this.props.isLoggedIn)
-              ? (
-                <WriteReview
-                  profName={ profName }
-                  courses={ courses }
-                  onSubmit={ this.onSubmit }
-                  onDelete={ this.onDelete }
-                  userReview={ userReview }
-                />
-              )
-              : (
-                <div style={ styles.login }>
-                  <span>
-                    <Link
-                      to={{
-                        pathname: '/login',
-                        state: {
-                          from: this.props.location.pathname,
-                        }
-                      }}
-                    >Login</Link> to write a review!
-                  </span>
-                </div>
-              )
-          }
-          {
-            (numRatings === 0)
-              ? (
-                <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
-              )
-              : (
-                <div style={ styles.sortContainer }>
-                  <span style={{ marginRight: 7 }}>Sort By:</span>
-                  <Select
-                    style={{ color: purple, fontWeight: 400 }}
-                    value={ this.state.sort }
-                    onChange={ this.onChangeSort }
-                    inputProps={{
-                      id: 'sort',
-                    }}
-                    autoWidth
-                  >
-                    <MenuItem value="New">New</MenuItem>
-                    <MenuItem value="Old">Old</MenuItem>
-                    <MenuItem value="Highest">Highest Rated</MenuItem>
-                    <MenuItem value="Lowest">Lowest Rated</MenuItem>
-                    <MenuItem value="Top">Top</MenuItem>
-                    <MenuItem value="Controversial">Controversial</MenuItem>
-                  </Select>
-                </div>
-              )
-          }
-          {
-            reviews.map(({
+    const reviewsDiv = loading ? (
+      <div style={{ width: '100%', height: '100%' }}>
+        <LoadingView />
+      </div>
+    ) : (
+      <div style={styles.reviewContainer}>
+        {this.props.isLoggedIn ? (
+          <WriteReview
+            profName={profName}
+            courses={courses}
+            onSubmit={this.onSubmit}
+            onDelete={this.onDelete}
+            userReview={userReview}
+          />
+        ) : (
+          <div style={styles.login}>
+            <span>
+              <Link
+                to={{
+                  pathname: '/login',
+                  state: {
+                    from: this.props.location.pathname,
+                  },
+                }}
+              >
+                Login
+              </Link>{' '}
+              to write a review!
+            </span>
+          </div>
+        )}
+        {numRatings === 0 ? (
+          <span style={styles.helpText}>
+            Looks like there aren't any ratings yet. Help us out by adding a review!
+          </span>
+        ) : (
+          <div style={styles.sortContainer}>
+            <span style={{ marginRight: 7 }}>Sort By:</span>
+            <Select
+              style={{ color: purple, fontWeight: 400 }}
+              value={this.state.sort}
+              onChange={this.onChangeSort}
+              inputProps={{
+                id: 'sort',
+              }}
+              autoWidth
+            >
+              <MenuItem value="New">New</MenuItem>
+              <MenuItem value="Old">Old</MenuItem>
+              <MenuItem value="Highest">Highest Rated</MenuItem>
+              <MenuItem value="Lowest">Lowest Rated</MenuItem>
+              <MenuItem value="Top">Top</MenuItem>
+              <MenuItem value="Controversial">Controversial</MenuItem>
+            </Select>
+          </div>
+        )}
+        {reviews.map(
+          (
+            {
               subject,
               catalogNumber,
               date,
@@ -407,69 +402,81 @@ class ProfViewContainer extends Component {
               numThumbsUp,
               numThumbsDown,
               rmpURL,
-              id
-            }, i) => (
-              <Review
-                key={ rmpURL || id || i }
-                subject={ subject }
-                catalogNumber={ catalogNumber }
-                date={ date }
-                rating={ rating }
-                difficulty={ difficulty }
-                isMandatory={ isMandatory }
-                textbookUsed={ textbookUsed }
-                grade={ grade }
-                comments={ comments }
-                numThumbsUp={ numThumbsUp }
-                numThumbsDown={ numThumbsDown }
-                rmpURL={ rmpURL }
-                onVote={ this.onVote(i) }
-              />
-            ))
-          }
-        </div>
-      );
+              id,
+            },
+            i
+          ) => (
+            <Review
+              key={rmpURL || id || i}
+              subject={subject}
+              catalogNumber={catalogNumber}
+              date={date}
+              rating={rating}
+              difficulty={difficulty}
+              isMandatory={isMandatory}
+              textbookUsed={textbookUsed}
+              grade={grade}
+              comments={comments}
+              numThumbsUp={numThumbsUp}
+              numThumbsDown={numThumbsDown}
+              rmpURL={rmpURL}
+              onVote={this.onVote(i)}
+            />
+          )
+        )}
+      </div>
+    );
 
     const pageTitle = `${profName} | University of Waterloo - WatsMyMajor`;
     const pageDescription = `${profName} - ${tags.join(', ')} (${numRatings} ratings)`;
-    const pageKeywords = [profName, 'uw', 'uwaterloo', 'waterloo', 'prof', 'professor',
-      ...tags, ...courses.map(({ subject, catalogNumber }) => subject + ' ' + catalogNumber)];
+    const pageKeywords = [
+      profName,
+      'uw',
+      'uwaterloo',
+      'waterloo',
+      'prof',
+      'professor',
+      ...tags,
+      ...courses.map(({ subject, catalogNumber }) => subject + ' ' + catalogNumber),
+    ];
 
     return (
-      <MediaQuery minWidth={ 400 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={400}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
             <div style={{ width: '100%', display: 'flex' }}>
               <Helmet>
-                <title>{ pageTitle }</title>
-                <meta name="description" content={ pageDescription } />
-                <meta name="keywords" content={ pageKeywords } />
-                <meta property="og:url"           content={ `https://www.watsmymajor.com/professors/${id}` } />
-                <meta property="og:type"          content="website" />
-                <meta property="og:title"         content={ pageTitle } />
-                <meta property="og:description"   content={ pageDescription } />
-                <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png" />
-              </Helmet>
-              <div style={ styles.container(isMobile) }>
-                <ProfHeader
-                  profName={ profName }
-                  numRatings={ numRatings }
-                  rating={ rating }
-                  difficulty={ difficulty }
-                  tags={ tags }
-                  rmpURL={ rmpURL }
-                  courses={ courses }
+                <title>{pageTitle}</title>
+                <meta name="description" content={pageDescription} />
+                <meta name="keywords" content={pageKeywords} />
+                <meta property="og:url" content={`https://www.watsmymajor.com/professors/${id}`} />
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content={pageTitle} />
+                <meta property="og:description" content={pageDescription} />
+                <meta
+                  property="og:image"
+                  content="https://user-images.githubusercontent.com/19257435/59579321-5233ca80-909a-11e9-855e-547cd83eeb91.png"
                 />
-                { reviewsDiv }
+              </Helmet>
+              <div style={styles.container(isMobile)}>
+                <ProfHeader
+                  profName={profName}
+                  numRatings={numRatings}
+                  rating={rating}
+                  difficulty={difficulty}
+                  tags={tags}
+                  rmpURL={rmpURL}
+                  courses={courses}
+                />
+                {reviewsDiv}
               </div>
             </div>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }
 
 const mapStateToProps = ({ isLoggedIn, user, profMetadata }) => ({
@@ -478,7 +485,7 @@ const mapStateToProps = ({ isLoggedIn, user, profMetadata }) => ({
   profMetadata,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     updateMetadataHandler: (profId) => dispatch(getProfMetadata(profId)),
   };

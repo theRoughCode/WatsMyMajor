@@ -10,13 +10,7 @@ import SettingsBoard from './SettingsBoard';
 import ImageUpload from './ImageUpload';
 import LinkFacebook from './LinkFacebook';
 import DeleteAccount from './DeleteAccount';
-import {
-  setUser,
-  editSettings,
-  linkFacebook,
-  unlinkFacebook,
-  deleteAccount,
-} from 'actions';
+import { setUser, editSettings, linkFacebook, unlinkFacebook, deleteAccount } from 'actions';
 import {
   validateName,
   // validateEmail,
@@ -59,40 +53,45 @@ const SettingsContainer = ({
   onUnlinkFacebook,
   onDeleteAccount,
 }) => (
-  <div style={ styles.settingsContainer }>
+  <div style={styles.settingsContainer}>
     <SettingsBoard
       boardName="Profile"
-      username={ username }
-      fields={ [
+      username={username}
+      fields={[
         { name: 'name', label: 'name', Icon: UserIcon },
         // { name: 'email', label: 'email', Icon: EmailIcon }
-      ] }
+      ]}
       values={{ name }}
-      onSaveSettings={ onSaveSettings }
-      verifyFields={ verifyProfile }
+      onSaveSettings={onSaveSettings}
+      verifyFields={verifyProfile}
     />
-    <ImageUpload username={ username } onChangeImage={ onChangeImage } profileURL={ profileURL } />
+    <ImageUpload username={username} onChangeImage={onChangeImage} profileURL={profileURL} />
     <SettingsBoard
       boardName="Password"
-      username={ username }
-      fields={ [
+      username={username}
+      fields={[
         { name: 'oldPassword', label: 'Current Password', type: 'password', Icon: OpenLockIcon },
         { name: 'password', label: 'New Password', type: 'password', Icon: LockIcon },
-        { name: 'confirmPassword', label: 'Confirm New Password', type: 'password', Icon: ConfirmIcon },
-      ] }
+        {
+          name: 'confirmPassword',
+          label: 'Confirm New Password',
+          type: 'password',
+          Icon: ConfirmIcon,
+        },
+      ]}
       values={{ password: '', oldPassword: '', confirmPassword: '' }}
-      onSaveSettings={
-        (username, { password, oldPassword }) => onSaveSettings(username, { password, oldPassword })
+      onSaveSettings={(username, { password, oldPassword }) =>
+        onSaveSettings(username, { password, oldPassword })
       }
-      verifyFields={ verifyPassword }
+      verifyFields={verifyPassword}
     />
     <LinkFacebook
-      username={ username }
-      isLinked={ isLinked }
-      onLink={ onLinkFacebook }
-      onUnlink={ onUnlinkFacebook }
+      username={username}
+      isLinked={isLinked}
+      onLink={onLinkFacebook}
+      onUnlink={onUnlinkFacebook}
     />
-    <DeleteAccount onDeleteAccount={ () => onDeleteAccount(username) } />
+    <DeleteAccount onDeleteAccount={() => onDeleteAccount(username)} />
   </div>
 );
 
@@ -117,11 +116,12 @@ const mapStateToProps = ({ user }) => ({
   isLinked: user.facebookID != null && user.facebookID.length > 0,
 });
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     onChangeImage: (username, user) => dispatch(setUser(username, user)),
     onSaveSettings: (username, user) => dispatch(editSettings(username, user)),
-    onLinkFacebook: (username, facebookID, hasFBPic) => dispatch(linkFacebook(username, facebookID, hasFBPic)),
+    onLinkFacebook: (username, facebookID, hasFBPic) =>
+      dispatch(linkFacebook(username, facebookID, hasFBPic)),
     onUnlinkFacebook: (username) => dispatch(unlinkFacebook(username)),
     onDeleteAccount: (username) => dispatch(deleteAccount(username)),
   };

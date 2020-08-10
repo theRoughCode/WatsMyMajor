@@ -39,20 +39,13 @@ const styles = {
   },
 };
 
-
-const SelectScreen = ({
-  handleMajorChange,
-  handleFacultyChange,
-  majorsList,
-  faculty,
-  major
-}) => (
-  <div style={ styles.container }>
-    <div style={ styles.selectScreen }>
-      <div style={ styles.header }>
-        <div style={ styles.titleContainer }>
-          <span style={ styles.headerText }>Select a Major</span>
-          <span style={ styles.subtitle }>
+const SelectScreen = ({ handleMajorChange, handleFacultyChange, majorsList, faculty, major }) => (
+  <div style={styles.container}>
+    <div style={styles.selectScreen}>
+      <div style={styles.header}>
+        <div style={styles.titleContainer}>
+          <span style={styles.headerText}>Select a Major</span>
+          <span style={styles.subtitle}>
             Select a major below to check out how far along you are to fulfill its requirements!
           </span>
         </div>
@@ -61,40 +54,33 @@ const SelectScreen = ({
         <div style={{ margin: 'auto', marginRight: 10 }}>
           <SelectField
             floatingLabelText="Select a faculty"
-            onChange={ handleFacultyChange }
-            style={ styles.select }
-            value={ faculty }
+            onChange={handleFacultyChange}
+            style={styles.select}
+            value={faculty}
             autoWidth
           >
-            {
-              Object.keys(majorsList).map((faculty, index) => (
-                <MenuItem
-                  key={ index }
-                  value={ faculty }
-                  primaryText={ majorsList[faculty].name }
-                />
-              ))
-            }
+            {Object.keys(majorsList).map((faculty, index) => (
+              <MenuItem key={index} value={faculty} primaryText={majorsList[faculty].name} />
+            ))}
           </SelectField>
         </div>
         <div>
           <SelectField
             floatingLabelText="Choose a major"
-            onChange={ handleMajorChange }
-            style={ styles.select }
-            value={ major }
+            onChange={handleMajorChange}
+            style={styles.select}
+            value={major}
             autoWidth
-            disabled={ !faculty.length }
+            disabled={!faculty.length}
           >
-            {
-              faculty.length && Object.keys(majorsList[faculty].majors).map((major, index) => (
+            {faculty.length &&
+              Object.keys(majorsList[faculty].majors).map((major, index) => (
                 <MenuItem
-                  key={ index }
-                  value={ major }
-                  primaryText={ majorsList[faculty].majors[major] }
+                  key={index}
+                  value={major}
+                  primaryText={majorsList[faculty].majors[major]}
                 />
-              ))
-            }
+              ))}
           </SelectField>
         </div>
       </div>

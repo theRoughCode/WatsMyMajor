@@ -20,7 +20,7 @@ async function getClassInfo(subject, catalogNumber, term) {
   // Get note
   let note = $('tr').eq(2).text().trim();
   // If no note, this would be the text of the table.  We don't want that.
-  if (!note.startsWith("Note")) note = "";
+  if (!note.startsWith('Note')) note = '';
   else note = note.replace(/Note(s)?:/, '').trim();
 
   // Get class info
@@ -30,7 +30,10 @@ async function getClassInfo(subject, catalogNumber, term) {
   const classInfo = [];
 
   rows.each((i, row) => {
-    const rowArr = $(row).find('td').map((i2, el) => $(el).text().trim()).get();
+    const rowArr = $(row)
+      .find('td')
+      .map((i2, el) => $(el).text().trim())
+      .get();
     if (rowArr[0].startsWith('Reserve') && classInfo.length > 0) {
       // Has reserve group
       Object.assign(classInfo[classInfo.length - 1], formatReserve(rowArr));
@@ -79,14 +82,14 @@ async function getClassInfo(subject, catalogNumber, term) {
 }
 
 /****************************
- *													*
- *			H E L P E R S 			*
- *													*
+ *                          *
+ *      H E L P E R S       *
+ *                          *
  ****************************/
 
 // Create adm.uwaterloo URL
 function createURL(subject, catalogNumber, term) {
-  const level = (catalogNumber.length < 3 || (catalogNumber.charAt(0) <= 4)) ? 'under' : 'grad';
+  const level = catalogNumber.length < 3 || catalogNumber.charAt(0) <= 4 ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
   return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
@@ -96,9 +99,7 @@ function createURL(subject, catalogNumber, term) {
 function formatInstructor(instructor) {
   if (instructor == null) return '';
   const [lastName, firstName] = instructor.split(',');
-  const nameArr = (firstName == null)
-    ? instructor.split(' ')
-    : `${firstName} ${lastName}`.split(' ');
+  const nameArr = firstName == null ? instructor.split(' ') : `${firstName} ${lastName}`.split(' ');
   nameArr.splice(1, nameArr.length - 2);
   const name = nameArr.join(' ');
   return name;
@@ -144,28 +145,20 @@ function formatTimes(timeStr) {
   const matchArr = timeStr.match(/(\d+):(\d+)-(\d+):(\d+)([A-Z][A-Za-x]*)(\d\d\/\d\d-\d\d\/\d\d)?/);
   if (matchArr == null || matchArr.length < 6) return timeObj;
 
-  let [
-    startHour,
-    startMin,
-    endHour,
-    endMin,
-    dayStr,
-    datesStr,
-  ] = matchArr.slice(1);
+  let [startHour, startMin, endHour, endMin, dayStr, datesStr] = matchArr.slice(1);
   const RE_DAY = /(M)?(Th|T)?(W)?(Th)?(F)?/g;
-  const weekdays =  RE_DAY.exec(dayStr)
+  const weekdays = RE_DAY.exec(dayStr)
     .slice(1, 6)
-    .map((d) => (d == null) ? null : d)
-    .filter(d => d != null);
+    .map((d) => (d == null ? null : d))
+    .filter((d) => d != null);
 
   if (datesStr != null) timeObj.dateRange = datesStr;
-
 
   // We need to check if the time is in AM or PM cuz the ADM time formatting sucks
   // A time is AM if start time is from 8 - 11
   startHour = Number(startHour);
   endHour = Number(endHour);
-  const isAM = (startHour >= 8 && startHour < 12);
+  const isAM = startHour >= 8 && startHour < 12;
   if (!isAM) {
     if (startHour < 12) startHour += 12;
     if (endHour < 12) endHour += 12;
@@ -188,7 +181,7 @@ function formatReserve(reserveArr) {
 
 // Format row data into useable object
 function formatRow(row) {
-  return ({
+  return {
     classNumber: Number(row[0]),
     section: row[1],
     campus: row[2].replace(/\s+/g, ' '),
@@ -207,15 +200,17 @@ function formatRow(row) {
         ...formatTimes(row[10]),
         location: row[11].replace(/\s+/g, ' '),
         instructor: formatInstructor(row[12]),
-      }
+      },
     ],
-    lastUpdated: new Date(Date.now()).toLocaleDateString("en-US", {
-      year: "numeric", month: "short",
-      day: "numeric", hour: "2-digit", minute: "2-digit"
+    lastUpdated: new Date(Date.now()).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     }),
-  });
+  };
 }
-
 
 module.exports = {
   getClassInfo,

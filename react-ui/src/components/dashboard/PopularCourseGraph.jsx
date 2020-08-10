@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 import Paper from 'material-ui/Paper';
 import { VictoryBar, VictoryChart, VictoryAxis, VictoryLabel } from 'victory';
 
-const colours = [
-  '#54c4a2',
-  '#ed3b3b',
-  '#4b96f2',
-  '#ef9c3e',
-  '#af2cc5',
-];
+const colours = ['#54c4a2', '#ed3b3b', '#4b96f2', '#ef9c3e', '#af2cc5'];
 
 const styles = {
   container: {
@@ -19,12 +13,12 @@ const styles = {
   },
 };
 
-const assignColours = (data) => data.map(({ subject, catalogNumber, count }, index) => ({
-  course: `${subject} ${catalogNumber}`,
-  count,
-  colour: colours[index]
-}));
-
+const assignColours = (data) =>
+  data.map(({ subject, catalogNumber, count }, index) => ({
+    course: `${subject} ${catalogNumber}`,
+    count,
+    colour: colours[index],
+  }));
 
 export default class PopularCourseGraph extends Component {
   state = {
@@ -35,8 +29,8 @@ export default class PopularCourseGraph extends Component {
     try {
       const response = await fetch('/server/stats/course/popular/5', {
         headers: {
-          "x-secret": process.env.REACT_APP_SERVER_SECRET
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
       if (!response.ok) {
         console.error(`Failed to retrieve popular courses: ${response}`);
@@ -54,12 +48,12 @@ export default class PopularCourseGraph extends Component {
     if (popular.length === 0) return null;
 
     return (
-      <Paper style={ styles.container } depth={ 1 }>
-        <VictoryChart domainPadding={ 30 } >
+      <Paper style={styles.container} depth={1}>
+        <VictoryChart domainPadding={30}>
           <VictoryLabel
             text="Popular Courses"
-            x={ 225 }
-            y={ 30 }
+            x={225}
+            y={30}
             textAnchor="middle"
             style={{ fontSize: 25 }}
           />
@@ -69,7 +63,7 @@ export default class PopularCourseGraph extends Component {
               tickLabels: {
                 fontFamily: "'Gill Sans', 'Gill Sans MT', 'Ser­avek', 'Trebuchet MS', sans-serif",
                 fontSize: 15,
-                padding: 5
+                padding: 5,
               },
             }}
           />
@@ -83,15 +77,15 @@ export default class PopularCourseGraph extends Component {
             }}
           />
           <VictoryBar
-            data={ popular }
+            data={popular}
             sortKey="count"
             sortOrder="descending"
             x="course"
             y="count"
-            barWidth={ 30 }
-            labels={ (c) => c.count }
+            barWidth={30}
+            labels={(c) => c.count}
             animate={{
-              onLoad: { duration: 500 }
+              onLoad: { duration: 500 },
             }}
             style={{
               data: {
@@ -105,5 +99,4 @@ export default class PopularCourseGraph extends Component {
       </Paper>
     );
   }
-
 }

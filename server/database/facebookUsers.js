@@ -1,31 +1,28 @@
 const { facebookUsersRef } = require('./index');
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 function setFacebookUser(facebookID, userId) {
-  return facebookUsersRef
-    .child(facebookID)
-    .set(userId)
+  return facebookUsersRef.child(facebookID).set(userId);
 }
 
 async function removeFacebookUser(facebookID) {
   try {
     await facebookUsersRef.child(facebookID).remove();
-  } catch(err) {
-    console.error(err)
+  } catch (err) {
+    console.error(err);
     return err;
   }
 }
 
-
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
 
 // Returns username corresponding to facebook user

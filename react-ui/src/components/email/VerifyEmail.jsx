@@ -50,9 +50,7 @@ const styles = {
   },
 };
 
-
 class VerifyEmail extends Component {
-
   static propTypes = {
     history: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -71,8 +69,8 @@ class VerifyEmail extends Component {
 
     const response = await fetch(`/server/email/verify/user?token=${token}`, {
       headers: {
-        "x-secret": process.env.REACT_APP_SERVER_SECRET
-      }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
     });
     if (!response.ok) {
       this.setState({ error: true, loading: false });
@@ -85,29 +83,32 @@ class VerifyEmail extends Component {
   redirect = () => {
     this.props.logout();
     this.props.history.push('/login');
-  }
+  };
 
   render() {
     if (this.state.loading) return null;
 
     // TODO: Add graphics to verification error message
-    const view = (this.state.error || !this.state.username)
-      ? (
-        <span style={ styles.error }>
-          Failed to verify email.  Please contact an administrator.<br />
+    const view =
+      this.state.error || !this.state.username ? (
+        <span style={styles.error}>
+          Failed to verify email. Please contact an administrator.
+          <br />
           Click <a href="/">here</a> to return to the login screen.
         </span>
-      )
-      : (
-        <div style={ styles.verifiedContainer }>
-          <img src={ logo } alt="logo" style={ styles.logo } />
-          <span style={ styles.verifiedTitle }>Welcome, { this.state.username }!</span>
-          <span style={ styles.verifiedSubtitle }>Please log in to your account to continue.</span>
-          <div style={ styles.loadingContainer }>
-            <span style={ styles.loadingText }>Redirecting you to the login page...</span>
-            <CircularProgress style={{ margin: 'auto' }} size={ 40 } thickness={ 3 } />
+      ) : (
+        <div style={styles.verifiedContainer}>
+          <img src={logo} alt="logo" style={styles.logo} />
+          <span style={styles.verifiedTitle}>Welcome, {this.state.username}!</span>
+          <span style={styles.verifiedSubtitle}>Please log in to your account to continue.</span>
+          <div style={styles.loadingContainer}>
+            <span style={styles.loadingText}>Redirecting you to the login page...</span>
+            <CircularProgress style={{ margin: 'auto' }} size={40} thickness={3} />
           </div>
-          <span>If you're not redirected after 5 seconds, click <a href="/">here</a> to return to the login screen.</span>
+          <span>
+            If you're not redirected after 5 seconds, click <a href="/">here</a> to return to the
+            login screen.
+          </span>
         </div>
       );
 
@@ -116,17 +117,15 @@ class VerifyEmail extends Component {
     }
 
     return (
-      <div style={ styles.bigContainer }>
-        <div style={ styles.smallContainer }>
-          { view }
-        </div>
+      <div style={styles.bigContainer}>
+        <div style={styles.smallContainer}>{view}</div>
       </div>
     );
   }
 }
 
-const mapDispatchToProps = dispatch => ({
-  logout: () =>	dispatch(logoutUser()),
+const mapDispatchToProps = (dispatch) => ({
+  logout: () => dispatch(logoutUser()),
 });
 
 export default connect(null, mapDispatchToProps)(VerifyEmail);

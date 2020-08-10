@@ -18,21 +18,39 @@ import { objectEquals } from 'utils/arrays';
 const stepContents = [
   {
     button: 'Log in to Quest',
-    text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">here</a>.</p>
+    text: (
+      <p>
+        Log in to your Quest account{' '}
+        <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">
+          here
+        </a>
+        .
+      </p>
+    ),
   },
   {
     button: 'Enroll',
     text: (
       <ol style={{ textAlign: 'left' }}>
-        <li>Click on the <b>Enroll</b> tab.</li>
-        <li>Select <b>My Class Schedule</b></li>
-        <li>Go to <b>List View</b>.</li>
+        <li>
+          Click on the <b>Enroll</b> tab.
+        </li>
+        <li>
+          Select <b>My Class Schedule</b>
+        </li>
+        <li>
+          Go to <b>List View</b>.
+        </li>
       </ol>
-    )
+    ),
   },
   {
     button: 'Select all and copy text',
-    text: <p>Select all (<i>ctrl-a</i>), and copy EVERYTHING!!</p>
+    text: (
+      <p>
+        Select all (<i>ctrl-a</i>), and copy EVERYTHING!!
+      </p>
+    ),
   },
 ];
 
@@ -41,7 +59,7 @@ const fetchUserSchedule = async (username) => {
     const response = await fetch(`/server/schedule/${username}`, {
       headers: {
         'x-secret': process.env.REACT_APP_SERVER_SECRET,
-      }
+      },
     });
     if (!response.ok) {
       console.error(response);
@@ -49,7 +67,7 @@ const fetchUserSchedule = async (username) => {
     }
     const resp = await response.json();
     return resp;
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return null;
   }
@@ -61,7 +79,7 @@ const setSchedulePrivacy = async (username, isPublic) => {
     const response = await fetch(`/server/users/schedule/privacy/${username}?public=${isPublic}`, {
       headers: {
         'x-secret': process.env.REACT_APP_SERVER_SECRET,
-      }
+      },
     });
     if (!response.ok) {
       console.error(response);
@@ -69,7 +87,7 @@ const setSchedulePrivacy = async (username, isPublic) => {
     }
     await response.text();
     return true;
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return false;
   }
@@ -88,7 +106,7 @@ class ToastCopy extends Component {
     if (this.state.copied) return;
     const linkInput = document.getElementById('schedule-link');
     linkInput.select();
-    document.execCommand("copy");
+    document.execCommand('copy');
     this.setState({ copied: true });
   };
 
@@ -101,14 +119,14 @@ class ToastCopy extends Component {
           <input
             type="url"
             id="schedule-link"
-            value={ link }
+            value={link}
             readOnly
             style={{ verticalAlign: 'middle' }}
           />
           <IconButton
-            tooltip={ (this.state.copied) ? "Copied!" : "Copy" }
+            tooltip={this.state.copied ? 'Copied!' : 'Copy'}
             tooltipPosition="top-center"
-            onClick={ this.handleCopy }
+            onClick={this.handleCopy}
             iconStyle={{ width: 20, height: 20, color: 'white' }}
             style={{
               padding: 5,
@@ -117,10 +135,7 @@ class ToastCopy extends Component {
               height: 'auto',
             }}
           >
-            { (this.state.copied)
-              ? <CheckIcon color="white" />
-              : <CopyIcon color="white" />
-            }
+            {this.state.copied ? <CheckIcon color="white" /> : <CopyIcon color="white" />}
           </IconButton>
         </div>
       </div>
@@ -143,12 +158,12 @@ class ScheduleContainer extends Component {
     text: '',
     schedule: this.props.schedule,
     friendSchedule: {},
-    friendName: '',                 // name of schedule owner (used for browsing)
+    friendName: '', // name of schedule owner (used for browsing)
     submitted: false,
     importDialogOpen: false,
     loading: true,
-    isBrowsing: false,              // true if browsing other schedules,
-    term: '',                       // term to view
+    isBrowsing: false, // true if browsing other schedules,
+    term: '', // term to view
     isPublic: this.props.isPublic,
   };
 
@@ -156,20 +171,19 @@ class ScheduleContainer extends Component {
     const { params, path } = this.props.match;
     if (params.term != null) this.setState({ term: params.term });
     this.updateSchedule(params.username, path);
-  }
+  };
 
   componentWillReceiveProps = (nextProps) => {
     const { params, path } = nextProps.match;
     // New friend schedulle
-    if (this.props.match.path !== path ||
-        this.props.match.params.username !== params.username) {
+    if (this.props.match.path !== path || this.props.match.params.username !== params.username) {
       this.setState({ loading: true });
       this.updateSchedule(params.username, path);
     }
 
     // Change viewing term
     if (this.props.match.params.term !== params.term) {
-      const term = (params.term == null) ? '' : params.term;
+      const term = params.term == null ? '' : params.term;
       this.setState({ term });
     }
 
@@ -177,7 +191,7 @@ class ScheduleContainer extends Component {
     if (!objectEquals(nextProps.schedule, this.props.schedule)) {
       this.setState({ schedule: nextProps.schedule });
     }
-  }
+  };
 
   // Update schedule based on given path
   // If path starts with 'schedule', we are browsing other schedules
@@ -203,7 +217,7 @@ class ScheduleContainer extends Component {
         isBrowsing: false,
       });
     }
-  }
+  };
 
   onOpenDialog = () => this.setState({ importDialogOpen: true });
   onCloseDialog = () => this.setState({ importDialogOpen: false });
@@ -215,23 +229,26 @@ class ScheduleContainer extends Component {
     const { username, onUploadSchedule } = this.props;
     onUploadSchedule(username, this.state.text);
     this.setState({ submitted: true, importDialogOpen: false });
-  }
+  };
 
-  onClassClick = (subject, catalogNumber) => this.props.history.push(`/courses/${subject}/${catalogNumber}`);
+  onClassClick = (subject, catalogNumber) =>
+    this.props.history.push(`/courses/${subject}/${catalogNumber}`);
   onClearScheduleClick = () => this.props.onClearSchedule(this.props.username);
 
   onUpdatePrivacy = () => {
     const isPublic = !this.state.isPublic;
-    if (!setSchedulePrivacy(this.props.username, isPublic)) toast('Failed to update schedule privacy.  Please contact an administrator.');
+    if (!setSchedulePrivacy(this.props.username, isPublic))
+      toast('Failed to update schedule privacy.  Please contact an administrator.');
     else this.setState({ isPublic });
 
-    if (isPublic) toast(<ToastCopy username={ this.props.username } />, {
-      type: 'info',
-      closeOnClick: false,
-      pauseOnHover: true,
-      draggable: false,
-    });
-  }
+    if (isPublic)
+      toast(<ToastCopy username={this.props.username} />, {
+        type: 'info',
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: false,
+      });
+  };
 
   render() {
     if (this.state.loading) {
@@ -242,88 +259,76 @@ class ScheduleContainer extends Component {
     if (this.state.isBrowsing) {
       return (
         <CalendarContainer
-          schedule={ this.state.schedule }
-          term={ this.state.term }
-          onClassClick={ this.onClassClick }
-          onClearSchedule={ this.onClearScheduleClick }
-          onImportTerm={ this.onOpenDialog }
-          onUpdatePrivacy={ this.onUpdatePrivacy }
+          schedule={this.state.schedule}
+          term={this.state.term}
+          onClassClick={this.onClassClick}
+          onClearSchedule={this.onClearScheduleClick}
+          onImportTerm={this.onOpenDialog}
+          onUpdatePrivacy={this.onUpdatePrivacy}
           isBrowsing
-          friendSchedule={ this.state.friendSchedule }
-          friendName={ this.state.friendName }
-          isPublic={ this.state.isPublic }
+          friendSchedule={this.state.friendSchedule}
+          friendName={this.state.friendName}
+          isPublic={this.state.isPublic}
         />
       );
     }
 
     const importDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.onCloseDialog }
-      />,
+      <FlatButton label="Cancel" primary onClick={this.onCloseDialog} />,
       <FlatButton
         label="Submit"
         primary
-        onClick={ this.onSubmit }
-        disabled={ this.state.text.length === 0 }
+        onClick={this.onSubmit}
+        disabled={this.state.text.length === 0}
       />,
     ];
 
-    return (Object.keys(this.props.schedule).length > 0)
-      ? (
-        <div style={{ height: '100%' }}>
-          <CalendarContainer
-            schedule={ this.state.schedule }
-            term={ this.state.term }
-            onClassClick={ this.onClassClick }
-            onClearSchedule={ this.onClearScheduleClick }
-            onImportTerm={ this.onOpenDialog }
-            onUpdatePrivacy={ this.onUpdatePrivacy }
-            isBrowsing={ false }
-            friendSchedule={ this.state.friendSchedule }
-            friendName={ this.state.friendName }
-            isPublic={ this.state.isPublic }
-          />
-          <Dialog
-            title="Import Schedule"
-            actions={ importDialogActions }
-            modal={ false }
-            open={ this.state.importDialogOpen }
-            onRequestClose={ this.closeImportDialog }
-            contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
-          >
-            <ParserInstructions
-              onChange={ this.onChange }
-              stepContents={ stepContents }
-            />
-          </Dialog>
-        </div>
-      )
-      : (
-        <div style={{ marginTop: 50 }}>
-          <ParserInstructions
-            onChange={ this.onChange }
-            stepContents={ stepContents }
-          />
-          <RaisedButton
-            label="Submit"
-            primary
-            onClick={ this.onSubmit }
-            disabled={ this.state.text.length === 0 }
-          />
-        </div>
-      )
+    return Object.keys(this.props.schedule).length > 0 ? (
+      <div style={{ height: '100%' }}>
+        <CalendarContainer
+          schedule={this.state.schedule}
+          term={this.state.term}
+          onClassClick={this.onClassClick}
+          onClearSchedule={this.onClearScheduleClick}
+          onImportTerm={this.onOpenDialog}
+          onUpdatePrivacy={this.onUpdatePrivacy}
+          isBrowsing={false}
+          friendSchedule={this.state.friendSchedule}
+          friendName={this.state.friendName}
+          isPublic={this.state.isPublic}
+        />
+        <Dialog
+          title="Import Schedule"
+          actions={importDialogActions}
+          modal={false}
+          open={this.state.importDialogOpen}
+          onRequestClose={this.closeImportDialog}
+          contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
+        >
+          <ParserInstructions onChange={this.onChange} stepContents={stepContents} />
+        </Dialog>
+      </div>
+    ) : (
+      <div style={{ marginTop: 50 }}>
+        <ParserInstructions onChange={this.onChange} stepContents={stepContents} />
+        <RaisedButton
+          label="Submit"
+          primary
+          onClick={this.onSubmit}
+          disabled={this.state.text.length === 0}
+        />
+      </div>
+    );
   }
 }
 
 const mapStateToProps = ({ user, mySchedule }) => ({
   username: user.username,
-  isPublic: (user.isSchedulePublic == null) || user.isSchedulePublic,
+  isPublic: user.isSchedulePublic == null || user.isSchedulePublic,
   schedule: mySchedule,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   onUploadSchedule: (username, text) => dispatch(addToSchedule(username, text)),
   onClearSchedule: (username) => dispatch(clearSchedule(username)),
 });

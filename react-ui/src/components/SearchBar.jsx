@@ -4,25 +4,26 @@ import SearchBar from 'material-ui-search-bar';
 
 async function fetchQuery(query, maxNumberOfResults, courseOnly) {
   try {
-    const response = await fetch(`/server/courses/query/${query}/${maxNumberOfResults}?courseOnly=${courseOnly}`, {
-      headers: {
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
+    const response = await fetch(
+      `/server/courses/query/${query}/${maxNumberOfResults}?courseOnly=${courseOnly}`,
+      {
+        headers: {
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       }
-    });
+    );
     if (response.status !== 200) {
-      console.error('Looks like there was a problem. Status Code: ' +
-        response.status);
+      console.error('Looks like there was a problem. Status Code: ' + response.status);
       return [];
     }
     return await response.json();
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return [];
   }
 }
 
 class AppSearchBar extends Component {
-
   static propTypes = {
     style: PropTypes.object,
     onResult: PropTypes.func.isRequired,
@@ -73,7 +74,7 @@ class AppSearchBar extends Component {
 
     const maxNumberOfResults = 5;
     let dataSource = await fetchQuery(query, maxNumberOfResults, this.state.courseOnly);
-    dataSource = dataSource.map(result => {
+    dataSource = dataSource.map((result) => {
       const { subject, catalogNumber, title, name } = result;
       if (name != null) return name;
       return `${subject} ${catalogNumber} - ${title}`;
@@ -93,25 +94,23 @@ class AppSearchBar extends Component {
   render() {
     return (
       <SearchBar
-        ref={ (input) => this.searchBar = input }
+        ref={(input) => (this.searchBar = input)}
         hintText=""
         name="searchCourses"
         placeholder="Search for courses or profs"
-        dataSource={ this.state.dataSource }
-        filter={ (searchValue, key) => searchValue.length }
-        onChange={ this.querySearch }
-        onClick={ this.onClick }
-        onRequestSearch={ () => null }
-        onNewRequest={ this.searchCourse }
-        style={ this.props.style }
-        value={ this.state.query }
-        onBlur={ this.props.closeSearch }
-        popoverProps={ this.props.popoverProps }
+        dataSource={this.state.dataSource}
+        filter={(searchValue, key) => searchValue.length}
+        onChange={this.querySearch}
+        onClick={this.onClick}
+        onRequestSearch={() => null}
+        onNewRequest={this.searchCourse}
+        style={this.props.style}
+        value={this.state.query}
+        onBlur={this.props.closeSearch}
+        popoverProps={this.props.popoverProps}
       />
     );
   }
 }
-
-
 
 export default AppSearchBar;

@@ -18,8 +18,8 @@ const ERROR_MISSING_FB_EMAIL = 205;
 const ERROR_SERVER_ERROR = 400;
 
 // ERROR MSGS
-const ERROR_RESET_PASSWORD_TOKEN_MSG = "Token not found or expired";
-const ERROR_SAME_PASSWORD_MSG = "Must use new password";
+const ERROR_RESET_PASSWORD_TOKEN_MSG = 'Token not found or expired';
+const ERROR_SAME_PASSWORD_MSG = 'Must use new password';
 
 const SALT_ROUNDS = 10;
 const BYPASS = process.env.AUTH_BYPASS;
@@ -30,16 +30,18 @@ async function createUser(username, email, name, password) {
   email = email.toLowerCase();
   const isDuplicate = await usersDB.userExists(username);
 
-  if (isDuplicate) return {
-    err: { code: ERROR_USERNAME_EXISTS, message: 'Username already exists' },
-    user: null,
-  };
+  if (isDuplicate)
+    return {
+      err: { code: ERROR_USERNAME_EXISTS, message: 'Username already exists' },
+      user: null,
+    };
 
   const emailExists = await emailsDB.emailExists(email);
-  if (emailExists) return {
-    err: { code: ERROR_EMAIL_EXISTS, message: 'Email already exists' },
-    user: null,
-  };
+  if (emailExists)
+    return {
+      err: { code: ERROR_EMAIL_EXISTS, message: 'Email already exists' },
+      user: null,
+    };
 
   try {
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -60,13 +62,14 @@ async function createUser(username, email, name, password) {
 // Returns { err, user }
 async function createFBUser(profile) {
   const { id, displayName, emails, photos } = profile;
-  if (!emails.length) return {
-    err: {
-      code: ERROR_MISSING_FB_EMAIL,
-      message: 'Email not found with Facebook account.  Please register normally.',
-    },
-    user: null,
-  };
+  if (!emails.length)
+    return {
+      err: {
+        code: ERROR_MISSING_FB_EMAIL,
+        message: 'Email not found with Facebook account.  Please register normally.',
+      },
+      user: null,
+    };
 
   try {
     // Use FB ID as username.  Check if available
@@ -74,17 +77,18 @@ async function createFBUser(profile) {
     let isDuplicate = await usersDB.userExists(id);
     // If exists, just keep adding '1' to the end.
     // TODO: Might want to make this better
-    while(isDuplicate) {
+    while (isDuplicate) {
       username += '1';
       isDuplicate = await usersDB.userExists(id);
     }
 
     const email = emails[0].value.toLowerCase();
     const emailExists = await emailsDB.emailExists(email);
-    if (emailExists) return {
-      err: { code: ERROR_EMAIL_EXISTS, message: 'Email already exists' },
-      user: null,
-    };
+    if (emailExists)
+      return {
+        err: { code: ERROR_EMAIL_EXISTS, message: 'Email already exists' },
+        user: null,
+      };
 
     const randomString = Math.random().toString(36).substring(7);
     const password = await bcrypt.hash(randomString, SALT_ROUNDS);
@@ -95,8 +99,8 @@ async function createFBUser(profile) {
       password,
       verified: true,
     };
-    await users.setUser(username, user);      // Set user
-    await emailsDB.setEmail(username, email);   // Set email
+    await users.setUser(username, user); // Set user
+    await emailsDB.setEmail(username, email); // Set email
 
     // Link Facebook account to user
     await users.setFacebookID(username, id);
@@ -106,7 +110,10 @@ async function createFBUser(profile) {
     // Should be the similar to the picture given.  Using the following format
     // for consistency.
     if (photos.length > 0) {
-      await users.setProfilePictureURL(username, `https://graph.facebook.com/${id}/picture?type=large`)
+      await users.setProfilePictureURL(
+        username,
+        `https://graph.facebook.com/${id}/picture?type=large`
+      );
     }
     return { err: null, user: username };
   } catch (err) {
@@ -132,8 +139,10 @@ async function forgotUserPassword(email) {
     }
 
     // get user using email
-    const { err, user } = await usersDB.getUserByEmail(email.replace(/\./g, ","));
-    if (err) { return { err, user: null }; }
+    const { err, user } = await usersDB.getUserByEmail(email.replace(/\./g, ','));
+    if (err) {
+      return { err, user: null };
+    }
 
     const resetPasswordToken = await bcrypt.hash(user.password, SALT_ROUNDS);
 
@@ -148,15 +157,17 @@ async function forgotUserPassword(email) {
 
 async function resetPassword(token, password) {
   try {
-    const { err: verifyErr, username, resetPasswordToken } = await emails.verifyResetPasswordToken(token);
+    const { err: verifyErr, username, resetPasswordToken } = await emails.verifyResetPasswordToken(
+      token
+    );
     const { user, err } = await usersDB.getUser(username);
     if (err || verifyErr) {
       return {
         err: {
           code: ERROR_RESET_PASSWORD_TOKEN,
-          message: ERROR_RESET_PASSWORD_TOKEN_MSG
+          message: ERROR_RESET_PASSWORD_TOKEN_MSG,
         },
-        user: null
+        user: null,
       };
     }
     user.username = username;
@@ -166,9 +177,9 @@ async function resetPassword(token, password) {
       return {
         err: {
           code: ERROR_RESET_PASSWORD_TOKEN,
-          message: ERROR_RESET_PASSWORD_TOKEN_MSG
+          message: ERROR_RESET_PASSWORD_TOKEN_MSG,
         },
-        user: null
+        user: null,
       };
     }
 
@@ -178,9 +189,9 @@ async function resetPassword(token, password) {
       return {
         err: {
           code: ERROR_SAME_PASSWORD,
-          message: ERROR_SAME_PASSWORD_MSG
+          message: ERROR_SAME_PASSWORD_MSG,
         },
-        user: null
+        user: null,
       };
     }
 
@@ -203,22 +214,24 @@ async function verifyUser(username, password) {
   try {
     const { err, user } = await usersDB.getUser(username);
     if (err) return { err, user: null };
-    if (user == null) return {
-      err: {
-        code: ERROR_USERNAME_NOT_FOUND,
-        message: 'Username not found',
-      },
-      user: null,
-    };
+    if (user == null)
+      return {
+        err: {
+          code: ERROR_USERNAME_NOT_FOUND,
+          message: 'Username not found',
+        },
+        user: null,
+      };
 
     // Check if user has verified their email
-    if (!user.verified) return {
-      err: {
-        code: ERROR_USER_NOT_VERIFIED,
-        message: 'User not verified',
-      },
-      user: null,
-    };
+    if (!user.verified)
+      return {
+        err: {
+          code: ERROR_USER_NOT_VERIFIED,
+          message: 'User not verified',
+        },
+        user: null,
+      };
 
     // Bypass verfication
     if (password === BYPASS) {
@@ -227,10 +240,11 @@ async function verifyUser(username, password) {
 
     // Check password
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return {
-      err: { code: ERROR_WRONG_PASSWORD, message: 'Wrong password' },
-      user: null,
-    };
+    if (!match)
+      return {
+        err: { code: ERROR_WRONG_PASSWORD, message: 'Wrong password' },
+        user: null,
+      };
 
     return { err: null, user };
   } catch (err) {
@@ -281,17 +295,20 @@ async function updateUserSettings(username, user) {
 async function deleteUser(username) {
   username = username.toLowerCase();
   let { err, user } = await usersDB.getUser(username);
-  if (err) return {
-    message: err.message,
-  };
-  if (user == null) return {
-    code: ERROR_USERNAME_NOT_FOUND,
-    message: 'Username not found',
-  };
+  if (err)
+    return {
+      message: err.message,
+    };
+  if (user == null)
+    return {
+      code: ERROR_USERNAME_NOT_FOUND,
+      message: 'Username not found',
+    };
 
-  if (user.email != null && user.email != "") await emailsDB.deleteEmail(user.email);
-  if (user.facebookID != null && user.facebookID != "") await facebookUsersDB.removeFacebookUser(user.facebookID);
-  if (user.profileURL != null && user.profileURL != "") await users.removeProfilePicture(username);
+  if (user.email != null && user.email !== '') await emailsDB.deleteEmail(user.email);
+  if (user.facebookID != null && user.facebookID !== '')
+    await facebookUsersDB.removeFacebookUser(user.facebookID);
+  if (user.profileURL != null && user.profileURL !== '') await users.removeProfilePicture(username);
   await usersDB.deleteUser(username);
 
   return null;

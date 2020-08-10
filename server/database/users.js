@@ -27,9 +27,9 @@ const { emailsRef } = require('./index');
 */
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 // username: {
@@ -49,36 +49,25 @@ const { emailsRef } = require('./index');
 // }
 
 function setUser(username, user) {
-  return usersRef
-    .child(username)
-    .set(user);
+  return usersRef.child(username).set(user);
 }
 
 function updateUser(username, user) {
-  return usersRef
-    .child(username)
-    .update(user);
+  return usersRef.child(username).update(user);
 }
 
 function deleteUser(username) {
-  return usersRef
-    .child(username)
-    .remove();
+  return usersRef.child(username).remove();
 }
 
 function setField(userId, field, data) {
-  return usersRef
-    .child(userId)
-    .child(field)
-    .set(data);
+  return usersRef.child(userId).child(field).set(data);
 }
 
-
-
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
 
 // Returns { user, err }
@@ -98,7 +87,7 @@ async function getUserByEmail(email) {
     const username = emailSnapshot.val();
     if (username == null) return { user: null, err: 'Email not found.' };
     const snapshot = await usersRef.child(username).once('value');
-    return { user: { ... snapshot.val(), username }, err: null };
+    return { user: { ...snapshot.val(), username }, err: null };
   } catch (err) {
     return { user: null, err };
   }
@@ -108,7 +97,7 @@ async function getAllUserCourses() {
   try {
     const snapshot = await usersRef.once('value');
     const courseCount = {};
-    snapshot.forEach(child => {
+    snapshot.forEach((child) => {
       const { courseList } = child.val();
       if (courseList == null || courseList.length === 0) return;
       courseList.forEach(({ courses }) => {

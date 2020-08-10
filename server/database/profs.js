@@ -33,7 +33,6 @@ async function setProfClasses(prof, subject, catalogNumber, term) {
   }
 }
 
-
 function setRMP(prof, rmpURL, tags) {
   const profRef = profsRef.child(prof.replace(/(\s|\.)/g, ''));
   return profRef.update({ rmpURL, tags });

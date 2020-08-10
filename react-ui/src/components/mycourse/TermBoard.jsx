@@ -17,11 +17,7 @@ import SearchBar from '../SearchBar';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { DragTypes } from 'constants/DragTypes';
 import { objectEquals, arrayOfObjectEquals } from 'utils/arrays';
-import {
-  purple,
-  lightPurple,
-  lightGreen
-} from 'constants/Colours';
+import { purple, lightPurple, lightGreen } from 'constants/Colours';
 
 const space = 8;
 const stylesConst = {
@@ -31,10 +27,10 @@ const stylesConst = {
 const styles = {
   board: (isCart) => ({
     margin: 10,
-    width:  stylesConst.width,
+    width: stylesConst.width,
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: (isCart) ? 450 : 'none',
+    maxHeight: isCart ? 450 : 'none',
   }),
   header: (isDragging) => ({
     padding: '5px 0',
@@ -61,11 +57,11 @@ const styles = {
   },
   editIcon: {
     color: 'white',
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
   listContainer: (isCart) => ({
     margin: '6px 0',
-    overflowY: (isCart) ? 'auto' : 'none',
+    overflowY: isCart ? 'auto' : 'none',
   }),
   addCourseCard: {
     border: '1px dashed #bcbcbc',
@@ -78,7 +74,7 @@ const styles = {
     width: 40,
     height: 40,
     cursor: 'pointer',
-  }
+  },
 };
 
 const getListStyle = (isDraggingOver) => ({
@@ -90,9 +86,9 @@ const getListStyle = (isDraggingOver) => ({
 });
 
 const AddCourseCard = ({ onClick }) => (
-  <FlatButton style={ styles.addCourseCard } onClick={ onClick } >
+  <FlatButton style={styles.addCourseCard} onClick={onClick}>
     <div style={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-      <AddIcon style={ styles.addIcon } />
+      <AddIcon style={styles.addIcon} />
     </div>
   </FlatButton>
 );
@@ -107,30 +103,29 @@ const renderCourses = (showAdd, isEditing, courseList, onClick, highlightBackgro
     const key = `${course.subject}/${course.catalogNumber}/${index}`;
     return (
       <Draggable
-        key={ key }
-        draggableId={ key }
-        index={ index }
-        type={ DragTypes.COURSE }
-        isDragDisabled={ !isEditing }
+        key={key}
+        draggableId={key}
+        index={index}
+        type={DragTypes.COURSE}
+        isDragDisabled={!isEditing}
       >
-        { (provided, snapshot) => (
+        {(provided, snapshot) => (
           <CourseCard
-            course={ course }
-            provided={ provided }
-            snapshot={ snapshot }
-            highlightBackground={ highlightBackground }
+            course={course}
+            provided={provided}
+            snapshot={snapshot}
+            highlightBackground={highlightBackground}
           />
-        ) }
+        )}
       </Draggable>
     );
   });
   // Add "Add courses" button if not a cart and editing mode is on
-  if (showAdd && isEditing) courses.push(<AddCourseCard key='add-course' onClick={ onClick } />);
+  if (showAdd && isEditing) courses.push(<AddCourseCard key="add-course" onClick={onClick} />);
   return courses;
 };
 
 export default class TermBoard extends Component {
-
   static propTypes = {
     index: PropTypes.string,
     term: PropTypes.string,
@@ -166,7 +161,7 @@ export default class TermBoard extends Component {
     relevel: this.props.level,
     reterm: this.props.term,
     renameError: '',
-    importText: ''
+    importText: '',
   };
 
   componentWillReceiveProps(nextProps) {
@@ -187,9 +182,16 @@ export default class TermBoard extends Component {
     const snapshotChanged = !objectEquals(this.props.snapshot, snapshot);
     const stateChanged = !objectEquals(this.state, nextState);
 
-    return indexChanged || termChanged || levelChanged
-      || coursesChanged || editingChanged || providedChanged
-      || snapshotChanged || stateChanged;
+    return (
+      indexChanged ||
+      termChanged ||
+      levelChanged ||
+      coursesChanged ||
+      editingChanged ||
+      providedChanged ||
+      snapshotChanged ||
+      stateChanged
+    );
   }
 
   toggleSettings = (open) => this.setState({ settingsOpen: open });
@@ -198,7 +200,8 @@ export default class TermBoard extends Component {
   openImportDialog = () => this.setState({ settingsOpen: false, importDialogOpen: true });
   openAddDialog = () => this.setState({ settingsOpen: false, addDialogOpen: true });
 
-  closeRenameDialog = () => this.setState({ reterm: this.props.term, renameError: '', renameDialogOpen: false });
+  closeRenameDialog = () =>
+    this.setState({ reterm: this.props.term, renameError: '', renameDialogOpen: false });
   closeImportDialog = () => this.setState({ importDialogOpen: false });
   closeAddDialog = () => this.setState({ addDialogOpen: false });
 
@@ -214,7 +217,7 @@ export default class TermBoard extends Component {
     }
     this.props.onRenameBoard(reterm, relevel);
     this.setState({ renameError: '', renameDialogOpen: false });
-  }
+  };
 
   onImport = () => {
     const { importText } = this.state;
@@ -225,70 +228,51 @@ export default class TermBoard extends Component {
       body: JSON.stringify({ text: importText }),
       headers: {
         'content-type': 'application/json',
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
-      }
-    }).then(response => {
-      if (!response.ok) throw new Error(`status ${response.status}`);
-      else return response.json();
-    }).then((termCourses) => {
-      this.setState({ importing: false });
-      const { courses } = termCourses;
-      this.props.onAddCourses(courses);
-    }).catch(err => toast.error(`Failed to parse your courses. Error: ${err.message}`));
-  }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`status ${response.status}`);
+        else return response.json();
+      })
+      .then((termCourses) => {
+        this.setState({ importing: false });
+        const { courses } = termCourses;
+        this.props.onAddCourses(courses);
+      })
+      .catch((err) => toast.error(`Failed to parse your courses. Error: ${err.message}`));
+  };
 
   onSearchResult = ({ subject, catalogNumber }) => {
-    this.props.onAddCourses([{ subject, catalogNumber }])
+    this.props.onAddCourses([{ subject, catalogNumber }]);
     this.closeAddDialog();
-  }
+  };
 
   clearBoard = () => {
     this.props.onClearBoard();
     this.toggleSettings(false);
-  }
+  };
 
   deleteBoard = () => {
     this.props.onDeleteBoard();
     this.toggleSettings(false);
-  }
+  };
 
   render() {
     const { index, term, level, courses, isCart, isEditing } = this.props;
-    const droppableId = (isCart) ? 'Cart' : index;
+    const droppableId = isCart ? 'Cart' : index;
 
     const renameDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeRenameDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onRename }
-      />,
+      <FlatButton label="Cancel" primary onClick={this.closeRenameDialog} />,
+      <FlatButton label="Submit" primary onClick={this.onRename} />,
     ];
 
     const importDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeImportDialog }
-      />,
-      <FlatButton
-        label="Submit"
-        primary
-        onClick={ this.onImport }
-      />,
+      <FlatButton label="Cancel" primary onClick={this.closeImportDialog} />,
+      <FlatButton label="Submit" primary onClick={this.onImport} />,
     ];
 
-    const addDialogActions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.closeAddDialog }
-      />,
-    ];
+    const addDialogActions = [<FlatButton label="Cancel" primary onClick={this.closeAddDialog} />];
 
     let innerRef = null;
     let draggableProps = [];
@@ -304,89 +288,78 @@ export default class TermBoard extends Component {
     }
 
     return (
-      <div ref={ innerRef } { ...draggableProps }>
-        <Paper
-          zDepth={ 1 }
-          style={ styles.board(isCart) }
-        >
-          <div style={ styles.header(isDragging) } { ...dragHandleProps }>
-            <div style={ styles.box } />
+      <div ref={innerRef} {...draggableProps}>
+        <Paper zDepth={1} style={styles.board(isCart)}>
+          <div style={styles.header(isDragging)} {...dragHandleProps}>
+            <div style={styles.box} />
             <div style={{ ...styles.box, ...styles.boardTitle }}>
-              <span>{ term }</span>
-              { (!isCart && level.length > 0) && (
-                <span style={ styles.level }>{ level }</span>
-              ) }
+              <span>{term}</span>
+              {!isCart && level.length > 0 && <span style={styles.level}>{level}</span>}
             </div>
-            <div style={ styles.box } >
-              {
-                isEditing && (
-                  <IconMenu
-                    iconButtonElement={ <IconButton><MoreVertIcon /></IconButton> }
-                    anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                    targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                    iconStyle={ styles.editIcon }
-                    onRequestChange={ this.toggleSettings }
-                    open={ this.state.settingsOpen }
-                    useLayerForClickAway
-                  >
-                    {
-                      isCart
-                        ? <MenuItem primaryText="Clear Cart" onClick={ this.clearBoard } />
-                        : (
-                          <div>
-                            <MenuItem primaryText="Edit Name" onClick={ this.openRenameDialog } />
-                            <MenuItem primaryText="Import Courses" onClick={ this.openImportDialog } />
-                            <MenuItem primaryText="Clear Term" onClick={ this.clearBoard } />
-                            <MenuItem primaryText="Delete Term" onClick={ this.deleteBoard } />
-                          </div>
-                        )
-                    }
-                  </IconMenu>
-                )
-              }
+            <div style={styles.box}>
+              {isEditing && (
+                <IconMenu
+                  iconButtonElement={
+                    <IconButton>
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                  targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                  iconStyle={styles.editIcon}
+                  onRequestChange={this.toggleSettings}
+                  open={this.state.settingsOpen}
+                  useLayerForClickAway
+                >
+                  {isCart ? (
+                    <MenuItem primaryText="Clear Cart" onClick={this.clearBoard} />
+                  ) : (
+                    <div>
+                      <MenuItem primaryText="Edit Name" onClick={this.openRenameDialog} />
+                      <MenuItem primaryText="Import Courses" onClick={this.openImportDialog} />
+                      <MenuItem primaryText="Clear Term" onClick={this.clearBoard} />
+                      <MenuItem primaryText="Delete Term" onClick={this.deleteBoard} />
+                    </div>
+                  )}
+                </IconMenu>
+              )}
             </div>
           </div>
-          <div style={ styles.listContainer(isCart) }>
-            <Droppable
-              droppableId={ droppableId }
-              type={ DragTypes.COURSE }
-            >
-              { (provided, snapshot) => (
-                <div
-                  ref={ provided.innerRef }
-                  style={ getListStyle(snapshot.isDraggingOver) }
-                >
-                  { renderCourses(
+          <div style={styles.listContainer(isCart)}>
+            <Droppable droppableId={droppableId} type={DragTypes.COURSE}>
+              {(provided, snapshot) => (
+                <div ref={provided.innerRef} style={getListStyle(snapshot.isDraggingOver)}>
+                  {renderCourses(
                     !isCart && !snapshot.isDraggingOver,
                     isEditing,
                     courses,
                     this.openAddDialog,
                     snapshot.isDraggingOver
-                  ) }
-                  { provided.placeholder }
+                  )}
+                  {provided.placeholder}
                 </div>
-              ) }
+              )}
             </Droppable>
           </div>
           <Dialog
             title="Rename Board"
-            actions={ renameDialogActions }
-            modal={ false }
-            open={ this.state.renameDialogOpen }
-            onRequestClose={ this.closeRenameDialog }
+            actions={renameDialogActions}
+            modal={false}
+            open={this.state.renameDialogOpen}
+            onRequestClose={this.closeRenameDialog}
             contentStyle={{ width: 400 }}
           >
             <TextField
               hintText="e.g. Winter 2019"
               floatingLabelText="New Board Name"
-              value={ this.state.reterm }
-              errorText={ this.state.renameError }
-              onChange={ this.onChangeRenameText }
+              value={this.state.reterm}
+              errorText={this.state.renameError}
+              onChange={this.onChangeRenameText}
             />
             <SelectField
               floatingLabelText="Term Level"
-              value={ this.state.relevel }
-              onChange={ this.onChangeRelevel }
+              value={this.state.relevel}
+              onChange={this.onChangeRelevel}
             >
               <MenuItem value="1A" primaryText="1A" />
               <MenuItem value="1B" primaryText="1B" />
@@ -401,22 +374,22 @@ export default class TermBoard extends Component {
           </Dialog>
           <Dialog
             title="Import Courses"
-            actions={ importDialogActions }
-            modal={ false }
-            open={ this.state.importDialogOpen }
-            onRequestClose={ this.closeImportDialog }
+            actions={importDialogActions}
+            modal={false}
+            open={this.state.importDialogOpen}
+            onRequestClose={this.closeImportDialog}
             contentStyle={{ width: 900, maxWidth: 'none', height: 600 }}
           >
-            <Parser onChange={ this.onChangeImportText } />
+            <Parser onChange={this.onChangeImportText} />
           </Dialog>
           <Dialog
             title="Add Course"
-            actions={ addDialogActions }
-            modal={ false }
-            open={ this.state.addDialogOpen }
-            onRequestClose={ this.closeAddDialog }
+            actions={addDialogActions}
+            modal={false}
+            open={this.state.addDialogOpen}
+            onRequestClose={this.closeAddDialog}
           >
-            <SearchBar onResult={ this.onSearchResult } courseOnly />
+            <SearchBar onResult={this.onSearchResult} courseOnly />
           </Dialog>
         </Paper>
       </div>

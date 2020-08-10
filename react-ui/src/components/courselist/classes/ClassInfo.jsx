@@ -10,7 +10,7 @@ const styles = {
   icon: {
     width: '20px',
     height: '20px',
-    marginRight: '10px'
+    marginRight: '10px',
   },
   info: {
     display: 'flex',
@@ -25,9 +25,9 @@ const styles = {
 };
 
 const Info = ({ icon, info }) => (
-  <div style={ styles.info }>
-    { icon }
-    { info }
+  <div style={styles.info}>
+    {icon}
+    {info}
   </div>
 );
 
@@ -47,51 +47,18 @@ const ClassInfo = ({
   reserveCap,
   reserveGroup,
 }) => (
-  <div style={ styles.container }>
-    <Info
-      icon={ <UnitsIcon style={ styles.icon } /> }
-      info={ `Units: ${units}` }
-    />
-    {
-      (topic.length > 0) && (
-        <Info
-          icon={ <TopicIcon style={ styles.icon } /> }
-          info={ `Topic: ${topic}` }
-        />
-      )
-    }
-    <Info
-      icon={ <EnrolledIcon style={ styles.icon } /> }
-      info={ `Attending: ${attending}` }
-    />
-    <Info
-      icon={ <div style={ styles.icon } /> }
-      info={ `Enrollment cap: ${enrollmentCap}` }
-    />
-    <Info
-      icon={ <WaitingIcon style={ styles.icon } /> }
-      info={ `Waiting: ${waiting}` }
-    />
-    <Info
-      icon={ <div style={ styles.icon } /> }
-      info={ `Waiting cap: ${waitingCap}` }
-    />
-    <Info
-      icon={ <BlockIcon style={ styles.icon } /> }
-      info={ `Reserved: ${reserved}` }
-    />
-    <Info
-      icon={ <div style={ styles.icon } /> }
-      info={ `Reserved cap: ${reserveCap}` }
-    />
-    {
-      (reserveGroup.length > 0) && (
-        <Info
-          icon={ <div style={ styles.icon } /> }
-          info={ `Reserve group: ${reserveGroup}` }
-        />
-      )
-    }
+  <div style={styles.container}>
+    <Info icon={<UnitsIcon style={styles.icon} />} info={`Units: ${units}`} />
+    {topic.length > 0 && <Info icon={<TopicIcon style={styles.icon} />} info={`Topic: ${topic}`} />}
+    <Info icon={<EnrolledIcon style={styles.icon} />} info={`Attending: ${attending}`} />
+    <Info icon={<div style={styles.icon} />} info={`Enrollment cap: ${enrollmentCap}`} />
+    <Info icon={<WaitingIcon style={styles.icon} />} info={`Waiting: ${waiting}`} />
+    <Info icon={<div style={styles.icon} />} info={`Waiting cap: ${waitingCap}`} />
+    <Info icon={<BlockIcon style={styles.icon} />} info={`Reserved: ${reserved}`} />
+    <Info icon={<div style={styles.icon} />} info={`Reserved cap: ${reserveCap}`} />
+    {reserveGroup.length > 0 && (
+      <Info icon={<div style={styles.icon} />} info={`Reserve group: ${reserveGroup}`} />
+    )}
   </div>
 );
 

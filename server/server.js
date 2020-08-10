@@ -14,8 +14,8 @@ const PORT = process.env.PORT || 5000;
 
 // Allow reading body of requests
 // Images are 5MB max
-app.use(bodyParser.json({ limit:'10mb' }));
-app.use(bodyParser.urlencoded({ extended: false, limit:'10mb' }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {

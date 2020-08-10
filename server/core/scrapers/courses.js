@@ -18,19 +18,22 @@ async function getBirdCourses() {
 
   const courses = [];
 
-  $('#list').find('tbody').find('tr').each((i, el) => {
-    const title = $(el).children().first().text();
-    const index = title.search(/\d/);
-    const subject = title.slice(0, index).trim().toUpperCase();
-    let catalogNumber = title.slice(index, title.length).trim();
-    catalogNumber = catalogNumber.split(' ')[0];
-    if (!subject || !catalogNumber) return;
-    courses.push({
-      subject,
-      catalogNumber,
-      link: $(el).find('a').prop('href'),
+  $('#list')
+    .find('tbody')
+    .find('tr')
+    .each((i, el) => {
+      const title = $(el).children().first().text();
+      const index = title.search(/\d/);
+      const subject = title.slice(0, index).trim().toUpperCase();
+      let catalogNumber = title.slice(index, title.length).trim();
+      catalogNumber = catalogNumber.split(' ')[0];
+      if (!subject || !catalogNumber) return;
+      courses.push({
+        subject,
+        catalogNumber,
+        link: $(el).find('a').prop('href'),
+      });
     });
-  });
 
   return courses;
 }
@@ -51,21 +54,30 @@ async function getBirdInfo(link) {
 
   const reviews = [];
 
-  $('#reviews').find('table').last().find('tr').each((i, el) => {
-    const meta = $(el).find('td').children().first().text();
-    const comments = $(el).find('td').contents().last().text().replace(/^\s+|\s+$/g, '');
-    let date = meta.split(' - ')[1];
-    date = formatDate(new Date(date.split(' ')[0]));
-    reviews.push({
-      comments,
-      date
+  $('#reviews')
+    .find('table')
+    .last()
+    .find('tr')
+    .each((i, el) => {
+      const meta = $(el).find('td').children().first().text();
+      const comments = $(el)
+        .find('td')
+        .contents()
+        .last()
+        .text()
+        .replace(/^\s+|\s+$/g, '');
+      let date = meta.split(' - ')[1];
+      date = formatDate(new Date(date.split(' ')[0]));
+      reviews.push({
+        comments,
+        date,
+      });
     });
-  });
 
   return { err: null, reviews };
 }
 
 module.exports = {
   getBirdCourses,
-  getBirdInfo
+  getBirdInfo,
 };

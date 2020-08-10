@@ -7,7 +7,7 @@ require('dotenv').config();
 const SERVER_SECRET = process.env.SERVER_SECRET;
 
 // Pre-check to ensure that API secret key is set.
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
   if (req.headers['x-secret'] === SERVER_SECRET) next();
   else res.sendStatus(401);
 });

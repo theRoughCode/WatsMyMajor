@@ -13,7 +13,7 @@ const styles = {
     lineHeight: 1.5,
     color: '#5c6e84',
   },
-}
+};
 
 const CourseDescription = ({
   subject,
@@ -25,16 +25,12 @@ const CourseDescription = ({
   prereqs,
   postreqs,
 }) => (
-  <div style={ styles.container }>
+  <div style={styles.container}>
     <div style={{ flex: 1 }}>
-      {
-        (crosslistings.length > 0) && (
-          <p style={ styles.description }>{ `Crosslisted with: ${crosslistings}` }</p>
-        )
-      }
-      <p style={ styles.description }>
-        { description }
-      </p>
+      {crosslistings.length > 0 && (
+        <p style={styles.description}>{`Crosslisted with: ${crosslistings}`}</p>
+      )}
+      <p style={styles.description}>{description}</p>
     </div>
   </div>
 );

@@ -43,32 +43,33 @@ const styles = {
     display: 'flex',
     flexWrap: 'wrap',
     overflowX: 'hidden',
-  }
+  },
 };
 
 const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   switch (type) {
-  case "choose":
+  case 'choose':
     return (
       <ChooseBoard
-        key={ index }
-        choose={ choose }
-        title={ `Choose ${choose} of:` }
-        courses={ courses }
-        myCourses={ myCourses }
+        key={index}
+        choose={choose}
+        title={`Choose ${choose} of:`}
+        courses={courses}
+        myCourses={myCourses}
       />
     );
-  case "all":
+  case 'all':
     return (
       <ChooseBoard
-        key={ index }
-        choose={ 0 }
+        key={index}
+        choose={0}
         title="Choose all of:"
-        courses={ courses }
-        myCourses={ myCourses }
+        courses={courses}
+        myCourses={myCourses}
       />
     );
-  default: return null;
+  default:
+    return null;
   }
 };
 
@@ -96,9 +97,9 @@ const renderRequisites = (reqs, myCourses) => {
   const courses = Object.assign({}, myCourses);
   // Remove prereqs array and set to false instead
   // TODO: Remove this once myCourses is revamped
-  Object.keys(courses).forEach(subject =>
-    Object.keys(courses[subject]).forEach(catalogNumber =>
-      courses[subject][catalogNumber] = false
+  Object.keys(courses).forEach((subject) =>
+    Object.keys(courses[subject]).forEach(
+      (catalogNumber) => (courses[subject][catalogNumber] = false)
     )
   );
   return reqs.map((req, index) => renderReqNode(req, index, courses));
@@ -107,22 +108,22 @@ const renderRequisites = (reqs, myCourses) => {
 async function fetchRequirements(faculty, key) {
   const response = await fetch(`/server/majors/get/${faculty}/${key}`, {
     headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return { data: [], name: '', url: '' };
-  const data = await response.json() || { data: [], name: '', url: '' };
+  const data = (await response.json()) || { data: [], name: '', url: '' };
   return data;
 }
 
 async function fetchList() {
   const response = await fetch('/server/majors/list', {
     headers: {
-      'x-secret': process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return;
-  return await response.json();
+  return response.json();
 }
 
 class MajorsContainer extends Component {
@@ -137,15 +138,15 @@ class MajorsContainer extends Component {
   state = {
     majorsList: {},
     faculty: '',
-    key: '',  // key for selected major
+    key: '', // key for selected major
     name: '', // name of selected major
-    url: '',  // url of selected major
+    url: '', // url of selected major
     reqs: [],
     core: [], // list of faculty core courses
   };
 
   async componentDidMount() {
-    const majorsList = await fetchList() || [];
+    const majorsList = (await fetchList()) || [];
     const { faculty, majorKey } = this.props.match.params;
     this.updateMajors(faculty, majorKey, majorsList);
     this.setState({ majorsList });
@@ -163,9 +164,9 @@ class MajorsContainer extends Component {
     if (faculty == null && majorKey == null) {
       this.setState({
         faculty: '',
-        key: '',  // key for selected major
+        key: '', // key for selected major
         name: '', // name of selected major
-        url: '',  // url of selected major
+        url: '', // url of selected major
         reqs: [],
         core: [], // list of faculty core courses
       });
@@ -196,12 +197,12 @@ class MajorsContainer extends Component {
   // Handle selection of major
   handleMajorChange = async (_, index, key) => {
     if (key !== this.state.key) this.props.history.push(`/majors/${this.state.faculty}/${key}`);
-  }
+  };
 
   // Handle selection of faculty
-  handleFacultyChange = async(_, index, key) => {
+  handleFacultyChange = async (_, index, key) => {
     if (key !== this.state.faculty) this.setState({ faculty: key });
-  }
+  };
 
   render() {
     const { majorsList, name, faculty, key, url, reqs, core } = this.state;
@@ -217,51 +218,58 @@ class MajorsContainer extends Component {
     if (key.length === 0) {
       return (
         <SelectScreen
-          handleMajorChange={ this.handleMajorChange }
-          handleFacultyChange={ this.handleFacultyChange }
-          majorsList={ majorsList }
-          faculty={ faculty }
-          major={ key }
+          handleMajorChange={this.handleMajorChange}
+          handleFacultyChange={this.handleFacultyChange}
+          majorsList={majorsList}
+          faculty={faculty}
+          major={key}
         />
       );
     } else {
       return (
-        <div style={ styles.container }>
+        <div style={styles.container}>
           <Helmet>
             <title>View Majors - WatsMyMajor</title>
-            <meta name="description" content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
-            This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts." />
+            <meta
+              name="description"
+              content="WatsMyMajor is a course planning app for University of Waterloo (UW) students.
+            This app aims to help plan out your courses and majors, whether you're in Computer Science, Engineering, or Arts."
+            />
             <meta name="keywords" content="majors, minors, options, uw, uwaterloo, watsmymajor" />
-            <meta property="og:url"           content="https://www.watsmymajor.com/majors" />
-            <meta property="og:type"          content="website" />
-            <meta property="og:title"         content="Plan Out Your Courses And Majors | WatsMyMajor" />
-            <meta property="og:description"   content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!" />
-            <meta property="og:image"         content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png" />
+            <meta property="og:url" content="https://www.watsmymajor.com/majors" />
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content="Plan Out Your Courses And Majors | WatsMyMajor" />
+            <meta
+              property="og:description"
+              content="Need help choosing courses or determining which major to take?  WatsMyMajor makes it all super easy by automating the process!"
+            />
+            <meta
+              property="og:image"
+              content="https://user-images.githubusercontent.com/19257435/42982669-3b1a569c-8b97-11e8-9e99-d15c3de11cf8.png"
+            />
           </Helmet>
           <MajorsAppBar
-            majorName={ name }
-            majorKey={ key }
-            url={ url }
-            faculty={ faculty }
-            majorsList={ majorsList }
-            handleMajorChange={ this.handleMajorChange }
-            handleFacultyChange={ this.handleFacultyChange }
+            majorName={name}
+            majorKey={key}
+            url={url}
+            faculty={faculty}
+            majorsList={majorsList}
+            handleMajorChange={this.handleMajorChange}
+            handleFacultyChange={this.handleFacultyChange}
           />
-          <div style={ styles.body }>
-            {
-              (key !== 'core' && core.length > 0) && (
-                <div style={ styles.reqsContainer }>
-                  <span style={ styles.reqsHeading }>Faculty Core Courses</span>
-                  <div style={ styles.reqsSubContainer }>
-                    { renderRequisites(core, this.props.myCourses) }
-                  </div>
+          <div style={styles.body}>
+            {key !== 'core' && core.length > 0 && (
+              <div style={styles.reqsContainer}>
+                <span style={styles.reqsHeading}>Faculty Core Courses</span>
+                <div style={styles.reqsSubContainer}>
+                  {renderRequisites(core, this.props.myCourses)}
                 </div>
-              )
-            }
-            <div style={ styles.reqsContainer }>
-              <span style={ styles.reqsHeading }>Program Courses</span>
-              <div style={ styles.reqsSubContainer }>
-                { renderRequisites(reqs, this.props.myCourses) }
+              </div>
+            )}
+            <div style={styles.reqsContainer}>
+              <span style={styles.reqsHeading}>Program Courses</span>
+              <div style={styles.reqsSubContainer}>
+                {renderRequisites(reqs, this.props.myCourses)}
               </div>
             </div>
           </div>

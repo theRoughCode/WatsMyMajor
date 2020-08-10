@@ -11,18 +11,18 @@ const styles = {
   },
   labelStyle: (taken) => ({
     width: '100%',
-    color: (taken) ? green2 : 'inherit'
+    color: taken ? green2 : 'inherit',
   }),
   checkbox: {
     marginTop: 10,
     width: 'auto',
     textAlign: 'left',
-  }
+  },
 };
 
 const hasTakenOption = (option, myCourses) => {
   switch (option.type) {
-  case "sum":
+  case 'sum':
     for (let i = 0; i < option.courses.length; i++) {
       const { subject, catalogNumber } = option.courses[i];
       if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
@@ -40,7 +40,7 @@ const hasTakenOption = (option, myCourses) => {
     return taken;
   }
   }
-}
+};
 
 export default class OptionCheck extends Component {
   static propTypes = {
@@ -51,7 +51,7 @@ export default class OptionCheck extends Component {
 
   state = {
     taken: false,
-    isChecked: false
+    isChecked: false,
   };
 
   componentDidMount() {
@@ -77,34 +77,38 @@ export default class OptionCheck extends Component {
     // If at least one option is taken, increment count by 1
     if (taken) this.props.onCheck(null, true);
     this.setState({ taken, isChecked: taken });
-  }
+  };
 
   onCheck = (ev, isChecked) => {
     this.setState({ isChecked });
     this.props.onCheck(ev, isChecked);
-  }
+  };
 
   render() {
     const { options } = this.props;
     const formattedOptions = options.map((option) => {
       switch (option.type) {
-      case "sum":
-        return '(' + option.courses
-          .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
-          .join(' & ') + ')';
+      case 'sum':
+        return (
+          '(' +
+          option.courses
+            .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
+            .join(' & ') +
+          ')'
+        );
       default:
         return `${option.subject} ${option.catalogNumber}`;
       }
     });
     return (
       <Checkbox
-        label={ formattedOptions.join('/') }
-        checked={ this.state.isChecked }
-        disabled={ this.state.taken }
-        onCheck={ this.onCheck }
-        labelStyle={ styles.labelStyle(this.state.taken) }
-        iconStyle={ styles.iconStyle }
-        style={ styles.checkbox }
+        label={formattedOptions.join('/')}
+        checked={this.state.isChecked}
+        disabled={this.state.taken}
+        onCheck={this.onCheck}
+        labelStyle={styles.labelStyle(this.state.taken)}
+        iconStyle={styles.iconStyle}
+        style={styles.checkbox}
       />
     );
   }

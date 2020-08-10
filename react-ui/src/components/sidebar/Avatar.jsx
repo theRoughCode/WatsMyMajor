@@ -8,11 +8,11 @@ const SideBarAvatar = ({ name, profileURL }) => (
   <div className="avatar-wrapper">
     <Avatar
       className="avatar-icon"
-      src={ (profileURL.length > 0) ? profileURL : defaultAvatar }
-      size={ 100 }
+      src={profileURL.length > 0 ? profileURL : defaultAvatar}
+      size={100}
       style={{ objectFit: 'cover' }}
     />
-    <span className="avatar-name">{ name }</span>
+    <span className="avatar-name">{name}</span>
   </div>
 );
 

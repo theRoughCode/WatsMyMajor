@@ -5,5 +5,5 @@ function read(textArr, substr, start = 0, offset = 0) {
 }
 
 module.exports = {
-  read
+  read,
 };

@@ -9,9 +9,9 @@ const { statsRef } = require('./index');
 */
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 // Update most popular courses
@@ -34,13 +34,11 @@ async function updateRatings(ratings) {
   return null;
 }
 
-
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
-
 
 // Get most popular courses
 async function getMostPopular(limit) {

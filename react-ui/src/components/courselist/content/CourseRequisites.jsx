@@ -37,7 +37,7 @@ const styles = {
   },
   reqs: (isSelected) => ({
     width: '100%',
-    color: (isSelected) ? green : 'inherit',
+    color: isSelected ? green : 'inherit',
     textDecoration: 'none',
     padding: 1,
     paddingLeft: 10,
@@ -50,24 +50,18 @@ const styles = {
 };
 
 class CourseRequisites extends Component {
-
   static propTypes = {
     antireqs: PropTypes.array.isRequired,
     coreqs: PropTypes.array.isRequired,
     prereqs: PropTypes.object.isRequired,
     postreqs: PropTypes.array.isRequired,
-    myCourses: PropTypes.object.isRequired
+    myCourses: PropTypes.object.isRequired,
   };
 
   constructor(props) {
     super(props);
 
-    const {
-      antireqs,
-      coreqs,
-      prereqs,
-      postreqs
-    } = this.props;
+    const { antireqs, coreqs, prereqs, postreqs } = this.props;
 
     this.state = {
       slideIndex: 0,
@@ -82,7 +76,7 @@ class CourseRequisites extends Component {
     const updatedState = {};
 
     if (!objectEquals(this.props.prereqs, nextProps.prereqs))
-      updatedState.prereqs =  this.formatReqs(nextProps.prereqs);
+      updatedState.prereqs = this.formatReqs(nextProps.prereqs);
     if (!arrayOfObjectEquals(this.props.coreqs, nextProps.coreqs))
       updatedState.coreqs = nextProps.coreqs.map(this.formatReqs);
     if (!arrayOfObjectEquals(this.props.antireqs, nextProps.antireqs))
@@ -91,7 +85,7 @@ class CourseRequisites extends Component {
       updatedState.postreqs = nextProps.postreqs.map(this.formatReqs);
 
     this.setState(updatedState);
-  }
+  };
 
   handleChange = (value) => {
     this.setState({
@@ -100,7 +94,7 @@ class CourseRequisites extends Component {
   };
 
   formatCourseReq = (course, index) => {
-    if (typeof course === "string") return course;
+    if (typeof course === 'string') return course;
 
     const { myCourses } = this.props;
     const { subject, catalogNumber, title } = course;
@@ -108,17 +102,19 @@ class CourseRequisites extends Component {
 
     return (
       <a
-        key={ index }
+        key={index}
         className="reqs-link"
-        href={ `/courses/${subject}/${catalogNumber}` }
-        style={ styles.reqs(hasTaken) }
+        href={`/courses/${subject}/${catalogNumber}`}
+        style={styles.reqs(hasTaken)}
       >
-        { `${subject} ${catalogNumber}` }
-        { hasTakenCourse(subject, catalogNumber, myCourses) ? ' ✔' : '' }
-        <span style={{ fontSize: 12 }}>&ensp;<i>{ title }</i></span>
+        {`${subject} ${catalogNumber}`}
+        {hasTakenCourse(subject, catalogNumber, myCourses) ? ' ✔' : ''}
+        <span style={{ fontSize: 12 }}>
+          &ensp;<i>{title}</i>
+        </span>
       </a>
-    )
-  }
+    );
+  };
 
   formatReqs = (requisites, index) => {
     if (!Object.keys(requisites).length) return [];
@@ -130,68 +126,49 @@ class CourseRequisites extends Component {
 
     // Inductive case: list of courses with choose
     switch (requisites.choose) {
-    case 0: return requisites.reqs.map(this.formatReqs);
+    case 0:
+      return requisites.reqs.map(this.formatReqs);
     default: {
       if (requisites.reqs == null) return [];
       const newReqsArr = requisites.reqs.map(this.formatReqs);
-      return [
-        <ChooseReqs
-          key={ 0 }
-          choose={ requisites.choose }
-          reqs={ newReqsArr }
-        />
-      ];
+      return [<ChooseReqs key={0} choose={requisites.choose} reqs={newReqsArr} />];
     }
     }
   };
 
   render() {
-    const {
-      antireqs,
-      coreqs,
-      prereqs,
-      postreqs
-    } = this.state;
+    const { antireqs, coreqs, prereqs, postreqs } = this.state;
 
-    const titles = [ 'Prereqs', 'Antireqs', 'Coreqs', 'Postreqs' ];
-    const reqs = [ prereqs, antireqs, coreqs, postreqs ];
+    const titles = ['Prereqs', 'Antireqs', 'Coreqs', 'Postreqs'];
+    const reqs = [prereqs, antireqs, coreqs, postreqs];
 
     return (
-      <div style={ styles.container }>
-        <Paper zDepth={ 1 }>
+      <div style={styles.container}>
+        <Paper zDepth={1}>
           <Tabs
-            onChange={ this.handleChange }
-            value={ this.state.slideIndex }
-            tabItemContainerStyle={ styles.tabHeader }
-            inkBarStyle={ styles.bar }
+            onChange={this.handleChange}
+            value={this.state.slideIndex}
+            tabItemContainerStyle={styles.tabHeader}
+            inkBarStyle={styles.bar}
           >
-            {
-              titles
-                .filter((title, index) => (!Array.isArray(reqs[index]) &&
-                  Object.keys(reqs[index]).length) || reqs[index].length)
-                .map((title, index) => (
-                  <Tab
-                    key={ index }
-                    label={ title }
-                    value={ index }
-                    style={ styles.headline }
-                  />
-                ))
-            }
+            {titles
+              .filter(
+                (title, index) =>
+                  (!Array.isArray(reqs[index]) && Object.keys(reqs[index]).length) ||
+                  reqs[index].length
+              )
+              .map((title, index) => (
+                <Tab key={index} label={title} value={index} style={styles.headline} />
+              ))}
           </Tabs>
-          <SwipeableViews
-            index={ this.state.slideIndex }
-            onChangeIndex={ this.handleChange }
-          >
-            {
-              reqs
-                .filter(req => req.length)
-                .map((req, index) => (
-                  <div key={ index } style={ styles.slide }>
-                    { req }
-                  </div>
-                ))
-            }
+          <SwipeableViews index={this.state.slideIndex} onChangeIndex={this.handleChange}>
+            {reqs
+              .filter((req) => req.length)
+              .map((req, index) => (
+                <div key={index} style={styles.slide}>
+                  {req}
+                </div>
+              ))}
           </SwipeableViews>
         </Paper>
       </div>

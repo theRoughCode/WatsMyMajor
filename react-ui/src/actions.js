@@ -32,7 +32,7 @@ export const LINK_FACEBOOK_FAILURE = 'LINK_FACEBOOK_FAILURE';
 export const UNLINK_FACEBOOK = 'UNLINK_FACEBOOK';
 export const UNLINK_FACEBOOK_FAILURE = 'UNLINK_FACEBOOK_FAILURE';
 export const DELETE_ACCOUNT_SUCCESS = 'DELETE_ACCOUNT_SUCCESS';
-export const DELETE_ACCOUNT_FAILURE =  'DELETE_ACCOUNT_FAILURE';
+export const DELETE_ACCOUNT_FAILURE = 'DELETE_ACCOUNT_FAILURE';
 export const UPDATE_COURSE_CLASSES = 'UPDATE_COURSE_CLASSES';
 
 // For prefetching data
@@ -42,7 +42,8 @@ export const UPDATE_PROF_METADATA = 'UPDATE_PROF_METADATA';
 export const UPDATE_PROF_METADATA_ERROR = 'UPDATE_PROF_METADATA_ERROR';
 
 const padBaseUrl = (url) => `${global.baseUrl || ''}${url}`;
-const removeCookie = () => document.cookie = 'watsmymajor_jwt=; expires = Thu, 01 Jan 1970 00:00:00 GMT';
+const removeCookie = () =>
+  (document.cookie = 'watsmymajor_jwt=; expires = Thu, 01 Jan 1970 00:00:00 GMT');
 
 /*
  * action creators
@@ -53,7 +54,7 @@ export const toggleSideBar = () => ({ type: TOGGLE_SIDEBAR });
 export const setUser = (username, user) => ({
   type: SET_USER,
   username,
-  user
+  user,
 });
 
 export const loginUser = () => ({
@@ -63,8 +64,8 @@ export const loginUser = () => ({
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
     },
-    types: ['', { type: LOGIN_USER }, { type: LOGOUT_USER }]
-  }
+    types: ['', { type: LOGIN_USER }, { type: LOGOUT_USER }],
+  },
 });
 
 export const logoutUser = () => {
@@ -72,19 +73,13 @@ export const logoutUser = () => {
   return { type: LOGOUT_USER };
 };
 
-export const createSnack = (
-  msg,
-  actionMsg,
-  undoMsg,
-  handleActionClick
-) => ({
+export const createSnack = (msg, actionMsg, undoMsg, handleActionClick) => ({
   type: CREATE_SNACK,
   msg,
   actionMsg,
   undoMsg,
-  handleActionClick
+  handleActionClick,
 });
-
 
 // TODO: Change approach to update immediately and then fallback on failure
 // Updates course list
@@ -100,9 +95,9 @@ export const updateUserCourses = (username, courseList) => ({
     types: [
       { type: UPDATE_USER_COURSES, meta: { courseList } },
       { type: UPDATE_USER_COURSES_PREREQS },
-      { type: UPDATE_USER_COURSES_ERROR }
-    ]
-  }
+      { type: UPDATE_USER_COURSES_ERROR },
+    ],
+  },
 });
 
 export const addToSchedule = (username, text) => ({
@@ -114,12 +109,8 @@ export const addToSchedule = (username, text) => ({
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
     },
     body: JSON.stringify({ text }),
-    types: [
-      '',
-      { type: UPDATE_USER_SCHEDULE },
-      { type: UPDATE_USER_SCHEDULE_FAILURE },
-    ]
-  }
+    types: ['', { type: UPDATE_USER_SCHEDULE }, { type: UPDATE_USER_SCHEDULE_FAILURE }],
+  },
 });
 
 export const clearSchedule = (username) => ({
@@ -131,12 +122,8 @@ export const clearSchedule = (username) => ({
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
     },
     body: JSON.stringify({ schedule: {} }),
-    types: [
-      '',
-      { type: CLEAR_USER_SCHEDULE },
-      { type: CLEAR_USER_SCHEDULE_FAILURE },
-    ]
-  }
+    types: ['', { type: CLEAR_USER_SCHEDULE }, { type: CLEAR_USER_SCHEDULE_FAILURE }],
+  },
 });
 
 export const addToCart = (subject, catalogNumber, username, cart) => {
@@ -150,19 +137,14 @@ export const addToCart = (subject, catalogNumber, username, cart) => {
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
       },
       body: JSON.stringify({ cart }),
-      types: [
-        { type: SET_CART, meta: { cart } },
-        { type: SET_CART_PREREQS },
-        ''
-      ]
-    }
+      types: [{ type: SET_CART, meta: { cart } }, { type: SET_CART_PREREQS }, ''],
+    },
   };
-}
+};
 
 export const removeFromCart = (subject, catalogNumber, username, cart) => {
-  cart = cart.filter(course =>
-    course.subject !== subject ||
-		course.catalogNumber !== catalogNumber
+  cart = cart.filter(
+    (course) => course.subject !== subject || course.catalogNumber !== catalogNumber
   );
   return {
     [RSAA]: {
@@ -173,10 +155,10 @@ export const removeFromCart = (subject, catalogNumber, username, cart) => {
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
       },
       body: JSON.stringify({ cart }),
-      types: [{ type: SET_CART, meta: { cart } }, '', '']
-    }
+      types: [{ type: SET_CART, meta: { cart } }, '', ''],
+    },
   };
-}
+};
 
 export const setCart = (username, cart) => ({
   [RSAA]: {
@@ -187,8 +169,8 @@ export const setCart = (username, cart) => ({
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
     },
     body: JSON.stringify({ cart }),
-    types: [{ type: REORDER_CART,	meta: { cart } }, '', '']
-  }
+    types: [{ type: REORDER_CART, meta: { cart } }, '', ''],
+  },
 });
 
 export const watchClass = (username, term, classNum) => ({
@@ -205,8 +187,8 @@ export const watchClass = (username, term, classNum) => ({
       },
       '',
       { type: WATCH_CLASS_FAILURE },
-    ]
-  }
+    ],
+  },
 });
 
 export const unwatchClass = (username, term, classNum) => ({
@@ -223,8 +205,8 @@ export const unwatchClass = (username, term, classNum) => ({
       },
       '',
       { type: UNWATCH_CLASS_FAILURE },
-    ]
-  }
+    ],
+  },
 });
 
 export const highlightPrereqs = (prereqs) => ({ type: HIGHLIGHT_PREREQS, prereqs });
@@ -246,14 +228,10 @@ export const editSettings = (username, user) => {
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
       },
       body: JSON.stringify(user),
-      types: [
-        { type: EDIT_SETTINGS, meta: { user } },
-        '',
-        { type: EDIT_SETTINGS_FAILURE }
-      ]
-    }
-  }
-}
+      types: [{ type: EDIT_SETTINGS, meta: { user } }, '', { type: EDIT_SETTINGS_FAILURE }],
+    },
+  };
+};
 
 export const linkFacebook = (username, facebookID, hasFBPic) => {
   if (!username) {
@@ -270,14 +248,10 @@ export const linkFacebook = (username, facebookID, hasFBPic) => {
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
       },
       body: JSON.stringify({ facebookID, hasFBPic }),
-      types: [
-        '',
-        { type: LINK_FACEBOOK, meta: { username } },
-        { type: LINK_FACEBOOK_FAILURE },
-      ]
-    }
-  }
-}
+      types: ['', { type: LINK_FACEBOOK, meta: { username } }, { type: LINK_FACEBOOK_FAILURE }],
+    },
+  };
+};
 
 export const unlinkFacebook = (username) => ({
   [RSAA]: {
@@ -286,12 +260,8 @@ export const unlinkFacebook = (username) => ({
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
     },
-    types: [
-      '',
-      { type: UNLINK_FACEBOOK, meta: { username } },
-      { type: UNLINK_FACEBOOK_FAILURE },
-    ]
-  }
+    types: ['', { type: UNLINK_FACEBOOK, meta: { username } }, { type: UNLINK_FACEBOOK_FAILURE }],
+  },
 });
 
 export const deleteAccount = (username) => {
@@ -303,12 +273,8 @@ export const deleteAccount = (username) => {
       headers: {
         'X-Secret': process.env.REACT_APP_SERVER_SECRET,
       },
-      types: [
-        '',
-        { type: DELETE_ACCOUNT_SUCCESS },
-        { type: DELETE_ACCOUNT_FAILURE },
-      ]
-    }
+      types: ['', { type: DELETE_ACCOUNT_SUCCESS }, { type: DELETE_ACCOUNT_FAILURE }],
+    },
   };
 };
 
@@ -319,12 +285,8 @@ export const getCourseMetadata = (subject, catalogNumber) => ({
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
     },
-    types: [
-      '',
-      { type: UPDATE_COURSE_METADATA },
-      { type: UPDATE_COURSE_METADATA_ERROR },
-    ]
-  }
+    types: ['', { type: UPDATE_COURSE_METADATA }, { type: UPDATE_COURSE_METADATA_ERROR }],
+  },
 });
 
 export const getCourseClasses = (subject, catalogNumber, term) => ({
@@ -334,12 +296,8 @@ export const getCourseClasses = (subject, catalogNumber, term) => ({
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET,
     },
-    types: [
-      '',
-      { type: UPDATE_COURSE_CLASSES },
-      '',
-    ]
-  }
+    types: ['', { type: UPDATE_COURSE_CLASSES }, ''],
+  },
 });
 
 export const getProfMetadata = (profId) => ({
@@ -349,10 +307,6 @@ export const getProfMetadata = (profId) => ({
     headers: {
       'X-Secret': process.env.REACT_APP_SERVER_SECRET || process.env.SERVER_SECRET,
     },
-    types: [
-      '',
-      { type: UPDATE_PROF_METADATA },
-      { type: UPDATE_PROF_METADATA_ERROR },
-    ]
-  }
+    types: ['', { type: UPDATE_PROF_METADATA }, { type: UPDATE_PROF_METADATA_ERROR }],
+  },
 });

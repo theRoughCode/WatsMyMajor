@@ -14,12 +14,12 @@ const styles = {
   },
   title: {
     fontWeight: 500,
-    marginTop: 3
+    marginTop: 3,
   },
   text: {
-    marginTop: 6
-  }
-}
+    marginTop: 6,
+  },
+};
 
 export default class Event extends Component {
   static propTypes = {
@@ -32,12 +32,12 @@ export default class Event extends Component {
     // classNum: PropTypes.string.isRequired,
     section: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
-    instructor: PropTypes.string.isRequired
+    instructor: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
-    style: {}
-  }
+    style: {},
+  };
 
   render() {
     const {
@@ -50,24 +50,21 @@ export default class Event extends Component {
       // classNum,
       section,
       location,
-      instructor
+      instructor,
     } = this.props;
 
     const startTime = moment(start).format('h:mmA');
     const endTime = moment(end).format('h:mmA');
 
     return (
-      <div
-        onClick={ onClick }
-        style={ style }
-      >
-        <div style={ styles.container }>
-          <span style={ styles.title }>{ `${title} - ${type} ${section}` }</span>
-          <span style={ styles.text }>{ `${startTime} - ${endTime}` }</span>
-          <span style={ styles.text }>{ instructor }</span>
-          <span style={ styles.text }>{ location }</span>
+      <div onClick={onClick} style={style}>
+        <div style={styles.container}>
+          <span style={styles.title}>{`${title} - ${type} ${section}`}</span>
+          <span style={styles.text}>{`${startTime} - ${endTime}`}</span>
+          <span style={styles.text}>{instructor}</span>
+          <span style={styles.text}>{location}</span>
         </div>
       </div>
-    )
+    );
   }
 }

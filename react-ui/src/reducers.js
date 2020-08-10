@@ -58,7 +58,7 @@ const snackInitialState = {
   msg: '',
   actionMsg: '',
   undoMsg: '',
-  onActionClick: () => {}
+  onActionClick: () => {},
 };
 function snack(state = snackInitialState, action) {
   switch (action.type) {
@@ -67,13 +67,13 @@ function snack(state = snackInitialState, action) {
       msg,
       actionMsg,
       undoMsg,
-      handleActionClick
+      handleActionClick,
     } = action;
     return {
       msg,
       actionMsg,
       undoMsg,
-      handleActionClick
+      handleActionClick,
     };
   }
   default:
@@ -107,11 +107,11 @@ function courseList(state = [], action) {
 // Helper function for myCourses
 // formats courseList into myCourses format of:
 /*
-	{
-		subject: {
-			catalogNumber: [prereqs]
-		}
-	}
+  {
+    subject: {
+      catalogNumber: [prereqs]
+    }
+  }
 */
 function getMyCourses(courseList) {
   if (!courseList) return {};
@@ -137,11 +137,11 @@ function getMyCourses(courseList) {
 // Used for determining if user has taken a certain course (hashmap)
 // Format:
 /*
-	{
-		subject: {
-			catalogNumber: [prereqs]
-		}
-	}
+  {
+    subject: {
+      catalogNumber: [prereqs]
+    }
+  }
 */
 function myCourses(state = {}, action) {
   switch (action.type) {
@@ -260,7 +260,7 @@ function user(state = defaultUser, action) {
   case DELETE_ACCOUNT_SUCCESS:
     return defaultUser;
   case DELETE_ACCOUNT_FAILURE:
-    toast.error('Failed to delete account. Please contact an administrator.')
+    toast.error('Failed to delete account. Please contact an administrator.');
     return state;
   case EDIT_SETTINGS:
     return Object.assign({}, state, action.meta.user);

@@ -20,8 +20,8 @@ const styles = {
     flexDirection: 'column',
     padding: 15,
     paddingBottom: 20,
-    backgroundColor: (isFulfilled) ? lightGreen : 'inherit',
-    border: (isFulfilled) ? '1px solid black' : 'inherit',
+    backgroundColor: isFulfilled ? lightGreen : 'inherit',
+    border: isFulfilled ? '1px solid black' : 'inherit',
   }),
   boardTitle: {
     textAlign: 'left',
@@ -30,63 +30,52 @@ const styles = {
 
 const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
   switch (node.type) {
-  case "course":
+  case 'course':
     return (
       <CourseCheck
-        key={ index }
-        subject={ node.subject }
-        catalogNumber={ node.catalogNumber }
-        onCheck={ onCheck }
-        myCourses={ myCourses }
+        key={index}
+        subject={node.subject}
+        catalogNumber={node.catalogNumber}
+        onCheck={onCheck}
+        myCourses={myCourses}
       />
     );
-  case "range":
+  case 'range':
     return (
       <RangeCheck
-        key={ index }
-        subject={ node.subject }
-        from={ node.from }
-        to={ node.to }
-        excluding={ node.excluding || [] }
-        choose={ choose }
-        onCheck={ onCheck }
-        myCourses={ myCourses }
+        key={index}
+        subject={node.subject}
+        from={node.from}
+        to={node.to}
+        excluding={node.excluding || []}
+        choose={choose}
+        onCheck={onCheck}
+        myCourses={myCourses}
       />
     );
-  case "level":
-  case "subject":
-  case "subject-level":
+  case 'level':
+  case 'subject':
+  case 'subject-level':
     return (
       <LevelCheck
-        key={ index }
-        subject={ node.subject }
-        level={ node.catalogNumber }
-        excluding={ node.excluding }
-        choose={ choose }
-        note={ node.note }
-        onCheck={ onCheck }
-        myCourses={ myCourses }
+        key={index}
+        subject={node.subject}
+        level={node.catalogNumber}
+        excluding={node.excluding}
+        choose={choose}
+        note={node.note}
+        onCheck={onCheck}
+        myCourses={myCourses}
       />
     );
-  case "option":
+  case 'option':
     return (
-      <OptionCheck
-        key={ index }
-        options={ node.options }
-        myCourses={ myCourses }
-        onCheck={ onCheck }
-      />
+      <OptionCheck key={index} options={node.options} myCourses={myCourses} onCheck={onCheck} />
     );
-  case "any":
-    return (
-      <AnyCheck
-        key={ index }
-        choose={ choose }
-        myCourses={ myCourses }
-        onCheck={ onCheck }
-      />
-    );
-  default: return null;
+  case 'any':
+    return <AnyCheck key={index} choose={choose} myCourses={myCourses} onCheck={onCheck} />;
+  default:
+    return null;
   }
 };
 
@@ -95,7 +84,7 @@ const renderCourseNode = (node, index, choose, myCourses, onCheck) => {
 // https://medium.com/@wereHamster/beware-react-setstate-is-asynchronous-ce87ef1a9cf3
 const incrementChecked = (delta) => ({ numChecked }, { choose, courses }) => {
   numChecked += delta;
-  if (choose === 0) choose = courses.length;  // Choose all
+  if (choose === 0) choose = courses.length; // Choose all
   const fulfilled = numChecked >= choose;
   return { numChecked, fulfilled };
 };
@@ -103,7 +92,6 @@ const incrementChecked = (delta) => ({ numChecked }, { choose, courses }) => {
 const resetChecked = () => ({ numChecked }) => ({ numChecked: 0, fulfilled: false });
 
 export default class ChooseBoard extends Component {
-
   static propTypes = {
     title: PropTypes.string.isRequired,
     choose: PropTypes.number.isRequired,
@@ -128,21 +116,21 @@ export default class ChooseBoard extends Component {
     } else {
       this.setState(incrementChecked(delta));
     }
-  }
+  };
 
   onReset = () => {
     this.setState(resetChecked());
-  }
+  };
 
   render() {
     const { choose, courses, title } = this.props;
     return (
-      <Paper style={ styles.board(this.state.fulfilled) }>
-        <span style={ styles.boardTitle }>{ title }</span>
-        { courses.map((node, i) =>
-          renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)) }
+      <Paper style={styles.board(this.state.fulfilled)}>
+        <span style={styles.boardTitle}>{title}</span>
+        {courses.map((node, i) =>
+          renderCourseNode(node, i, choose, this.props.myCourses, this.onCheck)
+        )}
       </Paper>
     );
   }
-
 }

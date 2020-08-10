@@ -20,7 +20,7 @@ import {
   setCart,
   unhighlightPrereqs,
   highlightPrereqs,
-  createSnack
+  createSnack,
 } from 'actions';
 
 const styles = {
@@ -80,7 +80,7 @@ const styles = {
     fontSize: 22,
     color: '#888e99',
   },
-}
+};
 
 const mobileStyles = {
   viewContainer: {
@@ -106,9 +106,7 @@ const mobileStyles = {
   },
 };
 
-
 class CourseBoardContainer extends Component {
-
   static propTypes = {
     courseList: PropTypes.array.isRequired,
     myCourses: PropTypes.object.isRequired,
@@ -165,25 +163,27 @@ class CourseBoardContainer extends Component {
     if (start.type !== DragTypes.COURSE) return;
     this.setState({ isDraggingCourse: true });
 
-    const splitId = start.draggableId.split("/");
+    const splitId = start.draggableId.split('/');
     if (splitId.length < 3) return;
-    const [ subject, catalogNumber ] = splitId;
+    const [subject, catalogNumber] = splitId;
     let prereqs = [];
 
     switch (start.source.droppableId) {
-    case "Cart":
+    case 'Cart':
       prereqs = this.state.cart[start.source.index].prereqs || [];
       break;
     default:
-      if (this.props.myCourses.hasOwnProperty(subject)
-          && this.props.myCourses[subject].hasOwnProperty(catalogNumber)) {
+      if (
+        this.props.myCourses.hasOwnProperty(subject) &&
+        this.props.myCourses[subject].hasOwnProperty(catalogNumber)
+      ) {
         prereqs = this.props.myCourses[subject][catalogNumber];
       }
     }
 
     if (prereqs.length === 0) return;
     this.props.highlightPrereqsHandler(prereqs);
-  }
+  };
 
   onDragEnd = (numPerRow) => (result) => {
     const { source, destination } = result;
@@ -202,7 +202,7 @@ class CourseBoardContainer extends Component {
       break;
     default:
     }
-  }
+  };
 
   // Called when a term is being dragged
   onDragTerm = (source, destination, numPerRow) => {
@@ -211,7 +211,7 @@ class CourseBoardContainer extends Component {
     const fromIndex = source.index + fromRowNum * numPerRow;
     // Offset by 1 when moving from a lower number to higher because the indices
     // have not been reshuffled yet to account for the blank space in the lower row.
-    const offsetNum = (fromRowNum < toRowNum) ? 1 : 0;
+    const offsetNum = fromRowNum < toRowNum ? 1 : 0;
     const toIndex = destination.index + toRowNum * numPerRow - offsetNum;
 
     if (fromIndex === toIndex) return;
@@ -219,7 +219,7 @@ class CourseBoardContainer extends Component {
     const [removed] = courseList.splice(fromIndex, 1);
     courseList.splice(toIndex, 0, removed);
     this.setState({ courseList });
-  }
+  };
 
   // Called when a course is being dragged
   onDragCourse = (source, destination) => {
@@ -228,7 +228,7 @@ class CourseBoardContainer extends Component {
     } else {
       this.move(source, destination);
     }
-  }
+  };
 
   // Retrieves board
   getBoard = (id) => {
@@ -240,17 +240,19 @@ class CourseBoardContainer extends Component {
     default:
       if (!this.state.courseList.hasOwnProperty(id)) {
         Sentry.captureException(`
-          User: ${this.state.username}\n
-          Invalid id: ${id}\n
-          Courselist: ${JSON.stringify(this.state.courseList)}
-        `);
-        toast.error('There was an error updating your courses.  Please contact an administrator.');
+        User: ${this.state.username}\n
+        Invalid id: ${id}\n
+        Courselist: ${JSON.stringify(this.state.courseList)}
+      `);
+        toast.error(
+          'There was an error updating your courses.  Please contact an administrator.'
+        );
       }
       if (this.state.courseList[id].courses != null) {
         return this.state.courseList[id].courses.slice();
       } else return [];
     }
-  }
+  };
 
   // Updates the board
   updateBoard = (id, board) => {
@@ -258,23 +260,26 @@ class CourseBoardContainer extends Component {
     case 'Cart':
       this.setState({ cart: board });
       break;
-    case 'Trash': break;
+    case 'Trash':
+      break;
     default: {
       const { username, courseList } = this.state;
       if (!courseList.hasOwnProperty(id)) {
         Sentry.captureException(`
-          User: ${username}\n
-          Invalid id: ${id}\n
-          Courselist: ${JSON.stringify(courseList)}
-        `);
-        toast.error('There was an error updating your courses.  Please contact an administrator.');
+        User: ${username}\n
+        Invalid id: ${id}\n
+        Courselist: ${JSON.stringify(courseList)}
+      `);
+        toast.error(
+          'There was an error updating your courses.  Please contact an administrator.'
+        );
         return;
       }
       courseList[id].courses = board;
       this.setState({ courseList });
     }
     }
-  }
+  };
 
   // Reorder term board
   reorderTerm = (id, fromIndex, toIndex) => {
@@ -283,7 +288,7 @@ class CourseBoardContainer extends Component {
     const [removed] = board.splice(fromIndex, 1);
     board.splice(toIndex, 0, removed);
     this.updateBoard(id, board);
-  }
+  };
 
   // Move an item between terms
   move = (source, dest) => {
@@ -293,7 +298,7 @@ class CourseBoardContainer extends Component {
     if (destBoard) destBoard.splice(dest.index, 0, removed);
     this.updateBoard(source.droppableId, sourceBoard);
     this.updateBoard(dest.droppableId, destBoard);
-  }
+  };
 
   renameBoard = (id, name, level) => {
     const { username, courseList } = this.state;
@@ -309,7 +314,7 @@ class CourseBoardContainer extends Component {
     courseList[id].term = name;
     courseList[id].level = level;
     this.setState({ courseList });
-  }
+  };
 
   clearBoard = (id) => {
     const { username, courseList } = this.state;
@@ -324,7 +329,7 @@ class CourseBoardContainer extends Component {
     }
     courseList[id].courses = [];
     this.setState({ courseList });
-  }
+  };
 
   clearCart = () => this.setState({ cart: [] });
 
@@ -334,7 +339,7 @@ class CourseBoardContainer extends Component {
     const { courseList } = this.state;
     courseList.push({ term, level, courses: [] });
     this.setState({ courseList });
-  }
+  };
 
   // Add courses to a term board
   addCourses = async (id, newCourses) => {
@@ -365,7 +370,7 @@ class CourseBoardContainer extends Component {
     courseList[id].courses = courses.concat(newCourses);
 
     this.setState({ courseList });
-  }
+  };
 
   importTerms = (terms) => {
     if (terms == null) return;
@@ -374,7 +379,7 @@ class CourseBoardContainer extends Component {
     // Dedup courses: remove courses that are duplicates in imported terms
     // Duplicated course before import takes precedence
     let duplicateCourse = false;
-    terms = terms.map(term => {
+    terms = terms.map((term) => {
       term.courses = term.courses.filter(({ subject, catalogNumber }) => {
         const isDuplicate =
           hasTakenCourse(subject, catalogNumber, this.props.myCourses) ||
@@ -407,17 +412,17 @@ class CourseBoardContainer extends Component {
 
     this.setState({ courseList: terms });
     this.props.updateCourseHandler(username, terms);
-  }
+  };
 
   deleteBoard = (id) => {
     const { courseList } = this.state;
     courseList.splice(id, 1);
     this.setState({ courseList });
-  }
+  };
 
   // Handles edit mode and saving/cancelling.
   // When a user saves, we update the database to reflect the changes.
-  toggleEditing = (isEditing, isCancel=false) => {
+  toggleEditing = (isEditing, isCancel = false) => {
     if (isEditing) {
       // If editing, we want to store original version of courselist and cart
       const tempCourseList = JSON.stringify(this.state.courseList);
@@ -432,8 +437,8 @@ class CourseBoardContainer extends Component {
     } else {
       // If cancelling, we want to reset courselist and cart
       const { tempCourseList, tempCart } = this.state;
-      const courseList = (tempCourseList != null) ? JSON.parse(tempCourseList) : [];
-      const cart = (tempCart != null) ? JSON.parse(tempCart) : [];
+      const courseList = tempCourseList != null ? JSON.parse(tempCourseList) : [];
+      const cart = tempCart != null ? JSON.parse(tempCart) : [];
       this.setState({
         courseList,
         cart,
@@ -442,7 +447,7 @@ class CourseBoardContainer extends Component {
       });
     }
     this.setState({ isEditing });
-  }
+  };
 
   renderBoard = (numPerRow) => {
     const { courseList, isEditing } = this.state;
@@ -451,142 +456,131 @@ class CourseBoardContainer extends Component {
     // Empty board
     if (numTerms === 0) {
       return (
-        <div style={ styles.emptyContainer }>
-          <div style={ styles.emptyInnerDiv }>
-            <img src={ emptyBoardImage } alt="Empty Board" style={ styles.emptyImage } />
-            <div style={ styles.emptyTextDiv }>
-              <span style={ styles.emptyTextTitle }>
-                Oops, looks like there's nothing here yet.
-              </span><br />
-              <span style={ styles.emptyTextSubtitle }>
-                Add a term or add courses to your cart!
-              </span>
+        <div style={styles.emptyContainer}>
+          <div style={styles.emptyInnerDiv}>
+            <img src={emptyBoardImage} alt="Empty Board" style={styles.emptyImage} />
+            <div style={styles.emptyTextDiv}>
+              <span style={styles.emptyTextTitle}>Oops, looks like there's nothing here yet.</span>
+              <br />
+              <span style={styles.emptyTextSubtitle}>Add a term or add courses to your cart!</span>
             </div>
           </div>
         </div>
       );
     }
 
-    if (!numPerRow) return (
-      <div style={ mobileStyles.termRowContainer }>
-        <TermRow
-          rowNumber={ 0 }
-          courseList={ courseList }
-          onClearBoard={ this.clearBoard }
-          onRenameBoard={ this.renameBoard }
-          onDeleteBoard={ this.deleteBoard }
-          onAddCourses={ this.addCourses }
-          cart={ this.state.cart }
-          onClearCart={ this.onClearCart }
-          isEditing={ isEditing }
-          showCart
-        />
-      </div>
-    );
+    if (!numPerRow)
+      return (
+        <div style={mobileStyles.termRowContainer}>
+          <TermRow
+            rowNumber={0}
+            courseList={courseList}
+            onClearBoard={this.clearBoard}
+            onRenameBoard={this.renameBoard}
+            onDeleteBoard={this.deleteBoard}
+            onAddCourses={this.addCourses}
+            cart={this.state.cart}
+            onClearCart={this.onClearCart}
+            isEditing={isEditing}
+            showCart
+          />
+        </div>
+      );
 
     const numRows = Math.ceil(numTerms / numPerRow);
     return (
-      <div style={ styles.termRowContainer }>
-        {
-          Array(numRows).fill().map((_, i) => {
+      <div style={styles.termRowContainer}>
+        {Array(numRows)
+          .fill()
+          .map((_, i) => {
             const courses = courseList.slice(i * numPerRow, (i + 1) * numPerRow);
             return (
               <TermRow
-                key={ i }
-                rowNumber={ i }
-                courseList={ courses }
-                onClearBoard={ this.clearBoard }
-                onRenameBoard={ this.renameBoard }
-                onDeleteBoard={ this.deleteBoard }
-                onAddCourses={ this.addCourses }
-                isEditing={ isEditing }
+                key={i}
+                rowNumber={i}
+                courseList={courses}
+                onClearBoard={this.clearBoard}
+                onRenameBoard={this.renameBoard}
+                onDeleteBoard={this.deleteBoard}
+                onAddCourses={this.addCourses}
+                isEditing={isEditing}
               />
-            )
-          })
-        }
+            );
+          })}
       </div>
     );
-  }
+  };
 
   render() {
     if (this.state.loading) return <LoadingView />;
 
     return (
-      <MediaQuery minWidth={ 460 }>
-        { matches => matches
-          ? (
-            <div style={ styles.container }>
+      <MediaQuery minWidth={460}>
+        {(matches) =>
+          matches ? (
+            <div style={styles.container}>
               <MyCourseAppBar
-                onAddBoard={ this.addBoard }
-                onImport={ this.importTerms }
-                onClear={ this.clearCourses }
-                onEditChange={ this.toggleEditing }
-                showClearButton={ this.state.courseList.length > 0 }
-                isEditing={ this.state.isEditing }
+                onAddBoard={this.addBoard}
+                onImport={this.importTerms}
+                onClear={this.clearCourses}
+                onEditChange={this.toggleEditing}
+                showClearButton={this.state.courseList.length > 0}
+                isEditing={this.state.isEditing}
               />
-              <MediaQuery minWidth={ 900 }>
-                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(3) }>
-                  <div style={ styles.viewContainer }>
-                    <div style={ styles.boardContainer }>
-                      { this.renderBoard(3) }
-                    </div>
+              <MediaQuery minWidth={900}>
+                <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd(3)}>
+                  <div style={styles.viewContainer}>
+                    <div style={styles.boardContainer}>{this.renderBoard(3)}</div>
                     <MyCourseSideBar
-                      cartCourses={ this.state.cart }
-                      onClearCart={ this.clearCart }
-                      isEditing={ this.state.isEditing }
+                      cartCourses={this.state.cart}
+                      onClearCart={this.clearCart}
+                      isEditing={this.state.isEditing}
                     />
                   </div>
                 </DragDropContext>
               </MediaQuery>
-              <MediaQuery minWidth={ 685 } maxWidth={ 900 }>
-                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(2) }>
-                  <div style={ styles.viewContainer }>
-                    <div style={ styles.boardContainer }>
-                      { this.renderBoard(2) }
-                    </div>
+              <MediaQuery minWidth={685} maxWidth={900}>
+                <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd(2)}>
+                  <div style={styles.viewContainer}>
+                    <div style={styles.boardContainer}>{this.renderBoard(2)}</div>
                     <MyCourseSideBar
-                      cartCourses={ this.state.cart }
-                      onClearCart={ this.clearCart }
-                      isEditing={ this.state.isEditing }
+                      cartCourses={this.state.cart}
+                      onClearCart={this.clearCart}
+                      isEditing={this.state.isEditing}
                     />
                   </div>
                 </DragDropContext>
               </MediaQuery>
-              <MediaQuery minWidth={ 460 } maxWidth={ 685 }>
-                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(1) }>
-                  <div style={ styles.viewContainer }>
-                    <div style={ styles.boardContainer }>
-                      { this.renderBoard(1) }
-                    </div>
+              <MediaQuery minWidth={460} maxWidth={685}>
+                <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd(1)}>
+                  <div style={styles.viewContainer}>
+                    <div style={styles.boardContainer}>{this.renderBoard(1)}</div>
                     <MyCourseSideBar
-                      cartCourses={ this.state.cart }
-                      onClearCart={ this.clearCart }
-                      isEditing={ this.state.isEditing }
+                      cartCourses={this.state.cart}
+                      onClearCart={this.clearCart}
+                      isEditing={this.state.isEditing}
                     />
                   </div>
                 </DragDropContext>
               </MediaQuery>
               <ReactTooltip id="course-card-title" effect="solid" />
             </div>
-          )
-          : (
-            <div style={ styles.container }>
-              <MediaQuery maxWidth={ 460 }>
-                <DragDropContext onDragStart={ this.onDragStart } onDragEnd={ this.onDragEnd(0) }>
+          ) : (
+            <div style={styles.container}>
+              <MediaQuery maxWidth={460}>
+                <DragDropContext onDragStart={this.onDragStart} onDragEnd={this.onDragEnd(0)}>
                   <MyCourseAppBar
-                    onAddBoard={ this.addBoard }
-                    onImport={ this.importTerms }
-                    onClear={ this.clearCourses }
-                    onEditChange={ this.toggleEditing }
-                    showClearButton={ this.state.courseList.length > 0 }
+                    onAddBoard={this.addBoard}
+                    onImport={this.importTerms}
+                    onClear={this.clearCourses}
+                    onEditChange={this.toggleEditing}
+                    showClearButton={this.state.courseList.length > 0}
                     showTrashOnDrag
-                    isDraggingCourse={ this.state.isDraggingCourse }
-                    isEditing={ this.state.isEditing }
+                    isDraggingCourse={this.state.isDraggingCourse}
+                    isEditing={this.state.isEditing}
                   />
-                  <div style={ mobileStyles.viewContainer }>
-                    <div style={ mobileStyles.boardContainer }>
-                      { this.renderBoard(0) }
-                    </div>
+                  <div style={mobileStyles.viewContainer}>
+                    <div style={mobileStyles.boardContainer}>{this.renderBoard(0)}</div>
                   </div>
                 </DragDropContext>
               </MediaQuery>
@@ -603,7 +597,7 @@ const mapStateToProps = ({ courseList, cart, user, myCourses }) => {
   return { courseList, cart, username, myCourses };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     updateCourseHandler: (username, courseList) => {
       dispatch(updateUserCourses(username, courseList));
@@ -619,8 +613,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(highlightPrereqs(prereqs));
     },
     sendDuplicateCourseSnack: () => {
-      dispatch(createSnack('Duplicate courses were removed.'))
-    }
+      dispatch(createSnack('Duplicate courses were removed.'));
+    },
   };
 };
 

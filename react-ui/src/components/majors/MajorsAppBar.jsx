@@ -61,59 +61,53 @@ const MajorsAppBar = ({
   handleFacultyChange,
   majorsList,
 }) => (
-  <div style={ styles.container }>
-    <div style={ styles.leftContainer }>
-      <div style={ styles.titleContainer }>
-        <span style={ styles.title }>{ majorName }</span>
+  <div style={styles.container}>
+    <div style={styles.leftContainer}>
+      <div style={styles.titleContainer}>
+        <span style={styles.title}>{majorName}</span>
         <IconButton
-          style={ styles.openIcon }
-          href={ url }
-          target="_blank" rel="noopener noreferrer"
+          style={styles.openIcon}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           hoveredStyle={{ backgroundColor: whiteGrey }}
         >
           <OpenIcon />
         </IconButton>
       </div>
     </div>
-    <MediaQuery minWidth={ 935 }>
-      <div style={ styles.rightContainer }>
-        <div style={ styles.selectContainer }>
+    <MediaQuery minWidth={935}>
+      <div style={styles.rightContainer}>
+        <div style={styles.selectContainer}>
           <SelectField
             floatingLabelText="Select a faculty"
-            onChange={ handleFacultyChange }
-            style={ styles.select }
-            value={ faculty }
+            onChange={handleFacultyChange}
+            style={styles.select}
+            value={faculty}
             autoWidth
           >
-            {
-              Object.keys(majorsList).map((faculty, index) => (
-                <MenuItem
-                  key={ index }
-                  value={ faculty }
-                  primaryText={ majorsList[faculty].name }
-                />
-              ))
-            }
+            {Object.keys(majorsList).map((faculty, index) => (
+              <MenuItem key={index} value={faculty} primaryText={majorsList[faculty].name} />
+            ))}
           </SelectField>
         </div>
-        <div style={ styles.selectContainer }>
+        <div style={styles.selectContainer}>
           <SelectField
             floatingLabelText="Choose a major"
-            onChange={ handleMajorChange }
-            style={ styles.select }
-            value={ majorKey }
+            onChange={handleMajorChange}
+            style={styles.select}
+            value={majorKey}
             autoWidth
-            disabled={ !faculty.length }
+            disabled={!faculty.length}
           >
-            {
-              faculty.length && Object.keys(majorsList[faculty].majors).map((major, index) => (
+            {faculty.length &&
+              Object.keys(majorsList[faculty].majors).map((major, index) => (
                 <MenuItem
-                  key={ index }
-                  value={ major }
-                  primaryText={ majorsList[faculty].majors[major] }
+                  key={index}
+                  value={major}
+                  primaryText={majorsList[faculty].majors[major]}
                 />
-              ))
-            }
+              ))}
           </SelectField>
         </div>
       </div>

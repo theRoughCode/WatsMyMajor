@@ -1,4 +1,4 @@
-const watApi = require('uwaterloo-api');
+const WatApi = require('uwaterloo-api');
 const utils = require('./utils');
 
 /*
@@ -12,21 +12,25 @@ require('dotenv').config();
 const coreqExceptions = ['HLTH333'];
 
 // instantiate client
-const uwclient = (process.env.TESTING) ? null : new watApi({
-  API_KEY : process.env.WATERLOO_API_KEY
-});
+const uwclient = process.env.TESTING
+  ? null
+  : new WatApi({
+    API_KEY: process.env.WATERLOO_API_KEY,
+  });
 
 // Retrieves terms
 // Returns { currentTerm, previousTerm, nextTerm }
 // TODO: Remove hard coded term with this
 function getTerms(callback) {
-  uwclient.get('/terms/list.json', function(err, res) {
+  uwclient.get('/terms/list.json', function (err, res) {
     if (err) return callback({ currentTerm: null, previousTerm: null, nextTerm: null });
-    const { current_term, previous_term, next_term } = res.data;
+    const currentTerm = res.data.current_term;
+    const previousTerm = res.data.previous_term;
+    const nextTerm = res.data.next_term;
     return callback({
-      currentTerm: current_term,
-      previousTerm: previous_term,
-      nextTerm: next_term
+      currentTerm,
+      previousTerm,
+      nextTerm,
     });
   });
 }
@@ -35,20 +39,21 @@ function getTerms(callback) {
 // { prereqString, prereqs }
 // TODO: Need to scrape.  UW API sucks
 function getPrereqs(subject, catalogNumber, callback) {
-  uwclient.get(`/courses/${subject}/${catalogNumber}/prerequisites.json`, function(err, res){
+  uwclient.get(`/courses/${subject}/${catalogNumber}/prerequisites.json`, function (err, res) {
     if (err) {
       console.error(err);
       return callback(err, null);
     }
     if (!res) {
-      console.error("Undefined prereqs");
+      console.error('Undefined prereqs');
       return callback(1, null);
     }
 
-    if (!Object.keys(res.data).length) return callback(null, {
-      prereqString: '',
-      prereqs: {}
-    });
+    if (!Object.keys(res.data).length)
+      return callback(null, {
+        prereqString: '',
+        prereqs: {},
+      });
 
     const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
     let prereqs = res.data.prerequisites_parsed;
@@ -63,17 +68,17 @@ function getPrereqs(subject, catalogNumber, callback) {
       prereqString,
       prereqs,
     });
-  })
+  });
 }
 
 // Gets description of course
 function getCourseDescription(subject, catalogNumber, callback) {
-  uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function(err, res) {
+  uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function (err, res) {
     if (err) {
       console.error(err);
       return callback(err, null);
     }
-    if (!Object.keys(res.data).length)   return callback('No course found.', null);
+    if (!Object.keys(res.data).length) return callback('No course found.', null);
     const { title, description } = res.data;
     callback(null, { subject, catalogNumber, title, description });
   });
@@ -83,20 +88,22 @@ function getCourseDescription(subject, catalogNumber, callback) {
 // returns { err, info }
 function getCourseInformation(subject, catalogNumber) {
   return new Promise((resolve, reject) => {
-    uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function(err, res) {
+    uwclient.get(`/courses/${subject}/${catalogNumber}.json`, function (err, res) {
       if (err) {
         console.error(err);
         return resolve({ err, info: null });
       }
-      if (!Object.keys(res.data).length)   return resolve({ err: 'No course found.', info: null });
+      if (!Object.keys(res.data).length) return resolve({ err: 'No course found.', info: null });
       const {
         title,
         units,
         description,
         crosslistings,
+        // eslint-disable-next-line camelcase
         terms_offered,
         notes,
         url,
+        // eslint-disable-next-line camelcase
         academic_level,
         // offerings,
         // needs_department_consent,
@@ -124,7 +131,7 @@ function getCourseInformation(subject, catalogNumber) {
 // returns object with prereqs, coreqs, and antireqs
 function getReqs(subject, catalogNumber, callback) {
   getPrereqs(subject, catalogNumber, (err, prereqData) => {
-    if(err) return callback(err, null);
+    if (err) return callback(err, null);
 
     let { prereqString, prereqs } = prereqData;
 
@@ -133,7 +140,7 @@ function getReqs(subject, catalogNumber, callback) {
         console.error(err);
         return callback(err, null);
       }
-      if (!Object.keys(res.data).length)  return callback('No course found.', null);
+      if (!Object.keys(res.data).length) return callback('No course found.', null);
 
       let { title, description, crosslistings } = res.data;
       const coreqString = res.data.corequisites || '';
@@ -167,11 +174,11 @@ function getReqs(subject, catalogNumber, callback) {
 
       if (antireqs) {
         // check if contains valid courses and not a note
-        if (!(/[a-z]/.test(antireqString))) {
+        if (!/[a-z]/.test(antireqString)) {
           antireqs = antireqs
             // SOC/LS 280 -> SOC 280,LS 280
             // NOTE:  only works for 2 options, need to modify to handle multiple
-            .replace(/(\w+)\/(\w+) (\w+)/g, "$1 $3,$2 $3")
+            .replace(/(\w+)\/(\w+) (\w+)/g, '$1 $3,$2 $3')
             .replace(/\//g, ',')
             // remove whitespace
             .replace(/\s+/g, '')
@@ -186,9 +193,9 @@ function getReqs(subject, catalogNumber, callback) {
         } else antireqs = [antireqString];
       } else antireqs = [];
 
-      crosslistings = (!crosslistings)
+      crosslistings = !crosslistings
         ? []
-        : (Array.isArray(crosslistings))
+        : Array.isArray(crosslistings)
           ? crosslistings
           : [crosslistings];
 
@@ -217,8 +224,8 @@ function getReqs(subject, catalogNumber, callback) {
         terms,
         subject,
         catalogNumber,
-        url: res.data.url
-      }
+        url: res.data.url,
+      };
       callback(null, data);
     });
   });
@@ -229,7 +236,7 @@ function getCourses(callback) {
   uwclient.get('/courses.json', function (err, res) {
     if (err) return callback(err, null);
     else return callback(null, res.data);
-  })
+  });
 }
 
 // Exports
@@ -239,4 +246,4 @@ module.exports = {
   getCourseDescription,
   getReqs,
   getCourses,
-}
+};

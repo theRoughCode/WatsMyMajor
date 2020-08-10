@@ -6,15 +6,15 @@ const ParseTranscript = ({ onChange }) => {
   const stepContents = [
     {
       button: 'Log in to Quest',
-      text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">here</a>.</p>
+      text: <p>Log in to your Quest account <a href="https://quest.pecs.uwaterloo.ca/psp/SS" target="_blank" rel="noopener noreferrer">here</a>.</p>,
     },
     {
       button: 'My Academics',
-      text: <p>Click on the <b>My Academics</b> tab.</p>
+      text: <p>Click on the <b>My Academics</b> tab.</p>,
     },
     {
       button: 'View Unofficial Transcript',
-      text: <p>Under the <b>Unofficial Transcript</b> tab, select <b>Undergrad Unofficial</b> as the <b>Report Type</b>, and click <b>View Report</b>.</p>
+      text: <p>Under the <b>Unofficial Transcript</b> tab, select <b>Undergrad Unofficial</b> as the <b>Report Type</b>, and click <b>View Report</b>.</p>,
     },
     {
       button: 'Select all and copy text',
@@ -29,17 +29,15 @@ const ParseTranscript = ({ onChange }) => {
             </i>
           </p>
         </div>
-      )
+      ),
     },
   ];
 
-  return <ParserInstructions stepContents={ stepContents } onChange={ onChange } />;
+  return <ParserInstructions stepContents={stepContents} onChange={onChange} />;
 };
 
 ParseTranscript.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
-
-
 
 export default ParseTranscript;

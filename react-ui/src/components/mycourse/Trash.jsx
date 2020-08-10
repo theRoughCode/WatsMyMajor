@@ -15,18 +15,18 @@ const styles = {
     height: '100px',
     display: 'flex',
   },
-  droppableContainer: isDraggingOver => ({
+  droppableContainer: (isDraggingOver) => ({
     width,
     height: '96px',
     display: 'flex',
     margin: 'auto',
-    border: (isDraggingOver) ? '2px dashed black' : 'none',
-    background: (isDraggingOver) ? red : 'inherit'
+    border: isDraggingOver ? '2px dashed black' : 'none',
+    background: isDraggingOver ? red : 'inherit',
   }),
   trashIcon: {
     margin: 'auto',
-    fontSize: '40px'
-  }
+    fontSize: '40px',
+  },
 };
 
 const mobileStyles = {
@@ -41,56 +41,31 @@ const mobileStyles = {
     height: 50,
     borderRadius: 25,
     display: 'flex',
-    border: (isDraggingOver) ? '2px dashed black' : 'none',
-    background: (isDraggingOver) ? red : white,
+    border: isDraggingOver ? '2px dashed black' : 'none',
+    background: isDraggingOver ? red : white,
   }),
 };
 
-const Trash = ({ isMobile }) => (isMobile)
-  ? (
-    <Droppable
-      droppableId={ 'Trash' }
-      type={ DragTypes.COURSE }
-    >
-      { (provided, snapshot) => (
-        <div
-          ref={ provided.innerRef }
-          style={ mobileStyles.droppableContainer }
-        >
-          <Paper zDepth={ 1 } style={ mobileStyles.trashContainer(snapshot.isDraggingOver) }>
-            <FontIcon
-              className="material-icons"
-              style={ styles.trashIcon }
-            >
-              { (snapshot.isDraggingOver)
-                ? 'delete_forever'
-                : 'delete'
-              }
+const Trash = ({ isMobile }) =>
+  isMobile ? (
+    <Droppable droppableId={'Trash'} type={DragTypes.COURSE}>
+      {(provided, snapshot) => (
+        <div ref={provided.innerRef} style={mobileStyles.droppableContainer}>
+          <Paper zDepth={1} style={mobileStyles.trashContainer(snapshot.isDraggingOver)}>
+            <FontIcon className="material-icons" style={styles.trashIcon}>
+              {snapshot.isDraggingOver ? 'delete_forever' : 'delete'}
             </FontIcon>
           </Paper>
         </div>
       )}
     </Droppable>
-  )
-  : (
-    <Paper zDepth={ 1 } style={ styles.trashContainer }>
-      <Droppable
-        droppableId={ 'Trash' }
-        type={ DragTypes.COURSE }
-      >
-        { (provided, snapshot) => (
-          <div
-            ref={ provided.innerRef }
-            style={ styles.droppableContainer(snapshot.isDraggingOver) }
-          >
-            <FontIcon
-              className="material-icons"
-              style={ styles.trashIcon }
-            >
-              { (snapshot.isDraggingOver)
-                ? 'delete_forever'
-                : 'delete'
-              }
+  ) : (
+    <Paper zDepth={1} style={styles.trashContainer}>
+      <Droppable droppableId={'Trash'} type={DragTypes.COURSE}>
+        {(provided, snapshot) => (
+          <div ref={provided.innerRef} style={styles.droppableContainer(snapshot.isDraggingOver)}>
+            <FontIcon className="material-icons" style={styles.trashIcon}>
+              {snapshot.isDraggingOver ? 'delete_forever' : 'delete'}
             </FontIcon>
           </div>
         )}

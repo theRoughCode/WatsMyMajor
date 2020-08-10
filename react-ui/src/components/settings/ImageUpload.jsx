@@ -91,11 +91,11 @@ export default class ImageUpload extends Component {
 
     // Validate images
     if (file.size > maxFileSize) {
-      this.setState({ errorMsg: "Max file size of 5MB exceeded." });
+      this.setState({ errorMsg: 'Max file size of 5MB exceeded.' });
       return;
     }
-    if (file.type !== "image/jpeg" && file.type !== "image/png") {
-      this.setState({ errorMsg: "Invalid file type.  Only JPG and PNG formats allowed." });
+    if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
+      this.setState({ errorMsg: 'Invalid file type.  Only JPG and PNG formats allowed.' });
       return;
     }
 
@@ -107,14 +107,14 @@ export default class ImageUpload extends Component {
         errorMsg: '',
         filename: file.name,
         filetype: file.type,
-        file: img
+        file: img,
       });
     };
     // reader.onabort = () => console.log('File upload aborted.');
     // reader.onerror = () => console.log('File upload failed.');
 
     reader.readAsDataURL(file);
-  }
+  };
 
   onDelete = async (_) => {
     this.setState({ loading: true });
@@ -122,8 +122,8 @@ export default class ImageUpload extends Component {
       const response = await fetch(`/server/users/remove/profile/${this.props.username}`, {
         method: 'POST',
         headers: {
-          "x-secret": process.env.REACT_APP_SERVER_SECRET,
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
 
       if (!response.ok) {
@@ -137,15 +137,15 @@ export default class ImageUpload extends Component {
       this.setState({ loading: false });
       this.closeDialog();
       toast.success('Successfully removed image!');
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       this.setState({ loading: false });
     }
-  }
+  };
 
   onSubmit = async (_, isEaster = false) => {
     this.setState({ loading: true });
-    const requestBody = (isEaster)
+    const requestBody = isEaster
       ? { easterRaph: isEaster }
       : { base64Str: this.state.file.split(',')[1], contentType: this.state.filetype };
     try {
@@ -154,10 +154,9 @@ export default class ImageUpload extends Component {
         body: JSON.stringify(requestBody),
         headers: {
           'content-type': 'application/json',
-          "x-secret": process.env.REACT_APP_SERVER_SECRET,
-        }
+          'x-secret': process.env.REACT_APP_SERVER_SECRET,
+        },
       });
-
 
       if (!response.ok) {
         toast.error('Failed to upload image.  Please contact an administrator.');
@@ -170,110 +169,87 @@ export default class ImageUpload extends Component {
       this.setState({ loading: false });
       this.closeDialog();
       toast.success('Image upload success!');
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       this.setState({ loading: false });
     }
-  }
+  };
 
   onUnlockEaster = () => this.onSubmit(null, true);
 
   render() {
     const actions = [
-      <FlatButton
-        label="Cancel"
-        onClick={ this.closeDialog }
-        disabled={ this.state.loading }
-      />,
+      <FlatButton label="Cancel" onClick={this.closeDialog} disabled={this.state.loading} />,
       <FlatButton
         label="Unlock Easter Egg"
-        onClick={ this.onUnlockEaster }
+        onClick={this.onUnlockEaster}
         style={{ display: 'none' }}
       />,
       <FlatButton
         label="Submit"
         primary
-        onClick={ this.onSubmit }
-        disabled={ this.state.file.length === 0 }
+        onClick={this.onSubmit}
+        disabled={this.state.file.length === 0}
       />,
     ];
 
-    const dialogBody = (this.state.loading)
-      ? (
-        <div style={ styles.loaderContainer }>
-          <CircularProgress
-            size={ 80 }
-            thickness={ 5 }
-            style={ styles.loader }
-          />
-        </div>
-      )
-      : (
+    const dialogBody = this.state.loading ? (
+      <div style={styles.loaderContainer}>
+        <CircularProgress size={80} thickness={5} style={styles.loader} />
+      </div>
+    ) : (
+      <div>
         <div>
-          <div>
-            <Grid
-              container
-              direction="row"
-              justify="flex-start"
-              spacing={ 8 }
-            >
-              <Grid item>
-                <RaisedButton
-                  label="Choose an Image"
-                  labelPosition="before"
-                  backgroundColor={ lightGreen2 }
-                  containerElement="label"
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={ styles.input }
-                    onChange={ this.onUpload }
-                  />
-                </RaisedButton>
-              </Grid>
-              <Grid item>
-                <RaisedButton
-                  label="Remove Avatar"
-                  backgroundColor={ lightGreen2 }
-                  containerElement="label"
-                  onClick={ this.onDelete }
-                  disabled={ !this.props.profileURL || this.props.profileURL === "" }
-                />
-              </Grid>
+          <Grid container direction="row" justify="flex-start" spacing={8}>
+            <Grid item>
+              <RaisedButton
+                label="Choose an Image"
+                labelPosition="before"
+                backgroundColor={lightGreen2}
+                containerElement="label"
+              >
+                <input type="file" accept="image/*" style={styles.input} onChange={this.onUpload} />
+              </RaisedButton>
             </Grid>
-            <span style={ styles.filename }>{ this.state.filename }</span>
-          </div>
-          <span style={ styles.error }>{ this.state.errorMsg }</span>
-          {
-            (this.state.file !== '') && (
-              <div style={ styles.previewContainer }>
-                <img src={ this.state.file } style={ styles.preview } alt="preview" />
-              </div>
-            )
-          }
+            <Grid item>
+              <RaisedButton
+                label="Remove Avatar"
+                backgroundColor={lightGreen2}
+                containerElement="label"
+                onClick={this.onDelete}
+                disabled={!this.props.profileURL || this.props.profileURL === ''}
+              />
+            </Grid>
+          </Grid>
+          <span style={styles.filename}>{this.state.filename}</span>
         </div>
-      );
+        <span style={styles.error}>{this.state.errorMsg}</span>
+        {this.state.file !== '' && (
+          <div style={styles.previewContainer}>
+            <img src={this.state.file} style={styles.preview} alt="preview" />
+          </div>
+        )}
+      </div>
+    );
 
     return (
-      <div style={ styles.container }>
+      <div style={styles.container}>
         <RaisedButton
           label="Change Avatar"
-          onClick={ this.openDialog }
+          onClick={this.openDialog}
           containerElement="label"
-          icon={ <AvatarIcon /> }
+          icon={<AvatarIcon />}
         />
         <Dialog
           title="Change Avatar"
-          actions={ actions }
+          actions={actions}
           modal
-          open={ this.state.open }
-          contentStyle={ styles.dialog }
+          open={this.state.open}
+          contentStyle={styles.dialog}
         >
-          { dialogBody }
+          {dialogBody}
         </Dialog>
       </div>
     );
   }
-
 }

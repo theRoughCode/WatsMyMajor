@@ -6,7 +6,7 @@ const usersDB = require('../database/users');
 
 require('dotenv').config();
 const JWT_SECRET = process.env.SERVER_SECRET;
-const RESET_PASSWORD_EXPIRATION = "1h";
+const RESET_PASSWORD_EXPIRATION = '1h';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -65,7 +65,7 @@ async function sendMail(to, subject, html) {
     html,
   };
 
-  return await transporter.sendMail(mailOptions);
+  return transporter.sendMail(mailOptions);
 }
 
 async function sendVerificationEmail(email, username) {
@@ -86,7 +86,7 @@ async function sendVerificationEmail(email, username) {
     <a href="${url}">${url}</a>
   `;
 
-  return await sendMail(email, subject, html);
+  return sendMail(email, subject, html);
 }
 
 async function sendResetPasswordEmail(email, user) {
@@ -115,7 +115,7 @@ async function sendResetPasswordEmail(email, user) {
     </p>
   `;
 
-  return await sendMail(email, subject, html);
+  return sendMail(email, subject, html);
 }
 
 async function sendResetPasswordSuccess(email, username) {
@@ -130,7 +130,7 @@ async function sendResetPasswordSuccess(email, username) {
     </p>
   `;
 
-  return await sendMail(email, subject, html);
+  return sendMail(email, subject, html);
 }
 
 // Verify email token to verify user's email
@@ -171,9 +171,8 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
   const token = jwt.sign({ username, term, classNum, subject, catalogNumber }, JWT_SECRET);
   const url = `https://www.watsmymajor.com/unwatch-class?token=${token}`;
 
-  const numSeatsText = (numSeats === 1)
-    ? 'There is 1 seat left.  Go get it!!'
-    : `There are ${numSeats} seats left.`;
+  const numSeatsText =
+    numSeats === 1 ? 'There is 1 seat left.  Go get it!!' : `There are ${numSeats} seats left.`;
 
   const html = `
   ${emailStyles}
@@ -189,7 +188,7 @@ async function sendClassUpdateEmail(term, classNum, subject, catalogNumber, numS
     <a href="${url}">${url}</a>
   `;
 
-  return await sendMail(email, `Open spot in ${subject} ${catalogNumber}!`, html);
+  return sendMail(email, `Open spot in ${subject} ${catalogNumber}!`, html);
 }
 
 // Token used to unsubscribe user from class
@@ -203,7 +202,6 @@ function verifyUnwatchToken(token) {
     return { err, info: null };
   }
 }
-
 
 module.exports = {
   createEmail,

@@ -10,7 +10,7 @@ const styles = {
     height: '100%',
     width: '100%',
     position: 'relative',
-    overflowY: 'hidden'
+    overflowY: 'hidden',
   },
   dayHeader: {
     position: 'absolute',
@@ -19,24 +19,24 @@ const styles = {
     width: 30,
     padding: '10px 0 10px 15px',
     background: 'white',
-    boxShadow: '0 14px 28px rgba(255,255,255,0.60), 0 10px 10px rgba(255,255,255,0.80)'
+    boxShadow: '0 14px 28px rgba(255,255,255,0.60), 0 10px 10px rgba(255,255,255,0.80)',
   },
   bodyContainer: (isScrollDisable) => ({
     height: '100%',
     position: 'relative',
-    overflowY: isScrollDisable ? 'hidden' : 'auto'
+    overflowY: isScrollDisable ? 'hidden' : 'auto',
   }),
   hoursContainer: {
     height,
-    position: 'absolute'
+    position: 'absolute',
   },
   daysContainer: {
     height,
     position: 'absolute',
     right: '15px',
-    left: '50px'
-  }
-}
+    left: '50px',
+  },
+};
 
 export default class DayView extends PureComponent {
   static propTypes = {
@@ -54,46 +54,32 @@ export default class DayView extends PureComponent {
 
   componentDidMount = () => {
     this.scrollViewer.current.scrollTop = this.props.scrollPosition;
-  }
+  };
 
   onScroll = () => {
     const scrollPosition = this.scrollViewer.current.scrollTop;
     this.props.onScrollChange(scrollPosition);
-  }
+  };
 
   render() {
-    const {
-      date,
-      children,
-      isScrollDisable
-    } = this.props;
+    const { date, children, isScrollDisable } = this.props;
 
     return (
-      <div style={ styles.container }>
+      <div style={styles.container}>
         <div
-          ref={ this.scrollViewer }
-          onScroll={ this.onScroll }
-          style={ styles.bodyContainer(isScrollDisable) }>
-          <div style={ styles.hoursContainer }>
-            {
-              verticalHours()
-            }
-          </div>
-          <div
-            key="eventsContainer"
-            style={ styles.daysContainer }>
-            {
-              renderDayEvents({
-                events: children,
-                date
-              })
-            }
+          ref={this.scrollViewer}
+          onScroll={this.onScroll}
+          style={styles.bodyContainer(isScrollDisable)}
+        >
+          <div style={styles.hoursContainer}>{verticalHours()}</div>
+          <div key="eventsContainer" style={styles.daysContainer}>
+            {renderDayEvents({
+              events: children,
+              date,
+            })}
           </div>
         </div>
-        <DayHeader
-          style={ styles.dayHeader }
-          date={ date }
-        />
+        <DayHeader style={styles.dayHeader} date={date} />
       </div>
     );
   }

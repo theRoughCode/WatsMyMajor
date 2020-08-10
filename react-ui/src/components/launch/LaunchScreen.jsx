@@ -23,15 +23,15 @@ const styles = {
     display: 'flex',
     flexWrap: 'wrap-reverse',
     margin: 'auto',
-    flex: (isMobile) ? 1 : 'none',
-    width: (isMobile) ? '100%' : '80%',
+    flex: isMobile ? 1 : 'none',
+    width: isMobile ? '100%' : '80%',
     height: 'fit-content',
   }),
   leftContainer: (isMobile) => ({
-    width: (isMobile) ? 'calc(100% - 26px)' : '50%',
-    padding: (isMobile) ? '0px 13px' : 'none',
+    width: isMobile ? 'calc(100% - 26px)' : '50%',
+    padding: isMobile ? '0px 13px' : 'none',
     margin: 'auto',
-    marginTop: (isMobile) ? 0 : 'auto',
+    marginTop: isMobile ? 0 : 'auto',
     display: 'flex',
     alignItems: 'center',
   }),
@@ -43,14 +43,14 @@ const styles = {
     textAlign: 'left',
   },
   title: (isMobile) => ({
-    fontSize: (isMobile) ? '5vw' : 30,
+    fontSize: isMobile ? '5vw' : 30,
     fontWeight: 350,
     margin: 'auto',
     marginBottom: 15,
     textAlign: 'center',
   }),
   subtitle: (isMobile) => ({
-    fontSize: (isMobile) ? '3.5vw' : 15,
+    fontSize: isMobile ? '3.5vw' : 15,
     fontWeight: 300,
     margin: 'auto',
     textAlign: 'center',
@@ -66,13 +66,13 @@ const styles = {
     color: white,
   },
   rightContainer: (isMobile) => ({
-    width: (isMobile) ? '100%' : '50%',
+    width: isMobile ? '100%' : '50%',
     margin: 'auto',
     display: 'flex',
     flexDirection: 'row-reverse',
   }),
   rightInnerContainer: (isMobile) => ({
-    margin: (isMobile) ? 'auto' : 'none',
+    margin: isMobile ? 'auto' : 'none',
     maxWidth: '100%',
   }),
   iconRow: {
@@ -96,8 +96,8 @@ const styles = {
     marginTop: 3,
   },
   waterman: (isMobile) => ({
-    height: (isMobile) ? '40vh' : 'auto',
-    width: (isMobile) ? 'auto' : '30vw',
+    height: isMobile ? '40vh' : 'auto',
+    width: isMobile ? 'auto' : '30vw',
     maxWidth: '100%',
   }),
   footer: {
@@ -115,7 +115,7 @@ const styles = {
     textAlign: 'right',
   },
   numUsersText: (isMobile) => ({
-    fontSize: (isMobile) ? '1.5vh' : 15,
+    fontSize: isMobile ? '1.5vh' : 15,
     fontWeight: 300,
     margin: 'auto',
     marginBottom: 0,
@@ -125,8 +125,8 @@ const styles = {
 const fetchNumUsers = async () => {
   const response = await fetch('/server/stats/users/count', {
     headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return;
   const { num } = await response.json();
@@ -134,13 +134,13 @@ const fetchNumUsers = async () => {
 };
 
 const LaunchIcon = ({ url, text, icon, alt }) => (
-  <div style={ styles.iconContainer }>
-    <ReactTooltip id={ text } effect='solid' place='top'>
-      <span>{ text }</span>
+  <div style={styles.iconContainer}>
+    <ReactTooltip id={text} effect="solid" place="top">
+      <span>{text}</span>
     </ReactTooltip>
-    <div data-tip data-for={ text }>
-      <a href={ url }>
-        <img src={ icon } alt={ alt } style={ styles.iconButton } />
+    <div data-tip data-for={text}>
+      <a href={url}>
+        <img src={icon} alt={alt} style={styles.iconButton} />
       </a>
     </div>
   </div>
@@ -174,86 +174,86 @@ export default class LaunchScreen extends Component {
 
   render() {
     return (
-      <MediaQuery minWidth={ 530 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={530}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
-            <div style={ styles.container }>
-              <div style={ styles.innerContainer(isMobile) }>
-                <div style={ styles.leftContainer(isMobile) }>
-                  <div style={ styles.infoContainer }>
-                    <div style={ styles.iconRow }>
+            <div style={styles.container}>
+              <div style={styles.innerContainer(isMobile)}>
+                <div style={styles.leftContainer(isMobile)}>
+                  <div style={styles.infoContainer}>
+                    <div style={styles.iconRow}>
                       <LaunchIcon
                         url="../schedule"
                         text="Schedule Courses"
-                        icon={ CalendarIcon }
+                        icon={CalendarIcon}
                         alt="Schedule"
                       />
                       <LaunchIcon
                         url="../majors"
                         text="Track Majors"
-                        icon={ MortarBoardIcon }
+                        icon={MortarBoardIcon}
                         alt="Majors"
                       />
                       <LaunchIcon
                         url="../courses/browse"
                         text="Browse Courses"
-                        icon={ SearchIcon }
+                        icon={SearchIcon}
                         alt="Browse"
                       />
                       <LaunchIcon
                         url="../courses/browse"
                         text="Watch Classes"
-                        icon={ WatchingIcon }
+                        icon={WatchingIcon}
                         alt="Watch Classes"
                       />
                     </div>
-                    <div style={ styles.title(isMobile) }>
+                    <div style={styles.title(isMobile)}>
                       Warriors, get the most out of your university career!
                     </div>
-                    <span style={ styles.subtitle(isMobile) }>
+                    <span style={styles.subtitle(isMobile)}>
                       WatsMyMajor simplifies planning your courses and majors.
                     </span>
-                    <div style={ styles.buttonContainer }>
+                    <div style={styles.buttonContainer}>
                       <RaisedButton
                         label="Get Started"
-                        backgroundColor={ green  }
-                        style={ styles.loginButton }
-                        labelStyle={ styles.loginText }
-                        onClick={ this.goToLogin }
+                        backgroundColor={green}
+                        style={styles.loginButton}
+                        labelStyle={styles.loginText}
+                        onClick={this.goToLogin}
                         type="submit"
                       />
                     </div>
                   </div>
                 </div>
-                <div style={ styles.rightContainer(isMobile) }>
-                  <div style={ styles.rightInnerContainer(isMobile) }>
-                    <img src={ WatermanImage } alt="waterman" style={ styles.waterman(isMobile) } />
+                <div style={styles.rightContainer(isMobile)}>
+                  <div style={styles.rightInnerContainer(isMobile)}>
+                    <img src={WatermanImage} alt="waterman" style={styles.waterman(isMobile)} />
                   </div>
                 </div>
               </div>
-              <div style={ styles.footer }>
+              <div style={styles.footer}>
                 <div
                   className="fb-like"
                   id="fb-like-home"
-                  style={ styles.fbContainer }
+                  style={styles.fbContainer}
                   data-href="https://www.watsmymajor.com/"
                   data-layout="standard"
                   data-action="like"
                   data-share="true"
                   data-show-faces="true"
                 />
-                <div style={ styles.numUsersContainer }>
-                  { this.state.numUsers > 0 && (
-                    <span style={ styles.numUsersText(isMobile) }>
-                      { `${this.state.numUsers} total users` }
+                <div style={styles.numUsersContainer}>
+                  {this.state.numUsers > 0 && (
+                    <span style={styles.numUsersText(isMobile)}>
+                      {`${this.state.numUsers} total users`}
                     </span>
-                  ) }
+                  )}
                 </div>
               </div>
             </div>
-          )
-        } }
+          );
+        }}
       </MediaQuery>
     );
   }

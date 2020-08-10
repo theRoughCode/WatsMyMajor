@@ -76,11 +76,11 @@ const styles = {
   sliderLabel: (num) => ({
     marginLeft: 5,
     marginRight: 15,
-    backgroundColor: (num <= 2) ? darkRed : (num >= 4) ? green : yellow2,
+    backgroundColor: num <= 2 ? darkRed : num >= 4 ? green : yellow2,
     color: 'white',
     padding: '1.5px 6px',
     borderRadius: 5,
-    display: 'inline'
+    display: 'inline',
   }),
   slider: {
     margin: '10px auto',
@@ -130,8 +130,8 @@ const styles = {
   errorText: {
     color: red,
     fontSize: 12,
-    marginTop: 5
-  }
+    marginTop: 5,
+  },
 };
 
 const MAX_WORDS = 500;
@@ -139,17 +139,19 @@ const MAX_RESOURCE_TITLE = 50;
 const MAX_RESOURCE_LINK = 100;
 
 const validURL = (str) => {
-  const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  const pattern = new RegExp(
+    '^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+    'i'
+  ); // fragment locator
   return str.length === 0 || !!pattern.test(str);
-}
+};
 
 export default class WriteReview extends Component {
-
   static propTypes = {
     subject: PropTypes.string.isRequired,
     catalogNumber: PropTypes.string.isRequired,
@@ -186,7 +188,7 @@ export default class WriteReview extends Component {
       prof: '',
       isMandatory: '',
       textbookUsed: '',
-      grades: ['A+', 'A' ,'B', 'C', 'D', 'E', 'F'],
+      grades: ['A+', 'A', 'B', 'C', 'D', 'E', 'F'],
       grade: '',
       resources: [{ title: '', link: '' }],
       visible: props.userReview == null,
@@ -243,18 +245,18 @@ export default class WriteReview extends Component {
     this.setState({
       comments: comments || '',
       advice: advice || '',
-      prof: (profIdx > -1) ? profIdx : '',
-      term: (termIdx > -1) ? termIdx : '',
-      year: (yearIdx > -1) ? yearIdx : '',
+      prof: profIdx > -1 ? profIdx : '',
+      term: termIdx > -1 ? termIdx : '',
+      year: yearIdx > -1 ? yearIdx : '',
       interesting: interesting || 3,
       useful: useful || 3,
       easy: easy || 3,
-      isMandatory: (isMandatory == null) ? '' : (isMandatory) ? 'yes' : 'no',
-      textbookUsed: (textbookUsed == null) ? '' : (textbookUsed) ? 'yes' : 'no',
+      isMandatory: isMandatory == null ? '' : isMandatory ? 'yes' : 'no',
+      textbookUsed: textbookUsed == null ? '' : textbookUsed ? 'yes' : 'no',
       grade: grade || '',
       resources: resources || [{ title: '', link: '' }],
     });
-  }
+  };
 
   openForm = () => this.setState({ visible: true });
 
@@ -274,22 +276,22 @@ export default class WriteReview extends Component {
   changeResourceTitle = (i) => (ev) => {
     const resources = this.state.resources;
     resources[i].title = ev.target.value;
-  }
+  };
   changeResourceLink = (i) => (ev) => {
     const resources = this.state.resources;
     resources[i].link = ev.target.value;
-  }
+  };
   addResource = () => {
     const resources = this.state.resources.slice(0);
     resources.push({ title: '', link: '' });
     this.setState({ resources });
-  }
+  };
   removeResource = (i) => () => {
     const resources = this.state.resources.slice(0);
     if (resources.length === 1) resources[0] = { title: '', link: '' };
     else resources.splice(i, 1);
     this.setState({ resources });
-  }
+  };
 
   changeMandatory = (ev) => this.setState({ isMandatory: ev.target.value });
 
@@ -317,8 +319,8 @@ export default class WriteReview extends Component {
     const numWords = comments.trim().replace(/\n/g, ' ').split(' ').length;
     if (numWords === 0) reviewError = 'Review cannot be left blank.';
     else if (numWords > MAX_WORDS) reviewError = `Review cannot exceed ${MAX_WORDS} words.`;
-    const termError = (term.length === 0);
-    const yearError = (year.length === 0);
+    const termError = term.length === 0;
+    const yearError = year.length === 0;
     let resourcesError = false;
     const resources = this.state.resources.slice(0);
     for (let i = 0; i < resources.length; i++) {
@@ -358,72 +360,68 @@ export default class WriteReview extends Component {
         interesting,
         useful,
         easy,
-        prof: (typeof prof === 'number') ? this.props.profs[prof] : null,
-        isMandatory: (isMandatory === '') ? null : (isMandatory === 'yes') ? true : false,
-        textbookUsed: (textbookUsed === '') ? null : (textbookUsed === 'yes') ? true : false,
+        prof: typeof prof === 'number' ? this.props.profs[prof] : null,
+        isMandatory: isMandatory === '' ? null : isMandatory === 'yes',
+        textbookUsed: textbookUsed === '' ? null : textbookUsed === 'yes',
         grade: grade || null,
         resources: resources.filter(({ title }) => title.length > 0),
       };
       this.props.onSubmit(reviewObj);
       this.setState({ visible: false });
     }
-  }
+  };
 
   onDelete = () => {
     this.props.onDelete();
     this.setState({ comments: '', advice: '', visible: true });
-  }
+  };
 
   render() {
     const errorDiv = (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        { this.state.reviewError.length > 0 && (
-          <span style={ styles.errorText }>{ this.state.reviewError }</span>
-        ) }
-        { this.state.yearError && (
-          <span style={ styles.errorText }>{ `Please select a year.` }</span>
-        ) }
-        { this.state.termError && (
-          <span style={ styles.errorText }>{ `Please select a term.` }</span>
-        ) }
+        {this.state.reviewError.length > 0 && (
+          <span style={styles.errorText}>{this.state.reviewError}</span>
+        )}
+        {this.state.yearError && <span style={styles.errorText}>{`Please select a year.`}</span>}
+        {this.state.termError && <span style={styles.errorText}>{`Please select a term.`}</span>}
       </div>
     );
 
     const resourcesList = this.state.resources.map(({ title, link, titleErr, linkErr }, i) => (
-      <div key={ `${i}:${title}${link}` } style={ styles.resourceDiv }>
-        <div style={ styles.resourceTitle }>
+      <div key={`${i}:${title}${link}`} style={styles.resourceDiv}>
+        <div style={styles.resourceTitle}>
           <TextField
             label="Title"
             placeholder="Describe this link"
-            defaultValue={ title }
-            onChange={ this.changeResourceTitle(i) }
+            defaultValue={title}
+            onChange={this.changeResourceTitle(i)}
             style={{ width: '100%', marginBottom: 0 }}
-            error={ titleErr != null }
+            error={titleErr != null}
             margin="normal"
             variant="outlined"
           />
           <div style={{ height: 10 }}>
-            <span style={ styles.errorText }>{ titleErr }</span>
+            <span style={styles.errorText}>{titleErr}</span>
           </div>
         </div>
-        <div style={ styles.resourceLink }>
+        <div style={styles.resourceLink}>
           <TextField
             label="Link"
             placeholder="Enter the link here..."
-            defaultValue={ link }
-            onChange={ this.changeResourceLink(i) }
+            defaultValue={link}
+            onChange={this.changeResourceLink(i)}
             style={{ width: '100%', marginBottom: 0 }}
-            error={ linkErr != null }
+            error={linkErr != null}
             margin="normal"
             variant="outlined"
           />
           <div style={{ height: 10 }}>
-            <span style={ styles.errorText }>{ linkErr }</span>
+            <span style={styles.errorText}>{linkErr}</span>
           </div>
         </div>
         <div style={{ display: 'flex' }}>
           <div style={{ margin: 'auto' }}>
-            <IconButton style={{ padding: 5 }} onClick={ this.removeResource(i) }>
+            <IconButton style={{ padding: 5 }} onClick={this.removeResource(i)}>
               <CloseIcon />
             </IconButton>
           </div>
@@ -432,181 +430,170 @@ export default class WriteReview extends Component {
     ));
 
     const form = (
-      <form style={ styles.container } noValidate autoComplete="off">
+      <form style={styles.container} noValidate autoComplete="off">
         <div style={{ display: 'flex' }}>
-          <FormControl style={ styles.instructorField }>
+          <FormControl style={styles.instructorField}>
             <InputLabel htmlFor="prof">Instructor</InputLabel>
-            <Select
-              value={ this.state.prof }
-              onChange={ this.changeProf }
-              inputProps={{ id: 'prof' }}
-            >
-              {
-                this.props.profs.map((prof, i) => (
-                  <MenuItem key={ i } value={ i }>{ prof }</MenuItem>
-                ))
-              }
+            <Select value={this.state.prof} onChange={this.changeProf} inputProps={{ id: 'prof' }}>
+              {this.props.profs.map((prof, i) => (
+                <MenuItem key={i} value={i}>
+                  {prof}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-          <FormControl style={ styles.selectField }>
+          <FormControl style={styles.selectField}>
             <InputLabel htmlFor="term">Term</InputLabel>
-            <Select
-              value={ this.state.term }
-              onChange={ this.changeTerm }
-              inputProps={{ id: 'term' }}
-            >
-              {
-                this.state.terms.map((term, i) => (
-                  <MenuItem key={ i } value={ i }>{ term }</MenuItem>
-                ))
-              }
+            <Select value={this.state.term} onChange={this.changeTerm} inputProps={{ id: 'term' }}>
+              {this.state.terms.map((term, i) => (
+                <MenuItem key={i} value={i}>
+                  {term}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-          <FormControl style={ styles.selectField }>
+          <FormControl style={styles.selectField}>
             <InputLabel htmlFor="year">Year</InputLabel>
-            <Select
-              value={ this.state.year }
-              onChange={ this.changeYear }
-              inputProps={{ id: 'year' }}
-            >
-              {
-                this.state.years.map((year, i) => (
-                  <MenuItem key={ i } value={ i }>{ year }</MenuItem>
-                ))
-              }
+            <Select value={this.state.year} onChange={this.changeYear} inputProps={{ id: 'year' }}>
+              {this.state.years.map((year, i) => (
+                <MenuItem key={i} value={i}>
+                  {year}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </div>
-        <div style={ styles.sliderOuterDiv }>
-          <div style={ styles.sliderInnerDiv }>
+        <div style={styles.sliderOuterDiv}>
+          <div style={styles.sliderInnerDiv}>
             <span>Easy:</span>
-            <span style={ styles.sliderLabel(this.state.easy) }>{ this.state.easy }</span>
+            <span style={styles.sliderLabel(this.state.easy)}>{this.state.easy}</span>
           </div>
           <div style={{ flex: 1 }}>
             <Slider
-              step={ 1 }
-              value={ this.state.easy }
-              min={ 1 }
-              max={ 5 }
-              onChange={ this.changeEasy }
-              sliderStyle={ styles.slider }
+              step={1}
+              value={this.state.easy}
+              min={1}
+              max={5}
+              onChange={this.changeEasy}
+              sliderStyle={styles.slider}
             />
           </div>
         </div>
-        <div style={ styles.sliderOuterDiv }>
-          <div style={ styles.sliderInnerDiv }>
+        <div style={styles.sliderOuterDiv}>
+          <div style={styles.sliderInnerDiv}>
             <span>Useful:</span>
-            <span style={ styles.sliderLabel(this.state.useful) }>{ this.state.useful }</span>
+            <span style={styles.sliderLabel(this.state.useful)}>{this.state.useful}</span>
           </div>
           <div style={{ flex: 1 }}>
             <Slider
-              step={ 1 }
-              value={ this.state.useful }
-              min={ 1 }
-              max={ 5 }
-              onChange={ this.changeUseful }
-              sliderStyle={ styles.slider }
+              step={1}
+              value={this.state.useful}
+              min={1}
+              max={5}
+              onChange={this.changeUseful}
+              sliderStyle={styles.slider}
             />
           </div>
         </div>
-        <div style={ styles.sliderOuterDiv }>
-          <div style={ styles.sliderInnerDiv }>
+        <div style={styles.sliderOuterDiv}>
+          <div style={styles.sliderInnerDiv}>
             <span>Interesting:</span>
-            <span style={ styles.sliderLabel(this.state.interesting) }>{ this.state.interesting }</span>
+            <span style={styles.sliderLabel(this.state.interesting)}>{this.state.interesting}</span>
           </div>
           <div style={{ flex: 1 }}>
             <Slider
-              step={ 1 }
-              value={ this.state.interesting }
-              min={ 1 }
-              max={ 5 }
-              onChange={ this.changeInteresting }
-              sliderStyle={ styles.slider }
+              step={1}
+              value={this.state.interesting}
+              min={1}
+              max={5}
+              onChange={this.changeInteresting}
+              sliderStyle={styles.slider}
             />
           </div>
         </div>
         <TextField
           label="Leave a review"
-          placeholder={ `What are your thoughts on ${this.props.subject} ${this.props.catalogNumber}?` }
+          placeholder={`What are your thoughts on ${this.props.subject} ${this.props.catalogNumber}?`}
           multiline
-          value={ this.state.comments }
-          onChange={ this.changeComments }
-          style={ styles.textField }
-          error={ this.state.reviewError.length > 0 }
+          value={this.state.comments}
+          onChange={this.changeComments}
+          style={styles.textField}
+          error={this.state.reviewError.length > 0}
           margin="normal"
           variant="outlined"
         />
         <TextField
           label="Give some advice (optional)"
-          placeholder={ 'Any advice for this course?' }
+          placeholder={'Any advice for this course?'}
           multiline
-          value={ this.state.advice }
-          onChange={ this.changeAdvice }
-          style={ styles.textField }
+          value={this.state.advice}
+          onChange={this.changeAdvice}
+          style={styles.textField}
           margin="normal"
           variant="outlined"
         />
-        <Card style={ styles.card }>
+        <Card style={styles.card}>
           <CardHeader
             action={
-              <IconButton onClick={ this.addResource }>
+              <IconButton onClick={this.addResource}>
                 <AddIcon />
               </IconButton>
             }
             title="Add useful resources"
             titleTypographyProps={{ style: { fontSize: '0.95rem' } }}
-            style={ styles.cardHeader }
+            style={styles.cardHeader}
           />
-          <CardContent style={{ paddingTop: 0, paddingBottom: 0 }}>
-            { resourcesList }
-          </CardContent>
+          <CardContent style={{ paddingTop: 0, paddingBottom: 0 }}>{resourcesList}</CardContent>
         </Card>
         <div style={{ display: 'flex', marginBottom: 25 }}>
           <div style={{ flex: 1, marginRight: 10 }}>
-            <ExpansionPanel style={ styles.expansionPanel }>
+            <ExpansionPanel style={styles.expansionPanel}>
               <ExpansionPanelSummary
-                expandIcon={ <ExpandMoreIcon /> }
+                expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
-                style={ styles.expansionHeader }
+                style={styles.expansionHeader}
               >
                 <Typography>Add More Details</Typography>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails>
-                <div style={ styles.expansionDetails }>
-                  <FormControl component="fieldset" style={ styles.mandatory }>
-                    <FormLabel component="legend" align="left">Was attendance mandatory?</FormLabel>
+                <div style={styles.expansionDetails}>
+                  <FormControl component="fieldset" style={styles.mandatory}>
+                    <FormLabel component="legend" align="left">
+                      Was attendance mandatory?
+                    </FormLabel>
                     <RadioGroup
-                      value={ this.state.isMandatory }
-                      onChange={ this.changeMandatory }
+                      value={this.state.isMandatory}
+                      onChange={this.changeMandatory}
                       style={{ flexDirection: 'row' }}
                     >
-                      <FormControlLabel value="yes" control={ <Radio /> } label="Yes" />
-                      <FormControlLabel value="no" control={ <Radio /> } label="No" />
+                      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                      <FormControlLabel value="no" control={<Radio />} label="No" />
                     </RadioGroup>
                   </FormControl>
-                  <FormControl component="fieldset" style={ styles.mandatory }>
-                    <FormLabel component="legend" align="left">Was a textbook required?</FormLabel>
+                  <FormControl component="fieldset" style={styles.mandatory}>
+                    <FormLabel component="legend" align="left">
+                      Was a textbook required?
+                    </FormLabel>
                     <RadioGroup
-                      value={ this.state.textbookUsed }
-                      onChange={ this.changeTextbook }
+                      value={this.state.textbookUsed}
+                      onChange={this.changeTextbook}
                       style={{ flexDirection: 'row' }}
                     >
-                      <FormControlLabel value="yes" control={ <Radio /> } label="Yes" />
-                      <FormControlLabel value="no" control={ <Radio /> } label="No" />
+                      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                      <FormControlLabel value="no" control={<Radio />} label="No" />
                     </RadioGroup>
                   </FormControl>
-                  <FormControl component="fieldset" style={ styles.mandatory }>
-                    <FormLabel component="legend" align="left">What was your grade?</FormLabel>
-                    <Select
-                      value={ this.state.grade }
-                      onChange={ this.changeGrade }
-                    >
-                      {
-                        this.state.grades.map(grade => (
-                          <MenuItem key={ grade } value={ grade }>{ grade }</MenuItem>
-                        ))
-                      }
+                  <FormControl component="fieldset" style={styles.mandatory}>
+                    <FormLabel component="legend" align="left">
+                      What was your grade?
+                    </FormLabel>
+                    <Select value={this.state.grade} onChange={this.changeGrade}>
+                      {this.state.grades.map((grade) => (
+                        <MenuItem key={grade} value={grade}>
+                          {grade}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 </div>
@@ -615,28 +602,26 @@ export default class WriteReview extends Component {
           </div>
           <div style={{ marginTop: 7, display: 'flex', flexDirection: 'column' }}>
             <div>
-              {
-                (this.props.userReview != null) && (
-                  <Button
-                    variant="contained"
-                    size="medium"
-                    style={ styles.deleteBtn }
-                    onClick={ this.onDelete }
-                  >
-                    Delete
-                  </Button>
-                )
-              }
+              {this.props.userReview != null && (
+                <Button
+                  variant="contained"
+                  size="medium"
+                  style={styles.deleteBtn}
+                  onClick={this.onDelete}
+                >
+                  Delete
+                </Button>
+              )}
               <Button
                 variant="contained"
                 size="medium"
-                style={ styles.submitBtn }
-                onClick={ this.onSubmit }
+                style={styles.submitBtn}
+                onClick={this.onSubmit}
               >
                 Submit
               </Button>
             </div>
-            { errorDiv }
+            {errorDiv}
           </div>
         </div>
       </form>
@@ -647,34 +632,22 @@ export default class WriteReview extends Component {
 
     return (
       <div>
-        {
-          (this.state.visible)
-            ? (
-              <Button
-                variant="contained"
-                size="medium"
-                style={ styles.closeBtn }
-                onClick={ this.closeForm }
-              >
-                Cancel
-              </Button>
-            )
-            : (
-              <Button
-                variant="contained"
-                size="medium"
-                style={ styles.openBtn }
-                onClick={ this.openForm }
-              >
-                Edit Review
-              </Button>
-            )
-        }
-        {
-          this.state.visible && form
-        }
+        {this.state.visible ? (
+          <Button
+            variant="contained"
+            size="medium"
+            style={styles.closeBtn}
+            onClick={this.closeForm}
+          >
+            Cancel
+          </Button>
+        ) : (
+          <Button variant="contained" size="medium" style={styles.openBtn} onClick={this.openForm}>
+            Edit Review
+          </Button>
+        )}
+        {this.state.visible && form}
       </div>
     );
   }
-
 }

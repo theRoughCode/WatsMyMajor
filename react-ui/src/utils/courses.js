@@ -3,9 +3,11 @@ export const hasTakenCourse = (subject, catalogNumber, myCourses) => {
   if (subject == null || catalogNumber == null) return false;
   if (myCourses[subject] == null) return false;
   const advancedCSCatNum = catalogNumber + 'E';
-  return myCourses[subject].hasOwnProperty(catalogNumber) ||
-		myCourses[subject].hasOwnProperty(advancedCSCatNum);
-}
+  return (
+    myCourses[subject].hasOwnProperty(catalogNumber) ||
+    myCourses[subject].hasOwnProperty(advancedCSCatNum)
+  );
+};
 
 // Check if course is in cart
 export const isInCart = (subject, catalogNumber, arr) => {
@@ -15,7 +17,7 @@ export const isInCart = (subject, catalogNumber, arr) => {
     }
   }
   return false;
-}
+};
 
 const fulfillPrereqs = (myCourses, prereqs) => {
   if (!Object.keys(prereqs).length) return true;
@@ -27,14 +29,14 @@ const fulfillPrereqs = (myCourses, prereqs) => {
   // Inductive case: list of courses with choose
   switch (prereqs.choose) {
   case 0:
-    return prereqs.reqs.reduce((acc, req) => acc && fulfillPrereqs(myCourses, req), true)
+    return prereqs.reqs.reduce((acc, req) => acc && fulfillPrereqs(myCourses, req), true);
   default: {
     let numRequired = prereqs.choose;
     for (var i = 0; i < prereqs.reqs.length; i++) {
       if (numRequired === 0) return true;
       if (fulfillPrereqs(myCourses, prereqs.reqs[i])) numRequired--;
     }
-    return (numRequired === 0);
+    return numRequired === 0;
   }
   }
 };
@@ -45,7 +47,7 @@ const fulfillCoreqs = (myCourses, coreqs) => {
     if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
   }
   return true;
-}
+};
 
 const fulfillAntireqs = (myCourses, antireqs) => {
   for (var i = 0; i < antireqs.length; i++) {
@@ -53,18 +55,20 @@ const fulfillAntireqs = (myCourses, antireqs) => {
     if (hasTakenCourse(subject, catalogNumber, myCourses)) return false;
   }
   return true;
-}
+};
 
 // Returns true if course can be taken by user
 export const canTakeCourse = (myCourses, prereqs, coreqs, antireqs) => {
-  return fulfillAntireqs(myCourses, antireqs)
-		&& fulfillCoreqs(myCourses, coreqs)
-		&& fulfillPrereqs(myCourses, prereqs);
-}
+  return (
+    fulfillAntireqs(myCourses, antireqs) &&
+    fulfillCoreqs(myCourses, coreqs) &&
+    fulfillPrereqs(myCourses, prereqs)
+  );
+};
 
 export const termNumToStr = (term) => {
   const termRegex = /1([1-2][0-9])(1|5|9)/;
-  const [ year, month ] = term.match(termRegex).slice(1);
+  const [year, month] = term.match(termRegex).slice(1);
   let season = '';
   switch (month) {
   case '1':

@@ -10,24 +10,21 @@ let cachedCourseList = [];
 let valid = false;
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 // Set a course
 function setCourse(subject, catalogNumber, title) {
   valid = false;
-  return courseListRef
-    .child(`${subject}/${catalogNumber}`)
-    .set(title);
+  return courseListRef.child(`${subject}/${catalogNumber}`).set(title);
 }
 
-
 /****************************
- *													*
- *			G E T T E R S 			*
- *													*
+ *                          *
+ *      G E T T E R S       *
+ *                          *
  ****************************/
 
 // Returns course name
@@ -35,9 +32,7 @@ async function getCourseTitle(subject, catalogNumber) {
   if (subject.length > 7 || catalogNumber.length > 7)
     return { err: `Invalid course: ${subject} ${catalogNumber}`, title: null };
   try {
-    const snapshot = await courseListRef
-      .child(`${subject}/${catalogNumber}`)
-      .once('value');
+    const snapshot = await courseListRef.child(`${subject}/${catalogNumber}`).once('value');
     const title = await snapshot.val();
     return { err: null, title };
   } catch (err) {
@@ -48,7 +43,7 @@ async function getCourseTitle(subject, catalogNumber) {
 
 // Returns array of courses: { subject, catalogNumber }
 async function getCourseList() {
-  if (valid) return cachedCourseList;  // use cached version if valid flag is true
+  if (valid) return cachedCourseList; // use cached version if valid flag is true
 
   const courseList = [];
   const snapshot = await courseListRef.once('value');

@@ -9,9 +9,9 @@ import App from './App';
 import 'stylesheets/index.css';
 
 const StaticWrapper = ({ store, location, context }) => (
-  <Provider store={ store }>
+  <Provider store={store}>
     <MuiThemeProvider>
-      <Router location={ location } context={ context }>
+      <Router location={location} context={context}>
         <App />
       </Router>
     </MuiThemeProvider>

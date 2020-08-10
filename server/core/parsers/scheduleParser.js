@@ -58,7 +58,7 @@ function getDateFormat(startDate, endDate) {
 
 // Formats date strings into date objects for a course
 function formatDates(course, format) {
-  if (format === '') format = 'DD/MM/YYYY';  // How it should be
+  if (format === '') format = 'DD/MM/YYYY'; // How it should be
   for (let compName in course.classes) {
     const comp = course.classes[compName];
 
@@ -90,12 +90,12 @@ function parseComponent(arr) {
   const section = arr[1];
   const type = arr[2];
   const dayArr = arr[3].split(' ');
-  const days = (!dayArr[0].length || dayArr[0] === 'TBA') ? [] : dayArr[0].split(/(?=[A-Z])/);
-  const startTime = moment(dayArr[1], "hh:mmA");
-  if (!startTime.isValid()) return null;  // Don't need to parse if cannot get time
-  const endTime = moment(dayArr[3], "hh:mmA");
+  const days = !dayArr[0].length || dayArr[0] === 'TBA' ? [] : dayArr[0].split(/(?=[A-Z])/);
+  const startTime = moment(dayArr[1], 'hh:mmA');
+  if (!startTime.isValid()) return null; // Don't need to parse if cannot get time
+  const endTime = moment(dayArr[3], 'hh:mmA');
   if (!endTime.isValid()) return null;
-  const location = (arr[4] === 'TBA') ? '' : arr[4].replace(/\s+/, ' ');
+  const location = arr[4] === 'TBA' ? '' : arr[4].replace(/\s+/, ' ');
   const instructor = arr[5].replace(/,/g, ', ');
   const dateArr = arr[6].split(' ');
   const startDate = dateArr[0];
@@ -117,23 +117,23 @@ function parseComponent(arr) {
       location,
       instructor,
       startDate,
-      endDate
-    }
+      endDate,
+    },
   };
 }
 
 function parseCourses1(textArr) {
   const courses = [];
   let dateFormat = '';
-  let index = textArr.findIndex(str => str.includes('Status\t'));
+  let index = textArr.findIndex((str) => str.includes('Status\t'));
   while (index > -1) {
     const courseArr = textArr[index - 1].split(' ');
     textArr = textArr.slice(index);
     const subject = courseArr[0];
     const catalogNumber = courseArr[1];
-    index = textArr.findIndex(str => str.includes('Class Nbr\t'));
+    index = textArr.findIndex((str) => str.includes('Class Nbr\t'));
     textArr = textArr.slice(index + 1);
-    const newIndex = textArr.findIndex(str => str.includes('Status\t'));
+    const newIndex = textArr.findIndex((str) => str.includes('Status\t'));
     const classArr = textArr.slice(0, newIndex - 1);
     index = newIndex;
     const classes = {};
@@ -150,10 +150,10 @@ function parseCourses1(textArr) {
     courses.push({
       subject,
       catalogNumber,
-      classes
+      classes,
     });
   }
-  return courses.map(course => formatDates(course, dateFormat));
+  return courses.map((course) => formatDates(course, dateFormat));
 }
 
 // Parse based on class schedule
@@ -173,7 +173,7 @@ function parseSchedule1(text) {
 }
 
 function getTermInfo(termStr) {
-  const termStrArr = termStr.split(" ");
+  const termStrArr = termStr.split(' ');
   // Invalid term
   if (termStrArr.length !== 2) return process.env.CURRENT_TERM;
 
@@ -181,12 +181,12 @@ function getTermInfo(termStr) {
   const startDate = {
     day: 1,
     month: 1,
-    year: 2018
+    year: 2018,
   };
   const endDate = {
     day: 1,
     month: 1,
-    year: 2018
+    year: 2018,
   };
   switch (termStrArr[0]) {
   case 'Winter':
@@ -219,15 +219,15 @@ function getTermInfo(termStr) {
   return {
     term,
     startDate,
-    endDate
+    endDate,
   };
 }
 
 function parseTimeSlot(timeSlot) {
   let { endTime, instructor, location, startTime, weekdays } = timeSlot;
-  startTime = moment(startTime, "HH:mm");
+  startTime = moment(startTime, 'HH:mm');
   if (!startTime.isValid()) return {};
-  endTime = moment(endTime, "HH:mm");
+  endTime = moment(endTime, 'HH:mm');
   if (!endTime.isValid()) return {};
   return {
     days: weekdays,
@@ -240,7 +240,7 @@ function parseTimeSlot(timeSlot) {
       min: endTime.minute(),
     },
     location,
-    instructor
+    instructor,
   };
 }
 
@@ -254,7 +254,7 @@ async function getClass(subject, catalogNumber, section, termInfo) {
       return classObj;
     }
     for (let i = 0; i < classes.length; i++) {
-      const sectionArr = classes[i].section.split(" ");
+      const sectionArr = classes[i].section.split(' ');
       if (sectionArr.length !== 2) return classObj;
       if (sectionArr[1] !== section) continue;
       classObj.type = sectionArr[0];
@@ -290,15 +290,16 @@ async function parseCourses2(textArr, termInfo) {
   }
   const result = await Promise.all(promises);
   const coursesObj = {};
-  result.forEach(c => {
-    const { subject, catalogNumber,  type, classInfo } = c;
+  result.forEach((c) => {
+    const { subject, catalogNumber, type, classInfo } = c;
     if (!coursesObj.hasOwnProperty(subject)) coursesObj[subject] = {};
-    if (!coursesObj[subject].hasOwnProperty(catalogNumber)) coursesObj[subject][catalogNumber] = {
-      classes: {},
-    };
+    if (!coursesObj[subject].hasOwnProperty(catalogNumber))
+      coursesObj[subject][catalogNumber] = {
+        classes: {},
+      };
     coursesObj[subject][catalogNumber].classes[type] = classInfo;
   });
-  Object.keys(coursesObj).forEach(subject => {
+  Object.keys(coursesObj).forEach((subject) => {
     Object.keys(coursesObj[subject]).forEach((catalogNumber) => {
       courses.push({
         subject,

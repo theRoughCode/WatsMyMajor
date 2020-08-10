@@ -17,7 +17,7 @@ const styles = {
     width: '100%',
   },
   boardHeaderContainer: {
-    marginBottom: 10
+    marginBottom: 10,
   },
   boardText: {
     fontSize: 20,
@@ -38,11 +38,9 @@ const styles = {
   },
 };
 
-
 // Takes in an array of fields: [name: string, Icon: func]
 // Note: name must be a field in the values object
 export default class SettingsBoard extends Component {
-
   static propTypes = {
     boardName: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
@@ -91,7 +89,7 @@ export default class SettingsBoard extends Component {
 
   onCancel() {
     const values = {};
-    this.props.fields.forEach(({ name }) => values[name] = this.props.values[name]);
+    this.props.fields.forEach(({ name }) => (values[name] = this.props.values[name]));
 
     this.setState({
       isEditing: false,
@@ -101,59 +99,55 @@ export default class SettingsBoard extends Component {
   }
 
   render() {
-    const buttons = (this.state.isEditing)
-      ? (
-        <div style={ styles.buttonContainer }>
-          <RaisedButton
-            label="Save"
-            labelPosition="before"
-            primary
-            icon={ <SaveIcon style={ styles.buttonIcon } /> }
-            onClick={ this.onSave }
-            type="submit"
-          />
-          <RaisedButton
-            label="Cancel"
-            labelPosition="before"
-            backgroundColor={ red }
-            icon={ <CancelIcon style={ styles.buttonIcon } /> }
-            style={{ marginLeft: 10 }}
-            onClick={ this.onCancel }
-          />
-        </div>
-      )
-      : (
+    const buttons = this.state.isEditing ? (
+      <div style={styles.buttonContainer}>
         <RaisedButton
-          label="Edit"
+          label="Save"
           labelPosition="before"
-          icon={ <EditIcon style={ styles.buttonIcon } /> }
-          style={ styles.buttonContainer }
-          onClick={ this.onEdit }
+          primary
+          icon={<SaveIcon style={styles.buttonIcon} />}
+          onClick={this.onSave}
+          type="submit"
         />
-      );
+        <RaisedButton
+          label="Cancel"
+          labelPosition="before"
+          backgroundColor={red}
+          icon={<CancelIcon style={styles.buttonIcon} />}
+          style={{ marginLeft: 10 }}
+          onClick={this.onCancel}
+        />
+      </div>
+    ) : (
+      <RaisedButton
+        label="Edit"
+        labelPosition="before"
+        icon={<EditIcon style={styles.buttonIcon} />}
+        style={styles.buttonContainer}
+        onClick={this.onEdit}
+      />
+    );
 
     return (
-      <form style={ styles.boardContainer } onSubmit={ e => e.preventDefault() }>
-        <div style={ styles.boardHeaderContainer }>
-          <span style={ styles.boardText }>{ this.props.boardName }</span>
-          { buttons }
+      <form style={styles.boardContainer} onSubmit={(e) => e.preventDefault()}>
+        <div style={styles.boardHeaderContainer}>
+          <span style={styles.boardText}>{this.props.boardName}</span>
+          {buttons}
         </div>
-        <Paper style={ styles.boardBody }>
-          {
-            this.props.fields.map(({ name, label, type, Icon }, index) => (
-              <Field
-                key={ index }
-                name={ name }
-                label={ label }
-                errorText={ this.state.errors[name] }
-                type={ type }
-                value={ this.state.values[name] }
-                isEditing={ this.state.isEditing }
-                onChange={ this.handleChange }
-                Icon={ Icon }
-              />
-            ))
-          }
+        <Paper style={styles.boardBody}>
+          {this.props.fields.map(({ name, label, type, Icon }, index) => (
+            <Field
+              key={index}
+              name={name}
+              label={label}
+              errorText={this.state.errors[name]}
+              type={type}
+              value={this.state.values[name]}
+              isEditing={this.state.isEditing}
+              onChange={this.handleChange}
+              Icon={Icon}
+            />
+          ))}
         </Paper>
       </form>
     );

@@ -19,16 +19,16 @@ class PrerequisitesTree extends Component {
     if (containerWidth > MAX_WIDTH) containerWidth = MAX_WIDTH;
     return (
       <Tree
-        data={ data }
-        height={ containerHeight }
-        width={ containerWidth }
-        nodeOffset={ 5 }
-        nodeRadius={ 10 }
+        data={data}
+        height={containerHeight}
+        width={containerWidth}
+        nodeOffset={5}
+        nodeRadius={10}
         margins={{
           bottom: 50,
           left: 50,
           right: 130,
-          top: 50
+          top: 50,
         }}
         svgProps={{ className: 'tree' }}
         keyProp="id"

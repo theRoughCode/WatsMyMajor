@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Step,
-  Stepper,
-  StepButton,
-} from 'material-ui/Stepper';
+import { Step, Stepper, StepButton } from 'material-ui/Stepper';
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import 'stylesheets/InstructionsView.css';
@@ -16,8 +12,8 @@ const styles = {
   },
   buttonContainer: {
     marginTop: 30,
-    display: 'flex'
-  }
+    display: 'flex',
+  },
 };
 
 export default class ParserInstructions extends Component {
@@ -33,7 +29,7 @@ export default class ParserInstructions extends Component {
       text: '',
       stepIndex: 0,
       maxIndex: props.stepContents.length + 1,
-      stepContents: props.stepContents
+      stepContents: props.stepContents,
     };
 
     this.handleNext = this.handleNext.bind(this);
@@ -43,9 +39,11 @@ export default class ParserInstructions extends Component {
 
   componentDidMount() {
     // Add parser box
-    const stepContents = this.props.stepContents.concat([{
-      button: 'Submit for parsing',
-    }]);
+    const stepContents = this.props.stepContents.concat([
+      {
+        button: 'Submit for parsing',
+      },
+    ]);
 
     this.setState({ stepContents });
   }
@@ -76,8 +74,8 @@ export default class ParserInstructions extends Component {
               rows="4"
               cols="100"
               type="text"
-              value={ this.state.text }
-              onChange={ this.handleChange }
+              value={this.state.text}
+              onChange={this.handleChange}
             />
           </form>
         </div>
@@ -96,32 +94,28 @@ export default class ParserInstructions extends Component {
 
     return (
       <div className="instructions">
-        <Stepper linear={ false } activeStep={ stepIndex }>
-          {
-            stepContents.map(({ button }, stepIndex) => (
-              <Step key={ stepIndex }>
-                <StepButton onClick={ () => this.setState({ stepIndex }) }>
-                  { button }
-                </StepButton>
-              </Step>
-            ))
-          }
+        <Stepper linear={false} activeStep={stepIndex}>
+          {stepContents.map(({ button }, stepIndex) => (
+            <Step key={stepIndex}>
+              <StepButton onClick={() => this.setState({ stepIndex })}>{button}</StepButton>
+            </Step>
+          ))}
         </Stepper>
-        <div style={ styles.stepperInfo }>
-          { this.getStepContent(stepIndex) }
-          <div style={ styles.buttonContainer }>
+        <div style={styles.stepperInfo}>
+          {this.getStepContent(stepIndex)}
+          <div style={styles.buttonContainer}>
             <div style={{ margin: 'auto' }}>
               <FlatButton
                 label="Back"
-                disabled={ stepIndex === 0 }
-                onClick={ this.handlePrev }
+                disabled={stepIndex === 0}
+                onClick={this.handlePrev}
                 style={{ marginRight: 12 }}
               />
               <RaisedButton
                 label="Next"
-                disabled={ stepIndex === stepContents.length - 1 }
+                disabled={stepIndex === stepContents.length - 1}
                 primary
-                onClick={ this.handleNext }
+                onClick={this.handleNext}
               />
             </div>
           </div>
@@ -129,5 +123,4 @@ export default class ParserInstructions extends Component {
       </div>
     );
   }
-
 }

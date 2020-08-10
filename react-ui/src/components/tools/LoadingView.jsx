@@ -11,7 +11,7 @@ const styles = {
 
 const LoadingView = () => (
   <div className="loading course-view">
-    <img src={ logo } style={ styles } alt="logo" />
+    <img src={logo} style={styles} alt="logo" />
   </div>
 );
 

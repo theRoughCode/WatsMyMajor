@@ -29,12 +29,15 @@ const MIN_TERM = 1159;
 // that the other tables rely on.
 function updateCourseList() {
   return new Promise((resolve, reject) => {
-    waterloo.getCourses(async function(err, data) {
+    waterloo.getCourses(async function (err, data) {
       if (err) return resolve(err);
 
-      await Promise.all(data.map(async ({ subject, catalog_number, title }) => {
-        await courseListDB.setCourse(subject, catalog_number, title);
-      }));
+      await Promise.all(
+        // eslint-disable-next-line camelcase
+        data.map(async ({ subject, catalog_number, title }) => {
+          await courseListDB.setCourse(subject, catalog_number, title);
+        })
+      );
       /* eslint-disable no-console */
       console.log(`Finished updating course list at ${new Date()}`);
       resolve(null);
@@ -66,25 +69,31 @@ async function updateCourseInformation(subject, catalogNumber) {
 function updateAllCourses() {
   const failedList = [];
   return new Promise((resolve, reject) => {
-    waterloo.getCourses(function(err, data) {
+    waterloo.getCourses(function (err, data) {
       if (err) return resolve({ err, failedList: null });
 
-      asyncjs.forEachOfLimit(data, 10, (courseData, index, callback) => {
-        const { subject, catalog_number } = courseData;
-        updateCourseInformation(subject, catalog_number)
-          .then(() => callback())
-          .catch(err => {
-            failedList.push({ subject, catalogNumber: catalog_number, err });
-            callback();
-          });
-      }, err => {
-        /* eslint-disable no-console */
-        console.log(`Finished updating all course information at ${new Date()}`);
-        if (err) {
-          console.error(err);
-          resolve({ err, failedList });
-        } else resolve();
-      });
+      asyncjs.forEachOfLimit(
+        data,
+        10,
+        (courseData, index, callback) => {
+          // eslint-disable-next-line camelcase
+          const { subject, catalog_number } = courseData;
+          updateCourseInformation(subject, catalog_number)
+            .then(() => callback())
+            .catch((err) => {
+              failedList.push({ subject, catalogNumber: catalog_number, err });
+              callback();
+            });
+        },
+        (err) => {
+          /* eslint-disable no-console */
+          console.log(`Finished updating all course information at ${new Date()}`);
+          if (err) {
+            console.error(err);
+            resolve({ err, failedList });
+          } else resolve();
+        }
+      );
     });
   });
 }
@@ -98,14 +107,13 @@ function updateAllCourses() {
 // Updates individial course requisite
 function updateCourseRequisite(subject, catalogNumber) {
   return new Promise((resolve, reject) => {
-    waterloo.getReqs(subject, catalogNumber, async function(err, reqs) {
+    waterloo.getReqs(subject, catalogNumber, async function (err, reqs) {
       if (err) return reject(err);
       else {
         let { prereqs, coreqs, antireqs } = reqs;
 
         // No requisities
-        if (prereqs.length + coreqs.length + antireqs.length === 0)
-          return resolve();
+        if (prereqs.length + coreqs.length + antireqs.length === 0) return resolve();
 
         try {
           // Store prereqs in database
@@ -120,7 +128,6 @@ function updateCourseRequisite(subject, catalogNumber) {
           return resolve(err);
         }
 
-
         // Store parent requisites in database
         if (!prereqs.length && !Object.keys(prereqs).length) return resolve();
 
@@ -128,9 +135,11 @@ function updateCourseRequisite(subject, catalogNumber) {
         prereqs = prereqs.reqs;
 
         const postreq = { subject, catalogNumber };
-        await Promise.all(prereqs.map(async (prereq) => {
-          await storePostreqs(choose, prereqs, postreq, prereq);
-        }));
+        await Promise.all(
+          prereqs.map(async (prereq) => {
+            await storePostreqs(choose, prereqs, postreq, prereq);
+          })
+        );
 
         resolve();
       }
@@ -145,30 +154,35 @@ async function updateAllRequisites() {
     const failedList = [];
 
     return new Promise((resolve, reject) => {
-      asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
-        // Get course reqs
-        updateCourseRequisite(subject, catalogNumber)
-          .then(err => {
-            if (err) {
+      asyncjs.forEachOfLimit(
+        courses,
+        100,
+        ({ subject, catalogNumber }, _, callback) => {
+          // Get course reqs
+          updateCourseRequisite(subject, catalogNumber)
+            .then((err) => {
+              if (err) {
+                console.error(`${subject} ${catalogNumber}: ${err}`);
+              }
+              callback();
+            })
+            .catch((err) => {
               console.error(`${subject} ${catalogNumber}: ${err}`);
-            }
-            callback();
-          })
-          .catch(err => {
-            console.error(`${subject} ${catalogNumber}: ${err}`);
-            failedList.push({ subject, catalogNumber, err });
-            callback();
-          });
-      }, err => {
-        /* eslint-disable no-console */
-        console.log(`Finished updating all course requisites at ${new Date()}`);
-        if (err) {
-          console.error('\n\n\n\n', err);
-          resolve({ err, failedList: null });
-        } else {
-          resolve({ err: null, failedList });
+              failedList.push({ subject, catalogNumber, err });
+              callback();
+            });
+        },
+        (err) => {
+          /* eslint-disable no-console */
+          console.log(`Finished updating all course requisites at ${new Date()}`);
+          if (err) {
+            console.error('\n\n\n\n', err);
+            resolve({ err, failedList: null });
+          } else {
+            resolve({ err: null, failedList });
+          }
         }
-      });
+      );
     });
   } catch (err) {
     console.error(err);
@@ -233,14 +247,18 @@ async function updateClass(subject, catalogNumber, term) {
 
   try {
     await classesDB.setClasses(subject, catalogNumber, term, classInfo);
-    asyncjs.forEachOf(classInfo, (info, _, callback) => {
-      info.subject = subject;
-      info.catalogNumber = catalogNumber;
-      updateWatchlist(term, info);
-    }, err => {
-      if (err) return err;
-      else return null;
-    });
+    asyncjs.forEachOf(
+      classInfo,
+      (info, _, callback) => {
+        info.subject = subject;
+        info.catalogNumber = catalogNumber;
+        updateWatchlist(term, info);
+      },
+      (err) => {
+        if (err) return err;
+        else return null;
+      }
+    );
   } catch (err) {
     return err;
   }
@@ -248,25 +266,29 @@ async function updateClass(subject, catalogNumber, term) {
 
 // Update classes for all courses
 // Returns { err, failedList }
-function updateAllClasses(term) {
+async function updateAllClasses(term) {
   const failedList = [];
   try {
-    return new Promise(async (resolve, reject) => {
-      const courses = await courseListDB.getCourseList();
-      asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
-        updateClass(subject, catalogNumber, term)
-          .then(callback)
-          .catch(err => {
-            console.error(`${subject} ${catalogNumber}: ${err}`);
-            failedList.push({ subject, catalogNumber, err });
-            callback(err);
-          });
-      }, err => {
-        if (err) {
-          resolve({ err, failedList });
+    const courses = await courseListDB.getCourseList();
+    return new Promise((resolve, reject) => {
+      asyncjs.forEachOfLimit(
+        courses,
+        100,
+        ({ subject, catalogNumber }, _, callback) => {
+          updateClass(subject, catalogNumber, term)
+            .then(callback)
+            .catch((err) => {
+              console.error(`${subject} ${catalogNumber}: ${err}`);
+              failedList.push({ subject, catalogNumber, err });
+              callback(err);
+            });
+        },
+        (err) => {
+          if (err) {
+            resolve({ err, failedList });
+          } else resolve({ err: null, failedList });
         }
-        else resolve({ err: null, failedList });
-      });
+      );
     });
   } catch (err) {
     console.error(err);
@@ -300,18 +322,20 @@ async function updateProfClasses(subject, catalogNumber, term) {
   const promises = [];
   const profs = {};
 
-  classInfo.forEach(c => c.classes.forEach(cl => {
-    const { instructor } = cl;
-    if (instructor == null || instructor.length === 0) return;
-    if (profs.hasOwnProperty(instructor)) return;
-    profs[instructor] = true;
-    promises.push(profsDB.setProfClasses(instructor, subject, catalogNumber, term));
-  }));
+  classInfo.forEach((c) =>
+    c.classes.forEach((cl) => {
+      const { instructor } = cl;
+      if (instructor == null || instructor.length === 0) return;
+      if (profs.hasOwnProperty(instructor)) return;
+      profs[instructor] = true;
+      promises.push(profsDB.setProfClasses(instructor, subject, catalogNumber, term));
+    })
+  );
 
   try {
     await Promise.all(promises);
     return null;
-  } catch(err) {
+  } catch (err) {
     console.error(`${term} | ${subject} ${catalogNumber}: ${err}`);
     return err;
   }
@@ -319,16 +343,21 @@ async function updateProfClasses(subject, catalogNumber, term) {
 
 // Update professors for all courses in term
 async function updateTermProfClasses(term) {
-  return new Promise(async (resolve, reject) => {
-    const courses = await courseListDB.getCourseList();
-    asyncjs.forEachOfLimit(courses, 100, ({ subject, catalogNumber }, _, callback) => {
-      updateProfClasses(subject, catalogNumber, term)
-        .then(callback)
-        .catch(err => callback(err));
-    }, err => {
-      if (err) resolve(err);
-      else resolve(null);
-    });
+  const courses = await courseListDB.getCourseList();
+  return new Promise((resolve, reject) => {
+    asyncjs.forEachOfLimit(
+      courses,
+      100,
+      ({ subject, catalogNumber }, _, callback) => {
+        updateProfClasses(subject, catalogNumber, term)
+          .then(callback)
+          .catch((err) => callback(err));
+      },
+      (err) => {
+        if (err) resolve(err);
+        else resolve(null);
+      }
+    );
   });
 }
 
@@ -348,7 +377,6 @@ async function updateAllProfClasses() {
   }
 }
 
-
 /****************************
  *                          *
  *       R E V I E W S      *
@@ -360,21 +388,15 @@ async function updateProfRmp(profName) {
   const { err, prof } = await profScraper.getRmpInfo(profName);
   if (err) return { profName, err };
 
-  const {
-    reviews,
-    rating,
-    difficulty,
-    tags,
-    rmpURL,
-  } = prof;
+  const { reviews, rating, difficulty, tags, rmpURL } = prof;
 
   try {
     await profsDB.setRMP(profName, rmpURL, tags, rating, difficulty, reviews.length);
     const { err, reviewIds } = await reviewsDB.getRmpReviewIds(profName);
     if (err) return { profName, err };
     const promises = reviews
-      .filter(r => !reviewIds.includes(r.id))
-      .map(r => reviewsDB.setRmpReview(profName, r));
+      .filter((r) => !reviewIds.includes(r.id))
+      .map((r) => reviewsDB.setRmpReview(profName, r));
     await Promise.all(promises);
     return null;
   } catch (err) {
@@ -389,32 +411,34 @@ async function updateAllProfsRmp() {
   if (err) return { err, failedList: [] };
 
   // divide promises into batches of CHUNK_SIZE
-  const { acc } = profList.reduce(({ acc, num }, { name }) => {
-    if (num <= CHUNK_SIZE) {
-      acc[acc.length - 1].push(name);
-      return { acc, num: num + 1 };
-    } else {
-      acc.push([name]);
-      return { acc, num: 1 };
-    }
-  }, { acc: [[]], num: 0 });
+  const { acc } = profList.reduce(
+    ({ acc, num }, { name }) => {
+      if (num <= CHUNK_SIZE) {
+        acc[acc.length - 1].push(name);
+        return { acc, num: num + 1 };
+      } else {
+        acc.push([name]);
+        return { acc, num: 1 };
+      }
+    },
+    { acc: [[]], num: 0 }
+  );
 
   try {
     let failedList = [];
     for (let i = 0; i < acc.length; i++) {
-      const promises = acc[i].map(name => updateProfRmp(name));
+      const promises = acc[i].map((name) => updateProfRmp(name));
       const list = await Promise.all(promises);
       failedList = failedList.concat(list);
     }
     /* eslint-disable no-console */
     console.log(`Finished updating all prof reviews at ${new Date()}`);
     return { err: null, failedList };
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return { err, failedList: [] };
   }
 }
-
 
 // Update course information from birdcourses.com
 async function updateBirdReviews() {
@@ -428,15 +452,18 @@ async function updateBirdReviews() {
     });
 
     // divide promises into batches of CHUNK_SIZE
-    const { acc } = courses.reduce(({ acc, num }, item) => {
-      if (num <= CHUNK_SIZE) {
-        acc[acc.length - 1].push(item);
-        return { acc, num: num + 1 };
-      } else {
-        acc.push([item]);
-        return { acc, num: 1 };
-      }
-    }, { acc: [[]], num: 0 });
+    const { acc } = courses.reduce(
+      ({ acc, num }, item) => {
+        if (num <= CHUNK_SIZE) {
+          acc[acc.length - 1].push(item);
+          return { acc, num: num + 1 };
+        } else {
+          acc.push([item]);
+          return { acc, num: 1 };
+        }
+      },
+      { acc: [[]], num: 0 }
+    );
 
     const failedList = [];
     for (let i = 0; i < acc.length; i++) {
@@ -474,12 +501,16 @@ async function storePostreqs(choose, prereqs, postreq, prereq) {
     choose = prereq.choose;
     prereqs = prereq.reqs;
 
-    await Promise.all(prereqs.map(async (prereq) => {
-      await storePostreqs(choose, prereqs, postreq, prereq);
-    }));
+    await Promise.all(
+      prereqs.map(async (prereq) => {
+        await storePostreqs(choose, prereqs, postreq, prereq);
+      })
+    );
   } else {
     const { subject, catalogNumber } = prereq;
-    const alternatives = prereqs.filter(req => req.subject !== subject || req.catalogNumber !== catalogNumber);
+    const alternatives = prereqs.filter(
+      (req) => req.subject !== subject || req.catalogNumber !== catalogNumber
+    );
 
     await requisitesDB.setPostreq(subject, catalogNumber, postreq, choose, alternatives);
   }
@@ -488,21 +519,16 @@ async function storePostreqs(choose, prereqs, postreq, prereq) {
 // Helper function for updateClass
 // Updates watchlist enrollment numbers and notifies watchers if necessary
 async function updateWatchlist(term, classInfo) {
-  const {
-    classNumber,
-    subject,
-    catalogNumber,
-    enrollmentCap,
-    enrollmentTotal,
-  } = classInfo;
+  const { classNumber, subject, catalogNumber, enrollmentCap, enrollmentTotal } = classInfo;
 
   let { enrollment, err } = await watchlistDB.getEnrollment(term, classNumber);
   if (err) return err;
 
   // If no change, return
-  if (enrollment != null &&
-      enrollmentCap === enrollment.enrollmentCap &&
-      enrollmentTotal === enrollment.enrollmentTotal
+  if (
+    enrollment != null &&
+    enrollmentCap === enrollment.enrollmentCap &&
+    enrollmentTotal === enrollment.enrollmentTotal
   ) {
     /* eslint-disable no-console */
     // console.log(`Skipping class ${classNumber}...`);
@@ -528,11 +554,17 @@ async function updateWatchlist(term, classInfo) {
   // Notify watchers if there are spaces
   const openings = enrollmentCap - enrollmentTotal;
   if (openings > 0) {
-    watchers.forEach(username => {
-      email.sendClassUpdateEmail(term, classNumber, subject.toUpperCase(), catalogNumber, openings, username);
+    watchers.forEach((username) => {
+      email.sendClassUpdateEmail(
+        term,
+        classNumber,
+        subject.toUpperCase(),
+        catalogNumber,
+        openings,
+        username
+      );
     });
   }
-  return;
 }
 
 async function updateXML() {
@@ -546,8 +578,9 @@ async function updateXML() {
     if (mm < 10) mm = '0' + mm;
     const yy = date.getFullYear();
     const dateStr = `${yy}-${mm}-${dd}`;
-    const courseXml = courseList.map(({ subject, catalogNumber }) => {
-      const str = `
+    const courseXml = courseList
+      .map(({ subject, catalogNumber }) => {
+        const str = `
   <url>
     <loc>https://www.watsmymajor.com/courses/${subject}/${catalogNumber}</loc>
     <lastmod>${dateStr}</lastmod>
@@ -560,18 +593,21 @@ async function updateXML() {
     <changefreq>weekly</changefreq>
     <priority>0.50</priority>
   </url>`;
-      return str;
-    }).join('');
-    const profXml = profList.map(({ id }) => {
-      const str = `
+        return str;
+      })
+      .join('');
+    const profXml = profList
+      .map(({ id }) => {
+        const str = `
   <url>
     <loc>https://www.watsmymajor.com/professors/${id}</loc>
     <lastmod>${dateStr}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.80</priority>
   </url>`;
-      return str;
-    }).join('');
+        return str;
+      })
+      .join('');
     const xml = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.watsmymajor.com</loc>

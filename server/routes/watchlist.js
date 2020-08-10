@@ -2,7 +2,7 @@ const WatchlistRouter = require('express').Router();
 const watchlist = require('../core/watchlist');
 
 // Get watchers for a class
-WatchlistRouter.get('/watchers/:term/:classNum', async function(req, res) {
+WatchlistRouter.get('/watchers/:term/:classNum', async function (req, res) {
   const { term, classNum } = req.params;
 
   const { watchers, err } = await watchlist.getWatchers(term, classNum);
@@ -11,7 +11,7 @@ WatchlistRouter.get('/watchers/:term/:classNum', async function(req, res) {
 });
 
 // Add watcher to class
-WatchlistRouter.get('/watchers/add/:term/:classNum/:username', async function(req, res) {
+WatchlistRouter.get('/watchers/add/:term/:classNum/:username', async function (req, res) {
   const { term, classNum, username } = req.params;
 
   const err = await watchlist.addWatcher(term, classNum, username);
@@ -20,7 +20,7 @@ WatchlistRouter.get('/watchers/add/:term/:classNum/:username', async function(re
 });
 
 // Remove watcher from class
-WatchlistRouter.get('/watchers/remove/:term/:classNum/:username', async function(req, res) {
+WatchlistRouter.get('/watchers/remove/:term/:classNum/:username', async function (req, res) {
   const { term, classNum, username } = req.params;
 
   const err = await watchlist.removeWatcher(term, classNum, username);
@@ -29,7 +29,7 @@ WatchlistRouter.get('/watchers/remove/:term/:classNum/:username', async function
 });
 
 // Get enrollment numbers for a class
-WatchlistRouter.get('/enrollment/:term/:classNum', async function(req, res) {
+WatchlistRouter.get('/enrollment/:term/:classNum', async function (req, res) {
   const { term, classNum } = req.params;
 
   const { enrollment, err } = await watchlist.getEnrollment(term, classNum);
@@ -38,13 +38,12 @@ WatchlistRouter.get('/enrollment/:term/:classNum', async function(req, res) {
 });
 
 // Get subject and catalog number for a class
-WatchlistRouter.get('/info/:term/:classNum', async function(req, res) {
+WatchlistRouter.get('/info/:term/:classNum', async function (req, res) {
   const { term, classNum } = req.params;
 
   const { subject, catalogNumber, err } = await watchlist.getSubjectAndCatNum(term, classNum);
   if (err) res.status(400).send(err.message);
   else res.json({ subject, catalogNumber });
 });
-
 
 module.exports = WatchlistRouter;

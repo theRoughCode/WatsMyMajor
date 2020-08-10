@@ -1,9 +1,8 @@
 const ScheduleRouter = require('express').Router();
 const users = require('../core/users');
 
-
 // Get user schedule
-ScheduleRouter.get('/:username', async function(req, res) {
+ScheduleRouter.get('/:username', async function (req, res) {
   const username = req.params.username.toLowerCase();
   const { schedule, name, err } = await users.getUserSchedule(username);
   if (err) {
@@ -12,6 +11,5 @@ ScheduleRouter.get('/:username', async function(req, res) {
   } else if (schedule == null) res.status(404).send('User schedule not found');
   else res.json({ schedule, name });
 });
-
 
 module.exports = ScheduleRouter;

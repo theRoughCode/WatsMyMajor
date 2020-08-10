@@ -2,7 +2,7 @@ const CourseRatingsRouter = require('express').Router();
 const courseRatingsDB = require('../database/courseRatings');
 
 // Updates user rating for a course
-CourseRatingsRouter.post('/update/:subject/:catalogNumber', async function(req, res) {
+CourseRatingsRouter.post('/update/:subject/:catalogNumber', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const catalogNumber = req.params.catalogNumber;
   const username = req.body.username.toLowerCase();
@@ -18,7 +18,7 @@ CourseRatingsRouter.post('/update/:subject/:catalogNumber', async function(req, 
   else res.json(result.rating);
 });
 
-CourseRatingsRouter.get('/:subject/:catalogNumber', async function(req, res) {
+CourseRatingsRouter.get('/:subject/:catalogNumber', async function (req, res) {
   const subject = req.params.subject.toUpperCase();
   const catalogNumber = req.params.catalogNumber;
 
@@ -29,7 +29,7 @@ CourseRatingsRouter.get('/:subject/:catalogNumber', async function(req, res) {
 });
 
 // Retrieves ratings of all courses
-CourseRatingsRouter.get('/all', async function(req, res) {
+CourseRatingsRouter.get('/all', async function (req, res) {
   const { err, courseRatings } = await courseRatingsDB.getAllCourseRatings();
   if (err) res.status(400).send(err.message);
   else res.json(courseRatings);

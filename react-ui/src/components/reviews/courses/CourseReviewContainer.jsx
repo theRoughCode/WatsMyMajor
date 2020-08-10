@@ -13,7 +13,7 @@ import { purple, grey } from 'constants/Colours';
 
 const styles = {
   container: (isMobile) => {
-    const horPadding = (isMobile) ? 15 : 20;
+    const horPadding = isMobile ? 15 : 20;
     return {
       width: `calc(100% - ${horPadding * 2}px)`,
       height: 'calc(100% - 40px)',
@@ -21,7 +21,7 @@ const styles = {
       flexDirection: 'column',
       flexWrap: 'wrap',
       padding: `20px ${horPadding}px`,
-    }
+    };
   },
   reviewContainer: {
     margin: '20px auto',
@@ -46,30 +46,31 @@ const styles = {
   subtitle: {
     color: grey,
     marginLeft: 10,
-  }
+  },
 };
 
 const getRating = (r) => r.easy + r.useful + r.interesting;
 
 const sortFunctions = {
-  'Old': (r1, r2) => new Date(r1.date) - new Date(r2.date),
-  'New': (r1, r2) => new Date(r2.date) - new Date(r1.date),
-  'Highest': (r1, r2) => getRating(r2) - getRating(r1),
-  'Lowest': (r1, r2) => getRating(r1) - getRating(r2),
-  'Top': (r1, r2) => (r2.numThumbsUp-r2.numThumbsDown) - (r1.numThumbsUp-r1.numThumbsDown),
-  'Controversial': (r1, r2) => (r1.numThumbsUp-r1.numThumbsDown) - (r2.numThumbsUp-r2.numThumbsDown),
+  Old: (r1, r2) => new Date(r1.date) - new Date(r2.date),
+  New: (r1, r2) => new Date(r2.date) - new Date(r1.date),
+  Highest: (r1, r2) => getRating(r2) - getRating(r1),
+  Lowest: (r1, r2) => getRating(r1) - getRating(r2),
+  Top: (r1, r2) => r2.numThumbsUp - r2.numThumbsDown - (r1.numThumbsUp - r1.numThumbsDown),
+  Controversial: (r1, r2) =>
+    r1.numThumbsUp - r1.numThumbsDown - (r2.numThumbsUp - r2.numThumbsDown),
 };
 
 const getCourseReviews = async (subject, catalogNumber) => {
   const response = await fetch(`/server/courses/reviews/${subject}/${catalogNumber}`, {
     headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return null;
   const resp = await response.json();
   return resp;
-}
+};
 
 // Adds course review. Returns true if successful
 const addCourseReview = async (subject, catalogNumber, review) => {
@@ -79,10 +80,10 @@ const addCourseReview = async (subject, catalogNumber, review) => {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
       'Content-Type': 'application/json',
-    }
+    },
   });
   return response.ok;
-}
+};
 
 // Deletes course review. Returns true if successful
 const deleteCourseReview = async (subject, catalogNumber) => {
@@ -90,32 +91,32 @@ const deleteCourseReview = async (subject, catalogNumber) => {
     method: 'DELETE',
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
-    }
+    },
   });
   return response.ok;
-}
+};
 
 const getProfList = async (subject, catalogNumber) => {
   const response = await fetch(`/server/prof/list/${subject}/${catalogNumber}`, {
     headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return null;
   const resp = await response.json();
   return resp;
-}
+};
 
 const getProfId = async (name) => {
   const response = await fetch(`/server/prof/id/${name}`, {
     headers: {
-      "x-secret": process.env.REACT_APP_SERVER_SECRET
-    }
+      'x-secret': process.env.REACT_APP_SERVER_SECRET,
+    },
   });
   if (!response.ok) return null;
   const resp = await response.json();
   return resp;
-}
+};
 
 // Adds course review vote. Returns true if successful
 const addVote = async (subject, catalogNumber, data) => {
@@ -125,13 +126,12 @@ const addVote = async (subject, catalogNumber, data) => {
     headers: {
       'x-secret': process.env.REACT_APP_SERVER_SECRET,
       'Content-Type': 'application/json',
-    }
+    },
   });
   return response.ok;
-}
+};
 
 class CourseReviewContainer extends Component {
-
   static propTypes = {
     location: PropTypes.object.isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
@@ -163,7 +163,6 @@ class CourseReviewContainer extends Component {
     const { subject, catalogNumber } = this.state;
     this.updatePage(subject, catalogNumber);
   }
-
 
   componentWillUnmount() {
     this._isMounted = false;
@@ -221,7 +220,7 @@ class CourseReviewContainer extends Component {
       if (resp.hasOwnProperty('bird')) {
         numRatings += Object.keys(resp.bird).length;
         const birdUrl = `https://birdcourses.com/course.php?courseid=${resp.bird.id}`;
-        const birdReviews = resp.bird.reviews.map(review => {
+        const birdReviews = resp.bird.reviews.map((review) => {
           review.birdURL = birdUrl;
           return review;
         });
@@ -232,7 +231,7 @@ class CourseReviewContainer extends Component {
       // Add reviews from watsmymajor
       if (resp.hasOwnProperty('wmm')) {
         numRatings += Object.keys(resp.wmm).length;
-        let wmmReviews = Object.keys(resp.wmm).map(async id => {
+        let wmmReviews = Object.keys(resp.wmm).map(async (id) => {
           const review = resp.wmm[id];
           review.id = id;
           if (review.hasOwnProperty('prof')) {
@@ -280,7 +279,7 @@ class CourseReviewContainer extends Component {
     const success = await addCourseReview(subject, catalogNumber, review);
     if (!success) console.error('Failed to update course review.');
     else this.updateReviews(subject, catalogNumber);
-  }
+  };
 
   onDelete = async () => {
     const { subject, catalogNumber } = this.state;
@@ -290,7 +289,7 @@ class CourseReviewContainer extends Component {
       this.setState({ userReview: null });
       this.updateReviews(subject, catalogNumber);
     }
-  }
+  };
 
   onVote = (i) => async (vote) => {
     const { subject, catalogNumber } = this.state;
@@ -317,7 +316,7 @@ class CourseReviewContainer extends Component {
       reviews[i].numThumbsDown = numThumbsDown;
       this.setState({ reviews });
     }
-  }
+  };
 
   render() {
     const {
@@ -331,139 +330,137 @@ class CourseReviewContainer extends Component {
       loading,
     } = this.state;
 
-    if (loading) return (
-      <div style={{ width: '100%', height: '100%' }}>
-        <LoadingView />
-      </div>
-    );
+    if (loading)
+      return (
+        <div style={{ width: '100%', height: '100%' }}>
+          <LoadingView />
+        </div>
+      );
 
     return (
-      <MediaQuery minWidth={ 400 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
-          const numRatingsText = (numRatings === 1) ? '1 rating' : `${numRatings} ratings`;
+      <MediaQuery minWidth={400}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
+          const numRatingsText = numRatings === 1 ? '1 rating' : `${numRatings} ratings`;
           return (
             <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap-reverse' }}>
               <div style={{ width: '100%', maxWidth: 760 }}>
-                <div style={ styles.container(isMobile) }>
+                <div style={styles.container(isMobile)}>
                   <div style={{ width: 'fit-content', marginBottom: 10 }}>
-                    <span style={ styles.title }>Reviews</span>
-                    { numRatings != null && (
-                      <span style={ styles.subtitle }>{ numRatingsText }</span>
-                    ) }
+                    <span style={styles.title}>Reviews</span>
+                    {numRatings != null && <span style={styles.subtitle}>{numRatingsText}</span>}
                   </div>
                   <div style={{ width: '100%' }}>
-                    {
-                      (this.props.isLoggedIn)
-                        ? (
-                          <WriteReview
-                            subject={ subject }
-                            catalogNumber={ catalogNumber }
-                            profs={ profs }
-                            onSubmit={ this.onSubmit }
-                            onDelete={ this.onDelete }
-                            userReview={ userReview }
-                          />
-                        )
-                        : (
-                          <div style={ styles.login }>
-                            <span>
-                              <Link
-                                to={{
-                                  pathname: '/login',
-                                  state: {
-                                    from: this.props.location.pathname,
-                                  }
-                                }}
-                              >Login</Link> to write a review!
-                            </span>
-                          </div>
-                        )
-                    }
-                    {
-                      (numRatings === 0)
-                        ? (
-                          (this.props.isLoggedIn)
-                            ? <span style={ styles.helpText }>Looks like there aren't any ratings yet.  Help us out by adding a review!</span>
-                            : null
-                        )
-                        : (
-                          <div style={ styles.sortContainer }>
-                            <span style={{ marginRight: 7 }}>Sort By:</span>
-                            <Select
-                              style={{ color: purple, fontWeight: 400 }}
-                              value={ this.state.sort }
-                              onChange={ this.onChangeSort }
-                              inputProps={{
-                                id: 'sort',
-                              }}
-                              autoWidth
-                            >
-                              <MenuItem value="New">New</MenuItem>
-                              <MenuItem value="Old">Old</MenuItem>
-                              <MenuItem value="Highest">Highest Rated</MenuItem>
-                              <MenuItem value="Lowest">Lowest Rated</MenuItem>
-                              <MenuItem value="Top">Top</MenuItem>
-                              <MenuItem value="Controversial">Controversial</MenuItem>
-                            </Select>
-                          </div>
-                        )
-                    }
-                    {
-                      reviews.map(({
-                        id,
-                        date,
-                        prof,
-                        profId,
-                        term,
-                        year,
-                        interesting,
-                        useful,
-                        easy,
-                        difficulty,
-                        isMandatory,
-                        textbookUsed,
-                        grade,
-                        comments,
-                        advice,
-                        numThumbsUp,
-                        numThumbsDown,
-                        birdURL,
-                      }, i) => (
+                    {this.props.isLoggedIn ? (
+                      <WriteReview
+                        subject={subject}
+                        catalogNumber={catalogNumber}
+                        profs={profs}
+                        onSubmit={this.onSubmit}
+                        onDelete={this.onDelete}
+                        userReview={userReview}
+                      />
+                    ) : (
+                      <div style={styles.login}>
+                        <span>
+                          <Link
+                            to={{
+                              pathname: '/login',
+                              state: {
+                                from: this.props.location.pathname,
+                              },
+                            }}
+                          >
+                            Login
+                          </Link>{' '}
+                          to write a review!
+                        </span>
+                      </div>
+                    )}
+                    {numRatings === 0 ? (
+                      this.props.isLoggedIn ? (
+                        <span style={styles.helpText}>
+                          Looks like there aren't any ratings yet. Help us out by adding a review!
+                        </span>
+                      ) : null
+                    ) : (
+                      <div style={styles.sortContainer}>
+                        <span style={{ marginRight: 7 }}>Sort By:</span>
+                        <Select
+                          style={{ color: purple, fontWeight: 400 }}
+                          value={this.state.sort}
+                          onChange={this.onChangeSort}
+                          inputProps={{
+                            id: 'sort',
+                          }}
+                          autoWidth
+                        >
+                          <MenuItem value="New">New</MenuItem>
+                          <MenuItem value="Old">Old</MenuItem>
+                          <MenuItem value="Highest">Highest Rated</MenuItem>
+                          <MenuItem value="Lowest">Lowest Rated</MenuItem>
+                          <MenuItem value="Top">Top</MenuItem>
+                          <MenuItem value="Controversial">Controversial</MenuItem>
+                        </Select>
+                      </div>
+                    )}
+                    {reviews.map(
+                      (
+                        {
+                          id,
+                          date,
+                          prof,
+                          profId,
+                          term,
+                          year,
+                          interesting,
+                          useful,
+                          easy,
+                          difficulty,
+                          isMandatory,
+                          textbookUsed,
+                          grade,
+                          comments,
+                          advice,
+                          numThumbsUp,
+                          numThumbsDown,
+                          birdURL,
+                        },
+                        i
+                      ) => (
                         <Review
-                          key={ id || i }
-                          date={ date }
-                          prof={ prof }
-                          profId={ profId }
-                          term={ term }
-                          year={ year }
-                          interesting={ interesting }
-                          useful={ useful }
-                          easy={ easy }
-                          difficulty={ difficulty }
-                          isMandatory={ isMandatory }
-                          textbookUsed={ textbookUsed }
-                          grade={ grade }
-                          comments={ comments }
-                          advice={ advice }
-                          numThumbsUp={ numThumbsUp }
-                          numThumbsDown={ numThumbsDown }
-                          birdURL={ birdURL }
-                          onVote={ this.onVote(i) }
+                          key={id || i}
+                          date={date}
+                          prof={prof}
+                          profId={profId}
+                          term={term}
+                          year={year}
+                          interesting={interesting}
+                          useful={useful}
+                          easy={easy}
+                          difficulty={difficulty}
+                          isMandatory={isMandatory}
+                          textbookUsed={textbookUsed}
+                          grade={grade}
+                          comments={comments}
+                          advice={advice}
+                          numThumbsUp={numThumbsUp}
+                          numThumbsDown={numThumbsDown}
+                          birdURL={birdURL}
+                          onVote={this.onVote(i)}
                         />
-                      ))
-                    }
+                      )
+                    )}
                   </div>
                 </div>
               </div>
-              <Resources resources={ resources } />
+              <Resources resources={resources} />
             </div>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }
 
 const mapStateToProps = ({ isLoggedIn, user }) => ({

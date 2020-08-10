@@ -12,7 +12,7 @@ import { objectEquals } from 'utils/arrays';
 import 'stylesheets/ClassDetails.css';
 import { darkRed } from 'constants/Colours';
 
-const styles =  {
+const styles = {
   titleContainer: {
     padding: '10px 20px',
     display: 'flex',
@@ -53,7 +53,7 @@ const styles =  {
   },
   body: (isMobile) => ({
     display: 'flex',
-    flexDirection: (isMobile) ? 'column' : 'row',
+    flexDirection: isMobile ? 'column' : 'row',
   }),
   note: {
     fontSize: 13,
@@ -67,21 +67,21 @@ const styles =  {
     lineHeight: 0.7,
     paddingLeft: 2,
     fontSize: 11,
-  }
+  },
 };
 
 async function retrieveProfInfo(instructor) {
   try {
     const response = await fetch(`/server/prof/info/${instructor}`, {
       headers: {
-        'x-secret': process.env.REACT_APP_SERVER_SECRET
-      }
+        'x-secret': process.env.REACT_APP_SERVER_SECRET,
+      },
     });
 
     if (!response.ok) return { err: `status ${response.status}`, prof: null };
 
     const prof = await response.json();
-    return { err:  null, prof };
+    return { err: null, prof };
   } catch (err) {
     return { err, prof: null };
   }
@@ -146,7 +146,7 @@ export default class ClassDetailsContainer extends Component {
   }
 
   render() {
-    const  { classInfo, watchlist, admURL, open, onClose, onWatch, onUnwatch } = this.props;
+    const { classInfo, watchlist, admURL, open, onClose, onWatch, onUnwatch } = this.props;
     const { instructor, prof, fetchingRMP } = this.state;
     const {
       classNumber,
@@ -163,100 +163,90 @@ export default class ClassDetailsContainer extends Component {
       lastUpdated,
     } = classInfo;
 
-    const actions = [
-      <FlatButton
-        label="Close"
-        onClick={ onClose }
-      />
-    ];
+    const actions = [<FlatButton label="Close" onClick={onClose} />];
 
     let watchButton = null;
 
     if (watchlist.hasOwnProperty(classNumber)) {
       watchButton = (
-        <div style={ styles.watchContainer }>
+        <div style={styles.watchContainer}>
           <RaisedButton
             label="Unwatch Class"
             labelPosition="before"
             secondary
-            icon={ <UnwatchIcon /> }
-            onClick={ () => onUnwatch(classNumber) }
+            icon={<UnwatchIcon />}
+            onClick={() => onUnwatch(classNumber)}
           />
         </div>
       );
     } else if (enrollmentCap > 0 && enrollmentTotal >= enrollmentCap) {
       watchButton = (
-        <div style={ styles.watchContainer }>
+        <div style={styles.watchContainer}>
           <RaisedButton
             label="Watch Class"
             labelPosition="before"
             primary
-            icon={ <WatchIcon /> }
-            onClick={ () => onWatch(classNumber) }
+            icon={<WatchIcon />}
+            onClick={() => onWatch(classNumber)}
           />
-          <span style={ styles.watchText }>This class is full!</span>
+          <span style={styles.watchText}>This class is full!</span>
         </div>
       );
     }
 
     return (
-      <MediaQuery minWidth={ 475 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={475}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
             <Dialog
               title={
-                <div style={ styles.titleContainer }>
-                  <div style={ styles.header }>
-                    <span style={ styles.headerText }>Class Information</span>
-                    <span style={ styles.lastUpdated }>Last updated: { lastUpdated }</span>
-                    <span style={ styles.admURL }>
+                <div style={styles.titleContainer}>
+                  <div style={styles.header}>
+                    <span style={styles.headerText}>Class Information</span>
+                    <span style={styles.lastUpdated}>Last updated: {lastUpdated}</span>
+                    <span style={styles.admURL}>
                       <span style={{ marginRight: 4 }}>Scraped from:</span>
-                      <a href={ admURL } target="_blank" rel="noopener noreferrer">
+                      <a href={admURL} target="_blank" rel="noopener noreferrer">
                         adm.uwaterloo.ca
                       </a>
                     </span>
                   </div>
-                  { watchButton }
+                  {watchButton}
                 </div>
               }
-              open={ open }
-              actions={ actions }
-              onRequestClose={ onClose }
-              contentStyle={ styles.dialog }
-              bodyStyle={ styles.container }
-              actionsContainerStyle={ styles.actions }
+              open={open}
+              actions={actions}
+              onRequestClose={onClose}
+              contentStyle={styles.dialog}
+              bodyStyle={styles.container}
+              actionsContainerStyle={styles.actions}
               autoScrollBodyContent
             >
-              <div style={ styles.body(isMobile) }>
+              <div style={styles.body(isMobile)}>
                 <ClassInfo
-                  units={ units }
-                  topic={ topic }
-                  attending={ enrollmentTotal }
-                  enrollmentCap={ enrollmentCap }
-                  waiting={ waitingTotal }
-                  waitingCap={ waitingCap }
-                  reserved={ reserveTotal }
-                  reserveCap={ reserveCap }
-                  reserveGroup={ reserveGroup }
+                  units={units}
+                  topic={topic}
+                  attending={enrollmentTotal}
+                  enrollmentCap={enrollmentCap}
+                  waiting={waitingTotal}
+                  waitingCap={waitingCap}
+                  reserved={reserveTotal}
+                  reserveCap={reserveCap}
+                  reserveGroup={reserveGroup}
                 />
                 <ClassProf
-                  instructor={ instructor }
-                  loading={ fetchingRMP }
-                  prof={ prof }
-                  isMobile={ isMobile }
+                  instructor={instructor}
+                  loading={fetchingRMP}
+                  prof={prof}
+                  isMobile={isMobile}
                 />
               </div>
-              {
-                (note.length > 0) && (
-                  <i style={ styles.note }>{ `Note: ${note}` }</i>
-                )
-              }
+              {note.length > 0 && <i style={styles.note}>{`Note: ${note}`}</i>}
             </Dialog>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }

@@ -30,38 +30,30 @@ export default class DeleteAccount extends Component {
   onDelete = () => {
     this.handleClose();
     this.props.onDeleteAccount();
-  }
+  };
 
   render() {
     const { open } = this.state;
 
     const actions = [
-      <FlatButton
-        label="Cancel"
-        primary
-        onClick={ this.handleClose }
-      />,
-      <FlatButton
-        label="Delete"
-        secondary
-        onClick={ this.onDelete }
-      />,
+      <FlatButton label="Cancel" primary onClick={this.handleClose} />,
+      <FlatButton label="Delete" secondary onClick={this.onDelete} />,
     ];
 
     return (
-      <div style={ styles.container }>
+      <div style={styles.container}>
         <RaisedButton
           label="Delete Account"
-          onClick={ this.handleOpen }
-          labelStyle={ styles.button }
-          backgroundColor={ darkRed }
+          onClick={this.handleOpen}
+          labelStyle={styles.button}
+          backgroundColor={darkRed}
         />
         <Dialog
           title="Are you sure you want to delete your account?"
-          actions={ actions }
-          modal={ false }
-          open={ open }
-          onRequestClose={ this.handleClose }
+          actions={actions}
+          modal={false}
+          open={open}
+          onRequestClose={this.handleClose}
         >
           All your current data will be lost.
         </Dialog>

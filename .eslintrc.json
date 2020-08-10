@@ -14,11 +14,21 @@
 		"indent": ["error", 2],
     "no-console": ["error", { "allow": ["warn", "error"] }],
     "standard/no-callback-literal": "off",
-    "react/jsx-curly-spacing": ["error", {
-      "when": "always",
-      "spacing": {
-        "objectLiterals": "never"
-      }
-    }]
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "never"
+    }],
+    "curly": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "no-prototype-builtins": "off",
+    "jsx-quotes": ["error", "prefer-double"]
 	}
 }

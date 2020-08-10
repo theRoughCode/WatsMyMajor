@@ -12,23 +12,23 @@ const styles = {
     paddingBottom: 10,
     borderBottom: '0.5px solid grey',
     display: 'flex',
-    flexDirection: (isMobile) ? 'column-reverse' : 'row',
+    flexDirection: isMobile ? 'column-reverse' : 'row',
     width: '100%',
   }),
   leftContainer: (isMobile) => ({
     display: 'flex',
-    flexDirection: (isMobile) ? 'row' : 'column',
+    flexDirection: isMobile ? 'row' : 'column',
     textAlign: 'left',
-    marginRight: (isMobile) ? 0 : 15,
-    marginTop: (isMobile) ? 10 : 0,
+    marginRight: isMobile ? 0 : 15,
+    marginTop: isMobile ? 10 : 0,
     fontSize: 12,
-    borderRight: (isMobile) ? 'none' : `1px solid ${grey}`,
+    borderRight: isMobile ? 'none' : `1px solid ${grey}`,
     minWidth: 132,
   }),
   infoList: (isMobile) => ({
     display: 'flex',
     flexDirection: 'column',
-    marginRight: (isMobile) ? 20 : 0,
+    marginRight: isMobile ? 20 : 0,
   }),
   mobileDate: {
     textAlign: 'left',
@@ -41,7 +41,7 @@ const styles = {
     fontWeight: 500,
   },
   infoTitle: {
-    marginRight:  4,
+    marginRight: 4,
   },
   infoItem: {
     marginRight: 0,
@@ -54,11 +54,11 @@ const styles = {
   colourLabel: (num) => ({
     marginLeft: 5,
     marginRight: 15,
-    backgroundColor: (num <= 2) ? darkRed : (num >= 4) ? green : yellow,
+    backgroundColor: num <= 2 ? darkRed : num >= 4 ? green : yellow,
     color: 'white',
     padding: '1.5px 6px',
     borderRadius: 5,
-    display: 'inline'
+    display: 'inline',
   }),
   rightContainer: {
     flexGrow: 1,
@@ -113,12 +113,11 @@ const styles = {
     float: 'left',
     marginTop: 7,
   },
-}
+};
 
-const boolToText = (val) => (val == null) ? 'N/A' : (val) ? 'Yes' : 'No';
+const boolToText = (val) => (val == null ? 'N/A' : val ? 'Yes' : 'No');
 
 export default class Review extends Component {
-
   static propTypes = {
     prof: PropTypes.string,
     profId: PropTypes.string,
@@ -146,9 +145,7 @@ export default class Review extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-
-    };
+    this.state = {};
   }
 
   shouldComponentUpdate(nextProps) {
@@ -177,149 +174,127 @@ export default class Review extends Component {
     } = this.props;
     const isBird = birdURL != null;
 
-    const commentSection = (isBird)
-      ? (
-        <div style={{ marginTop: 5 }}>
-          <p style={ styles.text }>{ comments }</p>
-          { birdURL && (
-            <a
-              style={ styles.birdUrl }
-              rel="noopener noreferrer"
-              href={ birdURL }
-              target="_blank"
-            >
-              Retrieved from birdcourses.com
-            </a>
-          ) }
+    const commentSection = isBird ? (
+      <div style={{ marginTop: 5 }}>
+        <p style={styles.text}>{comments}</p>
+        {birdURL && (
+          <a style={styles.birdUrl} rel="noopener noreferrer" href={birdURL} target="_blank">
+            Retrieved from birdcourses.com
+          </a>
+        )}
+      </div>
+    ) : (
+      <div>
+        <div style={styles.commentContainer}>
+          <p style={styles.commentHeader}>Comments:</p>
+          <p style={styles.text}>{comments}</p>
         </div>
-      )
-      : (
-        <div>
-          <div style={ styles.commentContainer }>
-            <p style={ styles.commentHeader }>Comments:</p>
-            <p style={ styles.text }>{ comments }</p>
+        {advice.length > 0 && (
+          <div style={styles.commentContainer}>
+            <p style={styles.commentHeader}>Advice:</p>
+            <p style={styles.text}>{advice}</p>
           </div>
-          {
-            advice.length > 0 && (
-              <div style={ styles.commentContainer }>
-                <p style={ styles.commentHeader }>Advice:</p>
-                <p style={ styles.text }>{ advice }</p>
-              </div>
-            )
-          }
-        </div>
-      );
+        )}
+      </div>
+    );
 
-    const profText = (profId != null && profId.length > 0)
-      ? (
+    const profText =
+      profId != null && profId.length > 0 ? (
         <a
           rel="noopener noreferrer"
-          href={ `/professors/${profId}` }
-          target='_blank'
-          style={ styles.term }
-        >{ prof }</a>
-      )
-      : (
-        <span style={ styles.term }>{ prof }</span>
+          href={`/professors/${profId}`}
+          target="_blank"
+          style={styles.term}
+        >
+          {prof}
+        </a>
+      ) : (
+        <span style={styles.term}>{prof}</span>
       );
     return (
-      <MediaQuery minWidth={ 600 }>
-        { matches => {
-          const isMobile = (global.isMobile != null) ? global.isMobile : !matches;
+      <MediaQuery minWidth={600}>
+        {(matches) => {
+          const isMobile = global.isMobile != null ? global.isMobile : !matches;
           return (
-            <div style={ styles.container(isMobile) }>
-              <div style={ styles.leftContainer(isMobile) }>
-                { !isMobile && (
-                  <span style={ styles.date }>{ date }</span>
-                ) }
-                { !isBird && (
-                  <div style={ styles.infoList(isMobile) }>
-                    <div style={ styles.infoItem }>
-                      <span style={ styles.infoTitle }>Easy:</span>
-                      <span style={ styles.colourLabel(easy) }>{ easy }</span>
+            <div style={styles.container(isMobile)}>
+              <div style={styles.leftContainer(isMobile)}>
+                {!isMobile && <span style={styles.date}>{date}</span>}
+                {!isBird && (
+                  <div style={styles.infoList(isMobile)}>
+                    <div style={styles.infoItem}>
+                      <span style={styles.infoTitle}>Easy:</span>
+                      <span style={styles.colourLabel(easy)}>{easy}</span>
                     </div>
-                    <div style={ styles.infoItem }>
-                      <span style={ styles.infoTitle }>Useful:</span>
-                      <span style={ styles.colourLabel(useful) }>{ useful }</span>
+                    <div style={styles.infoItem}>
+                      <span style={styles.infoTitle}>Useful:</span>
+                      <span style={styles.colourLabel(useful)}>{useful}</span>
                     </div>
-                    <div style={ styles.infoItem }>
-                      <span style={ styles.infoTitle }>Interesting:</span>
-                      <span style={ styles.colourLabel(interesting) }>{ interesting }</span>
+                    <div style={styles.infoItem}>
+                      <span style={styles.infoTitle}>Interesting:</span>
+                      <span style={styles.colourLabel(interesting)}>{interesting}</span>
                     </div>
                   </div>
-                ) }
-                <div style={ styles.infoList(isMobile) }>
-                  <div style={ styles.infoItem }>
-                    <span style={ styles.infoTitle }>Attendance:</span>
+                )}
+                <div style={styles.infoList(isMobile)}>
+                  <div style={styles.infoItem}>
+                    <span style={styles.infoTitle}>Attendance:</span>
                     <span>
-                      { (isMandatory == null)
-                        ? 'N/A'
-                        : (isMandatory) ? 'Mandatory' : 'Optional'
-                      }
+                      {isMandatory == null ? 'N/A' : isMandatory ? 'Mandatory' : 'Optional'}
                     </span>
                   </div>
-                  <div style={ styles.infoItem }>
-                    <span style={ styles.infoTitle }>Textbook Used:</span>
-                    <span>{ boolToText(textbookUsed) }</span>
+                  <div style={styles.infoItem}>
+                    <span style={styles.infoTitle}>Textbook Used:</span>
+                    <span>{boolToText(textbookUsed)}</span>
                   </div>
-                  <div style={ styles.infoItem }>
-                    <span style={ styles.infoTitle }>Grade:</span>
-                    <span>{ (grade == null) ? 'N/A' : grade }</span>
+                  <div style={styles.infoItem}>
+                    <span style={styles.infoTitle}>Grade:</span>
+                    <span>{grade == null ? 'N/A' : grade}</span>
                   </div>
                 </div>
               </div>
-              <div style={ styles.rightContainer }>
-                {
-                  !isBird && (
-                    <div style={ styles.upperContainer }>
-                      <div style={ styles.reviewTitle(isMobile) }>
-                        { term.length > 0 && (
-                          <span style={ styles.term }>
-                            { `${term} ${year}` }
-                            { prof.length > 0 && ' - ' }
-                          </span>
-                        ) }
-                        { prof.length > 0 && profId != null && profText }
+              <div style={styles.rightContainer}>
+                {!isBird && (
+                  <div style={styles.upperContainer}>
+                    <div style={styles.reviewTitle(isMobile)}>
+                      {term.length > 0 && (
+                        <span style={styles.term}>
+                          {`${term} ${year}`}
+                          {prof.length > 0 && ' - '}
+                        </span>
+                      )}
+                      {prof.length > 0 && profId != null && profText}
+                    </div>
+                    <div style={styles.thumbsContainer}>
+                      <div style={styles.thumbInnerContainer}>
+                        <IconButton style={{ padding: 5 }} onClick={() => onVote(1)}>
+                          <FontIcon className="material-icons" style={styles.thumb}>
+                            thumb_up
+                          </FontIcon>
+                        </IconButton>
+                        <span>{numThumbsUp}</span>
                       </div>
-                      <div style={ styles.thumbsContainer }>
-                        <div style={ styles.thumbInnerContainer }>
-                          <IconButton
-                            style={{ padding: 5 }}
-                            onClick={ () => onVote(1) }
-                          >
-                            <FontIcon className="material-icons" style={ styles.thumb }>
-                              thumb_up
-                            </FontIcon>
-                          </IconButton>
-                          <span>{ numThumbsUp }</span>
-                        </div>
-                        <div style={ styles.thumbInnerContainer }>
-                          <IconButton
-                            style={{ padding: 5 }}
-                            onClick={ () => onVote(-1) }
-                          >
-                            <FontIcon className="material-icons" style={ styles.thumb }>
-                              thumb_down
-                            </FontIcon>
-                          </IconButton>
-                          <span>{ numThumbsDown }</span>
-                        </div>
+                      <div style={styles.thumbInnerContainer}>
+                        <IconButton style={{ padding: 5 }} onClick={() => onVote(-1)}>
+                          <FontIcon className="material-icons" style={styles.thumb}>
+                            thumb_down
+                          </FontIcon>
+                        </IconButton>
+                        <span>{numThumbsDown}</span>
                       </div>
                     </div>
-                  )
-                }
-                { isMobile && (
-                  <div style={ styles.mobileDate }>
-                    <span>{ date }</span>
                   </div>
-                ) }
-                { commentSection }
+                )}
+                {isMobile && (
+                  <div style={styles.mobileDate}>
+                    <span>{date}</span>
+                  </div>
+                )}
+                {commentSection}
               </div>
             </div>
           );
-        } }
+        }}
       </MediaQuery>
     );
   }
-
 }

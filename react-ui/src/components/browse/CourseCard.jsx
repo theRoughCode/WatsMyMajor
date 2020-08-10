@@ -41,7 +41,7 @@ const styles = {
     overflow: 'hidden',
     margin: 15,
     textAlign: 'left',
-  }
+  },
 };
 
 const CourseCard = ({
@@ -56,34 +56,29 @@ const CourseCard = ({
 }) => {
   const onAddToCart = () => addToCart(subject, catalogNumber);
   return (
-    <Card
-      style={ styles.container }
-      containerStyle={ styles.innerContainer }
-    >
-      <div className="course-card" style={ styles.content }>
-        <div style={ styles.header }>
+    <Card style={styles.container} containerStyle={styles.innerContainer}>
+      <div className="course-card" style={styles.content}>
+        <div style={styles.header}>
           <CardHeader
-            title={ `${subject} ${catalogNumber}` }
-            subtitle={ title }
+            title={`${subject} ${catalogNumber}`}
+            subtitle={title}
             style={{ textAlign: 'left' }}
             titleStyle={{ marginBottom: 5 }}
             subtitleStyle={{ marginRight: -70 }}
           />
         </div>
-        <div className="overlay" style={ styles.overlayContainer }>
-          <div style={ styles.overlayText }>
-            { description }
-          </div>
+        <div className="overlay" style={styles.overlayContainer}>
+          <div style={styles.overlayText}>{description}</div>
         </div>
       </div>
       <CardActions>
-        <Link to={ `/courses/${subject}/${catalogNumber}` }>
+        <Link to={`/courses/${subject}/${catalogNumber}`}>
           <FlatButton label="See more" />
         </Link>
         <FlatButton
           label="Quick add"
-          disabled={ !isLoggedIn || taken || inCart }
-          onClick={ onAddToCart }
+          disabled={!isLoggedIn || taken || inCart}
+          onClick={onAddToCart}
         />
       </CardActions>
     </Card>
@@ -99,6 +94,6 @@ CourseCard.propTypes = {
   taken: PropTypes.bool.isRequired,
   inCart: PropTypes.bool.isRequired,
   addToCart: PropTypes.func.isRequired,
-}
+};
 
 export default CourseCard;

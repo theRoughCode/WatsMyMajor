@@ -33,12 +33,13 @@ async function updateUserRating(username, subject, catalogNumber, rating) {
 
   const userSnapshot = await userRef.once('value');
   try {
-    const { committed, snapshot } = await ratingRef.transaction(ratingObj => {
+    const { committed, snapshot } = await ratingRef.transaction((ratingObj) => {
       // Has not been set yet
-      if (ratingObj == null) return {
-        avgRating: rating,
-        numRatings: 1,
-      };
+      if (ratingObj == null)
+        return {
+          avgRating: rating,
+          numRatings: 1,
+        };
       let totalRatings = ratingObj.avgRating * ratingObj.numRatings + rating;
       let numRatings = ratingObj.numRatings + 1;
       const prevUserRating = userSnapshot.val();
@@ -64,7 +65,6 @@ async function updateUserRating(username, subject, catalogNumber, rating) {
   }
 }
 
-
 /****************************
  *                          *
  *      G E T T E R S       *
@@ -73,7 +73,9 @@ async function updateUserRating(username, subject, catalogNumber, rating) {
 
 async function getCourseRatings(subject, catalogNumber) {
   try {
-    const snapshot = await courseRatingsRef.child(`${subject}/${catalogNumber}/rating`).once('value');
+    const snapshot = await courseRatingsRef
+      .child(`${subject}/${catalogNumber}/rating`)
+      .once('value');
     const rating = snapshot.val() || { avgRating: 0, numRatings: 0 };
     return { err: null, rating };
   } catch (err) {
@@ -85,9 +87,9 @@ async function getAllCourseRatings() {
   try {
     const snapshot = await courseRatingsRef.once('value');
     const courseRatings = {};
-    snapshot.forEach(subjectSnapshot => {
+    snapshot.forEach((subjectSnapshot) => {
       const subject = subjectSnapshot.key;
-      subjectSnapshot.forEach(courseSnapshot => {
+      subjectSnapshot.forEach((courseSnapshot) => {
         const catalogNumber = courseSnapshot.key;
         const rating = courseSnapshot.child('rating').val();
         courseRatings[`${subject}-${catalogNumber}`] = rating;

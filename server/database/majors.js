@@ -43,9 +43,9 @@ const { majorsRef } = require('./index');
 */
 
 /****************************
- *													*
- *			S E T T E R S 			*
- *													*
+ *                          *
+ *      S E T T E R S       *
+ *                          *
  ****************************/
 
 async function setMajorRequirements(faculty, key, value) {
@@ -58,10 +58,10 @@ async function setMajorRequirements(faculty, key, value) {
 }
 
 /****************************
-  *													*
-  *			G E T T E R S 			*
-  *													*
-  ****************************/
+ *                          *
+ *      G E T T E R S       *
+ *                          *
+ ****************************/
 
 async function getMajorRequirements(faculty, key) {
   try {
@@ -82,7 +82,7 @@ async function getMajorsList(faculty) {
     const val = snapshot.val();
     const majors = Object.keys(val).map((key) => ({
       key,
-      name: val[key].name
+      name: val[key].name,
     }));
     return { err: null, majors };
   } catch (err) {
@@ -97,7 +97,7 @@ async function getFacultiesList() {
     const val = snapshot.val();
     const list = Object.keys(val).map((key) => ({
       key,
-      name: val[key]
+      name: val[key],
     }));
     return { err: null, list };
   } catch (err) {
@@ -111,13 +111,14 @@ async function getList() {
     const snapshot = await majorsRef.child('faculties').once('value');
     const val = snapshot.val();
     const list = {};
-    await Promise.all(Object.keys(val).map(async (faculty) => {
-      const { err, majors } = await getMajorsList(faculty);
-      if (err) return null;
-      list[faculty] = { name: val[faculty], majors: {} };
-      majors.forEach(({ key, name }) => list[faculty].majors[key] = name);
-      return;
-    }));
+    await Promise.all(
+      Object.keys(val).map(async (faculty) => {
+        const { err, majors } = await getMajorsList(faculty);
+        if (err) return;
+        list[faculty] = { name: val[faculty], majors: {} };
+        majors.forEach(({ key, name }) => (list[faculty].majors[key] = name));
+      })
+    );
     return { err: null, list };
   } catch (err) {
     return { err, list: null };
