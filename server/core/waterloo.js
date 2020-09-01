@@ -36,37 +36,40 @@ function getTerms(callback) {
 }
 
 // Gets prerequisites from UW-API
-// { prereqString, prereqs }
+// Promise({ err, prereqString, prereqs })
 // TODO: Need to scrape.  UW API sucks
-function getPrereqs(subject, catalogNumber, callback) {
-  uwclient.get(`/courses/${subject}/${catalogNumber}/prerequisites.json`, function (err, res) {
-    if (err) {
-      console.error(err);
-      return callback(err, null);
-    }
-    if (!res) {
-      console.error('Undefined prereqs');
-      return callback(1, null);
-    }
+function getPrereqs(subject, catalogNumber) {
+  const data = { err: null, prereqString: '', prereqs: {} };
+  return new Promise((resolve, reject) => {
+    uwclient.get(`/courses/${subject}/${catalogNumber}/prerequisites.json`, function (err, res) {
+      if (err) {
+        console.error(err);
+        data.err = err;
+        return resolve(data);
+      }
+      if (!res) {
+        console.error('Undefined prereqs');
+        data.err = err;
+        return resolve(data);
+      }
 
-    if (!Object.keys(res.data).length)
-      return callback(null, {
-        prereqString: '',
-        prereqs: {},
+      if (!Object.keys(res.data).length) return resolve(data);
+
+      const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
+      let prereqs = res.data.prerequisites_parsed;
+
+      try {
+        prereqs = utils.nestReqs(prereqs);
+      } catch (err) {
+        data.err = err;
+        resolve(data);
+      }
+
+      resolve({
+        err: null,
+        prereqString,
+        prereqs,
       });
-
-    const prereqString = res.data.prerequisites.replace('Prereq:', '').trim();
-    let prereqs = res.data.prerequisites_parsed;
-
-    try {
-      prereqs = utils.nestReqs(prereqs);
-    } catch (err) {
-      callback(err, null);
-    }
-
-    callback(null, {
-      prereqString,
-      prereqs,
     });
   });
 }
@@ -130,10 +133,8 @@ function getCourseInformation(subject, catalogNumber) {
 //  Gets requisites from UW-API
 // returns object with prereqs, coreqs, and antireqs
 function getReqs(subject, catalogNumber, callback) {
-  getPrereqs(subject, catalogNumber, (err, prereqData) => {
+  getPrereqs(subject, catalogNumber).then(({ err, prereqString, prereqs }) => {
     if (err) return callback(err, null);
-
-    let { prereqString, prereqs } = prereqData;
 
     uwclient.get(`/courses/${subject}/${catalogNumber}.json`, (err, res) => {
       if (err) {
