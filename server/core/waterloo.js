@@ -35,6 +35,14 @@ function getTerms(callback) {
   });
 }
 
+// Have to remove unwanted prereqs because UW-API sucks
+function removeBadPrereqs(subject, catalogNumber, prereqs) {
+  if (subject === 'ACTSC' && catalogNumber === '231') {
+    prereqs = prereqs.filter(req => req.length < 2 || req[1] !== 'ACTSC232');
+  }
+  return prereqs;
+}
+
 // Gets prerequisites from UW-API
 // Promise({ err, prereqString, prereqs })
 // TODO: Need to scrape.  UW API sucks
@@ -59,6 +67,7 @@ function getPrereqs(subject, catalogNumber) {
       let prereqs = res.data.prerequisites_parsed;
 
       try {
+        prereqs = removeBadPrereqs(subject, catalogNumber, prereqs);
         prereqs = utils.nestReqs(prereqs);
       } catch (err) {
         data.err = err;
