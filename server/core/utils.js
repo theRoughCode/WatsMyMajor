@@ -50,17 +50,18 @@ function parseCourse(courseStr) {
 function nestReqs(reqArr) {
   if (!Array.isArray(reqArr)) return {};
 
-  const reqs = reqArr.slice(!isNaN(reqArr[0])).map((req) => {
-    if (Array.isArray(req)) {
-      // [1, 'CS136']
-      if (!isNaN(req[0]) && typeof req[1] === 'string') return parseCourse(req[1]);
-      else return nestReqs(req);
-    } else return parseCourse(req);
-  });
-  return {
-    choose: !isNaN(reqArr[0]) ? Number(reqArr[0]) : 0,
-    reqs,
-  };
+  // Array is of the form [number, ...]
+  const isChoose = !isNaN(reqArr[0]);
+  let choose = 0;
+
+  if (isChoose) {
+    choose = Number(reqArr[0]);
+    reqArr = reqArr.slice(1);
+  }
+
+  const reqs = reqArr.map((req) => Array.isArray(req) ? nestReqs(req) : parseCourse(req));
+
+  return { choose, reqs };
 }
 
 // Format requisites into required structure
