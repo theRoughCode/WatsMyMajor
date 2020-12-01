@@ -87,12 +87,12 @@ async function getClassInfo(subject, catalogNumber, term) {
  *                          *
  ****************************/
 
-// Create adm.uwaterloo URL
+// Create classes.uwaterloo URL
 function createURL(subject, catalogNumber, term) {
   const level = catalogNumber.length < 3 || catalogNumber.charAt(0) <= 4 ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
-  return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
+  return `https://classes.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl??level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
 }
 
 // Format instructor into firstname lastname
@@ -154,7 +154,7 @@ function formatTimes(timeStr) {
 
   if (datesStr != null) timeObj.dateRange = datesStr;
 
-  // We need to check if the time is in AM or PM cuz the ADM time formatting sucks
+  // We need to check if the time is in AM or PM cuz the classes.uwaterloo.ca time formatting sucks
   // A time is AM if start time is from 8 - 11
   startHour = Number(startHour);
   endHour = Number(endHour);

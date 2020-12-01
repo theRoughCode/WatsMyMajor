@@ -71,7 +71,7 @@ const createAdmURL = (subject, catalogNumber, term) => {
   const level = catalogNumber.length < 3 || catalogNumber.charAt(0) <= 4 ? 'under' : 'grad';
   subject = subject.toUpperCase();
   catalogNumber = catalogNumber.toUpperCase();
-  return `http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
+  return `https://classes.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl?level=${level}&sess=${term}&subject=${subject}&cournum=${catalogNumber}`;
 };
 
 class CourseViewContainer extends Component {

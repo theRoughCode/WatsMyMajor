@@ -208,7 +208,7 @@ export default class ClassDetailsContainer extends Component {
                     <span style={styles.admURL}>
                       <span style={{ marginRight: 4 }}>Scraped from:</span>
                       <a href={admURL} target="_blank" rel="noopener noreferrer">
-                        adm.uwaterloo.ca
+                        classes.uwaterloo.ca
                       </a>
                     </span>
                   </div>

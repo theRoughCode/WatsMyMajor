@@ -2,7 +2,7 @@ const ScrapeRouter = require('express').Router();
 const classes = require('../core/scrapers/classes');
 const majors = require('../core/scrapers/majors');
 
-// Scrape ADM and get classes
+// Scrape classes.uwaterloo.ca and get classes
 ScrapeRouter.get('/classes/:term/:subject/:catalogNumber', async function (req, res) {
   const { subject, catalogNumber, term } = req.params;
   const { err, classInfo } = await classes.getClassInfo(subject, catalogNumber, term);
