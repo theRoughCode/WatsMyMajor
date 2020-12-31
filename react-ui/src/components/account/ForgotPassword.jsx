@@ -121,12 +121,12 @@ class ForgotPassword extends Component {
         const ERROR_EMAIL_NOT_FOUND = 201;
 
         switch (code) {
-        case ERROR_EMAIL_NOT_FOUND:
-          this.setState({ emailError: `Email doesn't exist`, isEmailError: true });
-          return;
-        default:
-          toast.error('Failed to send reset email. Please contact an administrator.');
-          return;
+          case ERROR_EMAIL_NOT_FOUND:
+            this.setState({ emailError: `Email doesn't exist`, isEmailError: true });
+            return;
+          default:
+            toast.error('Failed to send reset email. Please contact an administrator.');
+            return;
         }
       } else {
         this.setState({ email: '', forgotPasswordEmailSent: true });

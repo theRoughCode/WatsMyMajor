@@ -189,32 +189,32 @@ function getTermInfo(termStr) {
     year: 2018,
   };
   switch (termStrArr[0]) {
-  case 'Winter':
-    term += '1';
-    startDate.day = 7;
-    startDate.month = 1;
-    startDate.year = termStrArr[1];
-    endDate.day = 5;
-    endDate.month = 4;
-    endDate.year = termStrArr[1];
-    break;
-  case 'Spring':
-    term += '5';
-    startDate.day = 6;
-    startDate.month = 5;
-    startDate.year = termStrArr[1];
-    endDate.day = 30;
-    endDate.month = 7;
-    endDate.year = termStrArr[1];
-    break;
-  default:
-    term += '9';
-    startDate.day = 6;
-    startDate.month = 9;
-    startDate.year = termStrArr[1];
-    endDate.day = 3;
-    endDate.month = 12;
-    endDate.year = termStrArr[1];
+    case 'Winter':
+      term += '1';
+      startDate.day = 7;
+      startDate.month = 1;
+      startDate.year = termStrArr[1];
+      endDate.day = 5;
+      endDate.month = 4;
+      endDate.year = termStrArr[1];
+      break;
+    case 'Spring':
+      term += '5';
+      startDate.day = 6;
+      startDate.month = 5;
+      startDate.year = termStrArr[1];
+      endDate.day = 30;
+      endDate.month = 7;
+      endDate.year = termStrArr[1];
+      break;
+    default:
+      term += '9';
+      startDate.day = 6;
+      startDate.month = 9;
+      startDate.year = termStrArr[1];
+      endDate.day = 3;
+      endDate.month = 12;
+      endDate.year = termStrArr[1];
   }
   return {
     term,

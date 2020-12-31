@@ -157,18 +157,18 @@ export default class Register extends Component {
         this.setState({ loading: false });
 
         switch (code) {
-        case ERROR_USERNAME_EXISTS:
-          this.setState({ usernameError: 'Username already exists' });
-          return;
-        case ERROR_EMAIL_EXISTS:
-          this.setState({ emailError: 'Email already exists' });
-          return;
-        case ERROR_SERVER_ERROR:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
-        default:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
+          case ERROR_USERNAME_EXISTS:
+            this.setState({ usernameError: 'Username already exists' });
+            return;
+          case ERROR_EMAIL_EXISTS:
+            this.setState({ emailError: 'Email already exists' });
+            return;
+          case ERROR_SERVER_ERROR:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
+          default:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
         }
       } else {
         this.setState({ registered: true, loading: false });

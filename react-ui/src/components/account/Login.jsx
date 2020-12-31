@@ -152,23 +152,23 @@ class Login extends Component {
         const { code } = await response.json();
 
         switch (code) {
-        case ERROR_USERNAME_NOT_FOUND:
-          this.setState({ usernameError: 'Username not found' });
-          return;
-        case ERROR_WRONG_PASSWORD:
-          this.setState({ passwordError: 'Wrong password' });
-          return;
-        case ERROR_USER_NOT_VERIFIED:
-          toast.error(
-            "Please verify your email.  We've sent you a verification email at the email you provided."
-          );
-          return;
-        case ERROR_SERVER_ERROR:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
-        default:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
+          case ERROR_USERNAME_NOT_FOUND:
+            this.setState({ usernameError: 'Username not found' });
+            return;
+          case ERROR_WRONG_PASSWORD:
+            this.setState({ passwordError: 'Wrong password' });
+            return;
+          case ERROR_USER_NOT_VERIFIED:
+            toast.error(
+              "Please verify your email.  We've sent you a verification email at the email you provided."
+            );
+            return;
+          case ERROR_SERVER_ERROR:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
+          default:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
         }
       } else {
         const user = await response.json();
@@ -197,18 +197,18 @@ class Login extends Component {
       if (!response.ok) {
         const { code, message } = await response.json();
         switch (code) {
-        case ERROR_EMAIL_EXISTS:
-          toast.error(message);
-          return;
-        case ERROR_MISSING_FB_EMAIL:
-          toast.error(message);
-          return;
-        case ERROR_SERVER_ERROR:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
-        default:
-          toast.error('Failed to create account. Please contact an administrator.');
-          return;
+          case ERROR_EMAIL_EXISTS:
+            toast.error(message);
+            return;
+          case ERROR_MISSING_FB_EMAIL:
+            toast.error(message);
+            return;
+          case ERROR_SERVER_ERROR:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
+          default:
+            toast.error('Failed to create account. Please contact an administrator.');
+            return;
         }
       } else {
         const { username, user } = await response.json();

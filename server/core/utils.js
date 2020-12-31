@@ -59,7 +59,7 @@ function nestReqs(reqArr) {
     reqArr = reqArr.slice(1);
   }
 
-  const reqs = reqArr.map((req) => Array.isArray(req) ? nestReqs(req) : parseCourse(req));
+  const reqs = reqArr.map((req) => (Array.isArray(req) ? nestReqs(req) : parseCourse(req)));
 
   return { choose, reqs };
 }
@@ -112,17 +112,17 @@ function unpick(str) {
   if (str.includes('of')) {
     var choose = str.slice(0, 3);
     switch (choose) {
-    case 'One':
-      choose = 1;
-      break;
-    case 'Two':
-      choose = 2;
-      break;
-    case 'All':
-      choose = null;
-      break;
-    default:
-      return str;
+      case 'One':
+        choose = 1;
+        break;
+      case 'Two':
+        choose = 2;
+        break;
+      case 'All':
+        choose = null;
+        break;
+      default:
+        return str;
     }
     const arr = str.slice(6, -1).replace(/\s+/g, '').replace('/', ',').split(',');
     return { choose, reqs: fillInSubject(arr) };

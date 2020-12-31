@@ -28,16 +28,16 @@ const fulfillPrereqs = (myCourses, prereqs) => {
 
   // Inductive case: list of courses with choose
   switch (prereqs.choose) {
-  case 0:
-    return prereqs.reqs.reduce((acc, req) => acc && fulfillPrereqs(myCourses, req), true);
-  default: {
-    let numRequired = prereqs.choose;
-    for (var i = 0; i < prereqs.reqs.length; i++) {
-      if (numRequired === 0) return true;
-      if (fulfillPrereqs(myCourses, prereqs.reqs[i])) numRequired--;
+    case 0:
+      return prereqs.reqs.reduce((acc, req) => acc && fulfillPrereqs(myCourses, req), true);
+    default: {
+      let numRequired = prereqs.choose;
+      for (var i = 0; i < prereqs.reqs.length; i++) {
+        if (numRequired === 0) return true;
+        if (fulfillPrereqs(myCourses, prereqs.reqs[i])) numRequired--;
+      }
+      return numRequired === 0;
     }
-    return numRequired === 0;
-  }
   }
 };
 
@@ -71,17 +71,17 @@ export const termNumToStr = (term) => {
   const [year, month] = term.match(termRegex).slice(1);
   let season = '';
   switch (month) {
-  case '1':
-    season = 'Winter';
-    break;
-  case '5':
-    season = 'Spring';
-    break;
-  case '9':
-    season = 'Fall';
-    break;
-  default:
-    season = '';
+    case '1':
+      season = 'Winter';
+      break;
+    case '5':
+      season = 'Spring';
+      break;
+    case '9':
+      season = 'Fall';
+      break;
+    default:
+      season = '';
   }
   return `${season} 20${year}`;
 };

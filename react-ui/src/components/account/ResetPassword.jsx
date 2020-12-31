@@ -140,22 +140,22 @@ class ResetPassword extends Component {
       const ERROR_SAME_PASSWORD = 203;
 
       switch (code) {
-      case ERROR_RESET_PASSWORD_TOKEN:
-        this.setState({
-          passwordError: message,
-          isPasswordError: true,
-          isConfirmPasswordError: true,
-        });
-        return;
-      case ERROR_SAME_PASSWORD:
-        this.setState({
-          passwordError: message,
-          isPasswordError: true,
-          isConfirmPasswordError: true,
-        });
-        return;
-      default:
-        toast.error('An error occured. Please contact an administrator.');
+        case ERROR_RESET_PASSWORD_TOKEN:
+          this.setState({
+            passwordError: message,
+            isPasswordError: true,
+            isConfirmPasswordError: true,
+          });
+          return;
+        case ERROR_SAME_PASSWORD:
+          this.setState({
+            passwordError: message,
+            isPasswordError: true,
+            isConfirmPasswordError: true,
+          });
+          return;
+        default:
+          toast.error('An error occured. Please contact an administrator.');
       }
     } else {
       this.setState({ willRedirect: true });

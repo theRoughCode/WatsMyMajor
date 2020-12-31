@@ -22,23 +22,23 @@ const styles = {
 
 const hasTakenOption = (option, myCourses) => {
   switch (option.type) {
-  case 'sum':
-    for (let i = 0; i < option.courses.length; i++) {
-      const { subject, catalogNumber } = option.courses[i];
-      if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
+    case 'sum':
+      for (let i = 0; i < option.courses.length; i++) {
+        const { subject, catalogNumber } = option.courses[i];
+        if (!hasTakenCourse(subject, catalogNumber, myCourses)) return false;
+      }
+      // Mark as taken
+      for (let i = 0; i < option.courses.length; i++) {
+        const { subject, catalogNumber } = option.courses[i];
+        myCourses[subject][catalogNumber] = true;
+      }
+      return true;
+    default: {
+      const { subject, catalogNumber } = option;
+      const taken = hasTakenCourse(subject, catalogNumber, myCourses);
+      if (taken) myCourses[subject][catalogNumber] = true;
+      return taken;
     }
-    // Mark as taken
-    for (let i = 0; i < option.courses.length; i++) {
-      const { subject, catalogNumber } = option.courses[i];
-      myCourses[subject][catalogNumber] = true;
-    }
-    return true;
-  default: {
-    const { subject, catalogNumber } = option;
-    const taken = hasTakenCourse(subject, catalogNumber, myCourses);
-    if (taken) myCourses[subject][catalogNumber] = true;
-    return taken;
-  }
   }
 };
 
@@ -88,16 +88,16 @@ export default class OptionCheck extends Component {
     const { options } = this.props;
     const formattedOptions = options.map((option) => {
       switch (option.type) {
-      case 'sum':
-        return (
-          '(' +
-          option.courses
-            .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
-            .join(' & ') +
-          ')'
-        );
-      default:
-        return `${option.subject} ${option.catalogNumber}`;
+        case 'sum':
+          return (
+            '(' +
+            option.courses
+              .map(({ subject, catalogNumber }) => `${subject} ${catalogNumber}`)
+              .join(' & ') +
+            ')'
+          );
+        default:
+          return `${option.subject} ${option.catalogNumber}`;
       }
     });
     return (

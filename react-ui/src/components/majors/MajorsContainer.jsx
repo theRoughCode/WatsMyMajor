@@ -48,28 +48,28 @@ const styles = {
 
 const renderReqNode = ({ type, choose, courses }, index, myCourses) => {
   switch (type) {
-  case 'choose':
-    return (
-      <ChooseBoard
-        key={index}
-        choose={choose}
-        title={`Choose ${choose} of:`}
-        courses={courses}
-        myCourses={myCourses}
-      />
-    );
-  case 'all':
-    return (
-      <ChooseBoard
-        key={index}
-        choose={0}
-        title="Choose all of:"
-        courses={courses}
-        myCourses={myCourses}
-      />
-    );
-  default:
-    return null;
+    case 'choose':
+      return (
+        <ChooseBoard
+          key={index}
+          choose={choose}
+          title={`Choose ${choose} of:`}
+          courses={courses}
+          myCourses={myCourses}
+        />
+      );
+    case 'all':
+      return (
+        <ChooseBoard
+          key={index}
+          choose={0}
+          title="Choose all of:"
+          courses={courses}
+          myCourses={myCourses}
+        />
+      );
+    default:
+      return null;
   }
 };
 

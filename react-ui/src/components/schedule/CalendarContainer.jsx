@@ -139,23 +139,23 @@ const parseCourses = (courses, isFriends) => {
         days.forEach((dayStr) => {
           let day = 0;
           switch (dayStr) {
-          case 'M':
-            day = 1;
-            break;
-          case 'T':
-            day = 2;
-            break;
-          case 'W':
-            day = 3;
-            break;
-          case 'Th':
-            day = 4;
-            break;
-          case 'F':
-            day = 5;
-            break;
-          default:
-            day = 6;
+            case 'M':
+              day = 1;
+              break;
+            case 'T':
+              day = 2;
+              break;
+            case 'W':
+              day = 3;
+              break;
+            case 'Th':
+              day = 4;
+              break;
+            case 'F':
+              day = 5;
+              break;
+            default:
+              day = 6;
           }
 
           // ensure valid date
@@ -343,14 +343,14 @@ export default class CalendarContainer extends Component {
   changeMode = (mode) => {
     let view = '3 Days';
     switch (mode) {
-    case 'day':
-      view = 'Day';
-      break;
-    case 'week':
-      view = 'Week';
-      break;
-    default:
-      view = '3 Days';
+      case 'day':
+        view = 'Day';
+        break;
+      case 'week':
+        view = 'Week';
+        break;
+      default:
+        view = '3 Days';
     }
     this.setState({ mode: mode, isMenuOpen: false, view });
   };

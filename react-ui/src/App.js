@@ -118,16 +118,16 @@ class App extends Component {
   handleRouteChange({ pathname }) {
     const pathArr = pathname.split('/').slice(1);
     switch (pathArr[0]) {
-    case 'my-courses': // My courses
-      document.title = 'My Courses - WatsMyMajor';
-      break;
-    case 'schedule': // My schedule
-      document.title = 'My Schedule - WatsMyMajor';
-      break;
-    case 'welcome':
-      this.setState({ sideBarOpen: false });
+      case 'my-courses': // My courses
+        document.title = 'My Courses - WatsMyMajor';
+        break;
+      case 'schedule': // My schedule
+        document.title = 'My Schedule - WatsMyMajor';
+        break;
+      case 'welcome':
+        this.setState({ sideBarOpen: false });
       // falls through
-    default:
+      default:
     }
   }
 

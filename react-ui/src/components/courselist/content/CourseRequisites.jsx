@@ -126,13 +126,13 @@ class CourseRequisites extends Component {
 
     // Inductive case: list of courses with choose
     switch (requisites.choose) {
-    case 0:
-      return requisites.reqs.map(this.formatReqs);
-    default: {
-      if (requisites.reqs == null) return [];
-      const newReqsArr = requisites.reqs.map(this.formatReqs);
-      return [<ChooseReqs key={0} choose={requisites.choose} reqs={newReqsArr} />];
-    }
+      case 0:
+        return requisites.reqs.map(this.formatReqs);
+      default: {
+        if (requisites.reqs == null) return [];
+        const newReqsArr = requisites.reqs.map(this.formatReqs);
+        return [<ChooseReqs key={0} choose={requisites.choose} reqs={newReqsArr} />];
+      }
     }
   };
 
