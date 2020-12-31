@@ -169,16 +169,16 @@ class CourseBoardContainer extends Component {
     let prereqs = [];
 
     switch (start.source.droppableId) {
-    case 'Cart':
-      prereqs = this.state.cart[start.source.index].prereqs || [];
-      break;
-    default:
-      if (
-        this.props.myCourses.hasOwnProperty(subject) &&
-        this.props.myCourses[subject].hasOwnProperty(catalogNumber)
-      ) {
-        prereqs = this.props.myCourses[subject][catalogNumber];
-      }
+      case 'Cart':
+        prereqs = this.state.cart[start.source.index].prereqs || [];
+        break;
+      default:
+        if (
+          this.props.myCourses.hasOwnProperty(subject) &&
+          this.props.myCourses[subject].hasOwnProperty(catalogNumber)
+        ) {
+          prereqs = this.props.myCourses[subject][catalogNumber];
+        }
     }
 
     if (prereqs.length === 0) return;
@@ -193,14 +193,14 @@ class CourseBoardContainer extends Component {
     if (!destination) return;
 
     switch (result.type) {
-    case DragTypes.COLUMN:
-      this.onDragTerm(source, destination, numPerRow);
-      break;
-    case DragTypes.COURSE:
-      this.setState({ isDraggingCourse: false });
-      this.onDragCourse(source, destination, numPerRow);
-      break;
-    default:
+      case DragTypes.COLUMN:
+        this.onDragTerm(source, destination, numPerRow);
+        break;
+      case DragTypes.COURSE:
+        this.setState({ isDraggingCourse: false });
+        this.onDragCourse(source, destination, numPerRow);
+        break;
+      default:
     }
   };
 
@@ -233,51 +233,51 @@ class CourseBoardContainer extends Component {
   // Retrieves board
   getBoard = (id) => {
     switch (id) {
-    case 'Cart':
-      return this.state.cart.slice();
-    case 'Trash':
-      return null;
-    default:
-      if (!this.state.courseList.hasOwnProperty(id)) {
-        Sentry.captureException(`
+      case 'Cart':
+        return this.state.cart.slice();
+      case 'Trash':
+        return null;
+      default:
+        if (!this.state.courseList.hasOwnProperty(id)) {
+          Sentry.captureException(`
         User: ${this.state.username}\n
         Invalid id: ${id}\n
         Courselist: ${JSON.stringify(this.state.courseList)}
       `);
-        toast.error(
-          'There was an error updating your courses.  Please contact an administrator.'
-        );
-      }
-      if (this.state.courseList[id].courses != null) {
-        return this.state.courseList[id].courses.slice();
-      } else return [];
+          toast.error(
+            'There was an error updating your courses.  Please contact an administrator.'
+          );
+        }
+        if (this.state.courseList[id].courses != null) {
+          return this.state.courseList[id].courses.slice();
+        } else return [];
     }
   };
 
   // Updates the board
   updateBoard = (id, board) => {
     switch (id) {
-    case 'Cart':
-      this.setState({ cart: board });
-      break;
-    case 'Trash':
-      break;
-    default: {
-      const { username, courseList } = this.state;
-      if (!courseList.hasOwnProperty(id)) {
-        Sentry.captureException(`
-        User: ${username}\n
-        Invalid id: ${id}\n
-        Courselist: ${JSON.stringify(courseList)}
-      `);
-        toast.error(
-          'There was an error updating your courses.  Please contact an administrator.'
-        );
-        return;
+      case 'Cart':
+        this.setState({ cart: board });
+        break;
+      case 'Trash':
+        break;
+      default: {
+        const { username, courseList } = this.state;
+        if (!courseList.hasOwnProperty(id)) {
+          Sentry.captureException(`
+            User: ${username}\n
+            Invalid id: ${id}\n
+            Courselist: ${JSON.stringify(courseList)}
+          `);
+          toast.error(
+            'There was an error updating your courses.  Please contact an administrator.'
+          );
+          return;
+        }
+        courseList[id].courses = board;
+        this.setState({ courseList });
       }
-      courseList[id].courses = board;
-      this.setState({ courseList });
-    }
     }
   };
 
@@ -359,7 +359,7 @@ class CourseBoardContainer extends Component {
     let hasDuplicate = false;
     newCourses = newCourses.filter(({ subject, catalogNumber }) => {
       const isDuplicate =
-        hasTakenCourse(subject, catalogNumber, this.props.myCourses) ||
+        hasTakenCourse(subject, catalogNumber, this.state.courseList) ||
         isInCart(subject, catalogNumber, this.state.cart);
       if (isDuplicate) hasDuplicate = true;
       return !isDuplicate;
@@ -382,7 +382,7 @@ class CourseBoardContainer extends Component {
     terms = terms.map((term) => {
       term.courses = term.courses.filter(({ subject, catalogNumber }) => {
         const isDuplicate =
-          hasTakenCourse(subject, catalogNumber, this.props.myCourses) ||
+          hasTakenCourse(subject, catalogNumber, this.state.courseList) ||
           isInCart(subject, catalogNumber, this.state.cart);
         if (isDuplicate) duplicateCourse = true;
         return !isDuplicate;
